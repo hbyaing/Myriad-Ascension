@@ -53,6 +53,20 @@ public record CatalogIngredient(PillCatalog pill) {
     private MutableComponent tint(Component text,double ticks){return ItemTextPalette.colored(text,color(ticks));}
     public List<Component> tooltip(){return tooltip(net.minecraft.client.gui.screens.Screen.hasShiftDown(),clock());}
     public List<Component> tooltip(boolean expanded,double ticks){
+        if(!core()){
+            // Old variants remain internal recipe lookup keys; they are not the active V5 grading axes.
+            var lines=new ArrayList<Component>();lines.add(name(ticks));
+            lines.add(Component.literal("丹药统一一至九品；实际能力由炼制结果决定。"));
+            lines.add(Component.literal("此目录用于查找用途与材料，不保证旧配方产出相同效果。"));
+            lines.add(Component.literal("创造取物后由服务端按旧丹导入规则生成有效凭证。"));
+            if(expanded){
+                var preview=cn.blockforge.generated.generatedmod.alchemy.effects.LegacyPillImport.preview(cheat());
+                lines.add(Component.literal("当前取物模板的导入预览："));
+                lines.add(cn.blockforge.generated.generatedmod.alchemy.effects.PillSnapshot.name(preview));
+                cn.blockforge.generated.generatedmod.alchemy.effects.PillSnapshot.tooltip(preview,lines);
+            }else lines.add(Component.literal("按住 Shift 查看取物模板的导入预览").withStyle(ChatFormatting.GRAY));
+            return lines;
+        }
         List<Component> lines=new ArrayList<>();lines.add(name(ticks));
         lines.add(tint(Component.literal(core()?"品阶：凡品～仙品":pill==PillCatalog.CALMING?"品质：特殊":"品质：下品～极品"),ticks));
         if(!core()&&MedicineTier.imported(pill))lines.add(tint(Component.literal("丹阶：").append(MedicineTier.name(1)).append("～").append(MedicineTier.name(5)).append("；与品质分别计算"),ticks));

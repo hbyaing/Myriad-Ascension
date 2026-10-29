@@ -1,0 +1,13 @@
+{
+  "jar": "myriad-ascension-0.2.jar",
+  "bytes": 87689072,
+  "sha256": "561c08db7bef42fe360da811fac76f5110f13f4a1205a27d97c7cd2b4d8163f8",
+  "crcPassed": true,
+  "qaAndBundledJeiExcluded": true,
+  "runtimeCodeChanged": [
+    "AlchemyFurnaceBlockEntity.stillValid",
+    "ScreenResolutionEvents.initialize",
+    "CatalogIngredient.tooltip"
+  ],
+  "migrationOrProtocolChangedThisRound": false
+}

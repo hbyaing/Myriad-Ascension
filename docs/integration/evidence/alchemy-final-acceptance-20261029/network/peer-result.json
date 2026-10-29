@@ -1,0 +1,8 @@
+{
+  "captureViolations": 0,
+  "transport": "two JVM loopback TCP Forge LAN",
+  "passed": true,
+  "blockedGrabs": 3,
+  "stage": 10,
+  "error": ""
+}

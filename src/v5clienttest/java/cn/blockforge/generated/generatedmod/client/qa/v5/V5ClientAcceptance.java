@@ -52,6 +52,7 @@ public final class V5ClientAcceptance {
         if(mc.mouseHandler.isMouseGrabbed()||GLFW.glfwGetInputMode(mc.getWindow().getWindow(),GLFW.GLFW_CURSOR)!=GLFW.GLFW_CURSOR_NORMAL)violations++;
     }
     @SubscribeEvent public static void tick(TickEvent.ClientTickEvent event){
+        if(!System.getProperty("wuxingxiantu.v5NetworkRole","").isEmpty()){V5NetworkAcceptance.tick(event);return;}
         if(Boolean.getBoolean("wuxingxiantu.v5Migration")){AlchemyMigrationAcceptance.tick(event);return;}
         if(Boolean.getBoolean("wuxingxiantu.v5Inference")){ResearchInferenceAcceptance.tick(event);return;}
         if(Boolean.getBoolean("wuxingxiantu.v5Research")){ResearchTableAcceptance.tick(event);return;}

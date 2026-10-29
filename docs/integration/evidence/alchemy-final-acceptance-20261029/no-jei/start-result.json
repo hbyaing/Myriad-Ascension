@@ -1,0 +1,66 @@
+{
+  "blockedGrabs": 6,
+  "resume": false,
+  "captures": [
+    "migrated-inventory",
+    "migrated-hover",
+    "after-real-eating",
+    "real-nine-inventory",
+    "old-chest-preview",
+    "young-formula-gui2",
+    "formula-hover",
+    "formula-gui3",
+    "formula-gui4"
+  ],
+  "dimensions": {
+    "migrated-inventory": {
+      "width": 1440,
+      "height": 1080,
+      "guiScale": 2.0
+    },
+    "migrated-hover": {
+      "width": 1440,
+      "height": 1080,
+      "guiScale": 2.0
+    },
+    "after-real-eating": {
+      "width": 1440,
+      "height": 1080,
+      "guiScale": 2.0
+    },
+    "real-nine-inventory": {
+      "width": 1440,
+      "height": 1080,
+      "guiScale": 2.0
+    },
+    "old-chest-preview": {
+      "width": 1440,
+      "height": 1080,
+      "guiScale": 2.0
+    },
+    "young-formula-gui2": {
+      "width": 1440,
+      "height": 1080,
+      "guiScale": 2.0
+    },
+    "formula-hover": {
+      "width": 1440,
+      "height": 1080,
+      "guiScale": 2.0
+    },
+    "formula-gui3": {
+      "width": 1440,
+      "height": 1080,
+      "guiScale": 3.0
+    },
+    "formula-gui4": {
+      "width": 1920,
+      "height": 1440,
+      "guiScale": 4.0
+    }
+  },
+  "passed": true,
+  "captureViolations": 0,
+  "frames": 1723,
+  "error": ""
+}

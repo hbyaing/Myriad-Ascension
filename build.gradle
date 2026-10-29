@@ -407,9 +407,9 @@ minecraft.runs {
                 property 'mixin.env.remapRefMap', 'true'
                 property 'mixin.env.refMapRemappingFile', file('build/createSrgToMcp/output.srg').absolutePath
             }
-            workingDirectory project.file(project.hasProperty('alchemyMigrationOnly') ? 'build/alchemy-migration-gametest' : project.hasProperty('carvingOnly') ? 'build/carving-gametest' : project.hasProperty('fireTargetingOnly') ? 'build/fire-targeting-gametest' : project.hasProperty('domainDamageOnly') ? 'build/domain-damage-gametest' : project.hasProperty('spiritShieldOnly') ? 'build/shield-shatter-gametest' : project.hasProperty('xuanlingAnvilOnly') ? 'build/xuanling-anvil-gametest' : project.hasProperty('realmFlightOnly') ? 'build/realm-flight-gametest' :
+            workingDirectory project.file(project.hasProperty('alchemyMigrationOnly') ? 'build/alchemy-migration-gametest' : project.hasProperty('v5DawnOnly') ? 'build/v5-dawn-gametest' : project.hasProperty('carvingOnly') ? 'build/carving-gametest' : project.hasProperty('fireTargetingOnly') ? 'build/fire-targeting-gametest' : project.hasProperty('domainDamageOnly') ? 'build/domain-damage-gametest' : project.hasProperty('spiritShieldOnly') ? 'build/shield-shatter-gametest' : project.hasProperty('xuanlingAnvilOnly') ? 'build/xuanling-anvil-gametest' : project.hasProperty('realmFlightOnly') ? 'build/realm-flight-gametest' :
                 (project.hasProperty('entryUiOnly') ? 'build/entry-ui-gametest' : 'build/gametest-run'))
-            property 'forge.enabledGameTestNamespaces', project.hasProperty('alchemyMigrationOnly') ? 'wuxingxiantu_alchemymigration' : project.hasProperty('carvingOnly') ? 'wuxingxiantu_carving' : project.hasProperty('fireTargetingOnly') ? 'wuxingxiantu_firetargets' : project.hasProperty('herbLookbackOnly') ? 'wuxingxiantu_herblookback' : project.hasProperty('talismansOnly') ? 'wuxingxiantu_talismans' : project.hasProperty('furnaceExplosionOnly') ? 'wuxingxiantu_furnaceexplosion' : project.hasProperty('domainDamageOnly') ? 'wuxingxiantu_domainbalance' : project.hasProperty('spiritShieldOnly') ? 'wuxingxiantu_shield' : project.hasProperty('xuanlingAnvilOnly') ? 'wuxingxiantu_anvil' : project.hasProperty('tribulationOnly') ? 'wuxingxiantu_tribulation' : project.hasProperty('realmFlightOnly') ? 'wuxingxiantu_realmflight' :
+            property 'forge.enabledGameTestNamespaces', project.hasProperty('v5DawnOnly') ? 'wuxingxiantu_v5dawn' : project.hasProperty('alchemyMigrationOnly') ? 'wuxingxiantu_alchemymigration' : project.hasProperty('carvingOnly') ? 'wuxingxiantu_carving' : project.hasProperty('fireTargetingOnly') ? 'wuxingxiantu_firetargets' : project.hasProperty('herbLookbackOnly') ? 'wuxingxiantu_herblookback' : project.hasProperty('talismansOnly') ? 'wuxingxiantu_talismans' : project.hasProperty('furnaceExplosionOnly') ? 'wuxingxiantu_furnaceexplosion' : project.hasProperty('domainDamageOnly') ? 'wuxingxiantu_domainbalance' : project.hasProperty('spiritShieldOnly') ? 'wuxingxiantu_shield' : project.hasProperty('xuanlingAnvilOnly') ? 'wuxingxiantu_anvil' : project.hasProperty('tribulationOnly') ? 'wuxingxiantu_tribulation' : project.hasProperty('realmFlightOnly') ? 'wuxingxiantu_realmflight' :
                 (project.hasProperty('entryUiOnly') ? 'wuxingxiantu_entry' :
                 (project.hasProperty('bossCombatOnly') ? 'wuxingxiantu_boss' : 'wuxingxiantu,wuxingxiantu_boss,wuxingxiantu_entry,wuxingxiantu_alchemymigration,wuxingxiantu_realmflight,wuxingxiantu_anvil,wuxingxiantu_shield,wuxingxiantu_domainbalance,wuxingxiantu_carving'))
         mods {
@@ -564,6 +564,13 @@ if (project.hasProperty('flightInputCapture')) {
 
 // Independent background acceptance. QA code and pointer guards never enter the production jar.
 if (project.hasProperty('v5BatchCapture')) {
+    if (project.hasProperty('myriadExternalShaders') && !project.hasProperty('myriadCapture')) {
+        repositories { flatDir { dirs project.file('build/meteor-client/mod-libs') } }
+        dependencies {
+            runtimeOnly fg.deobf('meteor-test:oculus-mc1.20.1:1.8.0')
+            runtimeOnly fg.deobf('meteor-test:embeddium:0.3.31+mc1.20.1')
+        }
+    }
     sourceSets {
         v5ClientTest {
             java.setSrcDirs(['src/v5clienttest/java'])
@@ -574,7 +581,7 @@ if (project.hasProperty('v5BatchCapture')) {
     }
     minecraft.runs {
         client {
-            workingDirectory project.file('../../work/v5-independent-client')
+            workingDirectory project.file(project.findProperty('v5GameDir') ?: '../../work/v5-independent-client')
             jvmArgs '-Xmx2G', '-XX:ActiveProcessorCount=4', '-XX:CICompilerCount=2', '-Dfml.earlyprogresswindow=false'
             args '--mixin', 'wuxingxiantu.v5-qa.mixins.json'
             property 'mixin.env.remapRefMap', 'true'
@@ -584,10 +591,17 @@ if (project.hasProperty('v5BatchCapture')) {
             property 'wuxingxiantu.v5Effects', project.hasProperty('v5EffectsCapture').toString()
             property 'wuxingxiantu.v5Entries', project.hasProperty('v5EntriesCapture').toString()
             property 'wuxingxiantu.v5Migration', project.hasProperty('v5MigrationCapture').toString()
+            property 'wuxingxiantu.v5Compatibility', project.hasProperty('v5CompatibilityCapture').toString()
+            property 'wuxingxiantu.v5ExpectedJei', project.hasProperty('jeiCapture').toString()
+            property 'wuxingxiantu.v5ExpectedShaders', project.hasProperty('myriadExternalShaders').toString()
+            property 'wuxingxiantu.v5NetworkRole', project.findProperty('v5NetworkRole') ?: ''
+            property 'wuxingxiantu.v5NetworkOutput', project.file(project.findProperty('v5NetworkOutput') ?: '../v5-13/network').absolutePath
+            if (project.hasProperty('v5Username')) args '--username', project.property('v5Username')
             property 'wuxingxiantu.v5Research', project.hasProperty('v5ResearchCapture').toString()
             property 'wuxingxiantu.v5Inference', (project.hasProperty('v5InferenceCapture') || project.hasProperty('v5CertificationCapture')).toString()
             property 'wuxingxiantu.v5Certification', project.hasProperty('v5CertificationCapture').toString()
-            property 'wuxingxiantu.v5Output', project.file('../v5-batch-client-validation').absolutePath
+            property 'wuxingxiantu.v5Output', project.file(project.findProperty('v5Output') ?: '../v5-batch-client-validation').absolutePath
+            if (project.hasProperty('myriadNativePath')) property 'org.lwjgl.librarypath', project.property('myriadNativePath')
             mods { wuxingxiantu { source sourceSets.main; source sourceSets.v5ClientTest } }
         }
     }

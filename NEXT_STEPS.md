@@ -1,4 +1,6 @@
-> 2026-10-27最新接续：当前进行自由炼丹V5，先读[换电脑接续说明](docs/integration/ALCHEMY_V5_HANDOFF_20261027.md)、[V5制作清单](docs/integration/ALCHEMY_V5_CHECKLIST.md)及[V5.0-R1修订TXT](docs/specifications/alchemy-v5/DESIGN_V5_0_R1.txt)。第03项纯核心完成，下一项04；昼夜/月相与蕴月瓶为新确认设计，尚未实装。以下融合历史记录保留，不作为最新进度。
+> 2026-10-29最新接续：仓库为 https://github.com/hbyaing/Myriad-Ascension ，目标main。炼丹V5第04–12项已接入，第13项首轮验收完成，整体仍为进行中；下一步独立专服双客户端与更多热重载/故障注入。先读[制作清单](docs/integration/ALCHEMY_V5_CHECKLIST.md)、[第13项验收记录](docs/testing/ALCHEMY_V5_ACCEPTANCE_20261029.md)及根AGENTS.md。以下“下一项04”等为历史记录，不能用作最新进度。
+
+> 2026-10-27接续历史：当时第03项纯核心完成，下一项04；对应[换电脑接续说明](docs/integration/ALCHEMY_V5_HANDOFF_20261027.md)和[V5.0-R1修订TXT](docs/specifications/alchemy-v5/DESIGN_V5_0_R1.txt)保留供追溯。
 
 当前按用户确认的[16项工作清单](docs/integration/CHECKLIST-16.md)执行；数据与迁移边界见[第3项核对](docs/integration/DATA_AND_SAVE_AUDIT.md)。
 

@@ -1,5 +1,7 @@
 # 换电脑接续：自由炼丹V5
 
+> 2026-10-29更新：以下03→04进度为历史快照。最新main已完成04–12，第13项正在验收；请以[最新制作清单](ALCHEMY_V5_CHECKLIST.md)和[第13项记录](../testing/ALCHEMY_V5_ACCEPTANCE_20261029.md)为准，不重复开发已接入项目。上传目标已改为hbyaing/Myriad-Ascension，见根AGENTS.md。
+
 仓库：https://github.com/hbyaing/Myriad-Ascension.git，默认分支 main。先读根 AGENTS.md，检查分支/远程/未提交修改，fetch 后安全同步最新 main，最终合并上传main。不能直接覆盖已有工作；不要使用 reset --hard 或强推。
 
 ## 当前进度

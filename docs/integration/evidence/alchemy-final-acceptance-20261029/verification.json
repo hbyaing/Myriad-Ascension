@@ -1,0 +1,97 @@
+{
+  "baseline": "5ebf576",
+  "serverTests": 481,
+  "isolatedNaturalDawnTests": 1,
+  "pureCoreChecks": 388,
+  "clientRuns": [
+    {
+      "mode": "no-jei",
+      "run": "start-result.json",
+      "captures": 9,
+      "frames": 1723,
+      "captureViolations": 0,
+      "blockedGrabs": 6
+    },
+    {
+      "mode": "no-jei",
+      "run": "resume-result.json",
+      "captures": 6,
+      "frames": 653,
+      "captureViolations": 0,
+      "blockedGrabs": 4
+    },
+    {
+      "mode": "jei",
+      "run": "start-result.json",
+      "captures": 9,
+      "frames": 1624,
+      "captureViolations": 0,
+      "blockedGrabs": 6
+    },
+    {
+      "mode": "jei",
+      "run": "resume-result.json",
+      "captures": 6,
+      "frames": 621,
+      "captureViolations": 0,
+      "blockedGrabs": 4
+    },
+    {
+      "mode": "shaders",
+      "run": "start-result.json",
+      "captures": 9,
+      "frames": 1477,
+      "captureViolations": 0,
+      "blockedGrabs": 6
+    },
+    {
+      "mode": "shaders",
+      "run": "resume-result.json",
+      "captures": 6,
+      "frames": 503,
+      "captureViolations": 0,
+      "blockedGrabs": 4
+    }
+  ],
+  "migrationCaptureCount": 45,
+  "status": "item13_in_progress",
+  "notClaimed": [
+    "two clients on standalone DedicatedServer deployment",
+    "public network or load acceptance",
+    "arbitrary cross-file rollback or power-loss recovery"
+  ],
+  "logs": {
+    "full": "alchemy-v5-13-verify-complete.log",
+    "dawn": "alchemy-v5-13-dawn-isolated.log"
+  },
+  "researchRuns": [
+    {
+      "run": "start-result.json",
+      "captures": 26,
+      "frames": 2373,
+      "captureViolations": 0,
+      "blockedGrabs": 2
+    },
+    {
+      "run": "resume-result.json",
+      "captures": 6,
+      "frames": 413,
+      "captureViolations": 0,
+      "blockedGrabs": 2
+    }
+  ],
+  "researchCaptureCount": 32,
+  "network": {
+    "passed": true,
+    "transport": "two JVM loopback TCP Forge LAN",
+    "cases": [
+      "unauthorized start/control/seal rejected",
+      "peer repeated claim rejected",
+      "owner duplicate claim remains one receipt",
+      "peer reconnect",
+      "peer death and respawn",
+      "peer dimension change and packet replay"
+    ],
+    "captureViolations": 0
+  }
+}

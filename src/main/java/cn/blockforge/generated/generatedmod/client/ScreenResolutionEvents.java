@@ -29,6 +29,9 @@ public final class ScreenResolutionEvents {
             if(screen instanceof AbstractContainerScreen<?> container){
                 requiredWidth=Math.max(320,container.getXSize()+32);
                 requiredHeight=Math.max(240,container.getYSize()+32);
+                // Leave both side gutters for JEI instead of fitting the panel so tightly that
+                // the ingredient list disappears. No optional JEI types are loaded here.
+                if(net.minecraftforge.fml.ModList.get().isLoaded("jei"))requiredWidth=Math.max(requiredWidth,container.getXSize()+216);
                 // The anvil's template sidebar extends outside the native 176px inventory.
                 if(screen instanceof XuanlingAnvilScreen)requiredWidth=Math.max(requiredWidth,334);
             }

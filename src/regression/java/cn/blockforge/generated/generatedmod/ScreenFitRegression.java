@@ -17,6 +17,8 @@ public final class ScreenFitRegression {
         if(ScreenFitPolicy.scale(1920,1080,4,452,352,false)!=3)throw new AssertionError("1080p alchemy should fit at GUI 3");
         if(ScreenFitPolicy.scale(1280,720,4,452,352,false)!=2)throw new AssertionError("720p alchemy should fit at GUI 2");
         if(ScreenFitPolicy.scale(1920,1080,1,452,352,false)!=1)throw new AssertionError("Respect smaller user scale");
+        if(ScreenFitPolicy.scale(1440,1080,3,636,352,false)!=2)throw new AssertionError("JEI gutters must remain visible at 1440px");
+        if(ScreenFitPolicy.scale(1920,1080,4,636,352,false)!=3)throw new AssertionError("1080p retains GUI3 with JEI gutters");
         System.out.println("Screen fit: "+checks+" resolution/panel/option/unicode bounds passed");
     }
     private ScreenFitRegression(){}

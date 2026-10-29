@@ -1,0 +1,8 @@
+{
+  "passed": false,
+  "transport": "two JVM loopback TCP Forge LAN",
+  "captureViolations": 0,
+  "error": "java.lang.AssertionError: Network acceptance timeout stage\u003d3",
+  "stage": 3,
+  "blockedGrabs": 1
+}

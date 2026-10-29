@@ -1,0 +1,48 @@
+{
+  "frames": 653,
+  "captureViolations": 0,
+  "passed": true,
+  "dimensions": {
+    "restored-inventory": {
+      "guiScale": 2.0,
+      "height": 1080,
+      "width": 1440
+    },
+    "restored-hover": {
+      "guiScale": 2.0,
+      "height": 1080,
+      "width": 1440
+    },
+    "restored-nine-hover": {
+      "guiScale": 2.0,
+      "height": 1080,
+      "width": 1440
+    },
+    "formula-keyboard-focus": {
+      "guiScale": 2.0,
+      "height": 1080,
+      "width": 1440
+    },
+    "formula-disabled": {
+      "guiScale": 2.0,
+      "height": 1080,
+      "width": 1440
+    },
+    "admin-no-benefit-inventory": {
+      "guiScale": 2.0,
+      "height": 1080,
+      "width": 1440
+    }
+  },
+  "captures": [
+    "restored-inventory",
+    "restored-hover",
+    "restored-nine-hover",
+    "formula-keyboard-focus",
+    "formula-disabled",
+    "admin-no-benefit-inventory"
+  ],
+  "resume": true,
+  "blockedGrabs": 4,
+  "error": ""
+}

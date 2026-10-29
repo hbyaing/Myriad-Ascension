@@ -1,0 +1,16 @@
+{
+  "captures": [
+    "boundary-negative-grass",
+    "boundary-positive-grass",
+    "restored-root",
+    "restored-cumulative",
+    "approved-gui3",
+    "cert-restored-career"
+  ],
+  "blockedGrabs": 2,
+  "resume": true,
+  "passed": true,
+  "error": "",
+  "frames": 413,
+  "captureViolations": 0
+}

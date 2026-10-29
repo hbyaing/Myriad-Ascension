@@ -1,0 +1,25 @@
+{
+  "error": "java.lang.AssertionError: GUI4 not active",
+  "passed": false,
+  "resume": false,
+  "blockedGrabs": 2,
+  "captures": [
+    "boundary-negative-grass",
+    "boundary-positive-grass",
+    "empty",
+    "method-unlearned",
+    "candidate-normal",
+    "candidate-hover",
+    "candidate-focus",
+    "candidate-saved-disabled",
+    "lineage-root",
+    "age-hypothesis",
+    "lineage-child",
+    "approved-gui3",
+    "lineage-cumulative",
+    "single-factor-comparison",
+    "knowledge-disabled"
+  ],
+  "captureViolations": 0,
+  "frames": 1288
+}

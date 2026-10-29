@@ -1,0 +1,16 @@
+{
+  "status": "installed_on_disk",
+  "package": "Myriad-Ascension-1.20.1-v5-13-first.jar",
+  "sha256": "561c08db7bef42fe360da811fac76f5110f13f4a1205a27d97c7cd2b4d8163f8",
+  "gameDir": "D:\\我的世界\\.minecraft\\versions\\1.20.1-Forge_47.4.26",
+  "backupRelative": "deliverables/mod-backups/2026-10-29/万界仙途自动安装-200434-7da05520",
+  "old": [
+    {
+      "name": "Myriad-Ascension-2a11c5e.jar",
+      "sha256": "5550bf6f3791e4a13a423f9dba79ebdc70652c4efe368ccd8ffdefee5bebe695"
+    }
+  ],
+  "otherModsHashUnchanged": 18,
+  "runtime": "Disk updated; next JVM launch loads this package. No user process stopped.",
+  "localFilesUploaded": false
+}
