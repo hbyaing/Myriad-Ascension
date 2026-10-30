@@ -56,6 +56,11 @@ if (project.hasProperty('myriadCapture')) {
             if (project.hasProperty('backpackLayoutCapture')) { property 'wuxingxiantu.backpackLayoutCapture', 'true'; property 'wuxingxiantu.myriadCapture', 'false' }
             if (project.hasProperty('backpackCaptureOutput')) property 'wuxingxiantu.backpackCaptureOutput', project.file(project.property('backpackCaptureOutput')).absolutePath
             if (project.hasProperty('backpackExpectShaders')) property 'wuxingxiantu.backpackExpectShaders', 'true'
+            if (project.hasProperty('huahongCapture')) {
+                property 'wuxingxiantu.huahongCapture', 'true'
+                property 'wuxingxiantu.myriadCapture', 'false'
+                property 'wuxingxiantu.huahongOutput', project.file(project.findProperty('huahongOutput') ?: 'reports/huahong-client').absolutePath
+            }
             if (project.hasProperty('myriadWorldgen')) property 'wuxingxiantu.myriadWorldgen', 'true'
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', file('build/createSrgToMcp/output.srg').absolutePath

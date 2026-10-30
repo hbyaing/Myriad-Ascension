@@ -2474,5 +2474,9 @@
   "knowledge.wuxingxiantu.herb_years": "药龄按实际年份记录，无药材品阶。",
   "item.wuxingxiantu.sealed_alchemy_batch": "封存药液（不可服用）",
   "item.wuxingxiantu.alchemy_residue": "未凝药渣（不可服用）",
-  "item.wuxingxiantu.v5_pill": "未认证灵丹（不可服用）"
+  "item.wuxingxiantu.v5_pill": "未认证灵丹（不可服用）",
+  "tooltip.wuxingxiantu.huahong": "化虹：疾行稳定后人剑合一，速度再增一倍；入虹消耗最大灵力1%，维持每秒2%，急转或减速时退虹",
+  "yujian.wuxingxiantu.huahong.stage.1": "聚虹",
+  "yujian.wuxingxiantu.huahong.stage.2": "化虹",
+  "yujian.wuxingxiantu.huahong.stage.3": "退虹"
 }

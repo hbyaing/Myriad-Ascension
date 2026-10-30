@@ -46,6 +46,7 @@ public final class BalanceRegression {
         RealmFlightLevelRegression.run();
         RealmFlightSelectionRegression.run();
         SwordTrailPhaseRegression.run();
+        HuahongFlightRegression.run();
         RealmMeteorPathRegression.run();
         RealmMeteorJoinRegression.run();
         RealmMeteorTuningRegression.run();

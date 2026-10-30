@@ -50,6 +50,7 @@ public final class YujianController {
         int dunxuStage; // 0 none, 1 pre-phase, 2 phasing, 3 exiting
         boolean extremeEmitted;
         final JinghongBurst jinghong=new JinghongBurst();
+        final HuahongFlight huahong=new HuahongFlight();
         double cruiseTarget;
         int rollPulseTicks, rollPulseCooldown;
         boolean wasRolling;
@@ -189,6 +190,7 @@ public final class YujianController {
                         &&ride.entity.equals(vehicle.getUUID()))entity=vehicle;
                 if(entity instanceof ControlledSwordEntity sword){
                 if(p.isAlive() && p.level()==level && ride.phase==YujianPhase.DUNXU)restoreSafePosition(sword,p,ride);
+                sword.huahong(0,0);ride.huahong.reset();
                 sword.noPhysics=false;sword.advancedPhase(YujianPhase.BASIC);sword.dunxuStage(0);
                 if(p.getVehicle()==sword)p.stopRiding();
                 p.setDeltaMovement(Vec3.ZERO);
@@ -306,7 +308,7 @@ public final class YujianController {
         ride.stateTicks++;
         sword.flightState(ride.state);
         sword.dunxuStage(ride.phase==YujianPhase.DUNXU?ride.dunxuStage:0);
-        if(ride.state!=FlyingSwordState.FLYING){ride.jinghong.cancelEffect();sword.jinghongStrength(0);}
+        if(ride.state!=FlyingSwordState.FLYING){ride.jinghong.cancelEffect();sword.jinghongStrength(0);ride.huahong.reset();sword.huahong(0,0);}
         if(ride.state==FlyingSwordState.FLYING)sword.visualScale(definition.flightScale());
         if(ride.state!=FlyingSwordState.FLYING && ride.phase!=YujianPhase.BASIC)changePhase(sword,player,ride,YujianPhase.BASIC);
         switch (ride.state) {
@@ -365,6 +367,7 @@ public final class YujianController {
         player.setShiftKeyDown(false);
         if(sword.distanceToSqr(player)>64){stop(player);return;}
         if(!tickAdvanced(sword,player,ride,definition,source))return;
+        tickHuahong(sword,player,ride,definition,source);
         boolean hovering=ride.phase==YujianPhase.LINGKONG;
         float currentYaw=sword.getYRot();
         float currentPitch=sword.getXRot();
@@ -372,6 +375,7 @@ public final class YujianController {
         float yawDelta=Mth.wrapDegrees(ride.desiredYaw-currentYaw);
         double steer=definition.turnRate()/(1.0D+Math.abs(ride.manualRoll.velocity)*1.8D);
         if(ride.phase==YujianPhase.JIYU||ride.phase.burst())steer*=definition.advanced().fastHandling();
+        if(ride.huahong.boosting())steer*=.65;
         if(hovering)steer=Math.min(0.35,steer*1.4);
         float nextYaw=currentYaw+(float)(yawDelta*Mth.clamp(steer,0.03D,0.35D));
         float targetPitch=(float)Mth.clamp(ride.desiredPitch*definition.pitchResponse(),-70.0D,70.0D);
@@ -403,12 +407,13 @@ public final class YujianController {
         var data=GeneratedMod.data(player);
         float jinghongCost=definition.advanced().jinghongCost();
         long now=player.level().getGameTime();
-        boolean jinghongEligible=rolling && ride.phase==YujianPhase.JIYU && ride.sprint
+        boolean jinghongEligible=ride.huahong.stage()==0 && rolling && ride.phase==YujianPhase.JIYU && ride.sprint
                 && ride.collisionTicks==0 && ProgressionGate.canJinghong(player,source)
                 && sword.flightSpeed()>=definition.advanced().maxSpeed(YujianPhase.JIYU,definition)*JinghongBurst.ENTRY_SPEED
                 && player.getPersistentData().getLong("YujianJinghongCooldown")<=now;
         boolean jinghongTriggered=ride.jinghong.tick(now,ride.manualRoll.holdTicks(),jinghongEligible,
                 data!=null && data.wuxingxiantu$getAura()>=jinghongCost);
+        if(ride.huahong.stage()!=0)ride.jinghong.cancelEffect();
         if(jinghongTriggered){
             data.wuxingxiantu$setAura(data.wuxingxiantu$getAura()-jinghongCost);
             player.getPersistentData().putLong("YujianJinghongCooldown",now+JinghongBurst.COOLDOWN_TICKS);
@@ -432,12 +437,18 @@ public final class YujianController {
         else ride.cruiseTarget=Math.max(0,ride.cruiseTarget-YujianTuning.DECELERATION);
         double bonus=Math.min(FlyingSwordConfig.SPIRAL_BONUS.get(),FlyingSwordConfig.ROLL_PULSE_BONUS.get());
         double targetSpeed=Math.min(ceiling,ride.cruiseTarget*(1.0D+bonus*pulse));
+        // Scale the actual normal target once, including its cruise fraction and roll bonus.
+        // Do not accumulate a rainbow multiplier into cruiseTarget.
+        double rainbowMultiplier=ride.huahong.multiplier();
+        targetSpeed*=rainbowMultiplier;
+        ceiling*=rainbowMultiplier;
         if (ride.brake||hovering) targetSpeed=0.0D;
         Vec3 velocity=sword.getDeltaMovement();
         double previousSpeed=velocity.length();
         double acceleration=ride.phase.burst()?definition.advanced().burstAcceleration():ride.phase==YujianPhase.JIYU
                 ?definition.advanced().jiyuAcceleration():Math.max(YujianTuning.DECELERATION,definition.acceleration());
         acceleration=Math.min(1,acceleration*(1+(FlyingSwordConfig.ROLL_PULSE_ACCELERATION.get()-1)*pulse));
+        if(ride.huahong.boosting())acceleration=Math.max(acceleration,.55);
         if(ride.brake)acceleration=Math.max(acceleration,.18);
         Vec3 target=forward.scale(targetSpeed);
         velocity=new Vec3(Mth.lerp(acceleration,velocity.x,target.x),Mth.lerp(acceleration,velocity.y,target.y),Mth.lerp(acceleration,velocity.z,target.z));
@@ -497,6 +508,7 @@ public final class YujianController {
         }
         // Waiting for terrain is not a wall impact: retain the cruise target
         // and phase, while still moving only through the validated loaded path.
+        if(blocked){ride.huahong.exit();sword.huahong(ride.huahong.stage(),ride.huahong.strength());}
         if ((blocked&&sweep.loaded())||sword.horizontalCollision||sword.verticalCollision) {
             changePhase(sword,player,ride,YujianPhase.BASIC);
             ride.cruiseTarget=Math.min(ride.cruiseTarget,definition.baseSpeed());
@@ -508,9 +520,52 @@ public final class YujianController {
         Vec3 tip=direction(sword.getYRot(),sword.getXRot()).scale(1.2D*definition.flightScale());
         sword.angularSpeed((float)ride.manualRoll.velocity);
         var tipWall=FlightCollision.clipLoaded(player,sword,sword.position(),sword.position().add(tip));
-        if(ride.collisionTicks==0 && tipWall.isPresent() && tipWall.get().getType()==HitResult.Type.MISS)
+        if(ride.huahong.stage()==0 && ride.collisionTicks==0 && tipWall.isPresent() && tipWall.get().getType()==HitResult.Type.MISS)
             applyChargeDamage(sword,player,ride,source,oldTip,tipWall.get().getLocation(),definition);
         for (Iterator<Map.Entry<UUID,Integer>> it=ride.hitCooldown.entrySet().iterator();it.hasNext();) if(it.next().getValue()<=player.tickCount)it.remove();
+    }
+
+    /** Rainbow only changes speed/appearance. Collision always reads the original Dunxu phase. */
+    private static void tickHuahong(ControlledSwordEntity sword,ServerPlayer player,Ride ride,
+                                    FlyingSwordDefinition definition,ItemStack source){
+        var data=GeneratedMod.data(player);
+        double normal=definition.advanced().maxSpeed(ride.phase,definition)*FlyingSwordConfig.CRUISE_FRACTION.get();
+        boolean eligible=HuahongFlight.supported(SwordProfile.of(source).tier())
+                && ProgressionGate.canYujianPhase(player,source,YujianPhase.DUNXU)
+                && ride.forward&&ride.sprint&&!ride.brake&&ride.collisionTicks==0
+                && Math.abs(Mth.wrapDegrees(ride.desiredYaw-sword.getYRot()))<55
+                && Math.abs(ride.desiredPitch-sword.getXRot())<45;
+        if(eligible){
+            AABB volume=FlightFrame.riderBounds(sword.position(),sword.getYRot(),sword.getXRot(),sword.roll(),sword.riderOffset())
+                    .minmax(player.getBoundingBox()).minmax(sword.getBoundingBox());
+            // Look ahead along momentum AND the steered direction; never loads terrain.
+            double look=Math.max(normal*2,sword.flightSpeed())*2;
+            boolean phasing=ride.phase==YujianPhase.DUNXU;
+            var check=FlightCollision.sweep(player,volume,direction(sword.getYRot(),sword.getXRot()).scale(look),phasing);
+            eligible=!check.blocked();
+            if(eligible&&sword.getDeltaMovement().lengthSqr()>.01)
+                eligible=!FlightCollision.sweep(player,volume,sword.getDeltaMovement().normalize().scale(look),phasing).blocked();
+        }
+        float max=CultivationLogic.maxAura(data);
+        float entry=Math.max(1,(float)(max*HuahongFlight.ENTRY_COST));
+        float upkeep=Math.max(.1F,(float)(max*HuahongFlight.UPKEEP_PER_SECOND/20));
+        upkeep=cn.blockforge.generated.generatedmod.crafting.EquipmentCrafting.upkeep(source,upkeep);
+        boolean funded=data.wuxingxiantu$getAura()>=(ride.huahong.stage()==0?entry+upkeep:upkeep);
+        int before=ride.huahong.stage();
+        if(ride.huahong.tick(eligible,sword.flightSpeed()>=normal*HuahongFlight.ENTRY_RATIO,funded))
+            data.wuxingxiantu$setAura(data.wuxingxiantu$getAura()-entry);
+        if(ride.huahong.stage()==1||ride.huahong.stage()==2){
+            // tickAdvanced already charged ordinary upkeep. Refund it, except Dunxu's independent cost.
+            float refund=ride.phase==YujianPhase.DUNXU?0:
+                    cn.blockforge.generated.generatedmod.crafting.EquipmentCrafting.upkeep(source,definition.advanced().costPerTick(ride.phase));
+            data.wuxingxiantu$setAura(Math.max(0,data.wuxingxiantu$getAura()+refund-upkeep));
+        }
+        int after=ride.huahong.stage();sword.huahong(after,ride.huahong.strength());
+        if(after!=before&&after!=0){
+            player.displayClientMessage(net.minecraft.network.chat.Component.translatable("yujian.wuxingxiantu.huahong.stage."+after),true);
+            if(after==2)player.serverLevel().playSound(null,sword.blockPosition(),net.minecraft.sounds.SoundEvents.TRIDENT_RIPTIDE_1,
+                    net.minecraft.sounds.SoundSource.PLAYERS,.45F,1.65F);
+        }
     }
 
     private static void tickDismount(ControlledSwordEntity sword, ServerPlayer player, Ride ride) {

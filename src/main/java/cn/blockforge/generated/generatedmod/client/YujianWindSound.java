@@ -37,7 +37,7 @@ public final class YujianWindSound extends AbstractTickableSoundInstance {
         float wanted = riding ? (float) (FlyingSwordConfig.WIND_VOLUME.get()
                 * Mth.clamp(sword.flightSpeed(), 0, 1) * (.55 + .45 * roll)) : 0;
         volume = Mth.lerp(.2F, volume, wanted);
-        pitch = Mth.lerp(.15F, pitch, .85F + .3F * roll);
+        pitch = Mth.lerp(.15F, pitch, .85F + .3F * roll + .35F*sword.huahongStrength());
         x = sword.getX(); y = sword.getY(); z = sword.getZ();
         if (!riding && volume < .005F) stop();
     }

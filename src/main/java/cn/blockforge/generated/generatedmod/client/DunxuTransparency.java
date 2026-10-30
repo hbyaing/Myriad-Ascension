@@ -27,8 +27,12 @@ public final class DunxuTransparency {
     public static MultiBufferSource wrap(Entity entity,MultiBufferSource source){
         ControlledSwordEntity sword=entity instanceof ControlledSwordEntity s?s:
                 entity.getVehicle() instanceof ControlledSwordEntity s?s:null;
-        if(sword==null||!sword.flightRoot()||sword.advancedPhase()!=YujianPhase.DUNXU||sword.dunxuStage()==0)return source;
-        float opacity=sword.dunxuStage()==1?.72F:sword.dunxuStage()==3?.7F:OPACITY;
+        if(sword==null||!sword.flightRoot())return source;
+        boolean dunxu=sword.advancedPhase()==YujianPhase.DUNXU&&sword.dunxuStage()!=0;
+        float rainbow=cn.blockforge.generated.generatedmod.yujian.FlyingSwordConfig.TRAILS.get()?sword.renderHuahong(net.minecraft.client.Minecraft.getInstance().getFrameTime()):0;
+        if(!dunxu&&rainbow<=0)return source;
+        float base=dunxu?(sword.dunxuStage()==1?.72F:sword.dunxuStage()==3?.7F:OPACITY):1;
+        float opacity=base*(1-rainbow);
         return type->new Alpha(source.getBuffer(translucent(type)),opacity);
     }
 

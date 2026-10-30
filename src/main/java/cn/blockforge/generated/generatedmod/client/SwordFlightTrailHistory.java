@@ -12,8 +12,12 @@ public final class SwordFlightTrailHistory {
         public Point lerp(Point other,double t){return new Point(x+(other.x-x)*t,y+(other.y-y)*t,z+(other.z-z)*t);}
     }
     public record Node(Point point,double tick,double arc){}
-    private static final double SPACING=.09,LIFETIME=22,MAX_LENGTH=22;
-    private static final int CAPACITY=256;
+    private final double SPACING,LIFETIME,MAX_LENGTH;
+    private final int CAPACITY;
+    public SwordFlightTrailHistory(){this(.09,22,22,256);}
+    public SwordFlightTrailHistory(double spacing,double lifetime,double length,int capacity){
+        SPACING=spacing;LIFETIME=lifetime;MAX_LENGTH=length;CAPACITY=capacity;
+    }
     private final ArrayList<Node> nodes=new ArrayList<>();
     private final List<Node> view=Collections.unmodifiableList(nodes);
     private double lastTick=Double.NEGATIVE_INFINITY,arc;

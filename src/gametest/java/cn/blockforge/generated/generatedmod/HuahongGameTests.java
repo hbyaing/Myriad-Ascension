@@ -1,0 +1,53 @@
+package cn.blockforge.generated.generatedmod;
+
+import cn.blockforge.generated.generatedmod.fixtures.GameTestPlayer;
+import cn.blockforge.generated.generatedmod.yujian.*;
+import net.minecraft.core.BlockPos;
+import net.minecraft.gametest.framework.*;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.gametest.*;
+
+@GameTestHolder("wuxingxiantu")
+@PrefixGameTestTemplate(false)
+public final class HuahongGameTests {
+    @GameTest(template="furnace_empty",timeoutTicks=200)
+    public static void rainbowUsesRealMovementAndDoesNotGrantCollisionPermission(GameTestHelper h){
+        var p=new GameTestPlayer(h.getLevel());
+        try{
+            var base=h.absolutePos(new BlockPos(0,0,0));
+            Vec3 start=new Vec3(base.getX()+8,h.getLevel().getMaxBuildHeight()+10,base.getZ()+8);
+            for(int x=-2;x<=2;x++)for(int z=-2;z<=2;z++)h.getLevel().getChunk((base.getX()>>4)+x,(base.getZ()>>4)+z);
+            p.setPos(start);p.join();
+            var data=GeneratedMod.data(p);data.wuxingxiantu$setRealm(99);data.wuxingxiantu$learnArt(YujianController.FLIGHT);
+            data.wuxingxiantu$setArtMastery(YujianController.FLIGHT,100);data.wuxingxiantu$setMaxMana(100000);data.wuxingxiantu$setAura(100000);
+            var stack=new ItemStack(WuXingItems.PURE_YANG_SWORD.get());p.getInventory().setItem(0,stack);
+            YujianController.cast(p,YujianController.FLIGHT,100);
+            var root=h.getLevel().getEntitiesOfClass(ControlledSwordEntity.class,p.getBoundingBox().inflate(8),e->e.flightRoot()&&p.getUUID().equals(e.ownerId)).get(0);
+            for(int i=0;i<14;i++)YujianController.tickFlightEntity(root,p);
+            h.assertTrue(p.getVehicle()==root,"Actual sword did not mount");
+            double normal=FlyingSwordRegistry.get(stack).advanced().maxSpeed(YujianPhase.JIYU,FlyingSwordRegistry.get(stack))*FlyingSwordConfig.CRUISE_FRACTION.get();
+            p.getPersistentData().putLong("YujianCooldown_DUNXU",Long.MAX_VALUE);
+            for(int i=0;i<150;i++){
+                // Keep the long-distance movement fixture inside its generated region.
+                root.setPos(start);root.positionRider(p);
+                YujianController.handleInput(p,false,false,true,false,false,false,false,false,true,false,1,0,0,0);
+                YujianController.tickFlightEntity(root,p);root.positionRider(p);
+            }
+            h.assertTrue(root.huahongStage()==2,"Guiyuan failed to enter rainbow using actual speed");
+            h.assertTrue(Math.abs(root.flightSpeed()/normal-2)<.04,"Rainbow did not double normal speed: "+root.flightSpeed()/normal);
+            h.assertTrue(root.advancedPhase()==YujianPhase.JIYU&&!root.noPhysics,"Rainbow changed collision permission");
+            float before=data.wuxingxiantu$getAura();
+            root.setPos(start);root.positionRider(p);
+            YujianController.tickFlightEntity(root,p);
+            float expected=(float)(cn.blockforge.generated.generatedmod.items.CultivationLogic.maxAura(data)*.02/20);
+            h.assertTrue(Math.abs(before-data.wuxingxiantu$getAura()-expected)<.02,"Rainbow double-charged ordinary upkeep");
+            YujianController.handleInput(p,false,false,true,true,false,false,false,false,true,false,1,0,0,0);
+            YujianController.tickFlightEntity(root,p);
+            h.assertTrue(root.huahongStage()==3&&p.getVehicle()==root,"Brake failed to exit safely while retaining the mount");
+            for(int i=0;i<10;i++)YujianController.tickFlightEntity(root,p);
+            h.assertTrue(root.huahongStage()==0&&root.huahongStrength()==0,"Rider/sword did not restore after exit");
+        }finally{YujianController.stop(p);p.close();}
+        h.succeed();
+    }
+}

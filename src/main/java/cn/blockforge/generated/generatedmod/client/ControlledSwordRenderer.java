@@ -13,6 +13,7 @@ public final class ControlledSwordRenderer extends EntityRenderer<ControlledSwor
     private final net.minecraft.client.renderer.entity.ItemRenderer items;
     public ControlledSwordRenderer(EntityRendererProvider.Context context){super(context);items=context.getItemRenderer();}
     @Override public void render(ControlledSwordEntity sword,float yaw,float partial,PoseStack pose,MultiBufferSource buffers,int light){
+        if(cn.blockforge.generated.generatedmod.yujian.FlyingSwordConfig.TRAILS.get()&&sword.flightRoot()&&sword.huahongStrength()>=.995F)return;
         buffers=DunxuTransparency.wrap(sword,buffers);
         pose.pushPose();
         var definition=cn.blockforge.generated.generatedmod.yujian.FlyingSwordRegistry.visual(sword.display());

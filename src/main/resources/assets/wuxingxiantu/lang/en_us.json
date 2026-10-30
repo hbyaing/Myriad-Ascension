@@ -2474,5 +2474,9 @@
   "knowledge.wuxingxiantu.herb_years": "Medicinal age is measured in years; herbs have no rank.",
   "item.wuxingxiantu.sealed_alchemy_batch": "Sealed Alchemy Extract (Not Drinkable)",
   "item.wuxingxiantu.alchemy_residue": "Uncondensed Residue (Not Consumable)",
-  "item.wuxingxiantu.v5_pill": "Uncertified V5 Pill (Not Usable)"
+  "item.wuxingxiantu.v5_pill": "Uncertified V5 Pill (Not Usable)",
+  "tooltip.wuxingxiantu.huahong": "Rainbow Flight: sustained high speed unites rider and sword as light, doubling speed. Entry: 1% max mana; upkeep: 2%/s. Brake or turn sharply to exit.",
+  "yujian.wuxingxiantu.huahong.stage.1": "Gathering Light",
+  "yujian.wuxingxiantu.huahong.stage.2": "Rainbow Flight",
+  "yujian.wuxingxiantu.huahong.stage.3": "Returning to Form"
 }

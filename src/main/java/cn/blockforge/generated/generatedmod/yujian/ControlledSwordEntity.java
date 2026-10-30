@@ -30,6 +30,13 @@ public final class ControlledSwordEntity extends Entity {
     private static final EntityDataAccessor<Boolean> COLLIDING=SynchedEntityData.defineId(ControlledSwordEntity.class,EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DEBUG=SynchedEntityData.defineId(ControlledSwordEntity.class,EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> DUNXU_STAGE=SynchedEntityData.defineId(ControlledSwordEntity.class,EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> HUAHONG_STAGE=SynchedEntityData.defineId(ControlledSwordEntity.class,EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Float> HUAHONG=SynchedEntityData.defineId(ControlledSwordEntity.class,EntityDataSerializers.FLOAT);
+    private float previousHuahong,visualHuahong;
+    public int huahongStage(){return entityData.get(HUAHONG_STAGE);}
+    public float huahongStrength(){return entityData.get(HUAHONG);}
+    public float renderHuahong(float partial){return net.minecraft.util.Mth.lerp(partial,previousHuahong,visualHuahong);}
+    public void huahong(int stage,float strength){entityData.set(HUAHONG_STAGE,stage);entityData.set(HUAHONG,strength);}
     public UUID ownerId,binding;
     public int slot,age,mastery;
     public String art="";
@@ -53,7 +60,7 @@ public final class ControlledSwordEntity extends Entity {
     public ControlledSwordEntity(EntityType<? extends ControlledSwordEntity> type,Level level) { super(type,level);noPhysics=true;setNoGravity(true); }
     @Override protected void defineSynchedData(){entityData.define(ITEM,ItemStack.EMPTY);entityData.define(OWNER,-1);entityData.define(SUPPORT,false);entityData.define(FLIGHT_ROOT,false);entityData.define(SCALE,1.0F);entityData.define(ROLL,0.0F);entityData.define(BANK,0.0F);entityData.define(SPEED,0.0F);entityData.define(ANGULAR,0.0F);entityData.define(SPRINT,false);entityData.define(STATE,0);entityData.define(IMPACT,0);
         entityData.define(PHASE,0);entityData.define(TARGET_SPEED,0F);entityData.define(ACCELERATION,0F);
-        entityData.define(AHEAD_LOADED,true);entityData.define(COLLIDING,false);entityData.define(DEBUG,false);entityData.define(DUNXU_STAGE,0);}
+        entityData.define(AHEAD_LOADED,true);entityData.define(COLLIDING,false);entityData.define(DEBUG,false);entityData.define(DUNXU_STAGE,0);entityData.define(HUAHONG_STAGE,0);entityData.define(HUAHONG,0F);}
     public YujianPhase advancedPhase(){return YujianPhase.values()[net.minecraft.util.Mth.clamp(entityData.get(PHASE),0,YujianPhase.values().length-1)];}
     public void advancedPhase(YujianPhase phase){entityData.set(PHASE,phase.ordinal());}
     public float targetSpeed(){return entityData.get(TARGET_SPEED);}
@@ -111,6 +118,7 @@ public final class ControlledSwordEntity extends Entity {
     public void order(String id,Vec3 point,UUID victim,net.minecraft.core.BlockPos pos,int uses){art=id;anchor=point;target=victim;block=pos;mastery=uses;age=0;hits.clear();}
     public void syncFlightDisplay(ItemStack source){if(!ItemStack.matches(display(),source))entityData.set(ITEM,source.copy());}
     @Override public void tick(){
+        previousHuahong=visualHuahong;visualHuahong=huahongStrength();
         super.tick();
         if(level().isClientSide){
             if(!visualInitialized){

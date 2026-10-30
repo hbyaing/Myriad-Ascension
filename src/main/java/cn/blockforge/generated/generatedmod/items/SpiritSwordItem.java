@@ -202,6 +202,8 @@ public class SpiritSwordItem extends SwordItem {
         var flight=cn.blockforge.generated.generatedmod.yujian.FlyingSwordRegistry.get(stack);
         if(flight!=null){
             var lingkongLevel=profile().lingkongLevel();
+            if(cn.blockforge.generated.generatedmod.yujian.HuahongFlight.supported(profile().tier()))
+                tooltip.add(Component.translatable("tooltip.wuxingxiantu.huahong"));
             flight.advanced().capabilities().stream().sorted().forEach(phase -> {
                 if(phase==cn.blockforge.generated.generatedmod.yujian.YujianPhase.BASIC
                         ||phase==cn.blockforge.generated.generatedmod.yujian.YujianPhase.ACCELERATING)return;

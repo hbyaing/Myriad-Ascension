@@ -54,10 +54,11 @@ public final class FlyingSwordEffects {
         var client=Minecraft.getInstance();
         syncTrailLevel(client.level);
         TRAIL_CLOCK.advance(client.level==null?0:client.level.getGameTime(),!client.isPaused());
-        if(client.level==null||client.player==null||!FlyingSwordConfig.TRAILS.get()){TRAILS.clear();return;}
+        if(client.level==null||client.player==null||!FlyingSwordConfig.TRAILS.get()){TRAILS.clear();HuahongVisuals.clear();return;}
         if(client.isPaused()||!TRAIL_CLOCK.initialized())return;
         TRAILS.keySet().removeIf(s->s.isRemoved()||s.level()!=client.level||!s.flightRoot()||s.distanceToSqr(client.player)>4096);
         if(client.options.getCameraType().isFirstPerson()&&client.player.getVehicle() instanceof ControlledSwordEntity own)TRAILS.remove(own);
+        HuahongVisuals.sample(TRAIL_CLOCK.tick());
         int count=0;
         for(var entity:client.level.entitiesForRendering()){
             if(!(entity instanceof ControlledSwordEntity sword)||!sword.flightRoot()||sword.distanceToSqr(client.player)>4096)continue;
@@ -119,14 +120,14 @@ public final class FlyingSwordEffects {
         if(event.getStage()==RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS){
             // Save terrain/entity/glass depth before cloud rendering writes its
             // depth pass. Cloud depth is not an opaque obstacle for the plume.
-            if(!TRAILS.isEmpty()&&FlyingSwordConfig.TRAILS.get()){TrailShaderBridge.resetFrame();TrailShaderBridge.captureDepth();}
+            if((!TRAILS.isEmpty()||HuahongVisuals.hasTrails())&&FlyingSwordConfig.TRAILS.get()){TrailShaderBridge.resetFrame();TrailShaderBridge.captureDepth();}
             return;
         }
         if(event.getStage()!=RenderLevelStageEvent.Stage.AFTER_PARTICLES)return;
         var client=Minecraft.getInstance();
         syncTrailLevel(client.level);
         if(client.level==null||client.player==null||!FlyingSwordConfig.TRAILS.get()){TRAILS.clear();return;}
-        if(TRAILS.isEmpty()||!TRAIL_CLOCK.initialized()||!SwordFlightTrailRenderer.ready())return;
+        if((TRAILS.isEmpty()&&!HuahongVisuals.hasTrails())||!TRAIL_CLOCK.initialized()||!SwordFlightTrailRenderer.ready())return;
         postPath=usePostPath()||client.options.getCloudsType()!=net.minecraft.client.CloudStatus.OFF;renderStage="AFTER_PARTICLES";
         activeTrailRenderPath=postPath?"POST_SHADER_TRAIL_RENDER_PATH":"NORMAL_TRAIL_RENDER_PATH";
         activeRenderTarget=org.lwjgl.opengl.GL11.glGetInteger(org.lwjgl.opengl.GL30.GL_DRAW_FRAMEBUFFER_BINDING);
@@ -148,7 +149,8 @@ public final class FlyingSwordEffects {
         EMISSION_BUFFER.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.POSITION_TEX_COLOR);
         buffer=VertexMultiConsumer.create(buffer,EMISSION_BUFFER);
         try{
-            int count=0;
+            HuahongVisuals.sample(TRAIL_CLOCK.tick());
+        int count=0;
             for(var entry:TRAILS.entrySet()){
                 var sword=entry.getKey();
                 if(client.options.getCameraType().isFirstPerson()&&sword==client.player.getVehicle())continue;
@@ -161,6 +163,7 @@ public final class FlyingSwordEffects {
                 var nodes=samples.subList(0,end);if(nodes.size()<2)continue;
                 Vec3 anchor=SwordFlightAttachment.tail(sword,f.position(),f.yaw(),f.pitch(),f.roll());
                 float jinghong=sword.renderJinghong(event.getPartialTick());
+                if(sword.huahongStrength()>.5F)continue;
                 float strength=sword.advancedPhase().trailIntensity*(1+1.5F*jinghong);
                 double length=Math.min(22,(4+5*f.sprintFactor()+7*f.spiralFactor())*strength);
                 double width=Math.min(.85,(.36+.18*f.sprintFactor()+.09*f.spiralFactor())*Math.sqrt(strength));
@@ -197,6 +200,8 @@ public final class FlyingSwordEffects {
                 spiral(buffer,pose.last(),f,anchor,eye,jinghong,SwordTrailPhase.coordinate(headArc,origin));
                 spiralPass=false;
             }
+            HuahongVisuals.draw(buffer,pose.last(),eye,now,event.getPartialTick());
+            normalTrailVertexCount+=HuahongVisuals.vertices;
             if(postPath){
                 pending=POST_BUFFER.endOrDiscardIfEmpty();
             }else{
@@ -305,6 +310,7 @@ public final class FlyingSwordEffects {
                 ||(!FlyingSwordConfig.DEBUG_OVERLAY.get()&&!s.debugFlight()))return;
         var data=cn.blockforge.generated.generatedmod.GeneratedMod.data(client.player);
         String[] lines={"飞剑状态："+s.flightState()+" / "+net.minecraft.network.chat.Component.translatable(s.advancedPhase().translationKey()).getString()
+                        +(s.huahongStage()>0?" / "+net.minecraft.network.chat.Component.translatable("yujian.wuxingxiantu.huahong.stage."+s.huahongStage()).getString():"")
                         +(s.renderJinghong(1)>0?" / "+net.minecraft.network.chat.Component.translatable("yujian.wuxingxiantu.passive.jinghong").getString():""),
                 String.format(Locale.ROOT,"速度 %.2f 目标 %.2f 加速 %.2f",s.flightSpeed(),s.targetSpeed(),s.flightAcceleration()),
                 "Aura="+(data==null?0:data.wuxingxiantu$getAura())+" SwordSpirit="+cn.blockforge.generated.generatedmod.items.SpiritSwordItem.getSpirit(s.display()),
