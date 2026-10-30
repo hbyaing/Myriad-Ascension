@@ -20,6 +20,10 @@ public final class ScreenResolutionEvents {
     }
     @SubscribeEvent(priority=EventPriority.HIGHEST)
     public static void initialize(ScreenEvent.Init.Pre event){
+        // Embedded inventory pages receive their host's content viewport, not the window.
+        // Re-fitting them changes global GUI scale after the host has laid out its frame,
+        // and overwrites page.width/page.height with the full-screen canvas.
+        if(event.getScreen() instanceof CultivationPage)return;
         var mc=Minecraft.getInstance();var screen=event.getScreen();var window=mc.getWindow();
         if(!owned(screen)){
             if(!fitted)return;

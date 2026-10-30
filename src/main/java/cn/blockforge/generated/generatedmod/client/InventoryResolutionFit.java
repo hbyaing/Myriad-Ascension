@@ -17,8 +17,10 @@ public final class InventoryResolutionFit {
     public static void apply(Minecraft minecraft) {
         var window=minecraft.getWindow();
         int configured=window.calculateScale(minecraft.options.guiScale().get(),minecraft.isEnforceUnicode());
-        window.setGuiScale(ScreenFitPolicy.scale(window.getWidth(),window.getHeight(),
-                scale(window.getWidth(),window.getHeight(),configured,minecraft.isEnforceUnicode()),480,326,minecraft.isEnforceUnicode()));
+        // Restore the original backpack policy (f823139). Keep this independent of the
+        // newer furnace/research-window fit policy and its JEI gutter requirements.
+        // Each client uses its own framebuffer and preferred scale; no server/global preset.
+        window.setGuiScale(scale(window.getWidth(),window.getHeight(),configured,minecraft.isEnforceUnicode()));
     }
 
     public static void restore(Minecraft minecraft) {
