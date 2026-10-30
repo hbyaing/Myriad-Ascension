@@ -28,6 +28,6 @@
 
 ## 尖头高光修正
 
-用户指出虹线中部偏亮、尖头反而偏暗。旧头部材质使用 `sin(pi * U)`，亮度峰值位于头部中心；现改为沿飞行方向递增的亮度，并在实际前端 `center + forward * 0.8` 挂接独立光核。后方历史虹线保留较弱发光，使白色亮点与柔晕集中于尖头。原生、后绘制和选择性 Bloom 共用该材质。
+用户指出虹线中部偏亮、尖头反而偏暗。旧头部材质使用 `sin(pi * U)`，亮度峰值位于头部中心；第一次修正改为沿飞行方向递增的亮度，并在实际前端挂接独立光核。用户进一步指出前端圆形光球违和，当前版本已删除独立光核几何及圆形材质，改由虹线自身收窄成锐利尖端，亮度沿线向前增强，薄晕贴合线条。原生、后绘制和选择性 Bloom 共用该材质。
 
-修正后的复验记录位于 `reports/huahong-tip-native-final/`、`reports/huahong-tip-solas-final/`；尖头局部裁图由原始实机截图直接裁切，保留原图作对照。
+当前无光球版本的复验记录位于 `reports/huahong-no-orb-native/`、`reports/huahong-no-orb-solas/`；尖头局部裁图由原始实机截图直接裁切，保留原图作对照。上一轮记录保留在 `reports/huahong-tip-native-final/`、`reports/huahong-tip-solas-final/`。
