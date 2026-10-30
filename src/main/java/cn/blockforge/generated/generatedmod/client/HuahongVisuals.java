@@ -76,9 +76,12 @@ public final class HuahongVisuals {
                 var frame=InterpolatedFlyingSwordTransform.get(sword,partial);
                 Vec3 center=frame.position().add(0,.85,0),forward=frame.forward();
                 float strength=sword.renderHuahong(partial);
-                // Axis-aligned concentrated head, not an enclosing shell or opaque sphere.
-                ribbon(buffer,pose,eye,center.subtract(forward.scale(1.4)),center.add(forward.scale(.8)),
-                        .22*strength,strength,0,1,8,trail.golden);
+                // U increases towards the actual leading tip. The concentrated glow
+                // is anchored there, separately from the trailing axial gradient.
+                Vec3 tip=center.add(forward.scale(.8));
+                ribbon(buffer,pose,eye,center.subtract(forward.scale(1.4)),tip,
+                        .16*strength,strength,0,1,8,trail.golden);
+                tipGlow(buffer,pose,eye,tip,.38*strength,strength,trail.golden);
                 var last=nodes.get(nodes.size()-1);
                 if(vec(last.point()).distanceToSqr(center)<Math.pow(Math.max(8,sword.flightSpeed()*2),2))
                     ribbon(buffer,pose,eye,vec(last.point()),center,.28,strength,
@@ -112,6 +115,14 @@ public final class HuahongVisuals {
         }
     }
     private static Vec3 vec(SwordFlightTrailHistory.Point p){return new Vec3(p.x(),p.y(),p.z());}
+    private static void tipGlow(VertexConsumer b,PoseStack.Pose pose,Vec3 eye,Vec3 tip,double radius,float alpha,boolean gold){
+        Vec3 facing=eye.subtract(tip);if(facing.lengthSqr()<1e-8)return;
+        facing=facing.normalize();Vec3 right=perpendicular(facing).scale(radius),up=facing.cross(right);
+        vertex(b,pose,eye,tip.subtract(right).subtract(up),0,10,alpha,gold);
+        vertex(b,pose,eye,tip.add(right).subtract(up),1,10,alpha,gold);
+        vertex(b,pose,eye,tip.add(right).add(up),1,11,alpha,gold);
+        vertex(b,pose,eye,tip.subtract(right).add(up),0,11,alpha,gold);
+    }
     private static Vec3 perpendicular(Vec3 axis){
         Vec3 side=axis.cross(new Vec3(0,1,0));return side.lengthSqr()<1e-8?new Vec3(1,0,0):side.normalize();
     }

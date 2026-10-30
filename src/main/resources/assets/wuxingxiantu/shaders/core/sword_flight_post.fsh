@@ -22,6 +22,12 @@ float flowAngle(float arc,float spaceHarmonic,float timeHarmonic){
     return 6.28318530718*fract(arc*spaceHarmonic/256.0+EffectTime*timeHarmonic/128.0);
 }
 vec4 swordMaterial(){
+    if(trailCoord.y>9.5){
+        vec2 p=vec2(trailCoord.x,trailCoord.y-10.0)*2.0-1.0;
+        float radius2=dot(p,p);
+        float light=exp(-radius2*7.0)*(1.0-smoothstep(.25,1.0,radius2));
+        return vec4(mix(vertexColor.rgb,vec3(1.0,.995,.96),light),light*vertexColor.a);
+    }
     if(trailCoord.y>5.5){
         bool head=trailCoord.y>7.5;
         float across=(trailCoord.y-(head?8.0:6.0))*2.0-1.0;
@@ -30,7 +36,8 @@ vec4 swordMaterial(){
         float veil=exp(-across*across*7.0)*.28;
         float flow=.78+.22*pow(.5+.5*sin(flowAngle(trailCoord.x,64.0,-256.0)+across*2.0),3.0);
         float edge=pow(max(0.0,1.0-abs(across)),1.5);
-        float taper=head?pow(max(0.0,sin(clamp(trailCoord.x,0.0,1.0)*3.14159265)),.5):1.0;
+        // Head U=1 is the forward tip; the history is deliberately dimmer.
+        float taper=head?(.10+.90*pow(clamp(trailCoord.x,0.0,1.0),4.0)):.65;
         float alpha=clamp((core+veil*flow)*edge*taper*vertexColor.a,0.0,.98);
         vec3 color=mix(vertexColor.rgb,vec3(1.0,.995,.94),core);
         return vec4(color,alpha);

@@ -116,6 +116,9 @@ def main():
     record['status'] = 'installed_on_disk'
     record['runtime'] = 'Restart required if the game had already loaded the previous JAR; no process was stopped.'
     manifest.write_text(json.dumps(record, ensure_ascii=False, indent=2), encoding='utf-8')
+    report = ROOT / 'reports/last-test-instance-installation.json'
+    report.parent.mkdir(parents=True, exist_ok=True)
+    report.write_text(json.dumps(record, ensure_ascii=False, indent=2), encoding='utf-8')
     print(json.dumps(record, ensure_ascii=False, indent=2))
 
 
