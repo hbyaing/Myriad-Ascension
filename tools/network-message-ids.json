@@ -473,5 +473,10 @@
     "id": 94,
     "type": "cn.blockforge.generated.generatedmod.meditationqte.QteStatePacket",
     "direction": "S2C"
+  },
+  {
+    "id": 95,
+    "type": "cn.blockforge.generated.generatedmod.network.packet.alchemy.AlchemyHeatPacket",
+    "direction": "C2S"
   }
 ]

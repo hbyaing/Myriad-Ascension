@@ -13,6 +13,23 @@ import static cn.blockforge.generated.generatedmod.alchemy.simulation.AlchemySim
 
 @GameTestHolder("wuxingxiantu_entry") @PrefixGameTestTemplate(false)
 public final class V5IncidentGameTests {
+    @GameTest(template="empty") public static void directHeatSelectionStopsWithoutPassingThroughStrongFire(GameTestHelper h){
+        try(var f=V5BatchGameTests.setup(h)){
+            var initial=V5Batch.prepare(f.furnace(),f.player());
+            long time=h.getLevel().getGameTime();
+            var stopped=BatchIncidents.control(initial,1000,time);
+            h.assertTrue(stopped.getInt("HeatMode")==0&&stopped.getString("State").equals("ACTIVE"),"Stopping heat aborted batch or increased fire");
+            h.assertTrue(V5Batch.core(stopped).equals(V5Batch.core(initial)),"Selecting heat advanced the reaction");
+            var strong=BatchIncidents.control(stopped,1016,time);
+            var stoppedAgain=BatchIncidents.control(strong,1000,time);
+            h.assertTrue(strong.getInt("HeatMode")==16&&stoppedAgain.getInt("HeatMode")==0,"Emergency stop blocked by cooldown");
+            var low=BatchIncidents.control(strong,1001,time);
+            h.assertTrue(low.getInt("HeatMode")==1,"Direct reduction did not reach requested mode");
+            h.assertTrue(BatchIncidents.control(low,1003,time)==low,"Invalid heat accepted");
+            var sealed=V5Batch.seal(low);
+            h.assertTrue(BatchIncidents.control(sealed,1001,time+20)==sealed,"Terminal batch changed");
+        }h.succeed();
+    }
     private static CompoundTag doc(V5BatchGameTests.Fixture f,long burst,long thermal){
         var d=V5Batch.prepare(f.furnace(),f.player());var json=SimulationRuleLoader.document(d.getString("Profile"));
         json.getAsJsonObject("rules").getAsJsonObject("limits").addProperty("burstPressure",burst);

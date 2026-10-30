@@ -26,6 +26,7 @@ public final class AlchemyScreen extends AbstractContainerScreen<AlchemyFurnaceM
     private boolean observationOpen;
     private int observationScroll;
     private Button observationToggle;
+    private final List<Button> heatControls = new ArrayList<>();
     private Button start, previous, next, formulaMode, experimentMode, inject, upgrade, fillMaterials, clearMaterials;
     private boolean holdingInjection;
     private int injectionTicks;
@@ -42,7 +43,7 @@ public final class AlchemyScreen extends AbstractContainerScreen<AlchemyFurnaceM
         String query=search==null?"":search.getValue();
         super.init();
         holdingInjection=false;injectionTicks=0;
-        rows.clear();
+        rows.clear();heatControls.clear();
         formulaMode = addRenderableWidget(new FlatButton(12,31,54,14,Component.literal("按丹方"),b -> switchMode(false)));
         experimentMode = addRenderableWidget(new FlatButton(70,31,54,14,Component.literal("自由炼制"),b -> switchMode(true)));
         search = addRenderableWidget(new EditBox(font, leftPos + 16, topPos + 51, 102, 10,
@@ -66,6 +67,17 @@ public final class AlchemyScreen extends AbstractContainerScreen<AlchemyFurnaceM
                 button -> { page++; updateControls(); }));
         start = addRenderableWidget(new FlatButton(AlchemyUiLayout.BUTTON_X, AlchemyUiLayout.BUTTON_Y,
                 AlchemyUiLayout.BUTTON_WIDTH, AlchemyUiLayout.BUTTON_HEIGHT, Component.literal("开始炼丹"), button -> brew()));
+        for(int i=0;i<4;i++) {
+            final int mode=new int[]{0,1,4,16}[i];
+            var heat=addRenderableWidget(new FlatButton(298+i*28,296,26,16,
+                    Component.literal(mode==0?"停火":mode+"倍"), b -> {
+                        Network.CHANNEL.sendToServer(new cn.blockforge.generated.generatedmod.network.packet.alchemy.AlchemyHeatPacket(menu.containerId,mode));
+                    }));
+            heat.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(mode==0
+                    ?"直接停止加热，保留本炉并继续反应；余热不会立即消失。需要重新加热时选择火力。"
+                    :"直接设为"+mode+"倍火力；消耗炉内灵力，强火可能导致过热、丹灰或炸炉。")));
+            heatControls.add(heat);
+        }
         upgrade=addRenderableWidget(new FlatButton(12,274,42,18,Component.literal("升阶"),b -> machineAction(254)));
         inject=addRenderableWidget(new FlatButton(366,253,40,18,Component.literal("长按注灵"),b -> {}));
         inject.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal("按住持续注灵，松开停止。燃烧灵力耗尽，本炉炼制失败。")));
@@ -176,7 +188,7 @@ public final class AlchemyScreen extends AbstractContainerScreen<AlchemyFurnaceM
         return cn.blockforge.generated.generatedmod.alchemy.AlchemyTooltipOrder.attributionLast(lines);
     }
     private String incidentLabel(){
-        int w=menu.v5Warning();if((w&2)!=0)return "炉压急升，宜泄压";if((w&1)!=0)return "焦味渐浓，宜停火";if((w&8)!=0)return "结构失稳";if((w&16)!=0)return "温养储备不足";if((w&4)!=0)return "月华断供，宜温养";if((w&32)!=0)return "有偿温养中";return "火候平稳";
+        int w=menu.v5Warning();if((w&2)!=0)return "炉压急升，宜泄压";if((w&1)!=0)return "焦味渐浓，请停止加热";if((w&8)!=0)return "结构失稳";if((w&16)!=0)return "温养储备不足";if((w&4)!=0)return "月华断供，宜温养";if((w&32)!=0)return "有偿温养中";return menu.v5HeatMode()==0?"已停加热，余热反应中":"当前火力 "+menu.v5HeatMode()+"倍";
     }
     private void updateControls() {
         if (start == null || previous == null) return;
@@ -200,16 +212,18 @@ public final class AlchemyScreen extends AbstractContainerScreen<AlchemyFurnaceM
         previous.visible = next.visible = !menu.freeMode();
         previous.active = page > 0;
         next.active = (page + 1) * 6 < choices.size();
-        start.setTooltip(menu.freeMode() ? net.minecraft.client.gui.components.Tooltip.create(Component.literal("自由炼制：材料托管、预付炉内灵力；完成后按真实预算结算灵丹或副产物。升火会额外扣费，火力循环1/4/16/0倍。未使用的预付炉内灵力会返还。")) : null);
+        start.setTooltip(menu.freeMode() ? net.minecraft.client.gui.components.Tooltip.create(Component.literal("自由炼制：材料托管、预付炉内灵力；完成后按真实预算结算灵丹或副产物。升火会额外扣费，火力可直接选择停火/1/4/16倍。未使用的预付炉内灵力会返还。")) : null);
         boolean incident=menu.furnace().v5Batch()&&menu.isBrewing();
+        start.visible=!incident;
+        for(int i=0;i<heatControls.size();i++){var heat=heatControls.get(i);int mode=new int[]{0,1,4,16}[i];heat.visible=incident;heat.active=incident&&menu.v5HeatMode()!=mode;}
         start.active = incident||menu.state() == AlchemyFurnaceMenu.State.READY && pendingTicks == 0;
         fillMaterials.active=incident||!menu.isBrewing()&&!menu.freeMode()&&menu.formulaUnlocked()&&menu.knowsFormula(menu.selectedRecipe());
         fillMaterials.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(
                 !menu.formulaUnlocked()?"先学习炼丹入门。":!menu.knowsFormula(menu.selectedRecipe())?"先选择并学习对应丹方。":
                 "从背包补足选中丹方的一炉材料；材料不足时不移动物品。")));
         clearMaterials.active=incident||!menu.isBrewing()&&java.util.stream.IntStream.range(0,8).anyMatch(i -> !menu.container().getItem(i).isEmpty());
-        fillMaterials.setMessage(Component.literal(incident?"停火封存":"一键放入"));clearMaterials.setMessage(Component.literal(incident?"有损泄压":"一键清空"));
-        if(incident){fillMaterials.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal("不可逆中止，封存剩余药渣；已提交事故不能撤销。")));clearMaterials.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal("下一逻辑步释放部分挥发库存，永久损失质量和药力；不能撤销已提交事故。")));}
+        fillMaterials.setMessage(Component.literal(incident?"中止封存":"一键放入"));clearMaterials.setMessage(Component.literal(incident?"有损泄压":"一键清空"));
+        if(incident){fillMaterials.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal("终止本炉并封存副产物，不能恢复炼制。仅需降温请使用右下角「停火」。")));clearMaterials.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal("下一逻辑步释放部分挥发库存，永久损失质量和药力；不能撤销已提交事故。")));}
         if(inject!=null)inject.active=incident||!menu.furnace().v5Batch()&&menu.ignited() && menu.spiritFuel()<menu.spiritCapacity()
                 &&minecraft.player!=null&&ProgressionGate.canUseFire(minecraft.player,menu.ignitionTier());
         if(inject!=null&&injectionTooltipTier!=menu.furnaceTier()){
@@ -230,7 +244,7 @@ public final class AlchemyScreen extends AbstractContainerScreen<AlchemyFurnaceM
         if (actual >= 0 && actual < 249) minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 2 + actual);
     }
     private void brew() {
-        if(menu.furnace().v5Batch()&&menu.isBrewing()){machineAction(246);return;}
+        if(menu.furnace().v5Batch()&&menu.isBrewing()){return;}
         AlchemyRecipe recipe = menu.selectedRecipe();
         if ((!menu.freeMode() && recipe == null) || menu.state() != AlchemyFurnaceMenu.State.READY || pendingTicks > 0) return;
         pendingTicks = 20;
@@ -416,7 +430,7 @@ public final class AlchemyScreen extends AbstractContainerScreen<AlchemyFurnaceM
         centered(g,Component.literal(selected==null?menu.freeMode()?"V5自由配伍：有限药效与九品":"选择丹方后预览产物":"已选："+kindName(selected)),AlchemyUiLayout.CENTER_X,44,126,MUTED);
         if (!menu.freeMode()) centered(g, Component.literal((page + 1) + " / " + Math.max(1, (filtered().size() + 5) / 6)), 68, 201, 40, MUTED);
         else {
-            String[] hints={"药材与月华可组合", "投入材料即托管", "炉内灵力整批预付", "先编译药效再评级", "失败产物不可服用", "停火封存有限药渣"};
+            String[] hints={"药材与月华可组合", "投入材料即托管", "炉内灵力整批预付", "先编译药效再评级", "失败产物不可服用", "中止封存有限药渣"};
             for(int i=0;i<hints.length;i++) small(g,hints[i],14,70+i*20,108,i==4?0xFFDB8878:MUTED);
         }
         small(g,menu.isBrewing()?"炼制":"待炼制",16,219,34,GOLD);

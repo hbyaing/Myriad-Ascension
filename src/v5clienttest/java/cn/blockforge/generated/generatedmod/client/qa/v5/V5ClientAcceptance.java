@@ -62,7 +62,7 @@ public final class V5ClientAcceptance {
         if(done||event.phase!=TickEvent.Phase.END)return;var mc=Minecraft.getInstance();
         try{
             Files.createDirectories(OUT);GLFW.glfwHideWindow(mc.getWindow().getWindow());mc.setWindowActive(true);mc.options.pauseOnLostFocus=false;
-            if((System.nanoTime()-START)/1e9>300)throw new AssertionError("V5 independent client timeout stage="+stage);
+            if((System.nanoTime()-START)/1e9>(Boolean.getBoolean("wuxingxiantu.v5Heat")?180:300))throw new AssertionError("V5 independent client timeout stage="+stage);
             if(!opened&&mc.player!=null)throw new AssertionError("Refuses an unrelated existing world");
             if(!opened&&mc.getOverlay()==null&&(mc.screen instanceof net.minecraft.client.gui.screens.TitleScreen||mc.screen instanceof net.minecraft.client.gui.screens.AccessibilityOnboardingScreen)){
                 opened=true;mc.getWindow().setWindowed(1280,900);mc.options.guiScale().set(2);mc.resizeDisplay();mc.options.renderDistance().set(2);mc.options.simulationDistance().set(5);mc.options.framerateLimit().set(40);
@@ -76,12 +76,34 @@ public final class V5ClientAcceptance {
             ticks++;
             if(stage==0){if(++worldTicks<30)return;mc.mouseHandler.grabMouse();check(blockedGrabs>0&&violations==0,"Mouse protection failed");
                 pending=mc.getSingleplayerServer().submit(()->prepare(mc));stage=1;return;}
+            if(stage==1&&ticks==30&&Boolean.getBoolean("wuxingxiantu.v5Heat")&&!(mc.screen instanceof AlchemyScreen)){
+                pending=mc.getSingleplayerServer().submit(()->{var player=mc.getSingleplayerServer().getPlayerList().getPlayer(mc.player.getUUID());var f=(AlchemyFurnaceBlockEntity)mc.getSingleplayerServer().overworld().getBlockEntity(POS);net.minecraftforge.network.NetworkHooks.openScreen(player,f.menuProvider(),POS);});return;
+            }
+            if(Boolean.getBoolean("wuxingxiantu.v5Heat")&&ticks==100)System.out.println("HEAT_QA_STAGE "+stage+" pos="+mc.player.position()+" screen="+mc.screen+" menu="+mc.player.containerMenu.getClass().getSimpleName());
             if(!(mc.screen instanceof AlchemyScreen)||!(mc.player.containerMenu instanceof AlchemyFurnaceMenu menu))return;
             if(stage==1){if(ticks<15)return;mc.gameMode.handleInventoryButtonClick(menu.containerId,255);stage=2;return;}
             if(stage==2){if(!menu.freeMode()||ticks<25)return;
                 if(RESUME){capture(mc,"restored-running");stage=4;return;}
                 check(menu.state()==AlchemyFurnaceMenu.State.READY,"Free batch was not ready: "+menu.state());capture(mc,"ready");
                 Network.CHANNEL.sendToServer(new cn.blockforge.generated.generatedmod.network.packet.alchemy.AlchemyPacket(POS,cn.blockforge.generated.generatedmod.alchemy.FreeAlchemy.ID));stage=3;ticks=0;return;}
+            if(stage==3&&Boolean.getBoolean("wuxingxiantu.v5Heat")){if(!menu.isBrewing()||ticks<8)return;capture(mc,"heat-running-1x");stage=300;ticks=0;return;}
+            if(stage>=300&&stage<=305){
+                int[] requested={16,0,4,1,0,1};int index=stage-300;
+                if(ticks==1){
+                    int column=switch(requested[index]){case 0->0;case 1->1;case 4->2;default->3;};
+                    var screen=(AlchemyScreen)mc.screen;
+                    double x=(mc.getWindow().getGuiScaledWidth()-420)/2+298+column*28+13;
+                    double y=(mc.getWindow().getGuiScaledHeight()-320)/2+304;
+                    check(screen.mouseClicked(x,y,0),"Native heat button missed");return;
+                }
+                if(ticks<10)return;
+                check(menu.v5HeatMode()==requested[index]&&menu.isBrewing(),"Explicit heat selection failed at "+stage);
+                capture(mc,"heat-selected-"+stage+"-"+requested[index]);
+                if(stage==305){mc.options.guiScale().set(3);mc.resizeDisplay();stage=306;}else stage++;
+                ticks=0;return;
+            }
+            if(stage==306){if(ticks<10)return;capture(mc,"heat-gui3");mc.options.guiScale().set(4);mc.resizeDisplay();stage=307;ticks=0;return;}
+            if(stage==307){if(ticks<10)return;capture(mc,"heat-gui4-fit");finish(mc,true,null);return;}
             if(stage==3){if(!menu.isBrewing()||ticks<110)return;capture(mc,"running-before-restart");
                 pending=mc.getSingleplayerServer().submit(()->{
                     var f=(AlchemyFurnaceBlockEntity)mc.getSingleplayerServer().overworld().getBlockEntity(POS);var d=f.v5ServerRecord();var core=V5Batch.core(d);check(core.tick()>0&&core.tick()<21,"Batch not active before restart");
@@ -114,9 +136,10 @@ public final class V5ClientAcceptance {
         }catch(Throwable e){com.mojang.logging.LogUtils.getLogger().error("V5_CLIENT_ACCEPTANCE",e);finish(mc,false,e.toString());}
     }
     private static void prepare(Minecraft mc){
-        var server=mc.getSingleplayerServer();var level=server.overworld();var player=server.getPlayerList().getPlayer(mc.player.getUUID());player.setNoGravity(true);player.teleportTo(POS.getX()+.5,POS.getY()+1,POS.getZ()-3);
+        var server=mc.getSingleplayerServer();var level=server.overworld();var player=server.getPlayerList().getPlayer(mc.player.getUUID());player.setNoGravity(true);player.teleportTo(level,POS.getX()+.5,POS.getY()+1,POS.getZ()-3,0,10);
         if(!RESUME){
             for(int x=-3;x<=3;x++)for(int z=-4;z<=3;z++)for(int y=-1;y<6;y++)level.setBlockAndUpdate(POS.offset(x,y,z),net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+            if(Boolean.getBoolean("wuxingxiantu.v5Heat"))for(int x=-5;x<=5;x++)for(int z=-5;z<=5;z++)level.setBlockAndUpdate(POS.offset(x,-1,z),net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
             level.setBlockAndUpdate(POS,WuXingBlocks.ALCHEMY_FURNACE.get().defaultBlockState());CoreStructureBuilder.build(player,POS);AlchemyFurnaceStructure.refreshAround(level,POS);
             var f=(AlchemyFurnaceBlockEntity)level.getBlockEntity(POS);var tag=f.saveWithoutMetadata();tag.putInt("SpiritFuel",f.spiritCapacity());f.load(tag);
             var herb=new ItemStack(SpiritPlantRegistry.SPIRIT_SPROUT_GRASS_ITEM.get(),4);HerbAge.setYears(herb,1500);f.setItem(0,herb);f.setItem(8,cn.blockforge.generated.generatedmod.fire.FireBottleData.fresh(1));

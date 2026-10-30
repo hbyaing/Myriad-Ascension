@@ -1,0 +1,21 @@
+{
+  "captureViolations": 0,
+  "error": "",
+  "completed": true,
+  "blockedGrabs": 2,
+  "resume": false,
+  "captures": [
+    "ready",
+    "heat-running-1x",
+    "heat-selected-300-16",
+    "heat-selected-301-0",
+    "heat-selected-302-4",
+    "heat-selected-303-1",
+    "heat-selected-304-0",
+    "heat-selected-305-1",
+    "heat-gui3",
+    "heat-gui4-fit"
+  ],
+  "checkedFrames": 1343,
+  "passed": true
+}

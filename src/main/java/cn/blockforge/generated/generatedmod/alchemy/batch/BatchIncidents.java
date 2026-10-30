@@ -30,9 +30,14 @@ public final class BatchIncidents {
     /** One control of each kind per five world ticks, serialized before application by the furnace. */
     public static CompoundTag control(CompoundTag original,int button,long time){
         V5Batch.validate(original);if(!original.contains("IncidentVersion")||!original.getString("State").equals("ACTIVE"))return original;
-        String cooldown="Control"+button;if(original.contains(cooldown)&&time-original.getLong(cooldown)<5)return original;
+        String cooldown="Control"+button;if(button!=1000&&original.contains(cooldown)&&time-original.getLong(cooldown)<5)return original;
         var doc=original.copy();
         switch(button){
+            case 1000,1001,1004,1016 -> {
+                int mode=button-1000;
+                if(doc.getInt("HeatMode")==mode)return original;
+                doc.putInt("HeatMode",mode);
+            }
             case 245 -> doc.putBoolean("Vent",true);
             case 246 -> doc.putInt("HeatMode",switch(doc.getInt("HeatMode")){case 0->1;case 1->4;case 4->16;default->0;});
             case 247 -> doc.putBoolean("Warming",!doc.getBoolean("Warming"));

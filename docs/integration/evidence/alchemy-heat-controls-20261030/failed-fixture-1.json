@@ -1,0 +1,12 @@
+{
+  "captureViolations": 0,
+  "passed": false,
+  "checkedFrames": 10330,
+  "captures": [
+    "ready"
+  ],
+  "resume": false,
+  "blockedGrabs": 3,
+  "completed": false,
+  "error": "java.lang.AssertionError: V5 independent client timeout stage\u003d3"
+}

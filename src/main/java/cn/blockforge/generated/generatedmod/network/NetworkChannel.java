@@ -69,7 +69,7 @@ import cn.blockforge.generated.generatedmod.*;
 
 public final class NetworkChannel {
     // New formation block/menu registries require matching client and server builds.
-    private static final String VERSION = "105";
+    private static final String VERSION = "106";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(GeneratedMod.MOD_ID, "main"), () -> VERSION, VERSION::equals, VERSION::equals);
     private static final java.util.Set<Integer> IDS=new java.util.HashSet<>();
@@ -119,6 +119,7 @@ public final class NetworkChannel {
         c2s(6, HeartSwordRequestPacket.class, HeartSwordRequestPacket::encode, HeartSwordRequestPacket::decode, HeartSwordRequestPacket::handle);
         s2c(7, HeartSwordVisualPacket.class, HeartSwordVisualPacket::encode, HeartSwordVisualPacket::decode, HeartSwordVisualPacket::handle);
         s2c(8, OpenScreenPacket.class, OpenScreenPacket::encode, OpenScreenPacket::decode, OpenScreenPacket::handle);
+        c2s(95, cn.blockforge.generated.generatedmod.network.packet.alchemy.AlchemyHeatPacket.class, cn.blockforge.generated.generatedmod.network.packet.alchemy.AlchemyHeatPacket::encode, cn.blockforge.generated.generatedmod.network.packet.alchemy.AlchemyHeatPacket::decode, cn.blockforge.generated.generatedmod.network.packet.alchemy.AlchemyHeatPacket::handle);
         c2s(9, AlchemyPacket.class, AlchemyPacket::encode, AlchemyPacket::decode, AlchemyPacket::handle);
         c2s(10, RefiningPacket.class, RefiningPacket::encode, RefiningPacket::decode, RefiningPacket::handle);
         c2s(11, CollectRefiningPacket.class, CollectRefiningPacket::encode, CollectRefiningPacket::decode, CollectRefiningPacket::handle);

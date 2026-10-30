@@ -586,6 +586,7 @@ if (project.hasProperty('v5BatchCapture')) {
             args '--mixin', 'wuxingxiantu.v5-qa.mixins.json'
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', file('build/createSrgToMcp/output.srg').absolutePath
+            property 'wuxingxiantu.v5Heat', project.hasProperty('v5HeatCapture').toString()
             property 'wuxingxiantu.v5Resume', project.hasProperty('v5BatchResume').toString()
             property 'wuxingxiantu.v5Incidents', project.hasProperty('v5IncidentCapture').toString()
             property 'wuxingxiantu.v5Effects', project.hasProperty('v5EffectsCapture').toString()
