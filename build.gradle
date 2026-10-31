@@ -55,6 +55,8 @@ if (project.hasProperty('myriadCapture')) {
                 property 'wuxingxiantu.mindscapeCapture', 'true'
                 property 'wuxingxiantu.myriadCapture', 'false'
                 if (project.hasProperty('mindscapeNoShaders')) property 'wuxingxiantu.mindscapeNoShaders', 'true'
+                if (project.hasProperty('mindscapeCaptureWidth')) property 'wuxingxiantu.mindscapeCaptureWidth', project.property('mindscapeCaptureWidth').toString()
+                if (project.hasProperty('mindscapeCaptureHeight')) property 'wuxingxiantu.mindscapeCaptureHeight', project.property('mindscapeCaptureHeight').toString()
                 args '--mixin', 'wuxingxiantu.mindscape-qa.mixins.json'
                 args '--width', '1600', '--height', '900'
             }

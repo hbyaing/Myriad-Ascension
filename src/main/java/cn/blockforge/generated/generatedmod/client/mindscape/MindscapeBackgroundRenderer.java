@@ -334,7 +334,7 @@ public final class MindscapeBackgroundRenderer {
         result.put("fieldProgram", field == null ? 0 : field.id); result.put("compositeProgram", shell == null ? 0 : shell.id);
         result.put("lastStageFramebuffer", lastStageFramebuffer); result.put("lastDrawFramebuffer", lastDrawFramebuffer); result.put("lastRestored", lastRestored);
         result.put("corruptedPaletteSHA256", corruptedHash); result.put("purifiedPaletteSHA256", purifiedHash);
-        result.put("carrier", "early-color-finite-depth-shell"); result.put("mapping", "continuous-ellipsoid-stereographic");
+        result.put("carrier", "early-color-finite-depth-shell"); result.put("mapping", "closed-ellipsoid-bounded-fold-domain");
         return result;
     }
 

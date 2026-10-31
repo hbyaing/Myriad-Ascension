@@ -27,6 +27,7 @@ import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ViewportEvent;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.*;
 import net.minecraftforge.fml.common.Mod;
@@ -44,7 +45,8 @@ public final class MindscapeCapture {
     private static final boolean EXTERNAL=Boolean.getBoolean("wuxingxiantu.myriadExternalShaders")&&!Boolean.getBoolean("wuxingxiantu.mindscapeNoShaders");
     private static final String EXPECTED_PACK=System.getProperty("wuxingxiantu.myriadExpectedShaderPack","");
     private static final Path OUT=Path.of(System.getProperty("wuxingxiantu.myriadCaptureOutput","captures")).resolve("mindscape");
-    private static final int WIDTH=1600,HEIGHT=900,EXPECTED_CAPTURES=20;
+    private static final int WIDTH=Integer.getInteger("wuxingxiantu.mindscapeCaptureWidth",1600),
+            HEIGHT=Integer.getInteger("wuxingxiantu.mindscapeCaptureHeight",900),EXPECTED_CAPTURES=32;
     private static final double MIN_BACKGROUND_COLOR_RATIO=.02;
     private static final long START=System.nanoTime();
     private static final List<Map<String,Object>> ROWS=new ArrayList<>();
@@ -58,12 +60,23 @@ public final class MindscapeCapture {
             new View(new Vec3(0,4,-23),0,-10,100),new View(new Vec3(25.5,4,0),-90,-10,90),
             new View(new Vec3(0,3,-8),0,0,66)};
     private static final String[] VIEW_NAMES={"01-corrupted-front","02-corrupted-yaw","03-corrupted-wide-fov","04-corrupted-near-boundary","05-boss-entity-occlusion"};
-    private enum Phase {BOOT,PREPARE,FIRST_ENTER,FIRST_VIEWS,RELOAD_START,RELOAD_WAIT,THIRD_SETUP,THIRD_VIEW,
+    private static final View[] EXTRA_RED_VIEWS={new View(FRONT.relative(),180,0,76),new View(FRONT.relative(),90,0,76),
+            new View(FRONT.relative(),-90,0,76),new View(FRONT.relative(),0,-90,76),new View(FRONT.relative(),0,90,76)};
+    private static final String[] EXTRA_RED_NAMES={"05d-corrupted-back","05e-corrupted-left","05f-corrupted-right","05g-corrupted-up","05h-corrupted-down"};
+    private static final View[] GOLD_VIEWS={EXTRA_RED_VIEWS[0],EXTRA_RED_VIEWS[1],EXTRA_RED_VIEWS[2],EXTRA_RED_VIEWS[3],EXTRA_RED_VIEWS[4],
+            new View(new Vec3(0,3.4,-31.5),0,8,70),VIEWS[3]};
+    private static final String[] GOLD_NAMES={"17-gold-back","18-gold-left","19-gold-right","20-gold-up","21-gold-down","22-gold-third-person-boundary","23-gold-near-boundary"};
+    private enum Phase {BOOT,PREPARE,FIRST_ENTER,FIRST_VIEWS,EXTRA_RED,RELOAD_START,RELOAD_WAIT,THIRD_SETUP,THIRD_VIEW,
         TRANSPARENT_SETUP,TRANSPARENT_VIEW,TRANSPARENT_CLEAR,FIRST_KILL,FIRST_VICTORY,FIRST_RETURN,
         FINAL_ENTER,FINAL_PHASE_ONE,FINAL_FIRST_LETHAL,FINAL_PHASE_TWO,FINAL_SECOND_LETHAL,FINAL_VICTORY,FINAL_RETURN,
-        ABORT_ENTER,ABORT_ACTIVE,ABORT_DO,ABORT_RETURN,DEVELOPER_RETURN,DONE}
+        ABORT_ENTER,ABORT_ACTIVE,ABORT_DO,ABORT_RETURN,DEVELOPER_RETURN,DEVELOPER_COMPLETE,DONE,
+        GOLD_SURVEY_ENTER,GOLD_SURVEY_ACTIVE,GOLD_SURVEY_WAIT,GOLD_SURVEY_RETURN}
     private static Phase phase=Phase.BOOT;
-    private static int ticks,viewIndex,victoryCapture,firstLethalTick,bossId=-1,occluderId=-1,heartbeatTicks,closedQaPauseScreens;
+    private static int ticks,viewIndex,victoryCapture,firstLethalTick,bossId=-1,occluderId=-1,heartbeatTicks,closedQaPauseScreens,extraRedIndex,goldIndex;
+    private static UUID occluderUUID;
+    private static long foregroundWaitStarted;
+    private static CompletableFuture<Map<String,Object>> foregroundProbe;
+    private static Map<String,Object> foregroundServer=Map.of();
     private static boolean opened,finished,pointerExercised,shaderChecked,shaderActive;
     private static Boolean outsideExtendedVertexFormat;
     private static String pack="none",worldName="";
@@ -71,6 +84,12 @@ public final class MindscapeCapture {
     private static UUID playerId;
     private static Method cameraPosition;
     private static CompletableFuture<Map<String,Object>> pending;
+    private static CompletableFuture<Map<String,Object>> pendingBossBinding;
+    private static volatile UUID bindingSession,bindingBoss;
+    private static volatile String bindingChallenge="";
+    private static volatile boolean bindingWaiting;
+    private static boolean bindingServerReady;
+    private static long bindingStarted;
     private static Runnable afterServer;
     private static CaptureRequest requested;
     private static Map<String,Object> lastServer=Map.of();
@@ -85,6 +104,7 @@ public final class MindscapeCapture {
     private static final class CaptureRequest {
         final String name;final MindscapeState expected;final float low,high;final Runnable next;
         CompletableFuture<Map<String,Object>> evidence;
+        MindscapeCoverageProbe.Sample coverage;
         CaptureRequest(String name,MindscapeState expected,float low,float high,Runnable next){this.name=name;this.expected=expected;this.low=low;this.high=high;this.next=next;}
     }
     private static void check(boolean condition,String message){if(!condition)throw new AssertionError(message);}
@@ -103,6 +123,70 @@ public final class MindscapeCapture {
             ServerPlayer owner=mc.getSingleplayerServer().getPlayerList().getPlayer(playerId);
             check(owner!=null,"QA owner left integrated server");action.accept(owner);return snapshot(owner);
         });afterServer=next;
+    }
+    private static boolean awaitBossBinding(Minecraft mc){
+        if(!bindingWaiting)return false;
+        check((System.nanoTime()-bindingStarted)/1_000_000_000L<30,"Timed out waiting for real boss visibility; session="+bindingSession+", boss="+bindingBoss);
+        if(!bindingServerReady){
+            if(pendingBossBinding==null){
+                pendingBossBinding=mc.getSingleplayerServer().submit(()->{
+                    var owner=mc.getSingleplayerServer().getPlayerList().getPlayer(playerId);
+                    check(owner!=null,"QA owner left while awaiting boss");
+                    var tag=GeneratedMod.data(owner).wuxingxiantu$getMindscapeData();
+                    check(owner.level().dimension()==MindscapeManager.DIMENSION&&MindscapeManager.state(owner)==MindscapeState.CHALLENGE_ACTIVE
+                            &&tag.hasUUID("session")&&tag.getUUID("session").equals(bindingSession)
+                            &&tag.hasUUID("boss")&&tag.getUUID("boss").equals(bindingBoss)
+                            &&tag.getString("challenge").equals(bindingChallenge)
+                            &&MindscapeInstances.get(owner.serverLevel()).owns(owner.getUUID(),bindingSession,tag.getInt("slot")),
+                            "Production session/lease changed while awaiting boss visibility");
+                    var entity=owner.serverLevel().getEntity(bindingBoss);var result=new LinkedHashMap<>(snapshot(owner));
+                    if(entity==null){result.put("bindingReady",false);return result;}
+                    check(entity instanceof Mob,"Bound production entity is not a boss Mob");var mob=(Mob)entity;
+                    var binding=mob.getPersistentData();
+                    check(mob.isAlive()&&binding.hasUUID("MindscapeOwner")&&owner.getUUID().equals(binding.getUUID("MindscapeOwner"))
+                            &&binding.hasUUID("MindscapeSession")&&bindingSession.equals(binding.getUUID("MindscapeSession"))
+                            &&bindingChallenge.equals(binding.getString("MindscapeChallenge")),"Production boss owner/session/challenge binding differs");
+                    mob.setNoAi(true);bossId=mob.getId();
+                    check(!MindscapeManager.complete(owner,false),"Living boss incorrectly allowed natural completion");
+                    result.put("bindingReady",true);result.put("boundBossUUID",bindingBoss.toString());result.put("boundBossId",bossId);return result;
+                });return true;
+            }
+            if(!pendingBossBinding.isDone())return true;
+            var result=pendingBossBinding.join();pendingBossBinding=null;
+            if(!Boolean.TRUE.equals(result.get("bindingReady")))return true;
+            bindingServerReady=true;lastServer=result;SERVER_ACTIONS.add(result);
+        }
+        if(!inside(mc)||!Objects.equals(bindingSession,MindscapeClient.sessionId()))return true;
+        var entity=mc.level.getEntity(bossId);if(entity==null)return true;
+        check(entity instanceof Mob&&entity.getUUID().equals(bindingBoss),"Client tracked a different boss entity");
+        check(MindscapeClient.state()==MindscapeState.CHALLENGE_ACTIVE&&MindscapeClient.challenge().equals(bindingChallenge),"Client boss arrived for a different session state");
+        bindingWaiting=false;return false;
+    }
+    private static boolean foregroundReady(Minecraft mc){
+        if(foregroundWaitStarted==0)foregroundWaitStarted=System.nanoTime();
+        check((System.nanoTime()-foregroundWaitStarted)/1_000_000_000L<10,
+                "Foreground entity visibility timed out; id="+occluderId+", UUID="+occluderUUID+", server="+foregroundServer);
+        if(foregroundProbe==null){
+            foregroundProbe=mc.getSingleplayerServer().submit(()->{
+                var owner=mc.getSingleplayerServer().getPlayerList().getPlayer(playerId);
+                check(owner!=null&&owner.level().dimension()==MindscapeManager.DIMENSION,"Foreground owner left production session");
+                var entity=owner.serverLevel().getEntity(occluderUUID);var evidence=new LinkedHashMap<String,Object>();
+                evidence.put("expectedUUID",String.valueOf(occluderUUID));evidence.put("exists",entity!=null);
+                if(entity!=null){
+                    check(entity instanceof ArmorStand&&entity.getId()==occluderId,"Server foreground binding differs");
+                    evidence.put("id",entity.getId());evidence.put("alive",entity.isAlive());evidence.put("invulnerable",entity.isInvulnerable());
+                    evidence.put("health",((ArmorStand)entity).getHealth());evidence.put("position",xyz(entity.position()));
+                }
+                return evidence;
+            });return false;
+        }
+        if(!foregroundProbe.isDone())return false;
+        foregroundServer=foregroundProbe.join();foregroundProbe=null;
+        if(!Boolean.TRUE.equals(foregroundServer.get("exists"))||!Boolean.TRUE.equals(foregroundServer.get("alive")))return false;
+        check(Boolean.TRUE.equals(foregroundServer.get("invulnerable")),"QA-only foreground damage protection was not applied");
+        var entity=mc.level.getEntity(occluderId);if(entity==null)return false;
+        check(entity instanceof ArmorStand&&entity.getUUID().equals(occluderUUID)&&entity.isAlive(),"Client tracked a different foreground entity");
+        return true;
     }
     @SubscribeEvent public static void tick(TickEvent.ClientTickEvent event){
         if(!ENABLED||finished||event.phase!=TickEvent.Phase.END)return;
@@ -134,6 +218,7 @@ public final class MindscapeCapture {
             if(!pointerExercised){mc.mouseHandler.grabMouse();pointerExercised=true;PointerSafety.verify();}
             if(!shaderChecked){checkShaders();shaderChecked=true;}
             if(pending!=null){if(!pending.isDone())return;lastServer=pending.join();SERVER_ACTIONS.add(lastServer);pending=null;Runnable next=afterServer;afterServer=null;next.run();}
+            if(awaitBossBinding(mc))return;
             ticks++;
             if(requested!=null)return;
             switch(phase){
@@ -143,9 +228,15 @@ public final class MindscapeCapture {
                 case FIRST_VIEWS -> {
                     if(!active(mc,FIRST)||ticks<12)return;
                     check(MindscapeClient.purification(0)==0,"Active challenge showed purified color");
-                    if(viewIndex==4)check(mc.level.getEntity(occluderId)!=null,"Real foreground armor stand did not reach client");
+                    if(viewIndex==4&&!foregroundReady(mc))return;
                     request(VIEW_NAMES[viewIndex],MindscapeState.CHALLENGE_ACTIVE,0,0,()->{
-                        if(++viewIndex==VIEWS.length){view(mc,FRONT);phase(Phase.RELOAD_START);}else view(mc,VIEWS[viewIndex]);
+                        if(++viewIndex==VIEWS.length){extraRedIndex=0;view(mc,EXTRA_RED_VIEWS[0]);phase(Phase.EXTRA_RED);}else view(mc,VIEWS[viewIndex]);
+                    });
+                }
+                case EXTRA_RED -> {
+                    if(!active(mc,FIRST)||ticks<12)return;
+                    request(EXTRA_RED_NAMES[extraRedIndex],MindscapeState.CHALLENGE_ACTIVE,0,0,()->{
+                        if(++extraRedIndex==EXTRA_RED_VIEWS.length){view(mc,FRONT);phase(Phase.RELOAD_START);}else view(mc,EXTRA_RED_VIEWS[extraRedIndex]);
                     });
                 }
                 case RELOAD_START -> {
@@ -211,12 +302,34 @@ public final class MindscapeCapture {
                     check(GeneratedMod.data(p).wuxingxiantu$getMindscapeData().getList("completed_challenges",8).size()==rewards,"Abort granted an extra completion");
                 },()->phase(Phase.ABORT_RETURN));
                 case ABORT_RETURN -> returned(mc,"15-abort-return",Phase.DEVELOPER_RETURN);
-                case DEVELOPER_RETURN -> server(mc,p->{
-                    enter(p,FIRST,false);check(MindscapeManager.complete(p,true),"Developer completion rejected valid session");
+                case DEVELOPER_RETURN -> server(mc,p->enter(p,FIRST,false),()->phase(Phase.DEVELOPER_COMPLETE));
+                case DEVELOPER_COMPLETE -> server(mc,p->{
+                    check(MindscapeManager.complete(p,true),"Developer completion rejected valid session");
                     check(p.level().dimension()!=MindscapeManager.DIMENSION,"Developer completion incorrectly retained gold display");
                     check(!MindscapeExternalSnapshot.isSealed(p),"Developer completion left snapshot sealed");
                 },()->phase(Phase.DONE));
-                case DONE -> {if(!inside(mc)&&MindscapeClient.sessionId()==null&&ticks>=10)request("16-developer-instant-return",null,0,0,()->finish(mc));}
+                case DONE -> {if(!inside(mc)&&MindscapeClient.sessionId()==null&&ticks>=10)request("16-developer-instant-return",null,0,0,()->{goldIndex=0;phase(Phase.GOLD_SURVEY_ENTER);});}
+                case GOLD_SURVEY_ENTER -> server(mc,p->{
+                    enter(p,FIRST,false);
+                    if(goldIndex==5){var center=MindscapeInstances.center(GeneratedMod.data(p).wuxingxiantu$getMindscapeData().getInt("slot"));p.teleportTo(center.getX()+.5,65.1,center.getZ()+.5-25.5);p.setDeltaMovement(Vec3.ZERO);}
+                },()->{mc.options.setCameraType(goldIndex==5?CameraType.THIRD_PERSON_BACK:CameraType.FIRST_PERSON);view(mc,GOLD_VIEWS[goldIndex]);phase(Phase.GOLD_SURVEY_ACTIVE);});
+                case GOLD_SURVEY_ACTIVE -> {
+                    if(active(mc,FIRST)&&ticks>=12)server(mc,p->lethal(p,false),()->phase(Phase.GOLD_SURVEY_WAIT));
+                }
+                case GOLD_SURVEY_WAIT -> {
+                    check(inside(mc),"Missed natural gold survey window "+GOLD_NAMES[goldIndex]);
+                    if(MindscapeClient.state()==MindscapeState.COMPLETED&&MindscapeClient.purification(0)>=.999f)
+                        request(GOLD_NAMES[goldIndex],MindscapeState.COMPLETED,.98f,1,()->phase(Phase.GOLD_SURVEY_RETURN));
+                }
+                case GOLD_SURVEY_RETURN -> {
+                    if(inside(mc)||MindscapeClient.sessionId()!=null||ticks<8)return;
+                    check(MindscapeClient.origin()==null&&MindscapeClient.purification(0)==0,"Gold survey retained returned visual state");
+                    verifyPipeline(pipelineProbe(),false,"gold-survey-return-"+goldIndex);
+                    server(mc,p->{
+                        check(p.level().dimension()!=MindscapeManager.DIMENSION&&!MindscapeExternalSnapshot.isSealed(p),"Gold survey failed natural return");
+                        check(p.getInventory().items.stream().filter(s->s.is(Items.DIAMOND)).mapToInt(ItemStack::getCount).sum()==7,"Gold survey lost external inventory marker");
+                    },()->{view=null;if(++goldIndex==GOLD_VIEWS.length)finish(mc);else phase(Phase.GOLD_SURVEY_ENTER);});
+                }
             }
         }catch(Throwable error){fail(mc,error);}
     }
@@ -229,18 +342,25 @@ public final class MindscapeCapture {
     }
     private static void enter(ServerPlayer p,String challengeId,boolean occluder){
         check(p.level().dimension()!=MindscapeManager.DIMENSION,"Entry started before prior return");
+        check(p.isAlive(),"QA owner died before re-entry; refusing to revive or bypass production failure");
         check(p.getInventory().items.stream().filter(s->s.is(Items.DIAMOND)).mapToInt(ItemStack::getCount).sum()==7,"Prior return did not restore real inventory");
+        // Reset only this isolated test owner's accumulated external injuries.
+        // Incoming damage and the production failure/session handlers stay active.
+        p.setHealth(p.getMaxHealth());
         MindscapeManager.markUnstableFor(p,challengeId);
         check(MindscapeManager.enter(p,MindscapeChallenges.get(challengeId),false),"Production natural entry rejected "+challengeId);
-        var mob=boss(p);mob.setNoAi(true);bossId=mob.getId();
+        var tag=GeneratedMod.data(p).wuxingxiantu$getMindscapeData();
+        check(tag.hasUUID("session")&&tag.hasUUID("boss"),"Successful production entry omitted session/boss UUID");
+        bindingSession=tag.getUUID("session");bindingBoss=tag.getUUID("boss");bindingChallenge=challengeId;
+        bossId=-1;bindingServerReady=false;pendingBossBinding=null;bindingStarted=System.nanoTime();bindingWaiting=true;
         check(MindscapeExternalSnapshot.isSealed(p),"Entry did not seal external snapshot");
-        check(!MindscapeManager.complete(p,false),"Living boss incorrectly allowed natural completion");
         if(occluder){
             var center=MindscapeInstances.center(GeneratedMod.data(p).wuxingxiantu$getMindscapeData().getInt("slot"));
             var stand=new ArmorStand(p.serverLevel(),center.getX()+2.0,65.1,center.getZ()+1.5);
-            stand.setNoGravity(true);stand.setItemSlot(EquipmentSlot.HEAD,new ItemStack(Items.DIAMOND_HELMET));
+            stand.setNoGravity(true);stand.setInvulnerable(true);stand.setItemSlot(EquipmentSlot.HEAD,new ItemStack(Items.DIAMOND_HELMET));
             stand.setItemSlot(EquipmentSlot.CHEST,new ItemStack(Items.DIAMOND_CHESTPLATE));
-            check(p.serverLevel().addFreshEntity(stand),"Foreground entity spawn failed");occluderId=stand.getId();
+            check(p.serverLevel().addFreshEntity(stand),"Foreground entity spawn failed");occluderId=stand.getId();occluderUUID=stand.getUUID();
+            foregroundWaitStarted=0;foregroundProbe=null;foregroundServer=Map.of();
         }
     }
     private static net.minecraft.world.entity.Mob boss(ServerPlayer p){
@@ -327,6 +447,12 @@ public final class MindscapeCapture {
             status.put("clientState",MindscapeClient.state().name());status.put("clientChallenge",MindscapeClient.challenge());
             status.put("clientSession",String.valueOf(MindscapeClient.sessionId()));
             status.put("pending",pending!=null);status.put("pendingDone",pending!=null&&pending.isDone());
+            status.put("waitingForBossBinding",bindingWaiting);status.put("bindingServerReady",bindingServerReady);
+            status.put("bindingSession",String.valueOf(bindingSession));status.put("bindingBoss",String.valueOf(bindingBoss));
+            status.put("bindingQueryPending",pendingBossBinding!=null&&!pendingBossBinding.isDone());
+            status.put("bindingQueryDone",pendingBossBinding!=null&&pendingBossBinding.isDone());
+            status.put("foregroundExpectedUUID",String.valueOf(occluderUUID));status.put("foregroundServer",foregroundServer);
+            status.put("foregroundClientVisible",mc.level!=null&&occluderId>=0&&mc.level.getEntity(occluderId)!=null);
             status.put("requested",requested==null?"none":requested.name);
             status.put("captureEvidencePending",requested!=null&&requested.evidence!=null&&!requested.evidence.isDone());
             status.put("completedCaptures",ROWS.size());status.put("expectedCaptures",EXPECTED_CAPTURES);
@@ -372,6 +498,12 @@ public final class MindscapeCapture {
     }
     @SuppressWarnings("unchecked") private static Map<String,Object> rendererDiagnostics()throws Exception{
         return new LinkedHashMap<>((Map<String,Object>)Class.forName("cn.blockforge.generated.generatedmod.client.mindscape.MindscapeBackgroundRenderer").getMethod("diagnostics").invoke(null));
+    }
+    @SubscribeEvent(priority=EventPriority.LOWEST) public static void backgroundCoverage(RenderLevelStageEvent event){
+        if(!ENABLED||finished||requested==null||requested.expected==null||event.getStage()!=RenderLevelStageEvent.Stage.AFTER_SKY)return;
+        Minecraft mc=Minecraft.getInstance();
+        if(mc.getOverlay()!=null||mc.screen!=null||!inside(mc)||MindscapeClient.state()!=requested.expected)return;
+        try{requested.coverage=MindscapeCoverageProbe.capture();}catch(Throwable error){fail(mc,error);}
     }
     /** Read-only Oculus/Iris 1.8 API probe; no optional type enters the QA class linkage. */
     private static Map<String,Object> pipelineProbe()throws Exception{
@@ -429,10 +561,12 @@ public final class MindscapeCapture {
             PointerSafety.verify();check(GLFW.glfwGetWindowAttrib(mc.getWindow().getWindow(),GLFW.GLFW_VISIBLE)==GLFW.GLFW_FALSE,"QA window became visible");
             int error=GL11.glGetError();check(error==GL11.GL_NO_ERROR,"Mindscape draw GL error "+error);
             var row=new LinkedHashMap<String,Object>();row.put("case",capture.name);row.put("file",capture.name+".png");row.put("server",server);
+            if(capture.expected!=null){check(capture.coverage!=null,"No full-screen after-sky coverage evidence for "+capture.name);row.put("backgroundCoverage",capture.coverage.evidence);}
             row.put("clientState",MindscapeClient.state().name());row.put("clientChallenge",MindscapeClient.challenge());row.put("purification",progress);
             row.put("clientSession",String.valueOf(MindscapeClient.sessionId()));row.put("clientOrigin",MindscapeClient.origin()==null?List.of():xyz(MindscapeClient.origin()));
             row.put("camera",xyz(mc.gameRenderer.getMainCamera().getPosition()));row.put("fov",mc.options.fov().get());row.put("glError",error);
             row.put("cameraType",mc.options.getCameraType().name());
+            if(capture.name.equals("05-boss-entity-occlusion"))row.put("foregroundServer",foregroundServer);
             var pipeline=pipelineProbe();row.put("pipeline",pipeline);row.put("shaderActive",Boolean.TRUE.equals(pipeline.get("irisRenderingPipeline")));
             row.put("shaderPack",pipeline.get("loadedPackName"));row.put("width",mc.getMainRenderTarget().width);row.put("height",mc.getMainRenderTarget().height);
             verifyPipeline(pipeline,capture.expected!=null,capture.name);
@@ -466,10 +600,13 @@ public final class MindscapeCapture {
                 var colorProbe=backgroundColorProbe(image,capture.name);if(!colorProbe.isEmpty())row.put("backgroundColorProbe",colorProbe);
                 image.writeToFile(OUT.resolve(capture.name+".png"));
             }
+            if(capture.coverage!=null)capture.coverage.writeImages(OUT,capture.name);
             // Keep the failed final-output image and its measured ROI in the report.
             ROWS.add(row);requested=null;
-            if(row.get("backgroundColorProbe") instanceof Map<?,?> probe)
-                check(Boolean.TRUE.equals(probe.get("passed")),"Expected "+probe.get("expected")+" background absent in final output: ratio="+probe.get("ratio")+", minimum="+MIN_BACKGROUND_COLOR_RATIO+", ROI="+probe.get("roiPixels"));
+            // Legacy red/gold ROI ratios remain diagnostic only. The user may
+            // choose silver-white/black with very little gold; full coverage,
+            // texture variation and early-target agreement are the acceptance gate.
+            if(capture.coverage!=null)check(Boolean.TRUE.equals(capture.coverage.evidence.get("passed")),"Whole-background coverage failed: "+capture.coverage.evidence.get("failures"));
             writeReport();capture.next.run();
         }catch(Throwable error){fail(mc,error);}
     }
@@ -486,7 +623,7 @@ public final class MindscapeCapture {
         report.put("mindscapeCompatibilityStrategy",EXTERNAL?"isolated VanillaRenderingPipeline inside mindscape; outside IrisRenderingPipeline automatically restored":"native rendering without an active third-party pack");
         report.put("outsideExtendedVertexFormatBaseline",outsideExtendedVertexFormat);
         report.put("captures",ROWS);report.put("expectedCaptures",EXPECTED_CAPTURES);report.put("serverActions",SERVER_ACTIONS);report.put("failures",FAILURES);report.put("complete",finished&&FAILURES.isEmpty()&&ROWS.size()==EXPECTED_CAPTURES);
-        report.put("scope","Real natural server entry, owner lethal damage, S2C session/timer, purification/gold hold, actual resource reload, third-person camera beyond arena, real glass and translucent ParticleEngine probes. External packs use an isolated VanillaRenderingPipeline only inside mindscape; captures verify actual pipeline class, loaded pack and outside vertex-format restoration. This is not simultaneous third-party-pack compositing inside mindscape. QA creative owner, controlled health/camera/foreground; transparent/particle depth appearance requires screenshot review. Abort exercises production abort API, not player-death/respawn. No fake client state or OS pointer input.");
+        report.put("scope","32 real-server captures cover red/gold front/back/left/right/exact up/down, third-person beyond arena and near boundary; seven additional gold views each use a separate true owner kill and unchanged 72-tick victory window. Whole field and actual after-sky targets are sampled before legitimate terrain occlusion, with tile/alpha/near-white connected-region evidence. Resource reload, transparent/particle depth and outside pipeline restoration remain checked. Mindscape owns an isolated VanillaRenderingPipeline, not simultaneous pack compositing. QA creative owner, controlled health/camera/foreground; screenshots still need visual review. Abort uses production abort API, not death/respawn. No fake client state or OS pointer input.");
         Files.writeString(OUT.resolve("verification.json"),new GsonBuilder().setPrettyPrinting().create().toJson(report));
     }
     private static void fail(Minecraft mc,Throwable error){FAILURES.add(phase+": "+error);com.mojang.logging.LogUtils.getLogger().error("MINDSCAPE_QA",error);finish(mc);}
@@ -494,6 +631,7 @@ public final class MindscapeCapture {
         if(finished)return;finished=true;
         if(FAILURES.isEmpty()&&ROWS.size()!=EXPECTED_CAPTURES)FAILURES.add("Expected "+EXPECTED_CAPTURES+" captures, received "+ROWS.size());
         writeStatus(mc);
+        MindscapeCoverageProbe.release();
         try{Files.createDirectories(OUT);writeReport();Files.writeString(OUT.resolve(FAILURES.isEmpty()&&ROWS.size()==EXPECTED_CAPTURES?"complete.txt":"failure.txt"),FAILURES.isEmpty()?EXPECTED_CAPTURES+" real-server background captures completed; inspect PNGs and verification.json.\n":String.join("\n",FAILURES));}
         catch(Exception error){com.mojang.logging.LogUtils.getLogger().error("MINDSCAPE_QA_REPORT",error);}mc.stop();
     }

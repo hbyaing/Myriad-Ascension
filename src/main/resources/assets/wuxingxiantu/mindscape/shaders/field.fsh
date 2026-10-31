@@ -106,15 +106,16 @@ UserMaterialState completeUserMaterialState(vec2 domain){
  col=1.0-col;col=col*col*1.2;
  UserMaterialState result;result.gray=col;result.ron=on;result.normal=nor;result.lin=lin;result.rawField=f;return result;
 }
-// One continuous material chart per finite membrane. A three-chart average of
-// unrelated ron phases creates false grooves at chart boundaries; evaluate the
-// complete user material only once in this chart instead. The rear pole lies
-// outside finiteMask (all visible patches have 1+q.z > .09).
+// One bounded, smooth material domain on the entire closed membrane. The old
+// stereographic rear pole needed a cutout, which exposed a white rear hemisphere.
+// Folding that denominator smoothly keeps the front scale and has no UV branch,
+// pole guard or blend between unrelated material charts.
 UserMaterialState projectedMaterialState(vec3 p,vec3 normal,float id,float scale){
  vec3 center=id<.5?vec3(3.,12.,17.):(id<1.5?vec3(-24.,22.,20.):vec3(40.,16.,30.));
  vec3 axes=id<.5?vec3(70.,43.,94.):(id<1.5?vec3(48.,25.,70.):vec3(29.,35.,73.));
  vec3 q=normalize((p-center)/axes);
- vec2 domain=q.xy/max(1.+q.z,.06)*axes.xy*1.4*scale;
+ vec2 domain=q.xy/(1.+sqrt(q.z*q.z+.04))*axes.xy*1.4*scale;
+ domain+=.13*vec2(q.z-1.,q.x*q.z);
  domain+=vec2(id*.43,-id*.61)+vec2(float(stage)*.013);
  return completeUserMaterialState(domain);
 }
@@ -124,9 +125,11 @@ vec4 surfaceMaterial(vec3 p,vec3 normal,vec3 ray,float distance,int layerId){
  float finiteMask=smoothstep(-36.,-20.,p.z)*(1.-smoothstep(105.,126.,p.z));float localSupport=1.;
  if(layerId==1)localSupport=smoothstep(5.,15.,p.y)*(1.-smoothstep(6.,30.,p.x));
  if(layerId==2)localSupport=smoothstep(10.,22.,p.x)*smoothstep(-5.,3.,p.y)*(1.-smoothstep(45.,55.,p.y));
- float support=finiteMask*localSupport*smoothstep(.008,.10,abs(dot(normal,ray)));
+ // Only secondary folds have a finite silhouette. The enclosing primary layer
+ // is actual material in every direction, including the back, zenith and nadir.
+ float support=layerId==0?1.:finiteMask*localSupport*smoothstep(.008,.10,abs(dot(normal,ray)));
  float tangent=.74+.26*abs(dot(normal,normalize(vec3(-.4,.65,-.36))));
- float layerWeight=layerId==0?1.:(layerId==1?.25:.22);float redOpacity=(.035+.55*body)*support*layerWeight;
+ float layerWeight=layerId==0?1.:(layerId==1?.25:.22);float redOpacity=layerId==0?1.:(.035+.55*body)*support*layerWeight;
  // Internal spiritual-energy grooves are coordinates of this very fold field,
  // not another projected FBM picture. The flow advances along the same ron.
  float ronPhase=sampled.ron.z-sampled.ron.w;
@@ -152,7 +155,7 @@ vec4 surfaceMaterial(vec3 p,vec3 normal,vec3 ray,float distance,int layerId){
  // Gold occupies the broad folded surface without a central opening mask.
  // Body values modulate the gold, rather than leaving every midtone white.
  float goldPattern=smoothstep(.04,.34,body);
- float goldOpacity=clamp((.38+.62*goldPattern)*support*layerWeight*2.2,0.,.96);
+ float goldOpacity=layerId==0?1.:clamp((.38+.62*goldPattern)*support*layerWeight*2.2,0.,.96);
  vec3 goldPigment=mix(paletteGoldBase,paletteGoldHighlight,goldPattern)+vec3(.35,.20,.04)*pow(body,3.);
  vec3 bluePigment=paletteSpiritBase*(.55+.65*goldPattern)*foldShade*flowWeight;
  vec3 goldColor=(mix(goldPigment,bluePigment,spirit)+blueLight*(.18+.40*goldPattern))*goldOpacity;
@@ -164,25 +167,36 @@ vec4 surfaceMaterial(vec3 p,vec3 normal,vec3 ray,float distance,int layerId){
  return vec4(color,clamp(opacity,0.,1.));
 }
 
+// Preserve real optical rays. Only the virtual material eye is bounded for a
+// free/third-person camera beyond the artwork; physical shell depth stays real.
+vec3 materialEye(vec3 eye){
+ vec3 center=vec3(3.,12.,17.),axes=vec3(70.,43.,94.);
+ vec3 q=(eye-center)/axes;float radius=length(q);
+ if(radius>.9){float bounded=.9+.05*(1.-exp(-(radius-.9)/.05));return center+axes*q*(bounded/radius);}
+ return eye;
+}
+
 void main(){
  vec4 nearH=ClipToLocal*vec4(vUv*2.-1.,-1.,1.);
- vec3 ro=EyeLocal,rd=normalize(nearH.xyz/nearH.w-ro);
- vec3 color=mix(vec3(.010,.0015,.006),vec3(2.05,2.02,1.95),purification);
- vec4 a=ellipsoidHit(ro,rd,vec3(3.,12.,17.),vec3(70.,43.,94.));
- vec4 b=ellipsoidHit(ro,rd,vec3(-24.,22.,20.),vec3(48.,25.,70.));
- vec4 c=ellipsoidHit(ro,rd,vec3(40.,16.,30.),vec3(29.,35.,73.));
- int ai=0,bi=1,ci=2;
+ vec3 rd=normalize(nearH.xyz/nearH.w-EyeLocal),ro=materialEye(EyeLocal);
+ vec3 color=mix(paletteRedBase*.04,paletteGoldBase,purification);
+ float coverage=0.;
+ vec4 base=ellipsoidHit(ro,rd,vec3(3.,12.,17.),vec3(70.,43.,94.));
+ vec4 primary=surfaceMaterial(ro+rd*base.w,base.xyz,rd,base.w,0);
+ color=color*(1.-primary.a)+primary.rgb;coverage=primary.a;
+ vec4 a=ellipsoidHit(ro,rd,vec3(-24.,22.,20.),vec3(48.,25.,70.));
+ vec4 b=ellipsoidHit(ro,rd,vec3(40.,16.,30.),vec3(29.,35.,73.));
+ int ai=1,bi=2;
  if(a.w<b.w){vec4 h=a;a=b;b=h;int k=ai;ai=bi;bi=k;}
- if(b.w<c.w){vec4 h=b;b=c;c=h;int k=bi;bi=ci;ci=k;}
- if(a.w<b.w){vec4 h=a;a=b;b=h;int k=ai;ai=bi;bi=k;}
- if(a.w<300.){vec4 material=surfaceMaterial(ro+rd*a.w,a.xyz,rd,a.w,ai);color=color*(1.-material.a)+material.rgb;}
- if(b.w<300.){vec4 material=surfaceMaterial(ro+rd*b.w,b.xyz,rd,b.w,bi);color=color*(1.-material.a)+material.rgb;}
- if(c.w<300.){vec4 material=surfaceMaterial(ro+rd*c.w,c.xyz,rd,c.w,ci);color=color*(1.-material.a)+material.rgb;}
+ // Secondary membranes fade at the primary intersection instead of popping
+ // through an opaque surface when hit order swaps.
+ if(a.w<300.){vec4 material=surfaceMaterial(ro+rd*a.w,a.xyz,rd,a.w,ai)*smoothstep(0.,3.,base.w-a.w);color=color*(1.-material.a)+material.rgb;coverage=1.-(1.-coverage)*(1.-material.a);}
+ if(b.w<300.){vec4 material=surfaceMaterial(ro+rd*b.w,b.xyz,rd,b.w,bi)*smoothstep(0.,3.,base.w-b.w);color=color*(1.-material.a)+material.rgb;coverage=1.-(1.-coverage)*(1.-material.a);}
  float fog=(.5+.5*sin(rd.x*2.+rd.y*3.+seconds*.012))*.04;
  float side=smoothstep(.08,.48,abs(rd.x))*(1.-smoothstep(.6,.95,rd.y));
- color=mix(color,mix(vec3(.075,.002,.020),vec3(1.70,1.68,1.62),purification)*.40,fog*side);
+ color=mix(color,mix(paletteRedBase*.025,paletteGoldBase*.40,purification),fog*side);
  float exposure=mix(1.65,1.45,purification)*paletteExposure;
  color*=1.-.10*dot(vUv-.5,vUv-.5);
  color=1.-exp(-max(color,vec3(0.))*exposure);
- color=pow(color,vec3(.78));fragColor=vec4(color,1.);
+ color=pow(color,vec3(.78));fragColor=vec4(color,clamp(coverage,0.,1.));
 }
