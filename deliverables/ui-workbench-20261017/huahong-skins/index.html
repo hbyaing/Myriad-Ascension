@@ -5,11 +5,11 @@
 </style><main><a href="../index.html">← 返回总工作台</a>
 <h1>化虹皮肤 · Forge 实机对照</h1>
 <p>背包 → 设置 → 御剑飞行 → 化虹皮肤。点击当前皮肤按钮展开选择，选中后收起并保存，支持飞行中切换；仅改变外观。</p>
-<nav id="skins"></nav><label>飞行画面 <select id="view"><option value="side">稳定直飞</option><option value="turn">缓转</option></select></label>
+<nav id="skins"></nav><label>飞行画面 <select id="view"><option value="side">稳定直飞</option><option value="turn">掉头画面</option></select></label>
 <p id="description"></p><div class="pair"><figure><figcaption>无光影</figcaption><img id="native" alt="无光影化虹实机截图"></figure><figure><figcaption>Solas Shader V3.7b</figcaption><img id="solas" alt="Solas 化虹实机截图"></figure></div>
 <h2>背包设置与识海快捷入口</h2><p>复用正式金墨按钮。记录收起、展开、普通、悬停、焦点和禁用状态；检查两种窗口分辨率与 GUI 选项 3、4。识海两入口按参考恢复图案与左边框衔接。</p>
 <label>窗口与状态 <select id="ui"></select></label><div class="pair"><figure><figcaption>无光影设置页</figcaption><img id="ui-native" alt="无光影设置页"></figure><figure><figcaption>Solas 设置页</figcaption><img id="ui-solas" alt="Solas 设置页"></figure></div>
-<p class="note">这是实际 Forge 画面记录，按钮在此切换对照图，不控制游戏。本轮正式速度化虹连续转弯的逐帧指标保留于原始报告，不代表性能报告或用户美术验收。蓝白虹流为本项目三维几何适配，未复制许可未确认的 V13 参考代码。原图保留于本地 reports，此页 JPEG 等比缩小用于查看。</p>
+<p class="note">这是实际 Forge 画面记录，按钮在此切换对照图，不控制游戏。正式速度急转、完整掉头、松键和刹车的逐帧数据保留于报告；技术通过不等于用户美术认可。以当前 Skill 的实际消费者逐族核对，虹核保留原头和前向柔光，蓝白虹流采用独立原创路径体积着色器，没有复制许可未确认的参考源码。本页可组合动作矩阵、补图和单材质专项批次；每张图的来源与哈希独立记录，不把分项证据冒称同一次全8通过。原图保留于本地 reports，此页 JPEG 等比缩小用于查看。</p>
 <a href="manifest.json">查看截图、皮肤映射与验证记录</a>
 </main><script>
 fetch('manifest.json').then(r=>r.json()).then(m=>{let current=0;const $=s=>document.getElementById(s);function show(){for(const b of ['native','solas'])$(b).src=b+'-skin-'+current+'-'+m.skins[current].id+'-'+$('view').value+'.jpg';$('description').textContent=m.skins[current].description;[...$('skins').children].forEach((b,i)=>b.setAttribute('aria-pressed',i===current))}m.skins.forEach((s,i)=>{const b=document.createElement('button');b.textContent=s.label;b.onclick=()=>{current=i;show()};$('skins').append(b)});$('view').onchange=show;show();m.captures.native.rows.filter(r=>r.image.startsWith('settings-')||r.image.startsWith('sense-shortcuts-')).forEach(r=>{const o=document.createElement('option');o.value=r.image.slice(0,-4);o.textContent=r.image.replace('settings-','设置 · ').replace('sense-shortcuts-','识海入口 · ').replace('.png','').replace('expanded-focus-disabled','展开 · 焦点与禁用').replace('disabled','禁用').replace('focus','焦点').replace('normal','普通').replace('hover','悬停');$('ui').append(o)});function ui(){for(const b of ['native','solas'])$('ui-'+b).src=b+'-'+$('ui').value+'.jpg'}$('ui').onchange=ui;ui()});

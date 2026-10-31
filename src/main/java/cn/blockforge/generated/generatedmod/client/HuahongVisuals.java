@@ -12,14 +12,16 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import java.util.*;
 
-/** Forge consumer of minecraft-huahong's independent meteor_prism V9 geometry.
- * White axial nucleus, sparse chromatic filaments and birth-anchored fragments.
+/** Forge consumer of minecraft-huahong's current independent meteor_prism geometry.
+ * Preserves its full nucleus and the 2026-10-31 forward glow coverage correction.
  * No user-supplied Meteor Test111 / V13 reference shader is copied here. */
 @Mod.EventBusSubscriber(modid=GeneratedMod.MOD_ID,value=Dist.CLIENT)
 public final class HuahongVisuals {
-    private static final double WIDTH=.38,LIFE=116,SPREAD=.65,HEAD_LENGTH=.6+2.5*.65;
+    private static final double WIDTH=.19,LIFE=116,SPREAD=.65,HEAD_LENGTH=.6+2.5*.65;
     private record Spark(Vec3 origin,Vec3 forward,Vec3 side,Vec3 up,long born,double phase,double drift,double backward){}
-    private record Row(Vec3 point,double arc,double width,float alpha,int color){}
+    private record Row(Vec3 point,double arc,double width,float alpha,int color,Vec3 side){
+        Row(Vec3 point,double arc,double width,float alpha,int color){this(point,arc,width,alpha,color,null);}
+    }
     private static final class Trail {
         final SwordFlightTrailHistory history=new SwordFlightTrailHistory(.25,LIFE,160,720);
         final ArrayDeque<Spark> sparks=new ArrayDeque<>();
@@ -28,6 +30,7 @@ public final class HuahongVisuals {
     }
     private static final Map<ControlledSwordEntity,Trail> TRAILS=new IdentityHashMap<>();
     private static Object level;
+    private static double corePixelScale;
     public static int vertices;
     public static boolean hasTrails(){return !TRAILS.isEmpty();}
     public static void clear(){TRAILS.clear();vertices=0;}
@@ -64,6 +67,9 @@ public final class HuahongVisuals {
     }
     public static void draw(VertexConsumer buffer,PoseStack.Pose pose,Vec3 eye,double now,float partial){
         vertices=0;var mc=Minecraft.getInstance();
+        double projectionY=Math.abs(com.mojang.blaze3d.systems.RenderSystem.getProjectionMatrix().m11());
+        corePixelScale=Double.isFinite(projectionY)&&projectionY>1e-6
+                ?.85/(projectionY*Math.max(1,mc.getMainRenderTarget().viewHeight)):0;
         for(var entry:TRAILS.entrySet()){
             var sword=entry.getKey();var trail=entry.getValue();
             if(mc.player!=null&&mc.options.getCameraType().isFirstPerson()&&sword==mc.player.getVehicle())continue;
@@ -73,6 +79,11 @@ public final class HuahongVisuals {
             boolean active=!sword.isRemoved()&&sword.huahongStrength()>.001F;
             var nodes=active?trail.history.renderNodes(now,point(center)):trail.history.nodes();
             Vec3 modelSide=frame.local(1,0,0).subtract(frame.position());
+            if(trail.skin==cn.blockforge.generated.generatedmod.yujian.HuahongSkin.DENSE){
+                var clip=new org.joml.Matrix4f(com.mojang.blaze3d.systems.RenderSystem.getProjectionMatrix())
+                        .mul(com.mojang.blaze3d.systems.RenderSystem.getModelViewMatrix()).mul(pose.pose());
+                HuahongVolumeRenderer.queue(nodes,eye,now,active?sword.renderHuahong(partial):0,clip,1);
+            }
             if(trail.skin!=cn.blockforge.generated.generatedmod.yujian.HuahongSkin.METEOR_PRISM){
                 vertices+=HuahongSkinGeometry.draw(trail.skin,buffer,pose,eye,center,forward,modelSide,nodes,now,active?sword.renderHuahong(partial):0);
                 continue;
@@ -80,15 +91,18 @@ public final class HuahongVisuals {
             var path=new HuahongFlightPath(nodes,center,forward,modelSide);
             double origin=nodes.isEmpty()?0:Math.floor(nodes.get(0).arc()/256)*256;
             ArrayList<Row> rows=new ArrayList<>(nodes.size());
-            for(var n:nodes){
+            for(int i=0;i<nodes.size();i++){
+                var n=nodes.get(i);
                 if(n.tick()>now)continue;
                 double age=Math.max(0,(now-n.tick())/20),left=clamp(1-age/3.8);
+                Vec3 tangent=vec(nodes.get(Math.min(nodes.size()-1,i+1)).point()).subtract(vec(nodes.get(Math.max(0,i-1)).point()));
+                Vec3 side=path.frame(vec(n.point()),tangent).side();
                 rows.add(new Row(vec(n.point()),n.arc()-origin,Math.pow(left,1.3)*(.22+.78*Math.exp(-age*.35)),
-                        (float)Math.pow(left,1.7),mix(0x8274ff,0xe8faff,Math.exp(-age*2))));
+                        (float)Math.pow(left,1.7),mix(0x8274ff,0xe8faff,Math.exp(-age*2)),side));
             }
-            strip(buffer,pose,eye,rows,WIDTH*1.4,.10F,10);
-            strip(buffer,pose,eye,rows,WIDTH*.42,.62F,6);
-            strip(buffer,pose,eye,rows,.008+WIDTH*.10,.85F,8);
+            strip(buffer,pose,eye,rows,WIDTH*1.4,.045F,10,path);
+            strip(buffer,pose,eye,rows,WIDTH*.42,.35F,6,path);
+            strip(buffer,pose,eye,rows,.008+WIDTH*.045,.48F,8,path);
             // Offset each filament from its own world-path tangent, not the current head axis.
             for(int strand=0;strand<4;strand++){
                 rows.clear();double phase=strand*2.399;
@@ -97,23 +111,25 @@ public final class HuahongVisuals {
                     double age=Math.max(0,(now-n.tick())/20),left=clamp(1-age/3.8);
                     Vec3 f=vec(nodes.get(Math.min(nodes.size()-1,i+1)).point()).subtract(vec(nodes.get(Math.max(0,i-1)).point()));
                     if(f.lengthSqr()<1e-10)f=forward;else f=f.normalize();
-                    Vec3 side=perpendicular(f),up=side.cross(f).normalize();
+                    var section=path.frame(vec(n.point()),f);Vec3 side=section.side(),up=section.up();
                     double curl=Math.sin(n.arc()*.65+strand*1.7)*.24+Math.sin(n.arc()*1.73+strand)*.11;
                     double open=smooth((age-.025)/.375),spread=open*SPREAD*.035*(1+age*.24);
                     Vec3 p=vec(n.point()).add(side.scale(Math.cos(phase+curl)*spread)).add(up.scale(Math.sin(phase+curl)*spread));
                     rows.add(new Row(p,n.arc()-origin+strand*.93,.15+.85*Math.pow(left,1.2),
-                            (float)Math.pow(left,1.5),mix(0x8274ff,0xe8faff,Math.exp(-age*2)*.5)));
+                            (float)Math.pow(left,1.5),mix(0x8274ff,0xe8faff,Math.exp(-age*2)*.5),side));
                 }
-                strip(buffer,pose,eye,rows,WIDTH*.16,.40F,6);
+                strip(buffer,pose,eye,rows,WIDTH*.16,.24F,6,path);
             }
             if(active){
                 float strength=(float)Math.pow(sword.renderHuahong(partial),1.4);rows.clear();
                 for(int i=0;i<=68;i++){
                     double q=i/68.0,w=Math.max(.012,Math.pow(Math.max(0,Math.sin(Math.PI*q)),.65)*Math.exp(-q*2.7));
-                    rows.add(new Row(path.behind(q*HEAD_LENGTH).p().add(forward.scale(.26)),-q*HEAD_LENGTH,w,strength*(float)(1-q),0xe8faff));
+                    var section=path.behind(q*HEAD_LENGTH);
+                    rows.add(new Row(section.p().add(forward.scale(.26)),-q*HEAD_LENGTH,w,strength*(float)(1-q),0xe8faff,section.side()));
                 }
-                strip(buffer,pose,eye,rows,WIDTH*2.1,.11F,10,path);
-                strip(buffer,pose,eye,rows,WIDTH*.44,1.0F,8,path);
+                strip(buffer,pose,eye,rows,WIDTH*2.1,.054F,10,path);
+                strip(buffer,pose,eye,rows,WIDTH*.19,.68F,8,path);
+                noseGlow(buffer,pose,eye,center,forward,strength);
                 for(int strand=0;strand<4;strand++){
                     rows.clear();double phase=strand*2.399;
                     for(int i=0;i<=60;i++){
@@ -123,9 +139,9 @@ public final class HuahongVisuals {
                         Vec3 p=section.p().add(forward.scale(.17))
                                 .add(section.side().scale(Math.cos(angle)*reach)).add(section.up().scale(Math.sin(angle)*reach));
                         rows.add(new Row(p,-q*HEAD_LENGTH+strand*.83,Math.pow(Math.max(0,Math.sin(Math.PI*q)),.65)*(1-q*.65),
-                                strength*(float)(1-q),mix(0x8274ff,0xe8faff,Math.pow(1-q,4)*.8)));
+                                strength*(float)(1-q),mix(0x8274ff,0xe8faff,Math.pow(1-q,4)*.8),section.side()));
                     }
-                    strip(buffer,pose,eye,rows,WIDTH*.3,.36F,6,path);
+                    strip(buffer,pose,eye,rows,WIDTH*.3,.22F,6,path);
                 }
             }
             for(var spark:trail.sparks){
@@ -144,6 +160,27 @@ public final class HuahongVisuals {
     private static void strip(VertexConsumer b,PoseStack.Pose pose,Vec3 eye,List<Row> rows,double width,float opacity,float mode){
         strip(b,pose,eye,rows,width,opacity,mode,null);
     }
+    /** Project a prolate glow envelope without normalizing projected flight direction.
+     * The positive matrix square root stays continuous even when looking directly
+     * into the nose, where a direction-normalized billboard flips its long axis. */
+    private static void noseGlow(VertexConsumer b,PoseStack.Pose pose,Vec3 eye,Vec3 center,Vec3 forward,float strength){
+        var rotation=Minecraft.getInstance().gameRenderer.getMainCamera().rotation();
+        var r=new org.joml.Vector3f(1,0,0).rotate(rotation);
+        var u=new org.joml.Vector3f(0,1,0).rotate(rotation);
+        Vec3 right=new Vec3(r.x,r.y,r.z),up=new Vec3(u.x,u.y,u.z);
+        double major=.46+WIDTH*.85,minor=.075+WIDTH*.30;
+        double fx=forward.dot(right),fy=forward.dot(up),stretch=major*major-minor*minor;
+        double xx=minor*minor+stretch*fx*fx,xy=stretch*fx*fy,yy=minor*minor+stretch*fy*fy;
+        double detRoot=Math.sqrt(Math.max(0,xx*yy-xy*xy));
+        double denominator=Math.sqrt(xx+yy+2*detRoot);
+        Vec3 axisX=right.scale((xx+detRoot)/denominator).add(up.scale(xy/denominator));
+        Vec3 axisY=right.scale(xy/denominator).add(up.scale((yy+detRoot)/denominator));
+        Vec3 glowCenter=center.add(forward.scale(.14));float alpha=strength*.181F;
+        vertex(b,pose,eye,glowCenter.subtract(axisX).subtract(axisY),0,32,alpha,0xd3dfff);
+        vertex(b,pose,eye,glowCenter.add(axisX).subtract(axisY),1,32,alpha,0xd3dfff);
+        vertex(b,pose,eye,glowCenter.add(axisX).add(axisY),1,33,alpha,0xd3dfff);
+        vertex(b,pose,eye,glowCenter.subtract(axisX).add(axisY),0,33,alpha,0xd3dfff);
+    }
     private static void strip(VertexConsumer b,PoseStack.Pose pose,Vec3 eye,List<Row> rows,double width,float opacity,float mode,HuahongFlightPath localPath){
         if(localPath==null){strip(b,pose,eye,rows,width,opacity,mode,null,false);return;}
         // Crossed transport planes keep the local nucleus visible from every
@@ -152,22 +189,36 @@ public final class HuahongVisuals {
         strip(b,pose,eye,rows,width,opacity*.70710677F,mode,localPath,true);
     }
     private static void strip(VertexConsumer b,PoseStack.Pose pose,Vec3 eye,List<Row> rows,double width,float opacity,float mode,HuahongFlightPath localPath,boolean crossPlane){
-        Vec3 previous=null,previousSide=null;Row old=null;
+        Vec3 previous=null,previousSide=null;Row old=null;float previousAlpha=0;
         for(int i=0;i<rows.size();i++){
             Row row=rows.get(i);Vec3 f=rows.get(Math.min(rows.size()-1,i+1)).point().subtract(rows.get(Math.max(0,i-1)).point());
-            if(f.lengthSqr()<1e-12)continue;f=f.normalize();Vec3 side=localPath==null?f.cross(eye.subtract(row.point())):localPath.ribbonSide(row.point(),f,eye);
+            if(f.lengthSqr()<1e-12)continue;f=f.normalize();
+            Vec3 side=row.side()!=null?row.side().subtract(f.scale(row.side().dot(f))):localPath==null?f.cross(eye.subtract(row.point())):localPath.ribbonSide(row.point(),f,eye);
             if(crossPlane)side=f.cross(side);
+            if(side.lengthSqr()<1e-10&&previousSide!=null)side=previousSide.subtract(f.scale(previousSide.dot(f)));
             if(side.lengthSqr()<1e-10)side=perpendicular(f);else side=side.normalize();
             if(previousSide!=null&&side.dot(previousSide)<0)side=side.scale(-1);
-            side=side.scale(width*row.width());
+            double physical=width*row.width(),covered=mode==8?coreHalfWidth(row.point(),side,eye,physical):physical;
+            float alpha=row.alpha()*opacity*(float)(covered>0?physical/covered:1);
+            side=side.scale(covered);
             if(previous!=null){
-                vertex(b,pose,eye,previous.subtract(previousSide),(float)old.arc(),mode,old.alpha()*opacity,old.color());
-                vertex(b,pose,eye,previous.add(previousSide),(float)old.arc(),mode+1,old.alpha()*opacity,old.color());
-                vertex(b,pose,eye,row.point().add(side),(float)row.arc(),mode+1,row.alpha()*opacity,row.color());
-                vertex(b,pose,eye,row.point().subtract(side),(float)row.arc(),mode,row.alpha()*opacity,row.color());
+                vertex(b,pose,eye,previous.subtract(previousSide),(float)old.arc(),mode,previousAlpha,old.color());
+                vertex(b,pose,eye,previous.add(previousSide),(float)old.arc(),mode+1,previousAlpha,old.color());
+                vertex(b,pose,eye,row.point().add(side),(float)row.arc(),mode+1,alpha,row.color());
+                vertex(b,pose,eye,row.point().subtract(side),(float)row.arc(),mode,alpha,row.color());
             }
-            previous=row.point();previousSide=side;old=row;
+            previous=row.point();previousSide=side;old=row;previousAlpha=alpha;
         }
+    }
+    /** Smooth pixel coverage for thin axial ridges; callers conserve energy by
+     * multiplying alpha by physical/covered width. The soft nose has its own envelope. */
+    static double coreHalfWidth(Vec3 p,Vec3 side,Vec3 eye,double physical){
+        if(!(physical>0)||!(corePixelScale>0))return Math.max(0,physical);
+        Vec3 view=p.subtract(eye);double distance=view.length();
+        if(distance<1e-6)return physical;
+        double facing=side.cross(view.scale(1/distance)).length();
+        double pixels=distance*corePixelScale/Math.max(.12,facing);
+        return Math.max(physical,Math.min(physical*8,pixels));
     }
     private static void vertex(VertexConsumer b,PoseStack.Pose pose,Vec3 eye,Vec3 p,float u,float v,float alpha,int color){
         Vec3 r=p.subtract(eye);b.vertex(pose.pose(),(float)r.x,(float)r.y,(float)r.z).uv(u,v)

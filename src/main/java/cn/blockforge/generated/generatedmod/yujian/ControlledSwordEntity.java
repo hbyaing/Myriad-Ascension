@@ -58,6 +58,8 @@ public final class ControlledSwordEntity extends Entity {
     public float jinghongStrength(){return jinghongStrength;}
     public float renderJinghong(float partial){return net.minecraft.util.Mth.lerp(partial,previousJinghong,visualJinghong);}
     private final FlightInterpolation flightInterpolation=new FlightInterpolation();
+    private long lastServerTick=Long.MIN_VALUE;
+    long lastServerTick(){return lastServerTick;}
     public void acceptSnapshot(FlightSnapshot snapshot){if(level().isClientSide)flightInterpolation.accept(snapshot,tickCount);}
 
     public ControlledSwordEntity(EntityType<? extends ControlledSwordEntity> type,Level level) { super(type,level);noPhysics=true;setNoGravity(true); }
@@ -116,9 +118,12 @@ public final class ControlledSwordEntity extends Entity {
         // client terrain temporarily stops ticking its section. Otherwise its old
         // and current poses freeze while the trail clock keeps advancing, replaying
         // one stale interpolation interval on every frame. This is presentation
-        // only: no server ticking exception, terrain loads or chunk tickets.
-        return level().isClientSide&&flightRoot()
-                &&getFirstPassenger() instanceof net.minecraft.world.entity.player.Player player&&player.isLocalPlayer();
+        // on the client. The matching server exception is limited to a living
+        // owner actually riding this flight root; no terrain loads or tickets.
+        if(!flightRoot())return false;
+        if(level().isClientSide)return getFirstPassenger() instanceof net.minecraft.world.entity.player.Player player&&player.isLocalPlayer();
+        return getFirstPassenger() instanceof ServerPlayer player&&player.isAlive()
+                &&player.level()==level()&&player.getVehicle()==this&&player.getUUID().equals(ownerId);
     }
     @Override public boolean shouldRiderSit(){return !flightRoot();}
     public Entity owner(){return level().getEntity(entityData.get(OWNER));}
@@ -141,6 +146,7 @@ public final class ControlledSwordEntity extends Entity {
         super.onBelowWorld();
     }
     @Override public void tick(){
+        if(!level().isClientSide)lastServerTick=level().getGameTime();
         previousHuahong=visualHuahong;visualHuahong=huahongStrength();
         super.tick();
         if(level().isClientSide){

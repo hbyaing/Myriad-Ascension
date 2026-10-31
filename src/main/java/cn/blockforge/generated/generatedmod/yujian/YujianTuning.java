@@ -6,14 +6,17 @@ import net.minecraft.world.phys.Vec3;
 
 /** Shared movement profiles and collision work budgets, without a fixed flight-speed cap. */
 public final class YujianTuning {
-    /** All sword tiers share the dark-iron sword as the speed reference. */
-    /** 基础御剑速度提升 200%：原值 0.58，现为原值的 3 倍。 */
+    /** Raw per-sword config defaults; installed values remain meaningful. */
     public static final double BASE_FLIGHT_SPEED=0.58D*3.0D;
     public static final double SPRINT_FLIGHT_SPEED=BASE_FLIGHT_SPEED*1.5D;
+    /** Raise actual ordinary cruise/sprint by 50%, including existing worlds' configs. */
+    public static final double NORMAL_FLIGHT_GAIN=1.5D;
     public static final double SWEEP_STEP=0.2;
-    // Covers the fastest configured Dunxu displacement with 0.2-block swept checks.
-    // This bounds collision work, not the requested flight speed.
-    public static final int MAX_SWEEP_STEPS=512, MAX_COLLISION_BLOCKS=512, SAFE_HISTORY=48;
+    // At config maxima, Tianque Dunxu plus rainbow reaches 120 blocks/tick:
+    // base 2 * Dunxu 4 * tier 2.5 * global 3 * rainbow 2. Keep at least
+    // 600 exact 0.2-block steps available to prediction/reference consumers.
+    // The actual section sweep independently retains its 0.2-block fine checks.
+    public static final int MAX_SWEEP_STEPS=768, MAX_COLLISION_BLOCKS=512, SAFE_HISTORY=48;
     public static final int DUNXU_TICKS=30, DUNXU_PRE_TICKS=2, DUNXU_EXIT_TICKS=4;
     public static final int DUNXU_COOLDOWN=40;
     public static final double DUNXU_ENTRY_SPEED=0.70;
@@ -32,17 +35,31 @@ public final class YujianTuning {
         public int lingkongLevel(FlyingSwordDefinition sword) {
             String path=sword.itemId().getPath();
             if(path.endsWith("_sword"))path=path.substring(0,path.length()-6);
-            return SwordProfile.of(path).lingkongLevel();
+            // Registry names were renamed while SwordProfile's material IDs
+            // stayed stable. Looking up the new name silently erased every tier.
+            String material=switch(path) {
+                case "mingjue" -> "azure_steel";
+                case "qingming" -> "tiangang";
+                case "jixiao" -> "big_dipper";
+                case "wuxiang" -> "demon_slayer";
+                case "guiyuan" -> "pure_yang";
+                case "tianque" -> "xuanyuan";
+                default -> path;
+            };
+            return SwordProfile.of(material).lingkongLevel();
         }
         public double maxSpeed(YujianPhase phase, FlyingSwordDefinition sword) {
             double lingkong=1.0D+0.25D*lingkongLevel(sword);
             double speed=switch(phase) {
-                case JIYU -> SPRINT_FLIGHT_SPEED*jiyuMultiplier*lingkong;
-                case DUNXU -> BASE_FLIGHT_SPEED*dunxuMultiplier*lingkong;
-                case LINGKONG -> BASE_FLIGHT_SPEED*lingkong;
-                default -> BASE_FLIGHT_SPEED*cruiseMultiplier*lingkong;
+                case JIYU -> sword.sprintSpeed()*NORMAL_FLIGHT_GAIN*jiyuMultiplier*lingkong;
+                case DUNXU -> sword.baseSpeed()*dunxuMultiplier*lingkong;
+                case LINGKONG -> sword.baseSpeed()*NORMAL_FLIGHT_GAIN*lingkong;
+                default -> sword.baseSpeed()*NORMAL_FLIGHT_GAIN*cruiseMultiplier*lingkong;
             };
             return Math.max(0.01, speed*FlyingSwordConfig.SPEED_MULTIPLIER.get());
+        }
+        public double cruiseAcceleration(FlyingSwordDefinition sword) {
+            return sword.acceleration()*NORMAL_FLIGHT_GAIN*(1+.25*lingkongLevel(sword))*FlyingSwordConfig.SPEED_MULTIPLIER.get();
         }
         public float costPerTick(YujianPhase phase) {
             double perSecond=switch(phase) {
