@@ -11,6 +11,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class HuahongInputMixin {
     @Inject(method="clientTick",at=@At("HEAD"),cancellable=true,remap=false)
     private static void fixtureInput(TickEvent.ClientTickEvent event,CallbackInfo callback){
-        if(Boolean.getBoolean("wuxingxiantu.huahongCapture"))callback.cancel();
+        if((Boolean.getBoolean("wuxingxiantu.huahongCapture")||Boolean.getBoolean("wuxingxiantu.swordTailCapture")))callback.cancel();
     }
 }

@@ -50,7 +50,14 @@ public final class IntegrationHerbVeinGameTests {
             default -> throw new UnsupportedOperationException(method.toString());
         });
         var origin=new BlockPos(chunk.getMinBlockX()+8,0,chunk.getMinBlockZ()+8);
-        h.assertTrue(SpiritVeinFeature.generate(world,origin)&&written.size()>=64,"Controlled cave produced no vein");
+        var scan=new SpiritVeinFeature.Scan(world,origin);int batches=0;
+        while(!scan.advance(512)){
+            batches++;h.assertTrue(scan.lastBatchWork()<=512,"Vein scan exceeded its per-tick work budget");
+            h.assertTrue(written.isEmpty(),"Incremental scan placed a partial vein before selection completed");
+        }
+        h.assertTrue(batches>1&&scan.result()&&written.size()>=64,"Controlled incremental cave produced no vein");
+        var incremental=new java.util.HashSet<>(written);written.clear();
+        h.assertTrue(SpiritVeinFeature.generate(world,origin)&&incremental.equals(new java.util.HashSet<>(written)),"Budgeted scan changed the vein layout");
         h.assertTrue(written.stream().allMatch(p->new ChunkPos(p).equals(chunk)),"New vein overwrote old neighboring terrain");
         h.assertTrue(data.nearest(origin,64).orElseThrow().count()==written.size(),"Recorded ore count differs from writes");h.succeed();
     }

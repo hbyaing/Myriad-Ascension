@@ -305,6 +305,10 @@ public final class YujianController {
         if (!ProgressionGate.canYujian(player,GeneratedMod.data(player),source)) { stop(player); return; }
         FlyingSwordDefinition definition=FlyingSwordRegistry.get(source);
         if(definition==null){stop(player);return;}
+        if(ride.state==FlyingSwordState.FLYING&&ride.forward&&!ride.brake)
+            cn.blockforge.generated.generatedmod.flight.FlightTerrainStreaming.prefetch(player,sword.position(),
+                    direction(sword.getYRot(),sword.getXRot()).scale(Math.max(sword.flightSpeed(),definition.advanced().maxSpeed(ride.phase,definition))));
+        sword.huahongSkin(HuahongSkin.fromId(player.getPersistentData().getInt(HuahongSkin.KEY)));
         ride.stateTicks++;
         sword.flightState(ride.state);
         sword.dunxuStage(ride.phase==YujianPhase.DUNXU?ride.dunxuStage:0);

@@ -80,14 +80,23 @@ public final class FlightCollision {
         // obstacle, unloaded region or oversized box retains the exact sweep.
         AABB whole=volume.minmax(volume.move(velocity));
         if(clear(player,whole,phasing))return new Sweep(velocity,false,true);
-        int steps=Math.min(YujianTuning.MAX_SWEEP_STEPS,Math.max(1,(int)Math.ceil(velocity.length()/YujianTuning.SWEEP_STEP)));
+        int steps=Math.max(1,(int)Math.ceil(velocity.length()/2.0));
         Vec3 accepted=Vec3.ZERO;
         for(int i=1;i<=steps;i++) {
-            Vec3 next=velocity.scale(i/(double)steps);
-            AABB swept=volume.move(accepted).minmax(volume.move(next));
-            if(!collisionRegionLoaded(player,swept))return new Sweep(accepted,true,false);
-            if(!clear(player,swept,phasing))return new Sweep(accepted,true,true);
-            accepted=next;
+            Vec3 end=velocity.scale(i/(double)steps);
+            AABB section=volume.move(accepted).minmax(volume.move(end));
+            if(clear(player,section,phasing)){accepted=end;continue;}
+            // Only uncertain sections need the 0.2-block exact sweep. Empty
+            // sections do not repeatedly re-read the same overlapping blocks.
+            Vec3 start=accepted,delta=end.subtract(start);
+            int fine=Math.max(1,(int)Math.ceil(delta.length()/YujianTuning.SWEEP_STEP));
+            for(int j=1;j<=fine;j++){
+                Vec3 next=start.add(delta.scale(j/(double)fine));
+                AABB swept=volume.move(accepted).minmax(volume.move(next));
+                if(!collisionRegionLoaded(player,swept))return new Sweep(accepted,true,false);
+                if(!clear(player,swept,phasing))return new Sweep(accepted,true,true);
+                accepted=next;
+            }
         }
         return new Sweep(accepted,false,true);
     }

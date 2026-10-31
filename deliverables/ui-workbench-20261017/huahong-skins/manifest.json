@@ -1,0 +1,903 @@
+{
+  "date": "2026-10-31",
+  "route": "背包 → 设置 → 御剑飞行 → 化虹皮肤",
+  "config": "FlyingSwordConfig.HUAHONG_SKIN",
+  "skins": [
+    {
+      "id": "meteor_prism",
+      "label": "虹核流星",
+      "description": "白色亮核、虹色伴流与细碎余芒"
+    },
+    {
+      "id": "meteor_flame",
+      "label": "燃尾流星",
+      "description": "尖长燃核、沿路径弯曲的火舌与脱落短芒"
+    },
+    {
+      "id": "needle",
+      "label": "贯空长虹",
+      "description": "凝聚金白尖核与单束连续长虹"
+    },
+    {
+      "id": "feather",
+      "label": "开放流羽",
+      "description": "错落展开的蓝紫光膜与分叉羽丝"
+    },
+    {
+      "id": "smoke",
+      "label": "红黑离烟",
+      "description": "暗烟包裹、内部赤红裂光与离体烟团"
+    },
+    {
+      "id": "flame",
+      "label": "赤焰撕裂",
+      "description": "宽厚赤焰、开放撕裂火舌与残焰"
+    },
+    {
+      "id": "fan",
+      "label": "扇形流霞",
+      "description": "错位后展的暖金薄纱与长散丝"
+    },
+    {
+      "id": "dense",
+      "label": "蓝白虹流",
+      "description": "三维蓝白主流、起伏截面与高亮虹筋"
+    }
+  ],
+  "captures": {
+    "native": {
+      "rows": [
+        {
+          "image": "skin-0-meteor_prism-side.png",
+          "vertices": 3832,
+          "shaderPack": false,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 0.29285216,
+          "file": "native-skin-0-meteor_prism-side.jpg",
+          "sha256": "344f60e0e6625723f773995cbe293729ece74486552d08db1929df4bc1dfcfd4",
+          "originalSha256": "741bee5ae2cccd7e000f1c2d78ff48591f2f8f3e075a530f9da0e017f81cb2f4"
+        },
+        {
+          "image": "skin-0-meteor_prism-turn.png",
+          "vertices": 4768,
+          "shaderPack": false,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 6.864738,
+          "file": "native-skin-0-meteor_prism-turn.jpg",
+          "sha256": "3c889caf1ba4f832c0441ebf82de544672424fe74057271fb9e4397442260b55",
+          "originalSha256": "dd8fd1348370c4faf784701af4b1ddc5b17ca0131aa59deb0741e93bd8c4f83b"
+        },
+        {
+          "image": "skin-1-meteor_flame-side.png",
+          "vertices": 5264,
+          "shaderPack": false,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 0.68692243,
+          "file": "native-skin-1-meteor_flame-side.jpg",
+          "sha256": "35db1fc259202ae0632eadc60181bd3abcc9cabfc1b3eb488ef95522844ada98",
+          "originalSha256": "eb4428e50f08a1d2e2d84d582007f8cedb39be31eec21c60e16faba523e11085"
+        },
+        {
+          "image": "skin-1-meteor_flame-turn.png",
+          "vertices": 6544,
+          "shaderPack": false,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 6.104281,
+          "file": "native-skin-1-meteor_flame-turn.jpg",
+          "sha256": "9aadbc5e588b09e41dfd7a3e254bc3ebd419c965ea35cfc55d215eaf50c358c5",
+          "originalSha256": "2a7150ce39b3cac03d882b9257438a11ee527282bfd1161f953ef04ed4a9fac1"
+        },
+        {
+          "image": "skin-2-needle-side.png",
+          "vertices": 1724,
+          "shaderPack": false,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 0.6685076,
+          "file": "native-skin-2-needle-side.jpg",
+          "sha256": "096bda2ca12a8d937e1c632d3b54c980d4e56b2f605770adf5c925a8d2b05def",
+          "originalSha256": "a4144b8239adb6701990e262caef772b582c5dc205868e9a7cb67e33e8a0c1d7"
+        },
+        {
+          "image": "skin-2-needle-turn.png",
+          "vertices": 2364,
+          "shaderPack": false,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 6.653845,
+          "file": "native-skin-2-needle-turn.jpg",
+          "sha256": "a602504df3982af4def3534b60c8fd8d417388310ef85ff5a4639e697acd7090",
+          "originalSha256": "0b310a369aefabdd348601828e05e573a807778c15b3b7ca2d392594fb445f7e"
+        },
+        {
+          "image": "skin-3-feather-side.png",
+          "vertices": 4428,
+          "shaderPack": false,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 0.7533164,
+          "file": "native-skin-3-feather-side.jpg",
+          "sha256": "4a6f5fd1b25fa8ae722e8b9dc4d3662f93b3c43dac25edf18f8c9a9cf260a1f2",
+          "originalSha256": "49ebfa1da0f670482480a6753a044eedd5c7f4b4a5e4afec91fb96e4d417c94a"
+        },
+        {
+          "image": "skin-3-feather-turn.png",
+          "vertices": 4812,
+          "shaderPack": false,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 6.9946265,
+          "file": "native-skin-3-feather-turn.jpg",
+          "sha256": "07e47b5c77b0a624f4a2a7fb85203f13ed46a2257cf447d5fd8a113eb7de53cc",
+          "originalSha256": "19d3a2dfe1fb3da6d86ae52329c763ce1a71ca70d985d24a4ff537ab3563ee4e"
+        },
+        {
+          "image": "skin-4-smoke-side.png",
+          "vertices": 124,
+          "shaderPack": false,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 0.68873614,
+          "file": "native-skin-4-smoke-side.jpg",
+          "sha256": "2e3bca992282fa204c154bfeefe2177ebd2a4c4788ede2919a1ab412dbc4ca2c",
+          "originalSha256": "567d95668e45f50a526f0b9cac9c90d972c238a9542b25236eeec32b402284f7"
+        },
+        {
+          "image": "skin-4-smoke-turn.png",
+          "vertices": 124,
+          "shaderPack": false,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 6.97641,
+          "file": "native-skin-4-smoke-turn.jpg",
+          "sha256": "1ab0d832b2343e559b116ee5f112fd784c7e0bb90834ce73013a5f8001ed033e",
+          "originalSha256": "1adf1d725db78ef57d494d47897d5bd0545d64161336bc5e0ccaf62652358787"
+        },
+        {
+          "image": "skin-5-flame-side.png",
+          "vertices": 7912,
+          "shaderPack": false,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 0.7656165,
+          "file": "native-skin-5-flame-side.jpg",
+          "sha256": "fcd6d0c7731f4e8d5d29511d476356360053c22edf556ab549039be321aa9e9c",
+          "originalSha256": "06807d51542a39a1779ba31095d607e6a762fe4bc99d986d3e20efa54189ac0d"
+        },
+        {
+          "image": "skin-5-flame-turn.png",
+          "vertices": 7916,
+          "shaderPack": false,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 6.998096,
+          "file": "native-skin-5-flame-turn.jpg",
+          "sha256": "739314195adf2b2dc88abe2d40449636ca594296c4317bdaacb785d2bbd63c11",
+          "originalSha256": "83359170c8662ff3d98c253d300f5c0a0bd4b2e9f038132a426f7a81abc98bbf"
+        },
+        {
+          "image": "skin-6-fan-side.png",
+          "vertices": 4860,
+          "shaderPack": false,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 0.6887846,
+          "file": "native-skin-6-fan-side.jpg",
+          "sha256": "516ff911dd2a18fb354f886cc87247fdada7eee280b8ac08eee70ae912259939",
+          "originalSha256": "322d202cb00d9f1d7372126c1d66af783d81793e555def2577c9caed53a8b611"
+        },
+        {
+          "image": "skin-6-fan-turn.png",
+          "vertices": 5472,
+          "shaderPack": false,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 6.2188816,
+          "file": "native-skin-6-fan-turn.jpg",
+          "sha256": "99b42526bb9f0743444dae941b1a12106791be901a44338e444463fd9e8c6da8",
+          "originalSha256": "71b76827c02f8d244657393055a2f7674838b6c1c46043b02e72163d49c65c42"
+        },
+        {
+          "image": "skin-7-dense-side.png",
+          "vertices": 14088,
+          "shaderPack": false,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 0.6779034,
+          "file": "native-skin-7-dense-side.jpg",
+          "sha256": "4ce22e8fa092a5c69348e00483d48d4d94bc75d151028751d1bd641940b91f2f",
+          "originalSha256": "2c79b6b37006e5fac1dabe011b0d20af86b0221eaf3f50d362283aea89915afe"
+        },
+        {
+          "image": "skin-7-dense-turn.png",
+          "vertices": 19720,
+          "shaderPack": false,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 6.270025,
+          "file": "native-skin-7-dense-turn.jpg",
+          "sha256": "46e2117127bfc6f3da885085cbf7b83db28a6b810ac722da41cf747d789ea5ef",
+          "originalSha256": "3d727427cd7a20d0731b711096ef299f9575b9b13e36fe86f07cc22ffa387381"
+        },
+        {
+          "image": "settings-1920x1080-gui3-normal.png",
+          "vertices": 1028,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 3,
+          "scale": 2.0,
+          "skinButtons": 8,
+          "clicks": true,
+          "pageWidth": 388,
+          "file": "native-settings-1920x1080-gui3-normal.jpg",
+          "sha256": "c301d2643a974b3bb7b9b4af2c3b55f8246960c2e487d71c8f27c4f7aa4dc3c6",
+          "originalSha256": "7a2d1c6c1db497f67ecdcd915fded92b4caf39339d82eb57dcf97dcdd85a05b3"
+        },
+        {
+          "image": "settings-1920x1080-gui3-hover.png",
+          "vertices": 2792,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 3,
+          "scale": 2.0,
+          "skinButtons": 8,
+          "clicks": true,
+          "pageWidth": 388,
+          "file": "native-settings-1920x1080-gui3-hover.jpg",
+          "sha256": "0541451a381b797c264ba6c45facc3422df2eed7250151530fdc8a4592418f17",
+          "originalSha256": "d81d8fa537daeee6a50abe7432f92a00fb78aadd44f832b7c2dc0a876725e544"
+        },
+        {
+          "image": "settings-1920x1080-gui3-focus-disabled.png",
+          "vertices": 4560,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 3,
+          "scale": 2.0,
+          "skinButtons": 8,
+          "clicks": true,
+          "pageWidth": 388,
+          "file": "native-settings-1920x1080-gui3-focus-disabled.jpg",
+          "sha256": "cf6a990eca410326ef9b5d4b7c1d737ed4d7522bc1bdaa95298d329bea7de98a",
+          "originalSha256": "6c6f5e6c7b525740e26dd7b806ba764245bab87f52156902372f9032285896ae"
+        },
+        {
+          "image": "settings-2560x1440-gui3-normal.png",
+          "vertices": 11628,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 3,
+          "scale": 3.0,
+          "skinButtons": 8,
+          "clicks": true,
+          "pageWidth": 388,
+          "file": "native-settings-2560x1440-gui3-normal.jpg",
+          "sha256": "bed29c2288823075e0a83518d978c0ca1385b62ec5e78bcddcbe302be1837637",
+          "originalSha256": "980447bd95f56db33ef6ff53efde0897e55bf8548d748b12cd80d8ff19e219a4"
+        },
+        {
+          "image": "settings-2560x1440-gui3-hover.png",
+          "vertices": 13740,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 3,
+          "scale": 3.0,
+          "skinButtons": 8,
+          "clicks": true,
+          "pageWidth": 388,
+          "file": "native-settings-2560x1440-gui3-hover.jpg",
+          "sha256": "d685075a813c37670fa5c8b2344bcecdb02d7abbd589470c4e84b2e28a105bc4",
+          "originalSha256": "1345f67bdbcc65b6649d42fe7c21d61f50fd88cee13e532a96da24ddc6bb717f"
+        },
+        {
+          "image": "settings-2560x1440-gui3-focus-disabled.png",
+          "vertices": 16028,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 3,
+          "scale": 3.0,
+          "skinButtons": 8,
+          "clicks": true,
+          "pageWidth": 388,
+          "file": "native-settings-2560x1440-gui3-focus-disabled.jpg",
+          "sha256": "bed518303b25bb65a26b84d1beb626a347150813e0091f0bc66693d0bf719ae2",
+          "originalSha256": "75d7b7ebd13c03f4052fc3e864a159f39d4236e32587af69bad5f3fe583ed6f0"
+        },
+        {
+          "image": "settings-1920x1080-gui4-normal.png",
+          "vertices": 22188,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 4,
+          "scale": 2.0,
+          "skinButtons": 8,
+          "clicks": true,
+          "pageWidth": 388,
+          "file": "native-settings-1920x1080-gui4-normal.jpg",
+          "sha256": "77cff1aca6dc4607b01a5486cf58c236457fd1cc70d3b938be78d074433ea5e6",
+          "originalSha256": "d5199cc4c43df8a5c5d73d98db64ef4e5691f7539c9d46c064da5e77078a3efa"
+        },
+        {
+          "image": "settings-1920x1080-gui4-hover.png",
+          "vertices": 23944,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 4,
+          "scale": 2.0,
+          "skinButtons": 8,
+          "clicks": true,
+          "pageWidth": 388,
+          "file": "native-settings-1920x1080-gui4-hover.jpg",
+          "sha256": "c4b60a370d58126cad98d2eb349423c50addfceeef2670d480d946ffadbc9b1e",
+          "originalSha256": "8918a6b47ce6f3809bd838f07f4cd97fc8abc7e4614c3a8785f05925b6a2f903"
+        },
+        {
+          "image": "settings-1920x1080-gui4-focus-disabled.png",
+          "vertices": 25352,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 4,
+          "scale": 2.0,
+          "skinButtons": 8,
+          "clicks": true,
+          "pageWidth": 388,
+          "file": "native-settings-1920x1080-gui4-focus-disabled.jpg",
+          "sha256": "a705c54da1c6eda59509767de97be76fbf7c8b00e9f073d9fb63bbd93011c409",
+          "originalSha256": "064f953e9dce9dc3ad9b6539bfae4a6899cfb98de87ef92d05775931c7b72e13"
+        },
+        {
+          "image": "settings-2560x1440-gui4-normal.png",
+          "vertices": 25532,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 4,
+          "scale": 3.0,
+          "skinButtons": 8,
+          "clicks": true,
+          "pageWidth": 388,
+          "file": "native-settings-2560x1440-gui4-normal.jpg",
+          "sha256": "083ac959b8add1e074399c674119a8247843ab73f15a1e1ec5243fdc403be90d",
+          "originalSha256": "0aa11ab1261409b5f92eae0aa05086d4aa0a787e302602446785e4cde0bc4fc7"
+        },
+        {
+          "image": "settings-2560x1440-gui4-hover.png",
+          "vertices": 25532,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 4,
+          "scale": 3.0,
+          "skinButtons": 8,
+          "clicks": true,
+          "pageWidth": 388,
+          "file": "native-settings-2560x1440-gui4-hover.jpg",
+          "sha256": "c4ea64b8e833c9586c6a9e2598922e694f9e3829eb853c5e626bad2a0350706d",
+          "originalSha256": "e526800e37be0614ec2a565b92ca786e9e3dab302a325091e87265922a183f2a"
+        },
+        {
+          "image": "settings-2560x1440-gui4-focus-disabled.png",
+          "vertices": 25528,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 4,
+          "scale": 3.0,
+          "skinButtons": 8,
+          "clicks": true,
+          "pageWidth": 388,
+          "file": "native-settings-2560x1440-gui4-focus-disabled.jpg",
+          "sha256": "e5faaea3de6138b0c16ab44e762c6a2c0d861989f874b6e16ca4ad1ee1c33aac",
+          "originalSha256": "048486d7e3aae6a4f515e8b30ce27a4ab80bd6b743ee4d3f9121a22280bbcbaa"
+        }
+      ],
+      "pointer": {
+        "captureViolations": 0,
+        "passed": true,
+        "blockedGrabs": 5,
+        "cursorMode": 212993,
+        "checkedFrames": 2830
+      },
+      "material": [
+        {
+          "passed": true,
+          "comparisons": 16,
+          "maxChannelError": 0.0001697540283203125,
+          "check": "shipping-glsl-periodicity"
+        }
+      ]
+    },
+    "solas": {
+      "rows": [
+        {
+          "image": "skin-0-meteor_prism-side.png",
+          "vertices": 3900,
+          "shaderPack": true,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 0.27058077,
+          "file": "solas-skin-0-meteor_prism-side.jpg",
+          "sha256": "149d7ea07831bc9c573784825785b8596f2e12b12022b9cd8ea9d9b9f681d4ed",
+          "originalSha256": "75af35dda8f44f8bcafa4ba7b6488402619258b9368321b6c1103226ee765ee1"
+        },
+        {
+          "image": "skin-0-meteor_prism-turn.png",
+          "vertices": 4732,
+          "shaderPack": true,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 7.5749063,
+          "file": "solas-skin-0-meteor_prism-turn.jpg",
+          "sha256": "5dbd452c04ae66cc077cac0f1f16259b90630965620e07cb31663ea4a1fcf843",
+          "originalSha256": "33882f25a6a3426a6c35c8b99ab25e5a16cf50f6f05e7cf9112adc930b440c36"
+        },
+        {
+          "image": "skin-1-meteor_flame-side.png",
+          "vertices": 5344,
+          "shaderPack": true,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 0.6311804,
+          "file": "solas-skin-1-meteor_flame-side.jpg",
+          "sha256": "15a298eff42e6a94e3f57ba8b5dae40e21c7581ac41120ab85c4a6a8c709e4d0",
+          "originalSha256": "b51e015d35fd8b568ec8c196430f2d2b43b82d90ff49c3a22d23307fdfb3634f"
+        },
+        {
+          "image": "skin-1-meteor_flame-turn.png",
+          "vertices": 6628,
+          "shaderPack": true,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 7.6766253,
+          "file": "solas-skin-1-meteor_flame-turn.jpg",
+          "sha256": "bd77111243c09b79a30e5c1a240fcad905cb779812e27b6fff2b151fb02f179e",
+          "originalSha256": "4d4ec43620ee09a5f8c998cc84aba00d999d910ac53988ed5e6f0db82ef268c7"
+        },
+        {
+          "image": "skin-2-needle-side.png",
+          "vertices": 1764,
+          "shaderPack": true,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 0.6326008,
+          "file": "solas-skin-2-needle-side.jpg",
+          "sha256": "bc8bf415b1db5cf25fa947c1469d3fc0aa23b9b49d1bc5ca339d7a09aa1e016a",
+          "originalSha256": "8159da1b22f36f6e110f50a276d32e60cc10b66a50502b4d4253847d9190555a"
+        },
+        {
+          "image": "skin-2-needle-turn.png",
+          "vertices": 2404,
+          "shaderPack": true,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 7.677026,
+          "file": "solas-skin-2-needle-turn.jpg",
+          "sha256": "08e385985fdaefafc5f622880dee3ae669a89bd8d8f6ada6ad68f7dd461b5a61",
+          "originalSha256": "1e6d38469bb25b7f2c8061e36f044661f0bc17a0a489eea664db3271fb921d95"
+        },
+        {
+          "image": "skin-3-feather-side.png",
+          "vertices": 4476,
+          "shaderPack": true,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 0.63260645,
+          "file": "solas-skin-3-feather-side.jpg",
+          "sha256": "7f882b3aaeade478b5e357ea344b89141503dd55bb49fc551619f08cbd577821",
+          "originalSha256": "cfd1939c87b019f32878771b1de1e2a6e07440dc9296016045b7f6283491ad9f"
+        },
+        {
+          "image": "skin-3-feather-turn.png",
+          "vertices": 4860,
+          "shaderPack": true,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 7.6770277,
+          "file": "solas-skin-3-feather-turn.jpg",
+          "sha256": "f3b77c4c7cc3f0f1349ca6702e1ba070d501cd2bd3fa8a3fb8ff8c0d8db1c70a",
+          "originalSha256": "0ee666ea86511c826b49d00175a9063317cb8205bb8dd722e05f6f8bb45cc869"
+        },
+        {
+          "image": "skin-4-smoke-side.png",
+          "vertices": 120,
+          "shaderPack": true,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 0.63260645,
+          "file": "solas-skin-4-smoke-side.jpg",
+          "sha256": "50039725b0fa7e3fdf0359e54c6dc6d6c4ac8d5763724d5a1ea3e80b1f390d7b",
+          "originalSha256": "b29a10bdcbfeaeb7de520411cab3a3aaf7d22f967fd2efa9b65a84acde1328b6"
+        },
+        {
+          "image": "skin-4-smoke-turn.png",
+          "vertices": 124,
+          "shaderPack": true,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 7.6770277,
+          "file": "solas-skin-4-smoke-turn.jpg",
+          "sha256": "30bbec26a010d653fa63b2247a332a4ad83d65892805ad9f002b9ddd1697413f",
+          "originalSha256": "12dec43ecfe36420a86ceb83a55a768719dbcc68644fa4d8ffbe2064eb1ff108"
+        },
+        {
+          "image": "skin-5-flame-side.png",
+          "vertices": 7916,
+          "shaderPack": true,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 0.63260645,
+          "file": "solas-skin-5-flame-side.jpg",
+          "sha256": "c20407261614340e964bef12ce6c6be7dfb23196b6faf38b4418e348d5692953",
+          "originalSha256": "aa902fa7d63a1eb6834d45bcff92e6d74e1de390d7a2dd4a273f791b6ce5736f"
+        },
+        {
+          "image": "skin-5-flame-turn.png",
+          "vertices": 7912,
+          "shaderPack": true,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 7.6770277,
+          "file": "solas-skin-5-flame-turn.jpg",
+          "sha256": "41b687d6dc3fe3248f23bdc4fa8b4d3a8163e7bda5c42491ec4b2a534f818d9e",
+          "originalSha256": "d90b37d524210d094e5934787f61ec6bc637fe57949e3f3360ff464195aa608d"
+        },
+        {
+          "image": "skin-6-fan-side.png",
+          "vertices": 4932,
+          "shaderPack": true,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 0.63260645,
+          "file": "solas-skin-6-fan-side.jpg",
+          "sha256": "fa0222590c353f8ea1cc6c1b7e7fc36efdff35b1c1af6f138061bc21efeef2a9",
+          "originalSha256": "3062fe967adcf4b508142ff8162d45367fb4e9c3cfd6230912e7eb27747244ef"
+        },
+        {
+          "image": "skin-6-fan-turn.png",
+          "vertices": 5472,
+          "shaderPack": true,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 7.6770277,
+          "file": "solas-skin-6-fan-turn.jpg",
+          "sha256": "980c5d642c7163be71d05a852161f477ba7a4a8f491d95fa4fd603d933d3c67f",
+          "originalSha256": "5865ac99cf4b10747a633d346d1dd7b55fb00ad4efa78e4eaf11ff80dbb63579"
+        },
+        {
+          "image": "skin-7-dense-side.png",
+          "vertices": 14440,
+          "shaderPack": true,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 0.63260645,
+          "file": "solas-skin-7-dense-side.jpg",
+          "sha256": "d5397f64d43990df2481bf9debeec504b5a3a01064dad7f5a0684eb32ff23e74",
+          "originalSha256": "fdad68caaafa08410ed5896a1061f6d4703b4235409fc3984a6c9353ea01d947"
+        },
+        {
+          "image": "skin-7-dense-turn.png",
+          "vertices": 20076,
+          "shaderPack": true,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 7.6770277,
+          "file": "solas-skin-7-dense-turn.jpg",
+          "sha256": "35cac76f64e9ca3456a2b5ad47611f00a45aaf9dd077e92dd9d72d10ad21c0a5",
+          "originalSha256": "43ba38b16442c26609be532cd6d2035ede9eeb409ef05bb0d01ffbd11a84d447"
+        },
+        {
+          "image": "settings-1920x1080-gui3-normal.png",
+          "vertices": 25528,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 3,
+          "scale": 2.0,
+          "skinButtons": 8,
+          "clicks": true,
+          "pageWidth": 388,
+          "file": "solas-settings-1920x1080-gui3-normal.jpg",
+          "sha256": "439a1f4ea8711b3d9de96bc7f092751f0f574833e5717efb0d54cfd814710b87",
+          "originalSha256": "765bd626d8c6394c275096356aadcd0cb7f6dfb2372e885b99215d5be0849a84"
+        },
+        {
+          "image": "settings-1920x1080-gui3-hover.png",
+          "vertices": 25532,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 3,
+          "scale": 2.0,
+          "skinButtons": 8,
+          "clicks": true,
+          "pageWidth": 388,
+          "file": "solas-settings-1920x1080-gui3-hover.jpg",
+          "sha256": "1efa8635f67f42376d34a122fe67f0101830628fc86155c1b31710405a2cefd6",
+          "originalSha256": "94eee96e884de38888db8489c2981bc695cc2ab1c3f54ad0c8366091cf6ab36c"
+        },
+        {
+          "image": "settings-1920x1080-gui3-focus-disabled.png",
+          "vertices": 25528,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 3,
+          "scale": 2.0,
+          "skinButtons": 8,
+          "clicks": true,
+          "pageWidth": 388,
+          "file": "solas-settings-1920x1080-gui3-focus-disabled.jpg",
+          "sha256": "fe6db735e3a7cb4b2ceb54d9b1f1f292a24a5d7725467795b1eb0d2b2561ec3e",
+          "originalSha256": "398918cabf333ab3a0cb57d469f5bccb7ee875529a93ec2abc0bfb1af0068e9b"
+        },
+        {
+          "image": "settings-2560x1440-gui3-normal.png",
+          "vertices": 25528,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 3,
+          "scale": 3.0,
+          "skinButtons": 8,
+          "clicks": true,
+          "pageWidth": 388,
+          "file": "solas-settings-2560x1440-gui3-normal.jpg",
+          "sha256": "e0d323e5e01cb9afab747128aee47ea5a109551155f2026a91b9bd9703b2b81e",
+          "originalSha256": "5a0722bf25b87e09528d821ea195c8e99bf3f1a816ad719f7eb01ddaa36a63c1"
+        },
+        {
+          "image": "settings-2560x1440-gui3-hover.png",
+          "vertices": 25528,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 3,
+          "scale": 3.0,
+          "skinButtons": 8,
+          "clicks": true,
+          "pageWidth": 388,
+          "file": "solas-settings-2560x1440-gui3-hover.jpg",
+          "sha256": "5dd9f4f2ece6fa05a750fe72fcfe688682c48e7f6f7a3e4f60853c01fab865de",
+          "originalSha256": "41018f477add1ef215873441ed8cd7340c3eea461dcd062b4b24e49990336c95"
+        },
+        {
+          "image": "settings-2560x1440-gui3-focus-disabled.png",
+          "vertices": 25532,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 3,
+          "scale": 3.0,
+          "skinButtons": 8,
+          "clicks": true,
+          "pageWidth": 388,
+          "file": "solas-settings-2560x1440-gui3-focus-disabled.jpg",
+          "sha256": "54fbdf3b7829f056d7073adf6611aef22155f75b1321c6023775388a30eb81db",
+          "originalSha256": "daba072b19d5ab064df73e5ad58162213568b68a16c42e4048915c4b0f2f86d0"
+        },
+        {
+          "image": "settings-1920x1080-gui4-normal.png",
+          "vertices": 25528,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 4,
+          "scale": 2.0,
+          "skinButtons": 8,
+          "clicks": true,
+          "pageWidth": 388,
+          "file": "solas-settings-1920x1080-gui4-normal.jpg",
+          "sha256": "27a755a5b419619a8eb1c0f4db649632ec6d8f721bbfd3506f9ffa37de4b19b9",
+          "originalSha256": "b20a2da2f729679345232eba695fba723f529d7c07243a4ca9a9901ba9f992c8"
+        },
+        {
+          "image": "settings-1920x1080-gui4-hover.png",
+          "vertices": 25528,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 4,
+          "scale": 2.0,
+          "skinButtons": 8,
+          "clicks": true,
+          "pageWidth": 388,
+          "file": "solas-settings-1920x1080-gui4-hover.jpg",
+          "sha256": "c2e7c2fbda7281257682b7d2afa2e0f6cd919709a84a4f1105044df5a748695d",
+          "originalSha256": "490f6490f1ee4b143d81aaf1a4bf61b5c9ff92d91bc0b6c92ddb7c28d4efc901"
+        },
+        {
+          "image": "settings-1920x1080-gui4-focus-disabled.png",
+          "vertices": 25528,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 4,
+          "scale": 2.0,
+          "skinButtons": 8,
+          "clicks": true,
+          "pageWidth": 388,
+          "file": "solas-settings-1920x1080-gui4-focus-disabled.jpg",
+          "sha256": "76c8fdffeef7c0c9c9c7b91d49636c911cc071c4c74029313d425002ea77cf85",
+          "originalSha256": "5b4931cc42c68bb472a825249d48f3fac559cf1e9f236b081771c6f87727a48a"
+        },
+        {
+          "image": "settings-2560x1440-gui4-normal.png",
+          "vertices": 25528,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 4,
+          "scale": 3.0,
+          "skinButtons": 8,
+          "clicks": true,
+          "pageWidth": 388,
+          "file": "solas-settings-2560x1440-gui4-normal.jpg",
+          "sha256": "11dac5d4751aff1f08116cbdfb5d3ee93d11af9e91eba181283836ea26a0bb47",
+          "originalSha256": "8164f0c5746e834127e538eb73c75c805965ad59fdbb634d337bb2da0db14859"
+        },
+        {
+          "image": "settings-2560x1440-gui4-hover.png",
+          "vertices": 25528,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 4,
+          "scale": 3.0,
+          "skinButtons": 8,
+          "clicks": true,
+          "pageWidth": 388,
+          "file": "solas-settings-2560x1440-gui4-hover.jpg",
+          "sha256": "b12a11137101402dc515e377821851d3b7a6e62f43e995e021032e5b3e7874af",
+          "originalSha256": "142919a8ab490606ddce0aabf3beabdb554233d3ed52579e3d172e75298f6d83"
+        },
+        {
+          "image": "settings-2560x1440-gui4-focus-disabled.png",
+          "vertices": 25528,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 4,
+          "scale": 3.0,
+          "skinButtons": 8,
+          "clicks": true,
+          "pageWidth": 388,
+          "file": "solas-settings-2560x1440-gui4-focus-disabled.jpg",
+          "sha256": "8ba4899c27b3cbe4d8d74ac1038d1909781302c89c7ac2d75b1c92b150c2e538",
+          "originalSha256": "87565e3e25f0df762c3e20cae03ebec96f04f7560715095192a970297ff3a396"
+        }
+      ],
+      "pointer": {
+        "cursorMode": 212993,
+        "blockedGrabs": 5,
+        "passed": true,
+        "captureViolations": 0,
+        "checkedFrames": 2630
+      },
+      "material": [
+        {
+          "check": "shipping-glsl-periodicity",
+          "maxChannelError": 0.0001697540283203125,
+          "comparisons": 16,
+          "passed": true
+        }
+      ]
+    }
+  }
+}

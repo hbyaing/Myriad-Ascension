@@ -26,6 +26,14 @@ public final class HuahongGameTests {
             var root=h.getLevel().getEntitiesOfClass(ControlledSwordEntity.class,p.getBoundingBox().inflate(8),e->e.flightRoot()&&p.getUUID().equals(e.ownerId)).get(0);
             for(int i=0;i<14;i++)YujianController.tickFlightEntity(root,p);
             h.assertTrue(p.getVehicle()==root,"Actual sword did not mount");
+            for(var skin:HuahongSkin.values()){
+                float mana=data.wuxingxiantu$getAura();double speed=root.flightSpeed();
+                HuahongSkinPacket.apply(p,skin.ordinal());
+                h.assertTrue(root.huahongSkin()==skin&&p.getPersistentData().getInt(HuahongSkin.KEY)==skin.ordinal(),"Skin metadata or saved preference differs");
+                h.assertTrue(data.wuxingxiantu$getAura()==mana&&root.flightSpeed()==speed&&!root.noPhysics,"Cosmetic choice changed flight rules");
+            }
+            HuahongSkinPacket.apply(p,Integer.MAX_VALUE);
+            h.assertTrue(root.huahongSkin()==HuahongSkin.METEOR_PRISM,"Invalid skin did not fall back safely");
             double normal=FlyingSwordRegistry.get(stack).advanced().maxSpeed(YujianPhase.JIYU,FlyingSwordRegistry.get(stack))*FlyingSwordConfig.CRUISE_FRACTION.get();
             p.getPersistentData().putLong("YujianCooldown_DUNXU",Long.MAX_VALUE);
             for(int i=0;i<150;i++){

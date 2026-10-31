@@ -478,5 +478,10 @@
     "id": 95,
     "type": "cn.blockforge.generated.generatedmod.network.packet.alchemy.AlchemyHeatPacket",
     "direction": "C2S"
+  },
+  {
+    "id": 96,
+    "type": "cn.blockforge.generated.generatedmod.yujian.HuahongSkinPacket",
+    "direction": "C2S"
   }
 ]

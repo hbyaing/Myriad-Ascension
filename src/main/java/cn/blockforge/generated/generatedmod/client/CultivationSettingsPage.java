@@ -19,7 +19,7 @@ public final class CultivationSettingsPage extends CultivationPage {
     public CultivationSettingsPage() { super("设置"); }
     @Override public int contentHeight(int w, int h) {
         return Math.max(h, switch(category){
-            case SWORD -> 624;
+            case SWORD -> 916;
             case FLIGHT -> 332 + 28 * RealmFlightSelection.unlockedRealms(actualRealm()).size();
             case MANA -> tracking()?600:64;
             case COMBAT -> 274;
@@ -95,6 +95,12 @@ public final class CultivationSettingsPage extends CultivationPage {
             addRenderableWidget(targeting);
         } else if (category == SWORD) {
             toggle(46, "御剑飞行特效", FlyingSwordConfig.TRAILS);
+            int skinY=664;
+            for(var skin:cn.blockforge.generated.generatedmod.yujian.HuahongSkin.values()){
+                var choice=new CultivationUi.Action(bodyX,skinY,bodyW,22,Component.literal(skin.label),b->HuahongSkinPreferences.select(skin),()->FlyingSwordConfig.HUAHONG_SKIN.get()==skin);
+                choice.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(skin.description+"\n仅改变化虹外观，速度和消耗不变；其他玩家可见。")));
+                addRenderableWidget(choice);skinY+=28;
+            }
             toggle(74, "第一人称隐藏手持飞剑", FlyingSwordConfig.HIDE_HELD);
             cameraChoice(102,"御剑默认视角",HudConfig.SWORD_FLIGHT_DEFAULT_CAMERA);
             toggle(564, "御剑调试信息", FlyingSwordConfig.DEBUG_OVERLAY);
@@ -176,7 +182,7 @@ public final class CultivationSettingsPage extends CultivationPage {
         }
         if(category==SWORD){
             section(g,28,"基础显示");section(g,134,"视角与镜头");
-            section(g,454,"横滚操控");section(g,546,"调试与兼容");
+            section(g,454,"横滚操控");section(g,546,"调试与兼容");section(g,642,"化虹皮肤");
         }
         if(category==COMBAT){section(g,60,"异火缠绕 · 显示");section(g,198,"异火缠绕 · 伤害");}
         if(category==FLIGHT) {

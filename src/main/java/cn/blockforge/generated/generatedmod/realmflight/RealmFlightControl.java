@@ -62,11 +62,15 @@ public final class RealmFlightControl {
         double cruise=RealmFlightBalance.speed(realm,stage,false)/20;
         double speed=cruise+(RealmFlightBalance.speed(realm,stage,true)/20-cruise)*s.boostWeight,vertical=RealmFlightBalance.vertical(realm,stage)/20;
         Vec3 target=new Vec3(input.x*speed,input.y*vertical,input.z*speed);
-        if(!p.level().noCollision(p,p.getBoundingBox().deflate(.02).expandTowards(target.scale(3))))target=target.scale(.25);
+        if(p instanceof ServerPlayer server)cn.blockforge.generated.generatedmod.flight.FlightTerrainStreaming.prefetch(server,p.position(),target);
+        var prediction=p.getBoundingBox().deflate(.02).expandTowards(target.scale(3)).inflate(1);
+        if(!cn.blockforge.generated.generatedmod.flight.FlightTerrainStreaming.available(p,prediction))target=target.scale(.35);
+        else if(!p.level().noCollision(p,p.getBoundingBox().deflate(.02).expandTowards(target.scale(3))))target=target.scale(.25);
         double step=speed/(input.lengthSqr()<.001?8:boost?12:16);
         var velocity=RealmFlightBalance.advance(s.velocity.x,s.velocity.y,s.velocity.z,target.x,target.y,target.z,step);
         s.velocity=new Vec3(velocity.x(),velocity.y(),velocity.z());
         s.velocity=new Vec3(s.velocity.x,RealmFlightBalance.launchVertical(p.onGround(),input.y,s.velocity.y),s.velocity.z);
+        s.velocity=cn.blockforge.generated.generatedmod.flight.FlightTerrainStreaming.limit(p,p.getBoundingBox(),s.velocity);
         // Abilities are synchronized and saved by other flight modes. Never
         // publish a zero acceleration here; the client suppresses the extra
         // vanilla force only around a physics tick it actually controls.

@@ -24,6 +24,7 @@ public final class SpiritVeinData extends SavedData {
     public void markDecorationChunk(ChunkPos pos) {if(decorationChunks.add(pos.toLong()))setDirty();}
     public boolean canDecorate(ChunkPos pos) {return decorationChunks.contains(pos.toLong());}
     public void queue(ChunkPos pos) {long key=pos.toLong();if(!attempted.contains(key)&&pending.add(key))setDirty();}
+    public boolean isPending(ChunkPos pos){return pending.contains(pos.toLong());}
     public Set<Long> pending() {return Set.copyOf(pending);}
     public int grade(int x,int z) {var e=veins.get(ChunkPos.asLong(x,z));return e==null?0:e.grade();}
     public void finish(ChunkPos pos) {pending.remove(pos.toLong());attempted.add(pos.toLong());setDirty();}

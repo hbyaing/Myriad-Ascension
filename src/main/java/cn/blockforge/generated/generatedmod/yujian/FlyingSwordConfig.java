@@ -30,6 +30,7 @@ public final class FlyingSwordConfig {
     public static final ForgeConfigSpec SERVER_SPEC=SERVER.build();
     private static final ForgeConfigSpec.Builder CLIENT=new ForgeConfigSpec.Builder();
     public static final ForgeConfigSpec.BooleanValue DEBUG_OVERLAY=CLIENT.define("debugOverlay",false);
+    public static final ForgeConfigSpec.EnumValue<HuahongSkin> HUAHONG_SKIN=CLIENT.defineEnum("huahongSkin",HuahongSkin.METEOR_PRISM);
     public static final ForgeConfigSpec.BooleanValue TRAILS=CLIENT.define("trails",true);
     public static final ForgeConfigSpec.DoubleValue ROLL_VISUAL_FULL=CLIENT.defineInRange("rollVisualFullDegreesPerSecond",150.0,90.0,330.0);
     public static final ForgeConfigSpec.DoubleValue WIND_VOLUME=CLIENT.defineInRange("flightWindVolume",0.3,0.0,1.0);

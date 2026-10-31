@@ -35,33 +35,81 @@ public class SpiritVeinFeature extends Feature<NoneFeatureConfiguration> {
         return true;
     }
     public static boolean generate(WorldGenLevel level, BlockPos origin) {
-        long seed = level.getSeed();
-        ChunkPos chunk = new ChunkPos(origin);
-        if (!SpiritVein.hasVein(seed, chunk.x, chunk.z)) {
+        var scan=new Scan(level,origin);
+        while(!scan.advance(Integer.MAX_VALUE))if(!scan.ready())return false;
+        return scan.result();
+    }
+
+    /** Same deterministic vein selection, with a bounded resumable cave scan. */
+    public static final class Scan {
+        private final WorldGenLevel level;
+        private final SpiritVeinData data;
+        private final ChunkPos chunk;
+        private final int requested,minX,minZ,minY,height,total;
+        private final java.util.NavigableSet<BlockPos> walls=new java.util.TreeSet<>(java.util.Comparator.<BlockPos>comparingInt(BlockPos::getY).thenComparingInt(BlockPos::getX).thenComparingInt(BlockPos::getZ));
+        private final java.util.Set<BlockPos> remaining=new java.util.HashSet<>();
+        private final java.util.ArrayDeque<BlockPos> frontier=new java.util.ArrayDeque<>();
+        private java.util.List<BlockPos> component=new java.util.ArrayList<>(),largest=new java.util.ArrayList<>();
+        private int cursor,lastBatchWork;private boolean done,result;
+        private final BlockPos.MutableBlockPos position=new BlockPos.MutableBlockPos();
+        public Scan(WorldGenLevel level,BlockPos origin){
+            this.level=level;chunk=new ChunkPos(origin);data=SpiritVeinData.get(level.getLevel());
+            requested=SpiritVein.richness(level.getSeed(),chunk.x,chunk.z);
+            minX=chunk.getMinBlockX()-15;minZ=chunk.getMinBlockZ()-15;
+            minY=Math.max(SpiritVein.MIN_Y,level.getMinBuildHeight()+1);height=Math.max(0,SpiritVein.MAX_Y-minY+1);total=46*46*height;
+            done=!SpiritVein.hasVein(level.getSeed(),chunk.x,chunk.z)||!data.canDecorate(chunk)||height==0;
+        }
+        public ChunkPos chunk(){return chunk;}
+        public boolean result(){return result;}
+        public int lastBatchWork(){return lastBatchWork;}
+        public boolean ready(){
+            if(!(level instanceof net.minecraft.server.level.ServerLevel server))return true;
+            for(int x=chunk.x-1;x<=chunk.x+1;x++)for(int z=chunk.z-1;z<=chunk.z+1;z++)
+                if(server.getChunkSource().getChunkNow(x,z)==null)return false;
+            return true;
+        }
+        public boolean advance(int budget){
+            lastBatchWork=0;if(done)return true;if(!ready())return false;
+            long deadline=System.nanoTime()+2_000_000;
+            while(cursor<total&&lastBatchWork<Math.max(1,budget)){
+                if((lastBatchWork&63)==0&&lastBatchWork>0&&System.nanoTime()>=deadline)break;
+                int x=minX+cursor/(46*height),z=minZ+(cursor/height)%46,y=minY+cursor%height;
+                lastBatchWork++;
+                if(!data.canDecorate(new ChunkPos(x>>4,z>>4))){cursor+=height-cursor%height;continue;}
+                cursor++;position.set(x,y,z);BlockState state=level.getBlockState(position);
+                if((state.is(BlockTags.STONE_ORE_REPLACEABLES)||state.is(BlockTags.DEEPSLATE_ORE_REPLACEABLES))&&isCaveWall(level,position)){
+                    BlockPos wall=position.immutable();walls.add(wall);remaining.add(wall);
+                }
+            }
+            if(cursor<total)return false;
+            // Connectivity is also resumable; a dense cave cannot move the entire BFS into one tick.
+            while(lastBatchWork<Math.max(1,budget)){
+                if((lastBatchWork&63)==0&&lastBatchWork>0&&System.nanoTime()>=deadline)return false;
+                if(frontier.isEmpty()){
+                    if(component.size()>largest.size())largest=component;
+                    component=new java.util.ArrayList<>();
+                    if(walls.isEmpty()){result=finish();done=true;remaining.clear();return true;}
+                    BlockPos first=walls.pollFirst();lastBatchWork++;
+                    if(remaining.remove(first))frontier.add(first);
+                }else{
+                    BlockPos p=frontier.removeFirst();component.add(p);lastBatchWork++;
+                    for(Direction d:Direction.values()){BlockPos n=p.relative(d);if(remaining.remove(n))frontier.addLast(n);}
+                }
+            }
             return false;
         }
-
-        var data=SpiritVeinData.get(level.getLevel());
-        if(!data.canDecorate(chunk))return false;
-        int requested = SpiritVein.richness(seed, chunk.x, chunk.z);
-        java.util.Set<BlockPos> walls = new java.util.HashSet<>();
-        for (int x=chunk.getMinBlockX()-15;x<=chunk.getMaxBlockX()+15;x++)
-            for(int z=chunk.getMinBlockZ()-15;z<=chunk.getMaxBlockZ()+15;z++)
-                for(int y=Math.max(SpiritVein.MIN_Y,level.getMinBuildHeight()+1);y<=SpiritVein.MAX_Y;y++) {
-                    BlockPos p=new BlockPos(x,y,z);
-                    if(!data.canDecorate(new ChunkPos(p)))continue;
-                    BlockState state=level.getBlockState(p);
-                    if((state.is(BlockTags.STONE_ORE_REPLACEABLES)||state.is(BlockTags.DEEPSLATE_ORE_REPLACEABLES)) && isCaveWall(level,p)) walls.add(p);
-                }
+        private boolean finish(){
         // 只选六面相邻的最大连续洞壁；BFS前缀本身也保持连通。
-        java.util.List<BlockPos> largest=ConnectedVeinShape.largest(walls,
-                p -> java.util.Arrays.stream(Direction.values()).map(p::relative).toList(),
-                java.util.Comparator.<BlockPos>comparingInt(p -> p.getY()).thenComparingInt(p -> p.getX()).thenComparingInt(p -> p.getZ()));
         int minimum=requested==5?256:64;
         if(largest.size()<minimum)return false;
         int target=new int[]{96,144,192,255,512}[requested-1];
         java.util.List<BlockPos> ores=largest.subList(0,Math.min(target,largest.size()));
         int actual=requested==5?5:ores.size()>=192?4:ores.size()>=144?3:ores.size()>=96?2:1;
+        // A player may edit terrain between scan batches. Preflight every target before any write.
+        for(BlockPos p:ores){
+            BlockState state=level.getBlockState(p);
+            if(!(state.is(BlockTags.STONE_ORE_REPLACEABLES)||state.is(BlockTags.DEEPSLATE_ORE_REPLACEABLES))||!isCaveWall(level,p))return false;
+        }
         for(int i=0;i<ores.size();i++) {
             level.setBlock(ores.get(i),cn.blockforge.generated.generatedmod.WuXingBlocks.SPIRIT_VEIN_ORE.get().defaultBlockState(),2);
         }
@@ -70,6 +118,7 @@ public class SpiritVeinFeature extends Feature<NoneFeatureConfiguration> {
         BlockPos center=ores.stream().min(java.util.Comparator.comparingDouble(p->(p.getX()-ax)*(p.getX()-ax)+(p.getY()-ay)*(p.getY()-ay)+(p.getZ()-az)*(p.getZ()-az))).orElseThrow();
         SpiritVeinData.get(level.getLevel()).register(chunk.x,chunk.z,actual,center,ores.size());
         return true;
+        }
     }
 
     /** 必须是地表下的侧壁，水平邻接至少两格高的干燥洞内空气。 */

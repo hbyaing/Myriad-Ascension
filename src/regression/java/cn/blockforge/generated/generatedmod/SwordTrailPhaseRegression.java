@@ -6,6 +6,25 @@ import cn.blockforge.generated.generatedmod.client.SwordTrailPhase;
 /** Exercise real bounded history and material phase across long-flight and time precision boundaries. */
 public final class SwordTrailPhaseRegression {
     private static int checks;
+    private static void attachmentContinuity(){
+        var h=new SwordFlightTrailHistory();
+        for(int tick=0;tick<5;tick++)h.sample(new SwordFlightTrailHistory.Point(tick*15,0,0),tick,16);
+        double previous=-1;
+        for(int frame=0;frame<=120;frame++){
+            double now=3+frame/120.0;
+            var expected=new SwordFlightTrailHistory.Point(now*15,.01*Math.sin(now),0);
+            var render=h.renderNodes(now,expected);
+            var head=render.get(render.size()-1);
+            near(head.point().distance(expected),0,1e-10,"Fast trail detached from model tail");
+            require(head.arc()>=previous,"Render arc rewound at tick boundary");previous=head.arc();
+            for(var node:render)require(node.tick()<=now,"Future point entered trail");
+        }
+        require(h.nodes().get(h.nodes().size()-1).tick()==4,"Rendering mutated fixed history");
+        var tiny=new SwordFlightTrailHistory.Point(60,.000002,0);
+        var close=h.renderNodes(4,tiny);
+        require(close.get(close.size()-1).point().equals(tiny),"Near-equal attachment must still use the exact model endpoint");
+        require(h.nodes().get(h.nodes().size()-1).point().y()==0,"Near-equal attachment changed simulation history");
+    }
     private static void require(boolean condition,String message){checks++;if(!condition)throw new AssertionError(message);}
     private static void near(double a,double b,double tolerance,String message){require(Math.abs(a-b)<=tolerance,message+": "+a+" / "+b);}
     private static double fract(double v){return v-Math.floor(v);}
@@ -126,6 +145,7 @@ public final class SwordTrailPhaseRegression {
         clock.advance(500,true);require(!clock.initialized()&&clock.tick()==0,"Ticks without a level cannot seed or advance history time");
     }
     public static void run(){
+        attachmentContinuity();
         longFlight(2.61,1400);longFlight(12,420);
         correctedWorldTime();
         for(double arc:new double[]{-21.17,0,.37,255.93,1024.77,1e8+.37}){

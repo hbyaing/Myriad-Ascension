@@ -22,18 +22,58 @@ float flowAngle(float arc,float spaceHarmonic,float timeHarmonic){
     return 6.28318530718*fract(arc*spaceHarmonic/256.0+EffectTime*timeHarmonic/128.0);
 }
 vec4 swordMaterial(){
+    if(trailCoord.y>11.5){
+        float band=floor((trailCoord.y+.001)*.5)*2.0;
+        float v=trailCoord.y-band,across=v*2.0-1.0;
+        float arc=trailCoord.x,edge=max(0.0,1.0-abs(across));
+        float flow=arc+EffectTime*6.0;
+        float n=periodicNoise(vec2(flow*2.0,across*3.5),512.0);
+        n+=.5*periodicNoise(vec2(flow*4.0+5.0,across*8.0),1024.0);
+        if(band==22.0)return vec4(vertexColor.rgb*1.3,pow(edge,1.7)*vertexColor.a);
+        if(band==14.0||band==20.0){
+            vec2 p=vec2(fract(arc),v)*2.0-1.0;
+            float smoke=periodicNoise(p*4.3+vec2(EffectTime*.5,floor(arc)*.13),64.0);
+            smoke+=.5*periodicNoise(p*9.1-vec2(EffectTime,.6*sin(flowAngle(0.0,0.0,8.0))),128.0);
+            float body=pow(max(0.0,1.0-dot(p,p)*.73),1.5);
+            float alpha=body*smoothstep(.18,.85,smoke)*vertexColor.a;
+            return vec4(vertexColor.rgb*(band==20.0?2.8:1.0),alpha);
+        }
+        if(band==12.0){
+            float tongues=smoothstep(.16,.80,n-abs(across)*.24);
+            float core=exp(-across*across*12.0)*smoothstep(.5,1.2,n);
+            vec3 rgb=mix(vertexColor.rgb,vec3(1.0,.92,.53),core*.78)*(1.0+core*.4);
+            return vec4(rgb,pow(edge,.7)*tongues*vertexColor.a);
+        }
+        if(band==16.0){
+            float fiber=pow(.5+.5*sin(across*13.0+n*4.0-flowAngle(arc,81.0,244.0)),4.0);
+            float torn=smoothstep(.1,.45,n+edge*.4);
+            return vec4(vertexColor.rgb*(1.4+fiber*.9),pow(edge,1.1)*(.65+.35*fiber)*torn*vertexColor.a);
+        }
+        // Circular tube coordinates wrap continuously; no camera-facing density sheet.
+        float angle=v*6.2831853;
+        float cloud=periodicNoise(vec2(arc*(154.0/256.0)+EffectTime*(462.0/128.0),cos(angle)*2.0+sin(angle)*1.2),154.0);
+        float veins=pow(.5+.5*sin(angle*5.0+cloud*8.0-flowAngle(arc,65.0,-81.0)),8.0);
+        vec3 rgb=mix(vertexColor.rgb,vec3(.9,1.0,1.0),cloud*.7)+veins*vec3(.65,.9,1.0);
+        return vec4(rgb,(.30+.45*cloud+.5*veins)*vertexColor.a);
+    }
+
     if(trailCoord.y>5.5){
-        bool head=trailCoord.y>7.5;
-        float across=(trailCoord.y-(head?8.0:6.0))*2.0-1.0;
-        float width=max(.075,min(.22,fwidth(across)*.7));
-        float core=exp(-across*across/(width*width));
-        float veil=exp(-across*across*7.0)*(head?.08:.28);
-        float flow=.78+.22*pow(.5+.5*sin(flowAngle(trailCoord.x,64.0,-256.0)+across*2.0),3.0);
-        float edge=pow(max(0.0,1.0-abs(across)),1.5);
-        // Head U=1 is the forward tip; the history is deliberately dimmer.
-        float taper=head?(.10+.90*pow(clamp(trailCoord.x,0.0,1.0),1.8)):.65;
-        float alpha=clamp((core+veil*flow)*edge*taper*vertexColor.a,0.0,.98);
-        vec3 color=mix(vertexColor.rgb,vec3(1.0,.995,.94),core);
+        bool soft=trailCoord.y>9.5,hot=!soft&&trailCoord.y>7.5;
+        float across=(trailCoord.y-(soft?10.0:hot?8.0:6.0))*2.0-1.0;
+        float edge=max(0.0,1.0-abs(across));
+        if(soft)return vec4(vertexColor.rgb,pow(edge,1.7)*vertexColor.a);
+        if(hot)return vec4(mix(vertexColor.rgb,vec3(.96,1.0,1.0),.9)*2.2,pow(edge,2.1)*vertexColor.a);
+        // Independent V9 prism transport, using periodic noise for long flights.
+        float axis=trailCoord.x+EffectTime*(512.0/128.0);
+        float density=0.0,weight=.52,period=64.0;
+        for(int i=0;i<5;i++){
+            density+=weight*periodicNoise(vec2(axis*period/256.0,across*3.1*period/64.0),period);
+            period*=2.0;weight*=.49;
+        }
+        float fibers=pow(.5+.5*sin(across*19.0+density*5.0-axis*6.2831853*(64.0/256.0)),2.0);
+        vec3 spectrum=.5+.5*cos(6.2831853*(vec3(12.0,13.0,15.0)*axis/256.0+density*.27+vec3(.07,.31,.58)));
+        vec3 color=mix(vertexColor.rgb,spectrum*1.6,.52);
+        float alpha=pow(edge,1.8)*(.48+.52*fibers)*(.60+.40*density)*vertexColor.a;
         return vec4(color,alpha);
     }
     if(trailCoord.y>3.5){
@@ -78,5 +118,9 @@ void main(){
     vec4 material=swordMaterial();
     if(material.a<.003)discard;
     fragColor=material;
-    if(EmissionPass>0.5)fragColor=vec4(material.rgb*material.a,max(-viewPosition.z/128.0,0.0));
+    if(EmissionPass>0.5){
+        float band=floor((trailCoord.y+.001)*.5)*2.0;
+        float gain=band==14.0?0.0:band==12.0?.14:band==18.0?.08:band==22.0?.22:band==16.0?.40:1.0;
+        fragColor=vec4(material.rgb*material.a*gain,max(-viewPosition.z/128.0,0.0));
+    }
 }

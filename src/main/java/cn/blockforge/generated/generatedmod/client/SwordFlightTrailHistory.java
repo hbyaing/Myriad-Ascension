@@ -20,8 +20,32 @@ public final class SwordFlightTrailHistory {
     }
     private final ArrayList<Node> nodes=new ArrayList<>();
     private final List<Node> view=Collections.unmodifiableList(nodes);
+    private final ArrayList<Node> presentation=new ArrayList<>();
     private double lastTick=Double.NEGATIVE_INFINITY,arc;
     public List<Node> nodes(){return view;}
+    /** Clip at the render time and finish at the very same model attachment.
+     * Interpolate arc too: dropping the newest tick must never reset the material phase. */
+    public List<Node> renderNodes(double now,Point attachment){
+        presentation.clear();
+        if(!attachment.finite()||nodes.isEmpty())return presentation;
+        int i=0;
+        while(i<nodes.size()&&nodes.get(i).tick()<=now)presentation.add(nodes.get(i++));
+        if(presentation.isEmpty())return presentation;
+        Node last=presentation.get(presentation.size()-1);
+        if(attachment.distance(last.point())<.00001){
+            presentation.set(presentation.size()-1,new Node(attachment,last.tick(),last.arc()));
+            return presentation;
+        }
+        double headArc=last.arc();
+        if(i<nodes.size()){
+            Node next=nodes.get(i);
+            double fraction=Math.max(0,Math.min(1,(now-last.tick())/Math.max(1e-9,next.tick()-last.tick())));
+            headArc+=(next.arc()-last.arc())*fraction;
+        }else headArc+=attachment.distance(last.point());
+        if(Math.abs(now-last.tick())<1e-8)presentation.remove(presentation.size()-1);
+        presentation.add(new Node(attachment,now,headArc));
+        return presentation;
+    }
     public void sample(Point point,double tick){
         sample(point,tick,8);
     }

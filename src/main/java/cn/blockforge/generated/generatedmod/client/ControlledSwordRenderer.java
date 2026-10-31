@@ -22,9 +22,7 @@ public final class ControlledSwordRenderer extends EntityRenderer<ControlledSwor
             var frame=InterpolatedFlyingSwordTransform.get(sword,partial);
             pose.mulPose(frame.rotation());
             // BB tip is -X, top is +Y. Convert to the shared +Z-forward flight frame.
-            pose.mulPose(Axis.YP.rotationDegrees(definition.modelYaw()));
-            pose.mulPose(Axis.XP.rotationDegrees(definition.modelPitch()));
-            pose.mulPose(Axis.ZP.rotationDegrees(definition.modelRoll()));
+            SwordFlightAttachment.rotateModel(pose,definition.modelYaw(),definition.modelPitch(),definition.modelRoll());
         } else {
             pose.mulPose(Axis.YP.rotationDegrees(180-yaw));
             pose.mulPose(Axis.XP.rotationDegrees(sword.support()?90:90+net.minecraft.util.Mth.lerp(partial,sword.xRotO,sword.getXRot())));

@@ -14,6 +14,9 @@ import java.util.*;
 public final class SwordFlightAttachment {
     private record Key(BakedModel model,float yaw,float pitch,float roll,boolean custom) {}
     private static final Map<Key,Vec3> TAILS=new HashMap<>();
+    public static void rotateModel(PoseStack pose,float yaw,float pitch,float roll){
+        pose.mulPose(Axis.YP.rotationDegrees(yaw));pose.mulPose(Axis.XP.rotationDegrees(pitch));pose.mulPose(Axis.ZP.rotationDegrees(roll));
+    }
     public static Vec3 tail(ControlledSwordEntity sword,Vec3 position,float yaw,float pitch,float roll){
         var mc=Minecraft.getInstance();var definition=FlyingSwordRegistry.visual(sword.display());
         var model=definition.baked3d()?mc.getModelManager().getModel(FlyingSwordItemModels.worldModel(definition))
@@ -26,14 +29,13 @@ public final class SwordFlightAttachment {
                 new Vector3f((float)local.x*scale,(float)local.y*scale,(float)local.z*scale))));
     }
     private static Vec3 measure(Key key){
-        var pose=new PoseStack();pose.mulPose(Axis.YP.rotationDegrees(key.yaw));
-        pose.mulPose(Axis.XP.rotationDegrees(key.pitch));pose.mulPose(Axis.ZP.rotationDegrees(key.roll));
-        if(!key.custom)key.model.getTransforms().getTransform(ItemDisplayContext.FIXED).apply(false,pose);
+        var pose=new PoseStack();rotateModel(pose,key.yaw,key.pitch,key.roll);
+        var model=key.model.applyTransform(key.custom?ItemDisplayContext.NONE:ItemDisplayContext.FIXED,pose,false);
         pose.translate(-.5,-.5,-.5);
         var points=new ArrayList<Vector3f>();var random=net.minecraft.util.RandomSource.create(42);
         for(int face=-1;face<6;face++){
             random.setSeed(42);
-            for(var quad:key.model.getQuads(null,face<0?null:net.minecraft.core.Direction.values()[face],random)){
+            for(var quad:model.getQuads(null,face<0?null:net.minecraft.core.Direction.values()[face],random)){
                 int[] data=quad.getVertices();int stride=data.length/4;
                 for(int i=0;i<4;i++)points.add(pose.last().pose().transformPosition(new Vector3f(
                         Float.intBitsToFloat(data[i*stride]),Float.intBitsToFloat(data[i*stride+1]),Float.intBitsToFloat(data[i*stride+2]))));
@@ -42,9 +44,12 @@ public final class SwordFlightAttachment {
         if(points.isEmpty())return new Vec3(0,0,-.85/2.35);
         double rear=points.stream().mapToDouble(p->p.z).min().orElse(-.5);
         double front=points.stream().mapToDouble(p->p.z).max().orElse(.5);
-        double band=Math.max(.005,(front-rear)*.025),x=0,y=0;int count=0;
-        for(var p:points)if(p.z<=rear+band){x+=p.x;y+=p.y;count++;}
-        return new Vec3(x/count,y/count,rear);
+        double band=Math.max(.00001,(front-rear)*.0001);
+        double minX=Double.POSITIVE_INFINITY,minY=minX,maxX=Double.NEGATIVE_INFINITY,maxY=maxX;
+        for(var p:points)if(p.z<=rear+band){minX=Math.min(minX,p.x);maxX=Math.max(maxX,p.x);minY=Math.min(minY,p.y);maxY=Math.max(maxY,p.y);}
+        // A quad repeats its corners. Averaging those vertices biases the rear
+        // towards whichever side happens to contain more decorative faces.
+        return new Vec3((minX+maxX)*.5,(minY+maxY)*.5,rear);
     }
     private SwordFlightAttachment(){}
 }

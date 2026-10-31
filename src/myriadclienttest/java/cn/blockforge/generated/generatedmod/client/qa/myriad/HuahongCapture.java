@@ -25,12 +25,14 @@ import java.util.concurrent.CompletableFuture;
 public final class HuahongCapture {
     private static final boolean ENABLED=Boolean.getBoolean("wuxingxiantu.huahongCapture");
     private static final Path OUT=Path.of(System.getProperty("wuxingxiantu.huahongOutput","../../reports/huahong-client"));
+    private static final boolean SKINS=Boolean.getBoolean("wuxingxiantu.huahongSkins");
     private static final long START=System.nanoTime();
     private static final List<Object> ROWS=new ArrayList<>();
     private static final List<String> FAILURES=new ArrayList<>();
     private static final java.lang.reflect.Method CAMERA=ObfuscationReflectionHelper.findMethod(Camera.class,"m_90581_",Vec3.class);
-    private static boolean opened,ready,done;private static int tick;private static String pending;
+    private static boolean opened,ready,done,materialChecked;private static int tick;private static String pending;
     private static CompletableFuture<?> work;
+    private static net.minecraft.core.BlockPos occluder;
     private static int maxStage;private static double maxRatio;private static int maxVertices;
     @SubscribeEvent public static void tick(TickEvent.ClientTickEvent e){
         if(!ENABLED||done||e.phase!=TickEvent.Phase.END)return;
@@ -47,7 +49,7 @@ public final class HuahongCapture {
                 mc.createWorldOpenFlows().createFreshLevel("huahong-qa-"+System.currentTimeMillis(),new LevelSettings("Huahong isolated",GameType.SURVIVAL,false,net.minecraft.world.Difficulty.PEACEFUL,true,rules,WorldDataConfiguration.DEFAULT),new WorldOptions(7215,false,false),net.minecraft.world.level.levelgen.presets.WorldPresets::createNormalWorldDimensions);return;
             }
             if(mc.player==null||mc.level==null||mc.getSingleplayerServer()==null||mc.getOverlay()!=null||mc.screen instanceof net.minecraft.client.gui.screens.ReceivingLevelScreen)return;
-            if(mc.screen!=null)mc.setScreen(null);
+            if(mc.screen!=null&&(!SKINS||tick<900))mc.setScreen(null);
             if(!ready){
                 ready=true;var id=mc.player.getUUID();FlyingSwordConfig.TRAILS.set(true);FlyingSwordConfig.TRAIL_PATH.set(FlyingSwordConfig.TrailPath.NORMAL_TRAIL_RENDER_PATH);
                 work=mc.getSingleplayerServer().submitAsync(()->{
@@ -71,7 +73,7 @@ public final class HuahongCapture {
                 var id=mc.player.getUUID();work=mc.getSingleplayerServer().submitAsync(()->{
                     var p=mc.getSingleplayerServer().getPlayerList().getPlayer(id);
                     if(p.getVehicle() instanceof ControlledSwordEntity s){
-                        if(s.getZ()>45){s.setPos(8,180,-24);s.positionRider(p);}
+                        if(s.getZ()>45&&(!SKINS||tick<315)){s.setPos(8,180,-24);s.positionRider(p);}
                         var def=FlyingSwordRegistry.get(s.display());double normal=def.advanced().maxSpeed(s.advancedPhase(),def)*FlyingSwordConfig.CRUISE_FRACTION.get();
                         synchronized(ROWS){ROWS.add(Map.of("tick",tick,"stage",s.huahongStage(),"speed",s.flightSpeed(),"ratio",s.flightSpeed()/normal,"mana",GeneratedMod.data(p).wuxingxiantu$getAura(),"phase",s.advancedPhase().name()));}
                         maxStage=Math.max(maxStage,s.huahongStage());if(s.huahongStage()==2)maxRatio=Math.max(maxRatio,s.flightSpeed()/normal);
@@ -87,7 +89,7 @@ public final class HuahongCapture {
                 var id=mc.player.getUUID();work=mc.getSingleplayerServer().submitAsync(()->{
                     var p=mc.getSingleplayerServer().getPlayerList().getPlayer(id);
                     if(p.getVehicle() instanceof ControlledSwordEntity s){
-                        var corner=net.minecraft.core.BlockPos.containing(s.getX()+1,s.getY()-4,s.getZ()-6);
+                        var corner=net.minecraft.core.BlockPos.containing(s.getX()+1,s.getY()-4,s.getZ()-6);occluder=corner;
                         for(var pos:net.minecraft.core.BlockPos.betweenClosed(corner,corner.offset(11,18,0)))p.serverLevel().setBlockAndUpdate(pos,net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
                     }
                 });
@@ -95,7 +97,12 @@ public final class HuahongCapture {
             if(tick==156)pending="08-world-depth-occlusion.png";
             if(tick==160)mc.options.setCameraType(CameraType.FIRST_PERSON);
             if(tick==180)pending="04-first-person.png";
-            if(tick==190)mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+            if(tick==190){mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+                work=mc.getSingleplayerServer().submitAsync(()->{if(occluder!=null){
+                    var l=mc.getSingleplayerServer().overworld();
+                    for(var pos:net.minecraft.core.BlockPos.betweenClosed(occluder,occluder.offset(11,18,0)))l.setBlockAndUpdate(pos,net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+                }});
+            }
             if(tick==202)pending="05-exit.png";
             if(tick==215)pending="06-restored.png";
             if(tick==225){
@@ -110,13 +117,14 @@ public final class HuahongCapture {
             if(tick==300)pending="07-effects-disabled.png";
             if(tick>=315){
                 if(maxStage<3||maxRatio<1.95||maxVertices<40)throw new AssertionError("Missing actual stages/speed/geometry: "+maxStage+" / "+maxRatio+" / "+maxVertices);
-                finish(null);
+                if(!SKINS||HuahongSkinQa.tick(mc,tick,OUT,ROWS))finish(null);
             }
         }catch(Throwable error){finish(error);}
     }
     private static void input(){
         var mc=Minecraft.getInstance();boolean brake=tick>=200&&tick<225;
         float yaw=tick>=90&&tick<120?(tick-90)*.25F:tick>=120?7.5F:0;
+        if(SKINS&&tick>=320&&tick<880){int phase=(tick-320)%70;yaw=phase<=44?0:Math.min(16,phase-44)*1.5F;}
         Network.CHANNEL.sendToServer(new SwordFlightInputPacket(tick<20,tick==1||tick==20,!brake&&tick>=20,brake,false,false,false,false,!brake&&tick>=20,false,1,0,yaw,0));
     }
     @SubscribeEvent(priority=EventPriority.LOWEST) public static void camera(ViewportEvent.ComputeCameraAngles e)throws Exception{
@@ -129,6 +137,8 @@ public final class HuahongCapture {
     @SubscribeEvent(priority=EventPriority.LOWEST) public static void frame(TickEvent.RenderTickEvent e){
         if(!ENABLED||done||e.phase!=TickEvent.Phase.END)return;
         maxVertices=Math.max(maxVertices,HuahongVisuals.vertices);
+        if(SKINS&&!materialChecked&&tick>=50)try{materialChecked=true;ROWS.add(HuahongMaterialQa.verify(Minecraft.getInstance()));}catch(Throwable error){finish(error);return;}
+        if(SKINS)try{HuahongSkinQa.frame(Minecraft.getInstance(),OUT,ROWS);}catch(Throwable error){finish(error);}
         if(pending==null)return;var mc=Minecraft.getInstance();if(mc.player==null||mc.screen!=null||mc.getOverlay()!=null)return;
         try{
             int gl=org.lwjgl.opengl.GL11.glGetError();if(gl!=0)throw new AssertionError("GL error "+gl);

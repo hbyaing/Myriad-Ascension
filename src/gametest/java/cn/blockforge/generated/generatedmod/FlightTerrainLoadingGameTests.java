@@ -48,6 +48,15 @@ public final class FlightTerrainLoadingGameTests {
         h.assertTrue(FlightCollision.predict(player,box,requested)==FlightCollision.Prediction.UNLOADED,"Prediction read pending terrain");
         h.assertTrue(FlightCollision.clipLoaded(player,player,player.position(),player.position().add(requested)).isEmpty(),"Sword-tip ray waited for terrain");
         h.assertTrue(cache.getChunkNow(chunk.x,chunk.z)==null,"A flight query synchronously completed the load");
+        h.assertTrue(!cn.blockforge.generated.generatedmod.flight.FlightTerrainStreaming.available(player,box),"Realm flight accepted queued terrain");
+        h.assertTrue(cn.blockforge.generated.generatedmod.flight.FlightTerrainStreaming.limit(player,box,requested).equals(Vec3.ZERO),"Realm flight entered queued terrain");
+        var data=GeneratedMod.data(player);data.wuxingxiantu$setRealm(7);data.wuxingxiantu$setMaxMana(10000);data.wuxingxiantu$setAura(10000);
+        player.getAbilities().mayfly=true;player.getAbilities().flying=true;
+        cn.blockforge.generated.generatedmod.realmflight.RealmFlightControl.input(player,new Vec3(1,0,0),true);
+        cn.blockforge.generated.generatedmod.realmflight.RealmFlightControl.tick(player);
+        h.assertTrue(cache.getChunkNow(chunk.x,chunk.z)==null,"Realm prediction synchronously waited for generation");
+        h.assertTrue(player.getDeltaMovement().equals(Vec3.ZERO),"Realm flight failed to clip at queued terrain");
+        cn.blockforge.generated.generatedmod.realmflight.RealmFlightControl.release(player);
         h.startSequence().thenWaitUntil(()->h.assertTrue(cache.getChunkNow(chunk.x,chunk.z)!=null,"Waiting for asynchronous FULL readiness"))
             .thenExecute(()->{
                 var resumed=FlightCollision.sweep(player,box,requested,false);

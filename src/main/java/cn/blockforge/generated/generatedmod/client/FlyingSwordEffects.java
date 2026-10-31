@@ -36,7 +36,7 @@ public final class FlyingSwordEffects {
     private static float effectTime;
     private static boolean postPath,spiralPass;
     public record TrailDiagnostics(int swordId,int historyNodes,double firstArc,double headArc,double origin,
-            float headCoord,float time,float strength,double width){}
+            float headCoord,float time,float strength,double width,Vec3 attachment,Vec3 renderedHead){}
     private static final java.util.List<TrailDiagnostics> DIAGNOSTICS=new java.util.ArrayList<>();
     public static java.util.List<TrailDiagnostics> trailDiagnostics(){return java.util.List.copyOf(DIAGNOSTICS);}
     public static float capturedEffectTime(){return effectTime;}
@@ -149,8 +149,7 @@ public final class FlyingSwordEffects {
         EMISSION_BUFFER.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.POSITION_TEX_COLOR);
         buffer=VertexMultiConsumer.create(buffer,EMISSION_BUFFER);
         try{
-            HuahongVisuals.sample(TRAIL_CLOCK.tick());
-        int count=0;
+            int count=0;
             for(var entry:TRAILS.entrySet()){
                 var sword=entry.getKey();
                 if(client.options.getCameraType().isFirstPerson()&&sword==client.player.getVehicle())continue;
@@ -158,10 +157,8 @@ public final class FlyingSwordEffects {
                 if(++count>32)break;
                 var f=InterpolatedFlyingSwordTransform.get(sword,event.getPartialTick());
                 var history=entry.getValue();
-                var samples=history.nodes();int end=samples.size();
-                while(end>0&&samples.get(end-1).tick()>now)end--;
-                var nodes=samples.subList(0,end);if(nodes.size()<2)continue;
                 Vec3 anchor=SwordFlightAttachment.tail(sword,f.position(),f.yaw(),f.pitch(),f.roll());
+                var nodes=history.renderNodes(now,point(anchor));if(nodes.size()<2)continue;
                 float jinghong=sword.renderJinghong(event.getPartialTick());
                 if(sword.huahongStrength()>.5F)continue;
                 float strength=sword.advancedPhase().trailIntensity*(1+1.5F*jinghong);
@@ -172,29 +169,8 @@ public final class FlyingSwordEffects {
                 while(start<nodes.size()-2&&headArc-nodes.get(start).arc()>length)start++;
                 double origin=SwordTrailPhase.origin(nodes.get(start).arc(),sword.getUUID().hashCode());
                 DIAGNOSTICS.add(new TrailDiagnostics(sword.getId(),nodes.size(),nodes.get(start).arc(),headArc,
-                        origin,SwordTrailPhase.coordinate(headArc,origin),effectTime,strength,width));
-                Vec3 previous=vec(nodes.get(start).point());
-                double previousArc=nodes.get(start).arc();
-                double previousWidth=width*fade(nodes.get(start),headArc,length,now)*swordJoin(headArc-nodes.get(start).arc());
-                float previousAlpha=alpha*(float)fade(nodes.get(start),headArc,length,now);
-                int subdivisions=sword.distanceToSqr(eye)>1024?1:2;
-                for(int i=start;i<nodes.size()-1;i++){
-                    var node=nodes.get(i);var nextNode=nodes.get(i+1);
-                    Vec3 a=vec(nodes.get(Math.max(start,i-1)).point()),b=vec(node.point()),c=vec(nextNode.point()),d=vec(nodes.get(Math.min(nodes.size()-1,i+2)).point());
-                    for(int k=1;k<=subdivisions;k++){
-                        double t=k/(double)subdivisions;
-                        Vec3 next=catmull(a,b,c,d,t);
-                        double arc=Mth.lerp(t,node.arc(),nextNode.arc());
-                        double fade=Mth.lerp(t,fade(node,headArc,length,now),fade(nextNode,headArc,length,now));
-                        ribbon(buffer,pose.last(),previous,next,eye,previousWidth,width*fade*swordJoin(headArc-arc),previousAlpha,alpha*(float)fade,SwordTrailPhase.coordinate(previousArc,origin),SwordTrailPhase.coordinate(arc,origin),0);
-                        previous=next;previousArc=arc;previousWidth=width*fade*swordJoin(headArc-arc);previousAlpha=alpha*(float)fade;
-                    }
-                }
-                // This short unsampled head segment interpolates presentation only;
-                // it never appends a render-pass point to the fixed-tick history.
-                double headFade=Mth.clamp(1-(now-nodes.get(nodes.size()-1).tick())/22,0,1);
-                if(previous.distanceToSqr(anchor)<64)
-                    ribbon(buffer,pose.last(),previous,anchor,eye,previousWidth,width*headFade*.10,previousAlpha,alpha*(float)headFade,SwordTrailPhase.coordinate(previousArc,origin),SwordTrailPhase.coordinate(previousArc+previous.distanceTo(anchor),origin),0);
+                        origin,SwordTrailPhase.coordinate(headArc,origin),effectTime,strength,width,anchor,vec(nodes.get(nodes.size()-1).point())));
+                drawHistory(buffer,pose.last(),nodes,start,eye,headArc,length,now,width,alpha,origin);
                 sparks(buffer,pose.last(),nodes,start,eye,headArc,length,now,sword.getUUID().hashCode());
                 spiralPass=true;
                 spiral(buffer,pose.last(),f,anchor,eye,jinghong,SwordTrailPhase.coordinate(headArc,origin));
@@ -227,9 +203,29 @@ public final class FlyingSwordEffects {
         if(pending==null&&pendingEmission==null)return;
         event.getGuiGraphics().flush();renderStage="RenderGuiEvent.Pre";submitPending();
     }
-    private static Vec3 catmull(Vec3 a,Vec3 b,Vec3 c,Vec3 d,double t){
-        return b.scale(2).add(c.subtract(a).scale(t)).add(a.scale(2).subtract(b.scale(5)).add(c.scale(4)).subtract(d).scale(t*t))
-                .add(a.scale(-1).add(b.scale(3)).subtract(c.scale(3)).add(d).scale(t*t*t)).scale(.5);
+    /** Shared cross sections keep strip edges continuous through turns and near-axis views. */
+    private static void drawHistory(VertexConsumer buffer,PoseStack.Pose pose,List<SwordFlightTrailHistory.Node> nodes,
+            int start,Vec3 eye,double headArc,double length,double now,double width,float alpha,double origin){
+        Vec3 previous=null,previousSide=null;float previousU=0,previousA=0;
+        for(int i=start;i<nodes.size();i++){
+            var node=nodes.get(i);Vec3 center=vec(node.point());
+            Vec3 tangent=vec(nodes.get(Math.min(nodes.size()-1,i+1)).point()).subtract(vec(nodes.get(Math.max(start,i-1)).point()));
+            if(tangent.lengthSqr()<1e-12)continue;
+            tangent=tangent.normalize();Vec3 side=tangent.cross(eye.subtract(center));
+            if(side.lengthSqr()<1e-8&&previousSide!=null)side=previousSide.subtract(tangent.scale(previousSide.dot(tangent)));
+            if(side.lengthSqr()<1e-8)side=perpendicular(tangent);else side=side.normalize();
+            if(previousSide!=null&&side.dot(previousSide)<0)side=side.scale(-1);
+            double ageFade=fade(node,headArc,length,now);
+            side=side.scale(width*ageFade*swordJoin(headArc-node.arc()));
+            float u=SwordTrailPhase.coordinate(node.arc(),origin),a=alpha*(float)ageFade;
+            if(previous!=null&&previous.distanceToSqr(center)>1e-12){
+                vertex(buffer,pose,previous.add(previousSide),previousU,0,previousA);
+                vertex(buffer,pose,previous.subtract(previousSide),previousU,1,previousA);
+                vertex(buffer,pose,center.subtract(side),u,1,a);
+                vertex(buffer,pose,center.add(side),u,0,a);renderedSegments++;
+            }
+            previous=center;previousSide=side;previousU=u;previousA=a;
+        }
     }
     private static void spiral(VertexConsumer buffer,PoseStack.Pose pose,InterpolatedFlyingSwordTransform f,Vec3 anchor,Vec3 eye,float jinghong,float arc){
         float factor=Math.max(f.spiralFactor(),jinghong);if(factor<.15F||f.speed()<.03)return;

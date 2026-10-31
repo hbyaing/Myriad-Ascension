@@ -56,6 +56,9 @@ if (project.hasProperty('myriadCapture')) {
             if (project.hasProperty('backpackLayoutCapture')) { property 'wuxingxiantu.backpackLayoutCapture', 'true'; property 'wuxingxiantu.myriadCapture', 'false' }
             if (project.hasProperty('backpackCaptureOutput')) property 'wuxingxiantu.backpackCaptureOutput', project.file(project.property('backpackCaptureOutput')).absolutePath
             if (project.hasProperty('backpackExpectShaders')) property 'wuxingxiantu.backpackExpectShaders', 'true'
+            if (project.hasProperty('swordTailCapture')) { property 'wuxingxiantu.swordTailCapture', 'true'; property 'wuxingxiantu.myriadCapture', 'false' }
+            if (project.hasProperty('swordTailOutput')) property 'wuxingxiantu.swordTailOutput', project.file(project.property('swordTailOutput')).absolutePath
+            if (project.hasProperty('huahongSkins')) property 'wuxingxiantu.huahongSkins', 'true'
             if (project.hasProperty('huahongCapture')) {
                 property 'wuxingxiantu.huahongCapture', 'true'
                 property 'wuxingxiantu.myriadCapture', 'false'

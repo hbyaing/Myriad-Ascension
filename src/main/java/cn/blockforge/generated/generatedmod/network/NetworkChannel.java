@@ -69,12 +69,13 @@ import cn.blockforge.generated.generatedmod.*;
 
 public final class NetworkChannel {
     // New formation block/menu registries require matching client and server builds.
-    private static final String VERSION = "107";
+    private static final String VERSION = "108";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(GeneratedMod.MOD_ID, "main"), () -> VERSION, VERSION::equals, VERSION::equals);
     private static final java.util.Set<Integer> IDS=new java.util.HashSet<>();
 
     public static void register() {
+        c2s(96,cn.blockforge.generated.generatedmod.yujian.HuahongSkinPacket.class,cn.blockforge.generated.generatedmod.yujian.HuahongSkinPacket::encode,cn.blockforge.generated.generatedmod.yujian.HuahongSkinPacket::decode,cn.blockforge.generated.generatedmod.yujian.HuahongSkinPacket::handle);
         c2s(80,cn.blockforge.generated.generatedmod.network.packet.cultivation.ExoticFireTargetingPacket.class,cn.blockforge.generated.generatedmod.network.packet.cultivation.ExoticFireTargetingPacket::encode,cn.blockforge.generated.generatedmod.network.packet.cultivation.ExoticFireTargetingPacket::decode,cn.blockforge.generated.generatedmod.network.packet.cultivation.ExoticFireTargetingPacket::handle);
         c2s(79,cn.blockforge.generated.generatedmod.network.packet.cultivation.ManaLossTogglePacket.class,cn.blockforge.generated.generatedmod.network.packet.cultivation.ManaLossTogglePacket::encode,cn.blockforge.generated.generatedmod.network.packet.cultivation.ManaLossTogglePacket::decode,cn.blockforge.generated.generatedmod.network.packet.cultivation.ManaLossTogglePacket::handle);
         s2c(77,cn.blockforge.generated.generatedmod.network.packet.cultivation.ShieldShatterPacket.class,cn.blockforge.generated.generatedmod.network.packet.cultivation.ShieldShatterPacket::encode,cn.blockforge.generated.generatedmod.network.packet.cultivation.ShieldShatterPacket::decode,cn.blockforge.generated.generatedmod.network.packet.cultivation.ShieldShatterPacket::handle);
