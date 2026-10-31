@@ -72,10 +72,12 @@ public final class HuahongVisuals {
             Vec3 center=frame.position().add(0,.85,0),forward=frame.forward();
             boolean active=!sword.isRemoved()&&sword.huahongStrength()>.001F;
             var nodes=active?trail.history.renderNodes(now,point(center)):trail.history.nodes();
+            Vec3 modelSide=frame.local(1,0,0).subtract(frame.position());
             if(trail.skin!=cn.blockforge.generated.generatedmod.yujian.HuahongSkin.METEOR_PRISM){
-                vertices+=HuahongSkinGeometry.draw(trail.skin,buffer,pose,eye,center,forward,nodes,now,active?sword.renderHuahong(partial):0);
+                vertices+=HuahongSkinGeometry.draw(trail.skin,buffer,pose,eye,center,forward,modelSide,nodes,now,active?sword.renderHuahong(partial):0);
                 continue;
             }
+            var path=new HuahongFlightPath(nodes,center,forward,modelSide);
             double origin=nodes.isEmpty()?0:Math.floor(nodes.get(0).arc()/256)*256;
             ArrayList<Row> rows=new ArrayList<>(nodes.size());
             for(var n:nodes){
@@ -108,18 +110,18 @@ public final class HuahongVisuals {
                 float strength=(float)Math.pow(sword.renderHuahong(partial),1.4);rows.clear();
                 for(int i=0;i<=68;i++){
                     double q=i/68.0,w=Math.max(.012,Math.pow(Math.max(0,Math.sin(Math.PI*q)),.65)*Math.exp(-q*2.7));
-                    rows.add(new Row(center.add(forward.scale(.26-q*HEAD_LENGTH)),-q*HEAD_LENGTH,w,strength*(float)(1-q),0xe8faff));
+                    rows.add(new Row(path.behind(q*HEAD_LENGTH).p().add(forward.scale(.26)),-q*HEAD_LENGTH,w,strength*(float)(1-q),0xe8faff));
                 }
                 strip(buffer,pose,eye,rows,WIDTH*2.1,.11F,10);
                 strip(buffer,pose,eye,rows,WIDTH*.44,1.0F,8);
-                Vec3 side=perpendicular(forward),up=side.cross(forward).normalize();
                 for(int strand=0;strand<4;strand++){
                     rows.clear();double phase=strand*2.399;
                     for(int i=0;i<=60;i++){
                         double q=i/60.0,reach=Math.sin(Math.PI*q)*SPREAD*.075;
                         double angle=phase+q*.5+Math.sin(q*7-now/20*1.3+strand)*q*.22;
-                        Vec3 p=center.add(forward.scale(.17-q*HEAD_LENGTH*(.55+random(strand+7)*.45)))
-                                .add(side.scale(Math.cos(angle)*reach)).add(up.scale(Math.sin(angle)*reach));
+                        var section=path.behind(q*HEAD_LENGTH*(.55+random(strand+7)*.45));
+                        Vec3 p=section.p().add(forward.scale(.17))
+                                .add(section.side().scale(Math.cos(angle)*reach)).add(section.up().scale(Math.sin(angle)*reach));
                         rows.add(new Row(p,-q*HEAD_LENGTH+strand*.83,Math.pow(Math.max(0,Math.sin(Math.PI*q)),.65)*(1-q*.65),
                                 strength*(float)(1-q),mix(0x8274ff,0xe8faff,Math.pow(1-q,4)*.8)));
                     }

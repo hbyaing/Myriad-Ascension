@@ -120,6 +120,17 @@ public final class ControlledSwordEntity extends Entity {
     }
     public void order(String id,Vec3 point,UUID victim,net.minecraft.core.BlockPos pos,int uses){art=id;anchor=point;target=victim;block=pos;mastery=uses;age=0;hits.clear();}
     public void syncFlightDisplay(ItemStack source){if(!ItemStack.matches(display(),source))entityData.set(ITEM,source.copy());}
+    @Override protected void onBelowWorld(){
+        if(flightRoot()){
+            // A flight carrier must not vanish underneath a living rider at the
+            // vanilla item/entity cleanup altitude. The player's own void damage
+            // and the normal owner/equipment/lifecycle checks remain authoritative.
+            if(level().isClientSide)return;
+            var player=ownerId==null?null:level().getPlayerByUUID(ownerId);
+            if(player!=null&&player.isAlive()&&distanceToSqr(player)<=64)return;
+        }
+        super.onBelowWorld();
+    }
     @Override public void tick(){
         previousHuahong=visualHuahong;visualHuahong=huahongStrength();
         super.tick();

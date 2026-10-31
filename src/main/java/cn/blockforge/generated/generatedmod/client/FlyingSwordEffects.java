@@ -229,14 +229,15 @@ public final class FlyingSwordEffects {
     }
     private static void spiral(VertexConsumer buffer,PoseStack.Pose pose,InterpolatedFlyingSwordTransform f,Vec3 anchor,Vec3 eye,float jinghong,float arc){
         float factor=Math.max(f.spiralFactor(),jinghong);if(factor<.15F||f.speed()<.03)return;
-        Vec3 forward=f.forward(),side=perpendicular(forward),up=side.cross(forward).normalize();
+        Vec3 forward=f.forward(),side=f.local(1,0,0).subtract(f.position()).normalize(),up=side.cross(forward).normalize();
         double intensity=Math.max(f.brace(),jinghong)*(.18+.82*factor),length=1.2+6.5*factor,radius=.06+.40*intensity;
         int strands=factor>.52?2:1;
         for(int strand=0;strand<strands;strand++){
             Vec3 previous=null;
             for(int i=0;i<=72;i++){
-                double t=i/72.0,phase=Math.toRadians(f.manualRoll())-t*(4.0+factor*7.0)+strand*Math.PI;
-                Vec3 p=anchor.subtract(forward.scale(t*length)).add(side.scale(Math.cos(phase)*radius)).add(up.scale(Math.sin(phase)*radius));
+                double t=i/72.0,phase=-t*(4.0+factor*7.0)+strand*Math.PI;
+                double join=t*t*(3-2*t);
+                Vec3 p=anchor.subtract(forward.scale(t*length)).add(side.scale(Math.cos(phase)*radius*join)).add(up.scale(Math.sin(phase)*radius*join));
                 if(previous!=null){
                     double w=(.022+.035*intensity)*(1-t*.7);float alpha=(float)((.42+.35*factor)*intensity*(1-t));
                     ribbon(buffer,pose,previous,p,eye,w,w,alpha,alpha,arc-(float)((i-1)*length/72),arc-(float)(t*length),2);
@@ -259,10 +260,10 @@ public final class FlyingSwordEffects {
         Vec3 axis=Math.abs(direction.y)>.92?new Vec3(1,0,0):new Vec3(0,1,0);
         return direction.cross(axis).normalize();
     }
-    /** Narrow at the actual sword tail, smoothly opening over 1.4 blocks. */
+    /** Spread the opening over several blocks so the thin root does not flare abruptly. */
     private static double swordJoin(double behind){
-        double t=Mth.clamp(behind/1.4,0,1);
-        return .10+.90*t*t*(3-2*t);
+        double t=Mth.clamp(behind/4.5,0,1);
+        return .08+.92*t*t*(3-2*t);
     }
     private static void ribbon(VertexConsumer buffer,PoseStack.Pose pose,Vec3 a,Vec3 c,Vec3 eye,double aw,double cw,float aa,float ca,float au,float cu,float mode){
         Vec3 tangent=c.subtract(a);double distance=tangent.lengthSqr();

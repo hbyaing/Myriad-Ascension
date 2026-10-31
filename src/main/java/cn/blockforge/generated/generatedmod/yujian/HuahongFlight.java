@@ -3,7 +3,7 @@ package cn.blockforge.generated.generatedmod.yujian;
 /** Server-owned rainbow flight lifecycle. Orthogonal to Dunxu collision permission. */
 public final class HuahongFlight {
     public static final int STABLE_TICKS=20, GATHER_TICKS=6, ACCEL_TICKS=8, EXIT_TICKS=8, COOLDOWN=20;
-    public static final double ENTRY_RATIO=.90, ENTRY_COST=.01, UPKEEP_PER_SECOND=.02;
+    public static final double ENTRY_RATIO=.90, ENTRY_COST=.0025, UPKEEP_PER_SECOND=.005;
     private int stage,ticks,stable,cooldown;
     private float strength,exitStrength;
     public int stage(){return stage;}

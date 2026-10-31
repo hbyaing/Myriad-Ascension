@@ -24,12 +24,13 @@ import java.util.concurrent.CompletableFuture;
 @Mod.EventBusSubscriber(modid=GeneratedMod.MOD_ID,value=Dist.CLIENT)
 public final class SwordTailCapture {
     private static final boolean ENABLED=Boolean.getBoolean("wuxingxiantu.swordTailCapture");
+    private static final boolean FULL_SPEED=Boolean.getBoolean("wuxingxiantu.swordTailFullSpeed");
     private static final Path OUT=Path.of(System.getProperty("wuxingxiantu.swordTailOutput","../../reports/sword-tail-20261031"));
     private static final long START=System.nanoTime();
     private static final List<Object> ROWS=new ArrayList<>();
     private static final List<String> FAILURES=new ArrayList<>();
     private static final java.lang.reflect.Method CAMERA=ObfuscationReflectionHelper.findMethod(Camera.class,"m_90581_",Vec3.class);
-    private static boolean opened,ready,done;private static int tick;private static String pending;
+    private static boolean opened,ready,done;private static int tick,lastMotionTick=-1;private static String pending;
     private static CompletableFuture<?> work;
     private static int attachmentFrames;private static double maxAttachmentError;
     private static int maxStage;private static double maxRatio;private static int maxVertices;
@@ -59,7 +60,7 @@ public final class SwordTailCapture {
                     p.getInventory().setItem(0,new net.minecraft.world.item.ItemStack(WuXingItems.DARK_IRON_SWORD.get()));p.getInventory().selected=0;
                     var d=GeneratedMod.data(p);d.wuxingxiantu$setRealm(99);d.wuxingxiantu$learnArt(YujianController.FLIGHT);d.wuxingxiantu$setArtMastery(YujianController.FLIGHT,100);
                     d.wuxingxiantu$setMaxMana(1000000);d.wuxingxiantu$setAura(1000000);p.getPersistentData().putLong("YujianCooldown_DUNXU",Long.MAX_VALUE);
-                    FlyingSwordConfig.SPEED_MULTIPLIER.set(1.0);GeneratedMod.sync(p);p.containerMenu.broadcastChanges();
+                    FlyingSwordConfig.SPEED_MULTIPLIER.set(FULL_SPEED?1.0:.1);GeneratedMod.sync(p);p.containerMenu.broadcastChanges();
                 });return;
             }
             if(work!=null){if(!work.isDone())return;work.join();work=null;}
@@ -72,7 +73,6 @@ public final class SwordTailCapture {
                 var id=mc.player.getUUID();work=mc.getSingleplayerServer().submitAsync(()->{
                     var p=mc.getSingleplayerServer().getPlayerList().getPlayer(id);
                     if(p.getVehicle() instanceof ControlledSwordEntity s){
-                        if(s.getZ()>45){s.setPos(8,180,-24);s.positionRider(p);}
                         var def=FlyingSwordRegistry.get(s.display());double normal=def.advanced().maxSpeed(s.advancedPhase(),def)*FlyingSwordConfig.CRUISE_FRACTION.get();
                         synchronized(ROWS){ROWS.add(Map.of("tick",tick,"stage",s.huahongStage(),"speed",s.flightSpeed(),"ratio",s.flightSpeed()/normal,"mana",GeneratedMod.data(p).wuxingxiantu$getAura(),"phase",s.advancedPhase().name()));}
                         maxStage=Math.max(maxStage,s.huahongStage());if(s.huahongStage()==2)maxRatio=Math.max(maxRatio,s.flightSpeed()/normal);
@@ -80,6 +80,7 @@ public final class SwordTailCapture {
                 });
             }
             if(tick==80)pending="01-dark-iron-straight.png";
+            if(FULL_SPEED&&tick>=90){if(maxVertices<40||attachmentFrames<40)throw new AssertionError("Missing full-speed tail frames");finish(null);return;}
             if(tick==115||tick==180||tick==245){
                 var id=mc.player.getUUID();var item=tick==115?WuXingItems.AZURE_STEEL_SWORD.get():tick==180?WuXingItems.TIANGANG_SWORD.get():WuXingItems.BIG_DIPPER_SWORD.get();
                 work=mc.getSingleplayerServer().submitAsync(()->{var p=mc.getSingleplayerServer().getPlayerList().getPlayer(id);GeneratedMod.data(p).wuxingxiantu$setYujianStack(new net.minecraft.world.item.ItemStack(item));GeneratedMod.sync(p);});
@@ -100,7 +101,7 @@ public final class SwordTailCapture {
     @SubscribeEvent(priority=EventPriority.LOWEST) public static void camera(ViewportEvent.ComputeCameraAngles e)throws Exception{
         if(!ENABLED||done||tick<25)return;var mc=Minecraft.getInstance();
         if(mc.player==null||!(mc.player.getVehicle() instanceof ControlledSwordEntity s)||mc.options.getCameraType().isFirstPerson())return;
-        var target=s.getPosition((float)e.getPartialTick()).add(0,.85,0);
+        var target=InterpolatedFlyingSwordTransform.get(s,(float)e.getPartialTick()).position().add(0,.85,0);
         var eye=target.add(4,1.4,-5);var delta=target.subtract(eye);CAMERA.invoke(e.getCamera(),eye);
         e.setYaw((float)Math.toDegrees(Math.atan2(-delta.x,delta.z)));e.setPitch((float)-Math.toDegrees(Math.atan2(delta.y,delta.horizontalDistance())));e.setRoll(0);
     }
@@ -111,15 +112,22 @@ public final class SwordTailCapture {
             double error=d.attachment().distanceTo(d.renderedHead());maxAttachmentError=Math.max(maxAttachmentError,error);attachmentFrames++;
             if(error>1e-6){finish(new AssertionError("Trail detached: "+error));return;}
         }
+        if(tick>=185&&tick<=225&&lastMotionTick!=tick)try{
+            lastMotionTick=tick;Files.createDirectories(OUT.resolve("motion"));
+            try(var image=Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget())){
+                image.writeToFile(OUT.resolve("motion").resolve(String.format(Locale.ROOT,"%04d.png",tick)));
+            }
+        }catch(Throwable error){finish(error);return;}
         if(pending==null)return;var mc=Minecraft.getInstance();if(mc.player==null||mc.screen!=null||mc.getOverlay()!=null)return;
         try{
             int gl=org.lwjgl.opengl.GL11.glGetError();if(gl!=0)throw new AssertionError("GL error "+gl);
+            if(tick<320&&FlyingSwordEffects.normalTrailVertexCount<40)throw new AssertionError("Missing sword trail at capture tick "+tick);
 
-            if(tick>=120&&Boolean.getBoolean("wuxingxiantu.myriadExternalShaders")&&!TrailShaderBridge.shaderPackDetected())
+            if(Boolean.getBoolean("wuxingxiantu.myriadExternalShaders")&&!TrailShaderBridge.shaderPackDetected())
                 throw new AssertionError("Requested external shaderpack is not active");
             String name=pending;pending=null;
             try(var image=Screenshot.takeScreenshot(mc.getMainRenderTarget())){image.writeToFile(OUT.resolve(name));}
-            ROWS.add(Map.of("image",name,"vertices",HuahongVisuals.vertices,"path",FlyingSwordEffects.activeTrailRenderPath,"pack",TrailShaderBridge.shaderPackDetected(),"glError",gl));
+            ROWS.add(Map.of("image",name,"vertices",FlyingSwordEffects.normalTrailVertexCount,"path",FlyingSwordEffects.activeTrailRenderPath,"pack",TrailShaderBridge.shaderPackDetected(),"glError",gl,"clientPosition",mc.player.getVehicle().position().toString(),"clientYaw",mc.player.getVehicle().getYRot()));
         }catch(Throwable ex){finish(ex);}
     }
     private static void finish(Throwable error){

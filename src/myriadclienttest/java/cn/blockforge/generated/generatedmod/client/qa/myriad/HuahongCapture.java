@@ -26,11 +26,12 @@ public final class HuahongCapture {
     private static final boolean ENABLED=Boolean.getBoolean("wuxingxiantu.huahongCapture");
     private static final Path OUT=Path.of(System.getProperty("wuxingxiantu.huahongOutput","../../reports/huahong-client"));
     private static final boolean SKINS=Boolean.getBoolean("wuxingxiantu.huahongSkins");
+    private static final boolean MOTION=Boolean.getBoolean("wuxingxiantu.huahongMotion");
     private static final long START=System.nanoTime();
     private static final List<Object> ROWS=new ArrayList<>();
     private static final List<String> FAILURES=new ArrayList<>();
     private static final java.lang.reflect.Method CAMERA=ObfuscationReflectionHelper.findMethod(Camera.class,"m_90581_",Vec3.class);
-    private static boolean opened,ready,done,materialChecked;private static int tick;private static String pending;
+    private static boolean opened,ready,done,materialChecked,pathChecked;private static int tick,motionFrame;private static String pending;
     private static CompletableFuture<?> work;
     private static net.minecraft.core.BlockPos occluder;
     private static int maxStage;private static double maxRatio;private static int maxVertices;
@@ -117,7 +118,7 @@ public final class HuahongCapture {
             if(tick==300)pending="07-effects-disabled.png";
             if(tick>=315){
                 if(maxStage<3||maxRatio<1.95||maxVertices<40)throw new AssertionError("Missing actual stages/speed/geometry: "+maxStage+" / "+maxRatio+" / "+maxVertices);
-                if(!SKINS||HuahongSkinQa.tick(mc,tick,OUT,ROWS))finish(null);
+                if(!SKINS||(MOTION&&tick>=880)||HuahongSkinQa.tick(mc,tick,OUT,ROWS))finish(null);
             }
         }catch(Throwable error){finish(error);}
     }
@@ -125,7 +126,9 @@ public final class HuahongCapture {
         var mc=Minecraft.getInstance();boolean brake=tick>=200&&tick<225;
         float yaw=tick>=90&&tick<120?(tick-90)*.25F:tick>=120?7.5F:0;
         if(SKINS&&tick>=320&&tick<880){int phase=(tick-320)%70;yaw=phase<=44?0:Math.min(16,phase-44)*1.5F;}
-        Network.CHANNEL.sendToServer(new SwordFlightInputPacket(tick<20,tick==1||tick==20,!brake&&tick>=20,brake,false,false,false,false,!brake&&tick>=20,false,1,0,yaw,0));
+        float pitch=0;
+        if(MOTION&&tick>=320&&tick<880){int phase=(tick-320)%70;pitch=(float)(-20*Math.sin(phase*Math.PI/70));}
+        Network.CHANNEL.sendToServer(new SwordFlightInputPacket(tick<20,tick==1||tick==20,!brake&&tick>=20,brake,false,false,false,false,!brake&&tick>=20,false,1,0,yaw,pitch));
     }
     @SubscribeEvent(priority=EventPriority.LOWEST) public static void camera(ViewportEvent.ComputeCameraAngles e)throws Exception{
         if(!ENABLED||done||tick<25)return;var mc=Minecraft.getInstance();
@@ -137,8 +140,18 @@ public final class HuahongCapture {
     @SubscribeEvent(priority=EventPriority.LOWEST) public static void frame(TickEvent.RenderTickEvent e){
         if(!ENABLED||done||e.phase!=TickEvent.Phase.END)return;
         maxVertices=Math.max(maxVertices,HuahongVisuals.vertices);
+        if(!pathChecked&&tick>=50)try{pathChecked=true;ROWS.add(HuahongPathQa.verify());}catch(Throwable error){finish(error);return;}
         if(SKINS&&!materialChecked&&tick>=50)try{materialChecked=true;ROWS.add(HuahongMaterialQa.verify(Minecraft.getInstance()));}catch(Throwable error){finish(error);return;}
         if(SKINS)try{HuahongSkinQa.frame(Minecraft.getInstance(),OUT,ROWS);}catch(Throwable error){finish(error);}
+        if(MOTION&&tick>=320&&tick<880){
+            int phase=(tick-320)%70;
+            if(phase>=35&&phase<=62)try{
+                Files.createDirectories(OUT.resolve("motion"));
+                try(var image=Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget())){
+                    image.writeToFile(OUT.resolve("motion").resolve(String.format(Locale.ROOT,"%d-%04d.png",(tick-320)/70,motionFrame++)));
+                }
+            }catch(Throwable error){finish(error);return;}
+        }
         if(pending==null)return;var mc=Minecraft.getInstance();if(mc.player==null||mc.screen!=null||mc.getOverlay()!=null)return;
         try{
             int gl=org.lwjgl.opengl.GL11.glGetError();if(gl!=0)throw new AssertionError("GL error "+gl);

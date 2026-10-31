@@ -58,7 +58,9 @@ if (project.hasProperty('myriadCapture')) {
             if (project.hasProperty('backpackExpectShaders')) property 'wuxingxiantu.backpackExpectShaders', 'true'
             if (project.hasProperty('swordTailCapture')) { property 'wuxingxiantu.swordTailCapture', 'true'; property 'wuxingxiantu.myriadCapture', 'false' }
             if (project.hasProperty('swordTailOutput')) property 'wuxingxiantu.swordTailOutput', project.file(project.property('swordTailOutput')).absolutePath
+            if (project.hasProperty('swordTailFullSpeed')) property 'wuxingxiantu.swordTailFullSpeed', 'true'
             if (project.hasProperty('huahongSkins')) property 'wuxingxiantu.huahongSkins', 'true'
+            if (project.hasProperty('huahongMotion')) property 'wuxingxiantu.huahongMotion', 'true'
             if (project.hasProperty('huahongCapture')) {
                 property 'wuxingxiantu.huahongCapture', 'true'
                 property 'wuxingxiantu.myriadCapture', 'false'
@@ -80,6 +82,17 @@ if (project.hasProperty('myriadCapture')) {
 if (project.hasProperty('heavenlySmallWorld')) {
     repositories { flatDir { dirs project.file('build/creation-compat-libs') } }
     dependencies { runtimeOnly fg.deobf('creation-test:wuxingchuangshi:1.0') }
+}
+
+// Explicit, local compatibility fixture. The other Mod is never a production dependency.
+if (project.hasProperty('flightXianjieCompatibility')) {
+    repositories { flatDir { dirs project.file('build/flight-compat-libs') } }
+    dependencies { runtimeOnly fg.deobf('flight-compat:wuxingchuangshi:1.0') }
+    minecraft.runs.configureEach {
+        property 'wuxingxiantu.flightXianjieCompatibility', 'true'
+        property 'mixin.env.remapRefMap', 'true'
+        property 'mixin.env.refMapRemappingFile', file('build/createSrgToMcp/output.srg').absolutePath
+    }
 }
 
 // Optional compatibility fixture; never a production dependency or bundled mod.
@@ -423,6 +436,10 @@ minecraft.runs {
             property 'forge.enabledGameTestNamespaces', project.hasProperty('v5DawnOnly') ? 'wuxingxiantu_v5dawn' : project.hasProperty('alchemyMigrationOnly') ? 'wuxingxiantu_alchemymigration' : project.hasProperty('carvingOnly') ? 'wuxingxiantu_carving' : project.hasProperty('fireTargetingOnly') ? 'wuxingxiantu_firetargets' : project.hasProperty('herbLookbackOnly') ? 'wuxingxiantu_herblookback' : project.hasProperty('talismansOnly') ? 'wuxingxiantu_talismans' : project.hasProperty('furnaceExplosionOnly') ? 'wuxingxiantu_furnaceexplosion' : project.hasProperty('domainDamageOnly') ? 'wuxingxiantu_domainbalance' : project.hasProperty('spiritShieldOnly') ? 'wuxingxiantu_shield' : project.hasProperty('xuanlingAnvilOnly') ? 'wuxingxiantu_anvil' : project.hasProperty('tribulationOnly') ? 'wuxingxiantu_tribulation' : project.hasProperty('realmFlightOnly') ? 'wuxingxiantu_realmflight' :
                 (project.hasProperty('entryUiOnly') ? 'wuxingxiantu_entry' :
                 (project.hasProperty('bossCombatOnly') ? 'wuxingxiantu_boss' : 'wuxingxiantu,wuxingxiantu_boss,wuxingxiantu_entry,wuxingxiantu_alchemymigration,wuxingxiantu_realmflight,wuxingxiantu_anvil,wuxingxiantu_shield,wuxingxiantu_domainbalance,wuxingxiantu_carving'))
+            if (project.hasProperty('flightXianjieCompatibility')) {
+                workingDirectory project.file('build/flight-xianjie-gametest')
+                property 'forge.enabledGameTestNamespaces', 'wuxingxiantu_flightcompat'
+            }
         mods {
             wuxingxiantu {
                 source sourceSets.main

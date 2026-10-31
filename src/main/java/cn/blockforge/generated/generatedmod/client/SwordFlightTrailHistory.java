@@ -32,18 +32,33 @@ public final class SwordFlightTrailHistory {
         while(i<nodes.size()&&nodes.get(i).tick()<=now)presentation.add(nodes.get(i++));
         if(presentation.isEmpty())return presentation;
         Node last=presentation.get(presentation.size()-1);
-        if(attachment.distance(last.point())<.00001){
-            presentation.set(presentation.size()-1,new Node(attachment,last.tick(),last.arc()));
-            return presentation;
-        }
         double headArc=last.arc();
-        if(i<nodes.size()){
+        boolean stationary=attachment.distance(last.point())<.00001;
+        if(!stationary&&i<nodes.size()){
             Node next=nodes.get(i);
             double fraction=Math.max(0,Math.min(1,(now-last.tick())/Math.max(1e-9,next.tick()-last.tick())));
             headArc+=(next.arc()-last.arc())*fraction;
-        }else headArc+=attachment.distance(last.point());
-        if(Math.abs(now-last.tick())<1e-8)presentation.remove(presentation.size()-1);
-        presentation.add(new Node(attachment,now,headArc));
+        }else if(!stationary)headArc+=attachment.distance(last.point());
+        Node head=new Node(attachment,stationary?last.tick():now,headArc);
+        if(stationary||Math.abs(now-last.tick())<1e-8)
+            presentation.remove(presentation.size()-1);
+        presentation.add(head);
+        // Clip continuously at a fixed arc distance behind the live attachment.
+        // Dropping whole nodes here made the near-head tangent jump at every
+        // sample boundary; skipping exact tick endpoints reintroduced tiny edges.
+        double joinArc=headArc-SPACING*2;
+        int join=presentation.size()-2;
+        while(join>0&&presentation.get(join).arc()>joinArc)join--;
+        if(join>=0){
+            Node a=presentation.get(join),b=presentation.get(join+1);
+            double fraction=(joinArc-a.arc())/Math.max(1e-9,b.arc()-a.arc());
+            presentation.subList(join+1,presentation.size()).clear();
+            if(fraction>1e-8&&fraction<1-1e-8)
+                presentation.add(new Node(a.point().lerp(b.point(),fraction),
+                        a.tick()+(b.tick()-a.tick())*fraction,joinArc));
+            else if(fraction>=1-1e-8&&b!=head)presentation.add(b);
+            presentation.add(head);
+        }
         return presentation;
     }
     public void sample(Point point,double tick){

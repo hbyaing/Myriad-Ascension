@@ -48,7 +48,7 @@ public final class HuahongGameTests {
             float before=data.wuxingxiantu$getAura();
             root.setPos(start);root.positionRider(p);
             YujianController.tickFlightEntity(root,p);
-            float expected=(float)(cn.blockforge.generated.generatedmod.items.CultivationLogic.maxAura(data)*.02/20);
+            float expected=(float)(cn.blockforge.generated.generatedmod.items.CultivationLogic.maxAura(data)*HuahongFlight.UPKEEP_PER_SECOND/20);
             h.assertTrue(Math.abs(before-data.wuxingxiantu$getAura()-expected)<.02,"Rainbow double-charged ordinary upkeep");
             YujianController.handleInput(p,false,false,true,true,false,false,false,false,true,false,1,0,0,0);
             YujianController.tickFlightEntity(root,p);

@@ -123,6 +123,7 @@ public final class FlightCollision {
         var level=player.serverLevel();
         var min=BlockPos.containing(box.minX-1,Math.max(level.getMinBuildHeight(),box.minY-1),box.minZ-1);
         var max=BlockPos.containing(box.maxX+1,Math.min(level.getMaxBuildHeight()-1,box.maxY),box.maxZ+1);
+        if(min.getY()>max.getY())return Prediction.CLEAR;
         long volume=(long)(max.getX()-min.getX()+1)*(max.getY()-min.getY()+1)*(max.getZ()-min.getZ()+1);
         if(volume>YujianTuning.MAX_COLLISION_BLOCKS)return Prediction.BLOCKED;
         for(BlockPos pos:BlockPos.betweenClosed(min,max)) {

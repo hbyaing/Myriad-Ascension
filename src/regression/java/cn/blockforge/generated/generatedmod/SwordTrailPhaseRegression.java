@@ -24,6 +24,25 @@ public final class SwordTrailPhaseRegression {
         var close=h.renderNodes(4,tiny);
         require(close.get(close.size()-1).point().equals(tiny),"Near-equal attachment must still use the exact model endpoint");
         require(h.nodes().get(h.nodes().size()-1).point().y()==0,"Near-equal attachment changed simulation history");
+        // The rendered rear rotates on an arc, while fixed tick samples follow
+        // its chord. A very short final segment previously made its tangent jump.
+        var curved=new SwordFlightTrailHistory();
+        curved.sample(new SwordFlightTrailHistory.Point(-2,0,0),0);
+        curved.sample(new SwordFlightTrailHistory.Point(0,0,0),1);
+        curved.sample(new SwordFlightTrailHistory.Point(2,0,0),2);
+        SwordFlightTrailHistory.Point previousJoin=null;
+        for(int frame=0;frame<=100;frame++){
+            double now=1+frame/100.0;
+            var anchor=new SwordFlightTrailHistory.Point((now-1)*2,.08*Math.sin(Math.PI*(now-1)),0);
+            var rows=curved.renderNodes(now,anchor);
+            require(rows.size()>=2,"Curved attachment lost history");
+            var head=rows.get(rows.size()-1);
+            require(head.point().equals(anchor),"Curved head detached");
+            require(head.point().distance(rows.get(rows.size()-2).point())>=.18-1e-9,"Near-zero head segment destabilizes tangent");
+            var join=rows.get(rows.size()-2).point();
+            if(previousJoin!=null)require(join.distance(previousJoin)<.04,"Join jumped at a fixed sample boundary");
+            previousJoin=join;
+        }
     }
     private static void require(boolean condition,String message){checks++;if(!condition)throw new AssertionError(message);}
     private static void near(double a,double b,double tolerance,String message){require(Math.abs(a-b)<=tolerance,message+": "+a+" / "+b);}

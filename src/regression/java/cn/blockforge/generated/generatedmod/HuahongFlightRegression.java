@@ -4,6 +4,7 @@ import cn.blockforge.generated.generatedmod.yujian.HuahongFlight;
 
 final class HuahongFlightRegression {
     static void run(){
+        check(HuahongFlight.ENTRY_COST==.0025&&HuahongFlight.UPKEEP_PER_SECOND==.005,"reduced entry and sustained mana budget");
         check(!HuahongFlight.supported(5)&&HuahongFlight.supported(6)&&HuahongFlight.supported(7),"sword tier boundary");
         var f=new HuahongFlight();
         for(int i=0;i<100;i++)check(!f.tick(true,false,true)&&f.stage()==0,"stationary input must not charge");

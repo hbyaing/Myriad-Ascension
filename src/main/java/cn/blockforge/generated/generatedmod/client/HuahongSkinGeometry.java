@@ -1,6 +1,7 @@
 package cn.blockforge.generated.generatedmod.client;
 
 import cn.blockforge.generated.generatedmod.yujian.HuahongSkin;
+import cn.blockforge.generated.generatedmod.client.HuahongFlightPath.Frame;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.util.Mth;
@@ -12,7 +13,7 @@ import java.util.*;
  * No reference-only V13 shader, carrier model or browser code is embedded. */
 final class HuahongSkinGeometry {
     private record Row(Vec3 p,double u,double width,float alpha,int color,Vec3 side){}
-    private record Frame(Vec3 p,Vec3 forward,Vec3 side,Vec3 up){}
+    private final HuahongFlightPath path;
     private final VertexConsumer out;
     private final PoseStack.Pose pose;
     private final Vec3 eye,center,forward;
@@ -20,14 +21,15 @@ final class HuahongSkinGeometry {
     private final double now,origin;
     private final float strength;
     private int vertices;
-    private HuahongSkinGeometry(VertexConsumer out,PoseStack.Pose pose,Vec3 eye,Vec3 center,Vec3 forward,
+    private HuahongSkinGeometry(VertexConsumer out,PoseStack.Pose pose,Vec3 eye,Vec3 center,Vec3 forward,Vec3 headSide,
             List<SwordFlightTrailHistory.Node> nodes,double now,float strength){
         this.out=out;this.pose=pose;this.eye=eye;this.center=center;this.forward=forward;this.nodes=nodes;this.now=now;this.strength=strength;
+        path=new HuahongFlightPath(nodes,center,forward,headSide);
         origin=nodes.isEmpty()?0:Math.floor(nodes.get(0).arc()/256)*256;
     }
-    static int draw(HuahongSkin skin,VertexConsumer out,PoseStack.Pose pose,Vec3 eye,Vec3 center,Vec3 forward,
+    static int draw(HuahongSkin skin,VertexConsumer out,PoseStack.Pose pose,Vec3 eye,Vec3 center,Vec3 forward,Vec3 headSide,
             List<SwordFlightTrailHistory.Node> nodes,double now,float strength){
-        var g=new HuahongSkinGeometry(out,pose,eye,center,forward,nodes,now,strength);
+        var g=new HuahongSkinGeometry(out,pose,eye,center,forward,headSide,nodes,now,strength);
         switch(skin){
             case NEEDLE -> g.needle();
             case METEOR_FLAME -> g.fire(false);
@@ -44,19 +46,11 @@ final class HuahongSkinGeometry {
     private static double rnd(double x){double v=Math.sin(x*71.371+19.713)*15317.317;return v-Math.floor(v);}
     private static Vec3 vec(SwordFlightTrailHistory.Point p){return new Vec3(p.x(),p.y(),p.z());}
     private static Vec3 side(Vec3 f){return f.cross(Math.abs(f.y)>.95?new Vec3(0,0,1):new Vec3(0,1,0)).normalize();}
-    private Frame frame(Vec3 p,Vec3 f){if(f.lengthSqr()<1e-10)f=forward;else f=f.normalize();Vec3 s=side(f);return new Frame(p,f,s,s.cross(f).normalize());}
-    private Frame at(int i){return frame(vec(nodes.get(i).point()),vec(nodes.get(Math.min(nodes.size()-1,i+1)).point()).subtract(vec(nodes.get(Math.max(0,i-1)).point())));}
+    private Frame frame(Vec3 p,Vec3 f){return path.frame(p,f);}
+    private HuahongFlightPath.Frame at(int i){return path.frame(vec(nodes.get(i).point()),vec(nodes.get(Math.min(nodes.size()-1,i+1)).point()).subtract(vec(nodes.get(Math.max(0,i-1)).point())));}
     /** Walk the recorded path backwards; turn local flames with the trail, not a rigid spine. */
-    private Frame back(double distance){
-        Vec3 p=center;Frame last=frame(p,forward);
-        for(int i=nodes.size()-1;i>=0;i--){
-            Vec3 next=vec(nodes.get(i).point());double d=p.distanceTo(next);if(d<1e-8)continue;
-            last=frame(p,p.subtract(next));if(distance<=d)return frame(p.lerp(next,distance/d),last.forward());
-            distance-=d;p=next;
-        }
-        return frame(p.subtract(last.forward().scale(distance)),last.forward());
-    }
-    private Vec3 offset(Frame f,double x,double y){return f.p().add(f.side().scale(x)).add(f.up().scale(y));}
+    private HuahongFlightPath.Frame back(double distance){return path.behind(distance);}
+    private Vec3 offset(HuahongFlightPath.Frame f,double x,double y){return f.p().add(f.side().scale(x)).add(f.up().scale(y));}
     private List<Row> history(double life,double width,int color,int strand,double spread,boolean oriented){
         List<Row> rows=new ArrayList<>();
         for(int i=0;i<nodes.size();i++){
