@@ -17,6 +17,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--native', type=Path, required=True)
     parser.add_argument('--solas', type=Path, required=True)
+    parser.add_argument('--native-ui', type=Path, help='Optional later native UI-only capture')
+    parser.add_argument('--solas-ui', type=Path, help='Optional later Solas UI-only capture')
     parser.add_argument('--output', type=Path, default=ROOT / 'deliverables/ui-workbench-20261017/huahong-skins')
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
@@ -28,13 +30,24 @@ def main():
         report = json.loads((source / 'verification.json').read_text(encoding='utf-8'))
         if report['failures'] or not report['pointer']['passed']:
             raise ValueError(f'{backend}: failed capture')
-        rows = [r for r in report['rows'] if r.get('image', '').startswith(('skin-', 'settings-'))]
-        if len(rows) != 28:
-            raise ValueError(f'{backend}: expected 16 skin and 12 UI frames, got {len(rows)}')
+        ui_source = (args.native_ui if backend == 'native' else args.solas_ui) or source
+        ui_report = json.loads((ui_source / 'verification.json').read_text(encoding='utf-8'))
+        if ui_report['failures'] or not ui_report['pointer']['passed']:
+            raise ValueError(f'{backend}: failed UI capture')
+        rows = [dict(r) for r in report['rows'] if r.get('image', '').startswith('skin-')]
+        rows += [dict(r) for r in ui_report['rows'] if r.get('image', '').startswith(('settings-', 'sense-shortcuts-'))]
+        if sum(r['image'].startswith('skin-') for r in rows) != 16:
+            raise ValueError(f'{backend}: expected 16 skin frames')
+        for size in ('1920x1080', '2560x1440'):
+            for gui in (3, 4):
+                prefix = f'settings-{size}-gui{gui}-'
+                for state in ('normal', 'hover', 'focus', 'disabled', 'expanded-focus-disabled'):
+                    if not any(r['image'] == prefix + state + '.png' for r in rows):
+                        raise ValueError(f'{backend}: missing dropdown state {prefix}{state}')
         for row in rows:
             if row['image'].startswith('skin-') and (row['stage'] != 2 or row['strength'] < .995):
                 raise ValueError('Skin frame is not stable cruise')
-            raw = source / row['image']
+            raw = (source if row['image'].startswith('skin-') else ui_source) / row['image']
             target = args.output / f'{backend}-{raw.stem}.jpg'
             with Image.open(raw) as image:
                 image.thumbnail((1600, 1000))
@@ -43,6 +56,8 @@ def main():
             row['sha256'] = hashlib.sha256(target.read_bytes()).hexdigest()
             row['originalSha256'] = hashlib.sha256(raw.read_bytes()).hexdigest()
         manifest['captures'][backend] = {'rows': rows, 'pointer': report['pointer'],
+                                        'uiPointer': ui_report['pointer'],
+                                        'fullSpeed': report.get('fullSpeed', False),
                                         'material': [r for r in report['rows'] if r.get('check') == 'shipping-glsl-periodicity']}
     (args.output / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     html = '''<!doctype html><html lang="zh-CN"><meta charset="utf-8">
@@ -51,15 +66,15 @@ def main():
 :root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#101820;color:#eee7d5;font:16px/1.7 system-ui,sans-serif}main{max-width:1700px;margin:auto;padding:26px}a{color:#ecd091}h1{font-size:30px;margin:16px 0 4px}h2{font-size:23px;margin-top:30px}p{color:#bfc5ce}nav{display:flex;gap:9px;flex-wrap:wrap;margin:20px 0}button,select{font:inherit;color:inherit;border:1px solid #8b7447;background:#19232c;padding:8px 13px;border-radius:4px}button{cursor:pointer}button[aria-pressed=true]{background:#715b34;border-color:#f1cc78}.pair{display:grid;grid-template-columns:1fr 1fr;gap:18px}figure{margin:0;background:#18232d;border:1px solid #3e4b56}figcaption{padding:7px 14px;color:#e4c68b}img{display:block;width:100%;height:auto}.note{font-size:14px;color:#aab5c4}#description{min-height:30px}@media(max-width:800px){.pair{grid-template-columns:1fr}}
 </style><main><a href="../index.html">← 返回总工作台</a>
 <h1>化虹皮肤 · Forge 实机对照</h1>
-<p>背包 → 设置 → 御剑飞行 → 化虹皮肤。选择后立即保存，支持飞行中切换；仅改变外观。</p>
+<p>背包 → 设置 → 御剑飞行 → 化虹皮肤。点击当前皮肤按钮展开选择，选中后收起并保存，支持飞行中切换；仅改变外观。</p>
 <nav id="skins"></nav><label>飞行画面 <select id="view"><option value="side">稳定直飞</option><option value="turn">缓转</option></select></label>
 <p id="description"></p><div class="pair"><figure><figcaption>无光影</figcaption><img id="native" alt="无光影化虹实机截图"></figure><figure><figcaption>Solas Shader V3.7b</figcaption><img id="solas" alt="Solas 化虹实机截图"></figure></div>
-<h2>背包设置</h2><p>复用正式金墨按钮。记录普通、悬停、焦点和禁用状态；检查两种窗口分辨率与 GUI 选项 3、4。</p>
+<h2>背包设置与识海快捷入口</h2><p>复用正式金墨按钮。记录收起、展开、普通、悬停、焦点和禁用状态；检查两种窗口分辨率与 GUI 选项 3、4。识海两入口按参考恢复图案与左边框衔接。</p>
 <label>窗口与状态 <select id="ui"></select></label><div class="pair"><figure><figcaption>无光影设置页</figcaption><img id="ui-native" alt="无光影设置页"></figure><figure><figcaption>Solas 设置页</figcaption><img id="ui-solas" alt="Solas 设置页"></figure></div>
-<p class="note">这是实际 Forge 画面记录，按钮在此切换对照图，不控制游戏。截图使用 0.1 倍服务器速度，以保持可观察视场；不代表全速帧率测试或用户美术验收。蓝白虹流为本项目三维几何适配，未复制许可未确认的 V13 参考代码。原图保留于本地 reports，此页 JPEG 等比缩小用于查看。</p>
+<p class="note">这是实际 Forge 画面记录，按钮在此切换对照图，不控制游戏。本轮正式速度化虹连续转弯的逐帧指标保留于原始报告，不代表性能报告或用户美术验收。蓝白虹流为本项目三维几何适配，未复制许可未确认的 V13 参考代码。原图保留于本地 reports，此页 JPEG 等比缩小用于查看。</p>
 <a href="manifest.json">查看截图、皮肤映射与验证记录</a>
 </main><script>
-fetch('manifest.json').then(r=>r.json()).then(m=>{let current=0;const $=s=>document.getElementById(s);function show(){for(const b of ['native','solas'])$(b).src=b+'-skin-'+current+'-'+m.skins[current].id+'-'+$('view').value+'.jpg';$('description').textContent=m.skins[current].description;[...$('skins').children].forEach((b,i)=>b.setAttribute('aria-pressed',i===current))}m.skins.forEach((s,i)=>{const b=document.createElement('button');b.textContent=s.label;b.onclick=()=>{current=i;show()};$('skins').append(b)});$('view').onchange=show;show();m.captures.native.rows.filter(r=>r.image.startsWith('settings-')).forEach(r=>{const o=document.createElement('option');o.value=r.image.slice(0,-4);o.textContent=r.image.slice(9,-4).replace('focus-disabled','焦点与禁用').replace('normal','普通').replace('hover','悬停');$('ui').append(o)});function ui(){for(const b of ['native','solas'])$('ui-'+b).src=b+'-'+$('ui').value+'.jpg'}$('ui').onchange=ui;ui()});
+fetch('manifest.json').then(r=>r.json()).then(m=>{let current=0;const $=s=>document.getElementById(s);function show(){for(const b of ['native','solas'])$(b).src=b+'-skin-'+current+'-'+m.skins[current].id+'-'+$('view').value+'.jpg';$('description').textContent=m.skins[current].description;[...$('skins').children].forEach((b,i)=>b.setAttribute('aria-pressed',i===current))}m.skins.forEach((s,i)=>{const b=document.createElement('button');b.textContent=s.label;b.onclick=()=>{current=i;show()};$('skins').append(b)});$('view').onchange=show;show();m.captures.native.rows.filter(r=>r.image.startsWith('settings-')||r.image.startsWith('sense-shortcuts-')).forEach(r=>{const o=document.createElement('option');o.value=r.image.slice(0,-4);o.textContent=r.image.replace('settings-','设置 · ').replace('sense-shortcuts-','识海入口 · ').replace('.png','').replace('expanded-focus-disabled','展开 · 焦点与禁用').replace('disabled','禁用').replace('focus','焦点').replace('normal','普通').replace('hover','悬停');$('ui').append(o)});function ui(){for(const b of ['native','solas'])$('ui-'+b).src=b+'-'+$('ui').value+'.jpg'}$('ui').onchange=ui;ui()});
 </script></html>'''
     (args.output / 'index.html').write_text(html, encoding='utf-8')
     index = args.output.parent / 'index.html'
@@ -67,7 +82,7 @@ fetch('manifest.json').then(r=>r.json()).then(m=>{let current=0;const $=s=>docum
     if 'huahong-skins/index.html' not in text:
         text = text.replace('</header>', '<p><a href="huahong-skins/index.html" style="color:#e4c68b">化虹皮肤 · 实机对照与设置</a></p>\n</header>', 1)
         index.write_text(text, encoding='utf-8')
-    print(f'Generated {len(skins)} skins, 56 frames: {args.output}')
+    print(f'Generated {len(skins)} skins, {sum(len(c["rows"]) for c in manifest["captures"].values())} frames: {args.output}')
 
 
 if __name__ == '__main__':

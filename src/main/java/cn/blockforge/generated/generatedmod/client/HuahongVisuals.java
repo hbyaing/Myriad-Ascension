@@ -112,8 +112,8 @@ public final class HuahongVisuals {
                     double q=i/68.0,w=Math.max(.012,Math.pow(Math.max(0,Math.sin(Math.PI*q)),.65)*Math.exp(-q*2.7));
                     rows.add(new Row(path.behind(q*HEAD_LENGTH).p().add(forward.scale(.26)),-q*HEAD_LENGTH,w,strength*(float)(1-q),0xe8faff));
                 }
-                strip(buffer,pose,eye,rows,WIDTH*2.1,.11F,10);
-                strip(buffer,pose,eye,rows,WIDTH*.44,1.0F,8);
+                strip(buffer,pose,eye,rows,WIDTH*2.1,.11F,10,path);
+                strip(buffer,pose,eye,rows,WIDTH*.44,1.0F,8,path);
                 for(int strand=0;strand<4;strand++){
                     rows.clear();double phase=strand*2.399;
                     for(int i=0;i<=60;i++){
@@ -125,7 +125,7 @@ public final class HuahongVisuals {
                         rows.add(new Row(p,-q*HEAD_LENGTH+strand*.83,Math.pow(Math.max(0,Math.sin(Math.PI*q)),.65)*(1-q*.65),
                                 strength*(float)(1-q),mix(0x8274ff,0xe8faff,Math.pow(1-q,4)*.8)));
                     }
-                    strip(buffer,pose,eye,rows,WIDTH*.3,.36F,6);
+                    strip(buffer,pose,eye,rows,WIDTH*.3,.36F,6,path);
                 }
             }
             for(var spark:trail.sparks){
@@ -142,10 +142,21 @@ public final class HuahongVisuals {
         }
     }
     private static void strip(VertexConsumer b,PoseStack.Pose pose,Vec3 eye,List<Row> rows,double width,float opacity,float mode){
+        strip(b,pose,eye,rows,width,opacity,mode,null);
+    }
+    private static void strip(VertexConsumer b,PoseStack.Pose pose,Vec3 eye,List<Row> rows,double width,float opacity,float mode,HuahongFlightPath localPath){
+        if(localPath==null){strip(b,pose,eye,rows,width,opacity,mode,null,false);return;}
+        // Crossed transport planes keep the local nucleus visible from every
+        // side without an axis-dependent billboard roll. Split its opacity.
+        strip(b,pose,eye,rows,width,opacity*.70710677F,mode,localPath,false);
+        strip(b,pose,eye,rows,width,opacity*.70710677F,mode,localPath,true);
+    }
+    private static void strip(VertexConsumer b,PoseStack.Pose pose,Vec3 eye,List<Row> rows,double width,float opacity,float mode,HuahongFlightPath localPath,boolean crossPlane){
         Vec3 previous=null,previousSide=null;Row old=null;
         for(int i=0;i<rows.size();i++){
             Row row=rows.get(i);Vec3 f=rows.get(Math.min(rows.size()-1,i+1)).point().subtract(rows.get(Math.max(0,i-1)).point());
-            if(f.lengthSqr()<1e-12)continue;f=f.normalize();Vec3 side=f.cross(eye.subtract(row.point()));
+            if(f.lengthSqr()<1e-12)continue;f=f.normalize();Vec3 side=localPath==null?f.cross(eye.subtract(row.point())):localPath.ribbonSide(row.point(),f,eye);
+            if(crossPlane)side=f.cross(side);
             if(side.lengthSqr()<1e-10)side=perpendicular(f);else side=side.normalize();
             if(previousSide!=null&&side.dot(previousSide)<0)side=side.scale(-1);
             side=side.scale(width*row.width());

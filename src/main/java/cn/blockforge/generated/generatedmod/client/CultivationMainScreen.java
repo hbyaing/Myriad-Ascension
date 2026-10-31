@@ -182,6 +182,15 @@ public final class CultivationMainScreen extends InventoryScreen {
     }
     void scrollToTop() { scroll = 0; pageScroll.put(pageId, 0); }
     int contentViewportHeight() { return (int)(contentH / pageScale); }
+    /** Reveal page-local controls using this host's actual viewport and scale. */
+    void ensurePageRegionVisible(int top,int bottom) {
+        if(page==null)return;
+        int viewport=contentViewportHeight(),regionTop=Math.max(0,top),regionBottom=Math.max(regionTop,bottom);
+        if(regionBottom-regionTop>viewport||regionTop<scroll)scroll=regionTop;
+        else if(regionBottom>scroll+viewport)scroll=regionBottom-viewport;
+        scroll=Math.max(0,Math.min(scroll,Math.max(0,page.height-viewport)));
+        pageScroll.put(pageId,scroll);
+    }
     private int pageAreaWidth() {
         // Inner vision's effect sidebar meets the outer background frame without a second inset.
         return pageId.equals("vision")?layout.x()+layout.width()-3-contentX:contentW;

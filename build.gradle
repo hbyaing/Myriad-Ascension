@@ -61,6 +61,8 @@ if (project.hasProperty('myriadCapture')) {
             if (project.hasProperty('swordTailFullSpeed')) property 'wuxingxiantu.swordTailFullSpeed', 'true'
             if (project.hasProperty('huahongSkins')) property 'wuxingxiantu.huahongSkins', 'true'
             if (project.hasProperty('huahongMotion')) property 'wuxingxiantu.huahongMotion', 'true'
+            if (project.hasProperty('huahongFullSpeed')) property 'wuxingxiantu.huahongFullSpeed', 'true'
+            if (project.hasProperty('huahongUiOnly')) property 'wuxingxiantu.huahongUiOnly', 'true'
             if (project.hasProperty('huahongCapture')) {
                 property 'wuxingxiantu.huahongCapture', 'true'
                 property 'wuxingxiantu.myriadCapture', 'false'

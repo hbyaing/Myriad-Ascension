@@ -29,7 +29,13 @@ public final class SensePageArt {
     public static void addonSurface(GuiGraphics g,CultivationUi.Action b,boolean creation){
         float tint=!b.active?.45f:b.isHoveredOrFocused()?1f:.82f;g.setColor(tint,tint,tint,1);
         frame(g,creation?"creation":"ascension",b.getX(),b.getY(),b.getWidth(),b.getHeight());
-        icon(g,creation?"creation_icon":"ascension_icon",b.getX()+5,b.getY()+3,creation?34:26,b.getHeight()-6);
+        // These source crops include the inner left trim. Preserve their authored
+        // offset and aspect ratio so that trim meets the button's left cap instead
+        // of drawing a second, inset edge with an empty gutter beside it.
+        double scale=b.getHeight()/(creation?93.0:94.0);
+        icon(g,creation?"creation_icon":"ascension_icon",
+                b.getX()+(int)Math.round((creation?12:10)*scale),b.getY()+(int)Math.round((creation?7:12)*scale),
+                (int)Math.round((creation?184:104)*scale),(int)Math.round((creation?79:75)*scale));
         icon(g,"arrow",b.getX()+b.getWidth()-14,b.getY()+(b.getHeight()-8)/2,8,8);g.setColor(1,1,1,1);
     }
     public static class Button extends InkButton {

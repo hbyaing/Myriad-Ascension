@@ -111,6 +111,15 @@ public final class ControlledSwordEntity extends Entity {
     @Override public EntityDimensions getDimensions(Pose pose){return flightRoot()?EntityDimensions.scalable(0.85F,0.35F):super.getDimensions(pose);}
     // A null controlling passenger keeps vanilla vehicle movement packets non-authoritative.
     @Override public LivingEntity getControllingPassenger(){return null;}
+    @Override public boolean isAlwaysTicking(){
+        // The local rider's carrier must keep consuming validated snapshots when
+        // client terrain temporarily stops ticking its section. Otherwise its old
+        // and current poses freeze while the trail clock keeps advancing, replaying
+        // one stale interpolation interval on every frame. This is presentation
+        // only: no server ticking exception, terrain loads or chunk tickets.
+        return level().isClientSide&&flightRoot()
+                &&getFirstPassenger() instanceof net.minecraft.world.entity.player.Player player&&player.isLocalPlayer();
+    }
     @Override public boolean shouldRiderSit(){return !flightRoot();}
     public Entity owner(){return level().getEntity(entityData.get(OWNER));}
     public void bind(ServerPlayer player,ItemStack stack,int index,boolean riding){

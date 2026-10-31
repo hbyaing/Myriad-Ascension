@@ -49,99 +49,107 @@
       "rows": [
         {
           "image": "skin-0-meteor_prism-side.png",
-          "vertices": 3832,
+          "vertices": 21204,
           "shaderPack": false,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 0.29285216,
+          "yaw": 969.48334,
+          "view": "near-side",
           "file": "native-skin-0-meteor_prism-side.jpg",
-          "sha256": "344f60e0e6625723f773995cbe293729ece74486552d08db1929df4bc1dfcfd4",
-          "originalSha256": "741bee5ae2cccd7e000f1c2d78ff48591f2f8f3e075a530f9da0e017f81cb2f4"
+          "sha256": "360bedce28e0efeaf59020fcd1115fe7ba785cd10876868b2a55179c05c3969a",
+          "originalSha256": "1d6a1bff9f23648fefe001671e881fddf00cd1f75930c884530fcdcfc86e0dee"
         },
         {
           "image": "skin-0-meteor_prism-turn.png",
-          "vertices": 4768,
+          "vertices": 20832,
           "shaderPack": false,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 6.864738,
+          "yaw": 1019.2998,
+          "view": "near-axis",
           "file": "native-skin-0-meteor_prism-turn.jpg",
-          "sha256": "3c889caf1ba4f832c0441ebf82de544672424fe74057271fb9e4397442260b55",
-          "originalSha256": "dd8fd1348370c4faf784701af4b1ddc5b17ca0131aa59deb0741e93bd8c4f83b"
+          "sha256": "44be83d0128eb39c7beb194c5535d3b64e6542c806990ce704f2ac1f7928a56f",
+          "originalSha256": "6b9456347304e1286ac3c35ee83fa30b85419e5dc56ccdf75174018941b4f547"
         },
         {
           "image": "skin-1-meteor_flame-side.png",
-          "vertices": 5264,
+          "vertices": 27808,
           "shaderPack": false,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 0.68692243,
+          "yaw": 1178.638,
+          "view": "near-side",
           "file": "native-skin-1-meteor_flame-side.jpg",
-          "sha256": "35db1fc259202ae0632eadc60181bd3abcc9cabfc1b3eb488ef95522844ada98",
-          "originalSha256": "eb4428e50f08a1d2e2d84d582007f8cedb39be31eec21c60e16faba523e11085"
+          "sha256": "2364ca7700fb88a74e13d2f696ab433e7e3839bd8c68ee319d0f807126116fbf",
+          "originalSha256": "cd285383bf5ca79418cc291f549a5443e3510a1974c0276e76c60883db4913ec"
         },
         {
           "image": "skin-1-meteor_flame-turn.png",
-          "vertices": 6544,
+          "vertices": 28092,
           "shaderPack": false,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 6.104281,
+          "yaw": 1233.0186,
+          "view": "near-axis",
           "file": "native-skin-1-meteor_flame-turn.jpg",
-          "sha256": "9aadbc5e588b09e41dfd7a3e254bc3ebd419c965ea35cfc55d215eaf50c358c5",
-          "originalSha256": "2a7150ce39b3cac03d882b9257438a11ee527282bfd1161f953ef04ed4a9fac1"
+          "sha256": "b7121f8f7f00020117cb46fb6a6406cc914aabefb13b2b65d2e35c40408809aa",
+          "originalSha256": "48a5fb8b0fc71682558edfaa5cf34f00ddd34825f2f7df0dc25f9fe2473e7e22"
         },
         {
           "image": "skin-2-needle-side.png",
-          "vertices": 1724,
+          "vertices": 13148,
           "shaderPack": false,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 0.6685076,
+          "yaw": 1388.9204,
+          "view": "near-side",
           "file": "native-skin-2-needle-side.jpg",
-          "sha256": "096bda2ca12a8d937e1c632d3b54c980d4e56b2f605770adf5c925a8d2b05def",
-          "originalSha256": "a4144b8239adb6701990e262caef772b582c5dc205868e9a7cb67e33e8a0c1d7"
+          "sha256": "9ae9f497b2216242e28f56df466fb1cd32ebdca5ca31e1694fec56bf1e0fe0fc",
+          "originalSha256": "0b1f6c718b37b22ea79ce9635fe1a34d9072f7878eee9d3e8dad30e83b735bdd"
         },
         {
           "image": "skin-2-needle-turn.png",
-          "vertices": 2364,
+          "vertices": 13188,
           "shaderPack": false,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 6.653845,
+          "yaw": 1438.1698,
+          "view": "near-axis",
           "file": "native-skin-2-needle-turn.jpg",
-          "sha256": "a602504df3982af4def3534b60c8fd8d417388310ef85ff5a4639e697acd7090",
-          "originalSha256": "0b310a369aefabdd348601828e05e573a807778c15b3b7ca2d392594fb445f7e"
+          "sha256": "f2fd6d36b18a1bacedefc7041acd97ea91b4d1c5ff2ec92f3808da24fed3040b",
+          "originalSha256": "bf7cbc9f811d6415ece39b3d59e4af3dd136d079907fadf3da092b26b9c88527"
         },
         {
           "image": "skin-3-feather-side.png",
-          "vertices": 4428,
+          "vertices": 13080,
           "shaderPack": false,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 0.7533164,
+          "yaw": 1598.6338,
+          "view": "near-side",
           "file": "native-skin-3-feather-side.jpg",
-          "sha256": "4a6f5fd1b25fa8ae722e8b9dc4d3662f93b3c43dac25edf18f8c9a9cf260a1f2",
-          "originalSha256": "49ebfa1da0f670482480a6753a044eedd5c7f4b4a5e4afec91fb96e4d417c94a"
+          "sha256": "e028508a50c33f44aa3e79e5a9c7c7503831266601bd2f2beb081f7c14ad6619",
+          "originalSha256": "adb82982ff13437d1154642b25e9ecc3bff9e95335e3a2c6ccade85fa9f7ff87"
         },
         {
           "image": "skin-3-feather-turn.png",
-          "vertices": 4812,
+          "vertices": 12948,
           "shaderPack": false,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 6.9946265,
+          "yaw": 1651.2493,
+          "view": "near-axis",
           "file": "native-skin-3-feather-turn.jpg",
-          "sha256": "07e47b5c77b0a624f4a2a7fb85203f13ed46a2257cf447d5fd8a113eb7de53cc",
-          "originalSha256": "19d3a2dfe1fb3da6d86ae52329c763ce1a71ca70d985d24a4ff537ab3563ee4e"
+          "sha256": "4ce7e698899eeec71d5477b26cb55ec82603bf370621d9bcbab3ee623177e899",
+          "originalSha256": "6306454c73a5d6223651a0c8d6d97f2c2c1dbdf0c4dbe7c88c5ab42cc3aa4dcf"
         },
         {
           "image": "skin-4-smoke-side.png",
@@ -150,98 +158,106 @@
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 0.68873614,
+          "yaw": 1808.6202,
+          "view": "near-side",
           "file": "native-skin-4-smoke-side.jpg",
-          "sha256": "2e3bca992282fa204c154bfeefe2177ebd2a4c4788ede2919a1ab412dbc4ca2c",
-          "originalSha256": "567d95668e45f50a526f0b9cac9c90d972c238a9542b25236eeec32b402284f7"
+          "sha256": "007245f333baf9f858a9102d67dc1f13f199b755deea71f845bd6c6515dfaaeb",
+          "originalSha256": "bd242b2bd3b41c0966f89b849c13b88606cf29b0340303c4d66fe7664b129d8d"
         },
         {
           "image": "skin-4-smoke-turn.png",
-          "vertices": 124,
+          "vertices": 120,
           "shaderPack": false,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 6.97641,
+          "yaw": 1858.5248,
+          "view": "near-axis",
           "file": "native-skin-4-smoke-turn.jpg",
-          "sha256": "1ab0d832b2343e559b116ee5f112fd784c7e0bb90834ce73013a5f8001ed033e",
-          "originalSha256": "1adf1d725db78ef57d494d47897d5bd0545d64161336bc5e0ccaf62652358787"
+          "sha256": "0f58064a51b7582c8c05e77b529ad6ec163e7905f8104421f10b52e5d15b10fd",
+          "originalSha256": "026742ba960934c7974d9aa455da7fa0b257bc9b2dc1f97f6b52e36d324bf42e"
         },
         {
           "image": "skin-5-flame-side.png",
-          "vertices": 7912,
+          "vertices": 7768,
           "shaderPack": false,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 0.7656165,
+          "yaw": 2019.11,
+          "view": "near-side",
           "file": "native-skin-5-flame-side.jpg",
-          "sha256": "fcd6d0c7731f4e8d5d29511d476356360053c22edf556ab549039be321aa9e9c",
-          "originalSha256": "06807d51542a39a1779ba31095d607e6a762fe4bc99d986d3e20efa54189ac0d"
+          "sha256": "e62428f775c51a7ba23049f21b108cf65c56cc23de18e7d01fe4764ca7ba1796",
+          "originalSha256": "382050459d7d342295e7dca7167bfe6d6cc9a13901f825ee35979eb9f25f1a1d"
         },
         {
           "image": "skin-5-flame-turn.png",
-          "vertices": 7916,
+          "vertices": 7772,
           "shaderPack": false,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 6.998096,
+          "yaw": 2065.6604,
+          "view": "near-axis",
           "file": "native-skin-5-flame-turn.jpg",
-          "sha256": "739314195adf2b2dc88abe2d40449636ca594296c4317bdaacb785d2bbd63c11",
-          "originalSha256": "83359170c8662ff3d98c253d300f5c0a0bd4b2e9f038132a426f7a81abc98bbf"
+          "sha256": "2b15c195939e93a0ddf543d299a452b503c6bc019734d3ea712c69534ce579ba",
+          "originalSha256": "3de34bd6462fd1454b01b43c001187b47c09ab821cb94b973840dcc671d5c794"
         },
         {
           "image": "skin-6-fan-side.png",
-          "vertices": 4860,
+          "vertices": 25416,
           "shaderPack": false,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 0.6887846,
+          "yaw": 2229.7368,
+          "view": "near-side",
           "file": "native-skin-6-fan-side.jpg",
-          "sha256": "516ff911dd2a18fb354f886cc87247fdada7eee280b8ac08eee70ae912259939",
-          "originalSha256": "322d202cb00d9f1d7372126c1d66af783d81793e555def2577c9caed53a8b611"
+          "sha256": "50195a57c8c55a99baa5242cfba7df8584e174fc77e7aee4a65e7851524dbe1c",
+          "originalSha256": "5b7fec366631dc1d68964c33c49c267303396eafc7201566459762f5ab9272c8"
         },
         {
           "image": "skin-6-fan-turn.png",
-          "vertices": 5472,
+          "vertices": 24912,
           "shaderPack": false,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 6.2188816,
+          "yaw": 2275.7634,
+          "view": "near-axis",
           "file": "native-skin-6-fan-turn.jpg",
-          "sha256": "99b42526bb9f0743444dae941b1a12106791be901a44338e444463fd9e8c6da8",
-          "originalSha256": "71b76827c02f8d244657393055a2f7674838b6c1c46043b02e72163d49c65c42"
+          "sha256": "f484db98888cf6602131899a8b59745073aa8e6f1e3ad95b5984731a1cd2aaed",
+          "originalSha256": "62c76d0dd69702fef155f1cb33ea419ccb3fa0c8149f57ed475671a22d79db41"
         },
         {
           "image": "skin-7-dense-side.png",
-          "vertices": 14088,
+          "vertices": 113144,
           "shaderPack": false,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 0.6779034,
+          "yaw": 2444.3254,
+          "view": "near-side",
           "file": "native-skin-7-dense-side.jpg",
-          "sha256": "4ce22e8fa092a5c69348e00483d48d4d94bc75d151028751d1bd641940b91f2f",
-          "originalSha256": "2c79b6b37006e5fac1dabe011b0d20af86b0221eaf3f50d362283aea89915afe"
+          "sha256": "36b6dbad9e4de8c9213042d87398a7cfc6bfa2045106f506e017f9744abed006",
+          "originalSha256": "ef6da3dc951f5bfdc1d6aefb5771bfc23e7d4000f8588afa32b8500ca234e308"
         },
         {
           "image": "skin-7-dense-turn.png",
-          "vertices": 19720,
+          "vertices": 112444,
           "shaderPack": false,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 6.270025,
+          "yaw": 2487.6362,
+          "view": "near-axis",
           "file": "native-skin-7-dense-turn.jpg",
-          "sha256": "46e2117127bfc6f3da885085cbf7b83db28a6b810ac722da41cf747d789ea5ef",
-          "originalSha256": "3d727427cd7a20d0731b711096ef299f9575b9b13e36fe86f07cc22ffa387381"
+          "sha256": "4635379736d70095594df4d1462e9fc4e53b27e9b199980d90174796a355cc81",
+          "originalSha256": "9833c3fb498abc964224c5484408b766ddbddf9695f519a112958fba82b27832"
         },
         {
           "image": "settings-1920x1080-gui3-normal.png",
-          "vertices": 1028,
+          "vertices": 0,
           "shaderPack": false,
           "glError": 0,
           "size": [
@@ -250,16 +266,28 @@
           ],
           "guiOption": 3,
           "scale": 2.0,
-          "skinButtons": 8,
+          "skinOptions": 8,
+          "closedButtons": 1,
           "clicks": true,
           "pageWidth": 388,
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
           "file": "native-settings-1920x1080-gui3-normal.jpg",
-          "sha256": "c301d2643a974b3bb7b9b4af2c3b55f8246960c2e487d71c8f27c4f7aa4dc3c6",
-          "originalSha256": "7a2d1c6c1db497f67ecdcd915fded92b4caf39339d82eb57dcf97dcdd85a05b3"
+          "sha256": "083e21dea804b4d2a144e78d9f800f82018e729fbc0d51c3d10c54b8ab1540cf",
+          "originalSha256": "ce35d2e5f469247d40545ffd1ec5383c240f9abbe325a4b773887e74338266ea"
         },
         {
           "image": "settings-1920x1080-gui3-hover.png",
-          "vertices": 2792,
+          "vertices": 0,
           "shaderPack": false,
           "glError": 0,
           "size": [
@@ -268,16 +296,28 @@
           ],
           "guiOption": 3,
           "scale": 2.0,
-          "skinButtons": 8,
+          "skinOptions": 8,
+          "closedButtons": 1,
           "clicks": true,
           "pageWidth": 388,
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
           "file": "native-settings-1920x1080-gui3-hover.jpg",
-          "sha256": "0541451a381b797c264ba6c45facc3422df2eed7250151530fdc8a4592418f17",
-          "originalSha256": "d81d8fa537daeee6a50abe7432f92a00fb78aadd44f832b7c2dc0a876725e544"
+          "sha256": "eec11712c7603fabf4e583c3ea5ed99d5bcb2e54c66eeecc4ac5e5a9d47be021",
+          "originalSha256": "d60df338a31030f5217d997ffb84eafe3d179e7444996b9bb37db8d831cde7b7"
         },
         {
-          "image": "settings-1920x1080-gui3-focus-disabled.png",
-          "vertices": 4560,
+          "image": "settings-1920x1080-gui3-focus.png",
+          "vertices": 0,
           "shaderPack": false,
           "glError": 0,
           "size": [
@@ -286,16 +326,89 @@
           ],
           "guiOption": 3,
           "scale": 2.0,
-          "skinButtons": 8,
+          "skinOptions": 8,
+          "closedButtons": 1,
           "clicks": true,
           "pageWidth": 388,
-          "file": "native-settings-1920x1080-gui3-focus-disabled.jpg",
-          "sha256": "cf6a990eca410326ef9b5d4b7c1d737ed4d7522bc1bdaa95298d329bea7de98a",
-          "originalSha256": "6c6f5e6c7b525740e26dd7b806ba764245bab87f52156902372f9032285896ae"
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
+          "file": "native-settings-1920x1080-gui3-focus.jpg",
+          "sha256": "632e7bdfe836065daf633ef03e8c738eba4ce30ed5e221714cf2ed5eb6955a11",
+          "originalSha256": "ab959bf9f2a140f1a897b0dfcbcab0aacde3892eadb180bad1303186d53fb2fb"
+        },
+        {
+          "image": "settings-1920x1080-gui3-disabled.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 3,
+          "scale": 2.0,
+          "skinOptions": 8,
+          "closedButtons": 1,
+          "clicks": true,
+          "pageWidth": 388,
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
+          "file": "native-settings-1920x1080-gui3-disabled.jpg",
+          "sha256": "3ad651a1913b340f83598ad3881bec161aa0c5a4cf37b5ea724d3aae5e584807",
+          "originalSha256": "7328e9dc49cb0f707dc965085ddc2a9d9b10381e7725bb41935a99753f696ca9"
+        },
+        {
+          "image": "settings-1920x1080-gui3-expanded-focus-disabled.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 3,
+          "scale": 2.0,
+          "skinOptions": 8,
+          "closedButtons": 1,
+          "clicks": true,
+          "pageWidth": 388,
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 570,
+          "expandedOptionsVisible": 8,
+          "file": "native-settings-1920x1080-gui3-expanded-focus-disabled.jpg",
+          "sha256": "295dbcf138d510ebd51e249c661ff5e050f104a2aa08609f0ea14cd0854558fc",
+          "originalSha256": "54a28ead37953b3b06db220139f2f9f96d39956bb85203a23f0bb7b75c7fac07"
         },
         {
           "image": "settings-2560x1440-gui3-normal.png",
-          "vertices": 11628,
+          "vertices": 0,
           "shaderPack": false,
           "glError": 0,
           "size": [
@@ -304,16 +417,28 @@
           ],
           "guiOption": 3,
           "scale": 3.0,
-          "skinButtons": 8,
+          "skinOptions": 8,
+          "closedButtons": 1,
           "clicks": true,
           "pageWidth": 388,
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
           "file": "native-settings-2560x1440-gui3-normal.jpg",
-          "sha256": "bed29c2288823075e0a83518d978c0ca1385b62ec5e78bcddcbe302be1837637",
-          "originalSha256": "980447bd95f56db33ef6ff53efde0897e55bf8548d748b12cd80d8ff19e219a4"
+          "sha256": "1b2670b516b463a542ad402739f4ba7e587b10d01be762a93e4330909aa8dd75",
+          "originalSha256": "32b2bf2846fea86ea825ffbe83870245f3ff4c3648ee94cc07c8d910795058f5"
         },
         {
           "image": "settings-2560x1440-gui3-hover.png",
-          "vertices": 13740,
+          "vertices": 0,
           "shaderPack": false,
           "glError": 0,
           "size": [
@@ -322,16 +447,28 @@
           ],
           "guiOption": 3,
           "scale": 3.0,
-          "skinButtons": 8,
+          "skinOptions": 8,
+          "closedButtons": 1,
           "clicks": true,
           "pageWidth": 388,
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
           "file": "native-settings-2560x1440-gui3-hover.jpg",
-          "sha256": "d685075a813c37670fa5c8b2344bcecdb02d7abbd589470c4e84b2e28a105bc4",
-          "originalSha256": "1345f67bdbcc65b6649d42fe7c21d61f50fd88cee13e532a96da24ddc6bb717f"
+          "sha256": "e1093dcd33a00f263ae4c8216816a00883c341dac04eb26ea1c1c6cd2f9024ab",
+          "originalSha256": "d43c11a576b652d617bfd12427216fd476fa39ad76b620b460f2942631d98742"
         },
         {
-          "image": "settings-2560x1440-gui3-focus-disabled.png",
-          "vertices": 16028,
+          "image": "settings-2560x1440-gui3-focus.png",
+          "vertices": 0,
           "shaderPack": false,
           "glError": 0,
           "size": [
@@ -340,16 +477,89 @@
           ],
           "guiOption": 3,
           "scale": 3.0,
-          "skinButtons": 8,
+          "skinOptions": 8,
+          "closedButtons": 1,
           "clicks": true,
           "pageWidth": 388,
-          "file": "native-settings-2560x1440-gui3-focus-disabled.jpg",
-          "sha256": "bed518303b25bb65a26b84d1beb626a347150813e0091f0bc66693d0bf719ae2",
-          "originalSha256": "75d7b7ebd13c03f4052fc3e864a159f39d4236e32587af69bad5f3fe583ed6f0"
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
+          "file": "native-settings-2560x1440-gui3-focus.jpg",
+          "sha256": "9718e46ba903808adb7b98d68a164fe92625b90602821cb4e113dafaab4197bf",
+          "originalSha256": "1718638966232dcf984089f4598ad2df15089c43ee9bd5b41aeedbd192387545"
+        },
+        {
+          "image": "settings-2560x1440-gui3-disabled.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 3,
+          "scale": 3.0,
+          "skinOptions": 8,
+          "closedButtons": 1,
+          "clicks": true,
+          "pageWidth": 388,
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
+          "file": "native-settings-2560x1440-gui3-disabled.jpg",
+          "sha256": "385500f63f38517fb2533240f78f64157c60cade4472458346617919f01551ac",
+          "originalSha256": "bf44cb230e6ac22ecd96bea6304642346e4877eb8ce02c14e9999e81b97055d7"
+        },
+        {
+          "image": "settings-2560x1440-gui3-expanded-focus-disabled.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 3,
+          "scale": 3.0,
+          "skinOptions": 8,
+          "closedButtons": 1,
+          "clicks": true,
+          "pageWidth": 388,
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 570,
+          "expandedOptionsVisible": 8,
+          "file": "native-settings-2560x1440-gui3-expanded-focus-disabled.jpg",
+          "sha256": "1efb4243e0d8badfdca14e39b3d5c134e0c9ee6bd7ce6dba03a8b4fa519a15ff",
+          "originalSha256": "1b6f0f4f6af0e5bc0c703e236fd311447b72fdaea942ba686e39f9653f4c3965"
         },
         {
           "image": "settings-1920x1080-gui4-normal.png",
-          "vertices": 22188,
+          "vertices": 0,
           "shaderPack": false,
           "glError": 0,
           "size": [
@@ -358,16 +568,28 @@
           ],
           "guiOption": 4,
           "scale": 2.0,
-          "skinButtons": 8,
+          "skinOptions": 8,
+          "closedButtons": 1,
           "clicks": true,
           "pageWidth": 388,
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
           "file": "native-settings-1920x1080-gui4-normal.jpg",
-          "sha256": "77cff1aca6dc4607b01a5486cf58c236457fd1cc70d3b938be78d074433ea5e6",
-          "originalSha256": "d5199cc4c43df8a5c5d73d98db64ef4e5691f7539c9d46c064da5e77078a3efa"
+          "sha256": "66e931c24050389a45f46d8f3ae8ce09cfbfd267f4c49165a8efb105c8514b6e",
+          "originalSha256": "5a5cb72c6a785ee898a2e28c7d52a955968f980e19a4a2523a787924c1f8c086"
         },
         {
           "image": "settings-1920x1080-gui4-hover.png",
-          "vertices": 23944,
+          "vertices": 0,
           "shaderPack": false,
           "glError": 0,
           "size": [
@@ -376,16 +598,28 @@
           ],
           "guiOption": 4,
           "scale": 2.0,
-          "skinButtons": 8,
+          "skinOptions": 8,
+          "closedButtons": 1,
           "clicks": true,
           "pageWidth": 388,
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
           "file": "native-settings-1920x1080-gui4-hover.jpg",
-          "sha256": "c4b60a370d58126cad98d2eb349423c50addfceeef2670d480d946ffadbc9b1e",
-          "originalSha256": "8918a6b47ce6f3809bd838f07f4cd97fc8abc7e4614c3a8785f05925b6a2f903"
+          "sha256": "9c80be0a0cd03e0ea099a28d0a7808c6de6b81670bf99f91fea93b88459f1ae7",
+          "originalSha256": "e8308aff6be0bdda65ccda0f56e1b3a638ab474ecaf27982e472b73dd4947961"
         },
         {
-          "image": "settings-1920x1080-gui4-focus-disabled.png",
-          "vertices": 25352,
+          "image": "settings-1920x1080-gui4-focus.png",
+          "vertices": 0,
           "shaderPack": false,
           "glError": 0,
           "size": [
@@ -394,16 +628,89 @@
           ],
           "guiOption": 4,
           "scale": 2.0,
-          "skinButtons": 8,
+          "skinOptions": 8,
+          "closedButtons": 1,
           "clicks": true,
           "pageWidth": 388,
-          "file": "native-settings-1920x1080-gui4-focus-disabled.jpg",
-          "sha256": "a705c54da1c6eda59509767de97be76fbf7c8b00e9f073d9fb63bbd93011c409",
-          "originalSha256": "064f953e9dce9dc3ad9b6539bfae4a6899cfb98de87ef92d05775931c7b72e13"
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
+          "file": "native-settings-1920x1080-gui4-focus.jpg",
+          "sha256": "0ed3bd4d8fd7dc704d395a415d584046b825cef8028b4c673589136e01bb9903",
+          "originalSha256": "e9dbcfd4313790e4725e4031dbeae91429ca7c7ca7f2bd51cf576ae65d829867"
+        },
+        {
+          "image": "settings-1920x1080-gui4-disabled.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 4,
+          "scale": 2.0,
+          "skinOptions": 8,
+          "closedButtons": 1,
+          "clicks": true,
+          "pageWidth": 388,
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
+          "file": "native-settings-1920x1080-gui4-disabled.jpg",
+          "sha256": "fa24f3b1351b92dee6ad5e1c8d91c8c5df699e69dc880b7da494226b9721d48f",
+          "originalSha256": "0a310ce44e18b81cc1a9b7a3e1d663e5d1c354b11b645f6c499caf55492814f0"
+        },
+        {
+          "image": "settings-1920x1080-gui4-expanded-focus-disabled.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 4,
+          "scale": 2.0,
+          "skinOptions": 8,
+          "closedButtons": 1,
+          "clicks": true,
+          "pageWidth": 388,
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 570,
+          "expandedOptionsVisible": 8,
+          "file": "native-settings-1920x1080-gui4-expanded-focus-disabled.jpg",
+          "sha256": "49857e9069b93d72ae8f9f58fa0296137ffcac4e2da0bbc393b7a32991f12c5d",
+          "originalSha256": "37467f3fab0b407924b5bc0ada699c62c1a87ea674b1d1509b2aaaa5ac5bae15"
         },
         {
           "image": "settings-2560x1440-gui4-normal.png",
-          "vertices": 25532,
+          "vertices": 0,
           "shaderPack": false,
           "glError": 0,
           "size": [
@@ -412,16 +719,28 @@
           ],
           "guiOption": 4,
           "scale": 3.0,
-          "skinButtons": 8,
+          "skinOptions": 8,
+          "closedButtons": 1,
           "clicks": true,
           "pageWidth": 388,
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
           "file": "native-settings-2560x1440-gui4-normal.jpg",
-          "sha256": "083ac959b8add1e074399c674119a8247843ab73f15a1e1ec5243fdc403be90d",
-          "originalSha256": "0aa11ab1261409b5f92eae0aa05086d4aa0a787e302602446785e4cde0bc4fc7"
+          "sha256": "f720a38ac7da60ccb7b872be8e22d9e2b116f927f852117ea5a2e9c9df921a28",
+          "originalSha256": "86eaf2f6fdf9d372c932b1027466447d403cf4a30f5db01d76264376284af337"
         },
         {
           "image": "settings-2560x1440-gui4-hover.png",
-          "vertices": 25532,
+          "vertices": 0,
           "shaderPack": false,
           "glError": 0,
           "size": [
@@ -430,16 +749,28 @@
           ],
           "guiOption": 4,
           "scale": 3.0,
-          "skinButtons": 8,
+          "skinOptions": 8,
+          "closedButtons": 1,
           "clicks": true,
           "pageWidth": 388,
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
           "file": "native-settings-2560x1440-gui4-hover.jpg",
-          "sha256": "c4ea64b8e833c9586c6a9e2598922e694f9e3829eb853c5e626bad2a0350706d",
-          "originalSha256": "e526800e37be0614ec2a565b92ca786e9e3dab302a325091e87265922a183f2a"
+          "sha256": "3b34b650365cdf508d06fb64016756393af8613612f3354dd8e6c5397e1fcfc9",
+          "originalSha256": "b98399c5fef1d7b1e6acef7dc69ce95cd4d89ca5e819b6a6be71d4b207e1d278"
         },
         {
-          "image": "settings-2560x1440-gui4-focus-disabled.png",
-          "vertices": 25528,
+          "image": "settings-2560x1440-gui4-focus.png",
+          "vertices": 0,
           "shaderPack": false,
           "glError": 0,
           "size": [
@@ -448,27 +779,1356 @@
           ],
           "guiOption": 4,
           "scale": 3.0,
-          "skinButtons": 8,
+          "skinOptions": 8,
+          "closedButtons": 1,
           "clicks": true,
           "pageWidth": 388,
-          "file": "native-settings-2560x1440-gui4-focus-disabled.jpg",
-          "sha256": "e5faaea3de6138b0c16ab44e762c6a2c0d861989f874b6e16ca4ad1ee1c33aac",
-          "originalSha256": "048486d7e3aae6a4f515e8b30ce27a4ab80bd6b743ee4d3f9121a22280bbcbaa"
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
+          "file": "native-settings-2560x1440-gui4-focus.jpg",
+          "sha256": "858876de0133a3c861a6cb260a6265b4365a440447bf13a12da6c777c67b8be5",
+          "originalSha256": "2b0f6910762fc17a05207f6260673878fef5961f9ea965bd1126a5dbd6a84a8f"
+        },
+        {
+          "image": "settings-2560x1440-gui4-disabled.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 4,
+          "scale": 3.0,
+          "skinOptions": 8,
+          "closedButtons": 1,
+          "clicks": true,
+          "pageWidth": 388,
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
+          "file": "native-settings-2560x1440-gui4-disabled.jpg",
+          "sha256": "0670a058a215aae438f25dfc6419323871c764311200cecf5631e2f3f4f98cda",
+          "originalSha256": "76e466926fc4dc1132c9621e2aa82033762f2de8812cbbb8eac6758e16416396"
+        },
+        {
+          "image": "settings-2560x1440-gui4-expanded-focus-disabled.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 4,
+          "scale": 3.0,
+          "skinOptions": 8,
+          "closedButtons": 1,
+          "clicks": true,
+          "pageWidth": 388,
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 570,
+          "expandedOptionsVisible": 8,
+          "file": "native-settings-2560x1440-gui4-expanded-focus-disabled.jpg",
+          "sha256": "9c8c3dcb733270cefd164a51572b0a545590b849959d076657159a8d72215949",
+          "originalSha256": "ba70e47711b58b4a945ed1c00af5ebed839f63eaf59f448cab249f45044087cd"
+        },
+        {
+          "image": "sense-shortcuts-1920x1080-gui3-normal.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 3,
+          "scale": 2.0,
+          "shortcuts": [
+            {
+              "label": "创世 · 管理小世界",
+              "active": true,
+              "hovered": false,
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "focused": false
+            },
+            {
+              "label": "天仙渡劫",
+              "active": false,
+              "hovered": false,
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "native-sense-shortcuts-1920x1080-gui3-normal.jpg",
+          "sha256": "df70d76cc2ac776ad93932a3650161096e52d671faebcafc1d5261b484966832",
+          "originalSha256": "8fdd67d3a0121bc40955dd1a2b0ef4b6454b285f4970f9ace083d832317abd2f"
+        },
+        {
+          "image": "sense-shortcuts-1920x1080-gui3-creation-hover.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 3,
+          "scale": 2.0,
+          "shortcuts": [
+            {
+              "label": "创世 · 管理小世界",
+              "active": true,
+              "hovered": true,
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "focused": false
+            },
+            {
+              "label": "天仙渡劫",
+              "active": false,
+              "hovered": false,
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "native-sense-shortcuts-1920x1080-gui3-creation-hover.jpg",
+          "sha256": "d7bfaa6cfe49cf4e892fef14d325e4ff1d462f080740e1d06eeadf83129783d0",
+          "originalSha256": "d9e845fd426cb7d609c92375dd363d4999d1b63719028b2939db836c373ebaf9"
+        },
+        {
+          "image": "sense-shortcuts-1920x1080-gui3-ascension-hover.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 3,
+          "scale": 2.0,
+          "shortcuts": [
+            {
+              "label": "创世 · 管理小世界",
+              "active": true,
+              "hovered": false,
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "focused": false
+            },
+            {
+              "label": "天仙渡劫",
+              "active": false,
+              "hovered": true,
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "native-sense-shortcuts-1920x1080-gui3-ascension-hover.jpg",
+          "sha256": "d85c0405b4ecaad464fe575921c2378497fa1c3cd7eb971c9e66f42f1c7e6102",
+          "originalSha256": "f59651a1ab8eb3da7de69ba5ad1bea2671f9449aa1fe928e90948fb8bc712152"
+        },
+        {
+          "image": "sense-shortcuts-1920x1080-gui3-creation-focus.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 3,
+          "scale": 2.0,
+          "shortcuts": [
+            {
+              "label": "创世 · 管理小世界",
+              "active": true,
+              "hovered": false,
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "focused": true
+            },
+            {
+              "label": "天仙渡劫",
+              "active": false,
+              "hovered": false,
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "native-sense-shortcuts-1920x1080-gui3-creation-focus.jpg",
+          "sha256": "fe98bf3b32e8a572fa3151f1211e6df836774917d51fc0edbd2f4f75a0667504",
+          "originalSha256": "d51da08e113ebef1cbad1fbd21716d1b62289ed308214eae891355e0b62c1e65"
+        },
+        {
+          "image": "sense-shortcuts-1920x1080-gui3-ascension-focus.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 3,
+          "scale": 2.0,
+          "shortcuts": [
+            {
+              "label": "创世 · 管理小世界",
+              "active": true,
+              "hovered": false,
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "focused": false
+            },
+            {
+              "label": "天仙渡劫",
+              "active": false,
+              "hovered": false,
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "focused": true
+            }
+          ],
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "native-sense-shortcuts-1920x1080-gui3-ascension-focus.jpg",
+          "sha256": "bcf811f86d77c8619f35546ad2ad48ff6e719bd7a046c3a2a7938224b344c950",
+          "originalSha256": "6e5ef8b8509e44ccafdcb300e5350947294ba513b30dde36112ce31a9141ffab"
+        },
+        {
+          "image": "sense-shortcuts-1920x1080-gui3-disabled.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 3,
+          "scale": 2.0,
+          "shortcuts": [
+            {
+              "label": "创世 · 管理小世界",
+              "active": false,
+              "hovered": false,
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "focused": false
+            },
+            {
+              "label": "天仙渡劫",
+              "active": false,
+              "hovered": false,
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "native-sense-shortcuts-1920x1080-gui3-disabled.jpg",
+          "sha256": "e5bb6f21eb2c0cd6fec3a4d2b503d74f9b27b5679589b30dad52532db0d9e3d9",
+          "originalSha256": "62bc847730d2018bbad3326dfc7851f1dc0a90097ee05450a8bbc65a64301ffe"
+        },
+        {
+          "image": "sense-shortcuts-2560x1440-gui3-normal.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 3,
+          "scale": 3.0,
+          "shortcuts": [
+            {
+              "label": "创世 · 管理小世界",
+              "active": true,
+              "hovered": false,
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "focused": false
+            },
+            {
+              "label": "天仙渡劫",
+              "active": false,
+              "hovered": false,
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "native-sense-shortcuts-2560x1440-gui3-normal.jpg",
+          "sha256": "66e30e13e95073ba47a298db9d38dd654f75a486d9e436e2d9bb9f0478bc9e1a",
+          "originalSha256": "6300d9837520c41e213ea3e9c6166c101764bcb7162c3fbea87cd44b916f9464"
+        },
+        {
+          "image": "sense-shortcuts-2560x1440-gui3-creation-hover.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 3,
+          "scale": 3.0,
+          "shortcuts": [
+            {
+              "label": "创世 · 管理小世界",
+              "active": true,
+              "hovered": true,
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "focused": false
+            },
+            {
+              "label": "天仙渡劫",
+              "active": false,
+              "hovered": false,
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "native-sense-shortcuts-2560x1440-gui3-creation-hover.jpg",
+          "sha256": "0888a34e78eeb0d7fc93cd7ca46b0f13e941c4f81361d0f59aee2afd68d763f8",
+          "originalSha256": "51f085a9f412aa0898c34ca3413d296e302378d7ffe35c6c55d07aa59949d8bc"
+        },
+        {
+          "image": "sense-shortcuts-2560x1440-gui3-ascension-hover.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 3,
+          "scale": 3.0,
+          "shortcuts": [
+            {
+              "label": "创世 · 管理小世界",
+              "active": true,
+              "hovered": false,
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "focused": false
+            },
+            {
+              "label": "天仙渡劫",
+              "active": false,
+              "hovered": true,
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "native-sense-shortcuts-2560x1440-gui3-ascension-hover.jpg",
+          "sha256": "b7b1b0d7c1b68fd5c928cdd09e6678bddb952dc4ec0831e707dbfabd4383aa58",
+          "originalSha256": "3d44b8a6006481292c2f9db57f656c31c84492ee840577b6f9417b1cf0b16932"
+        },
+        {
+          "image": "sense-shortcuts-2560x1440-gui3-creation-focus.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 3,
+          "scale": 3.0,
+          "shortcuts": [
+            {
+              "label": "创世 · 管理小世界",
+              "active": true,
+              "hovered": false,
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "focused": true
+            },
+            {
+              "label": "天仙渡劫",
+              "active": false,
+              "hovered": false,
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "native-sense-shortcuts-2560x1440-gui3-creation-focus.jpg",
+          "sha256": "28d01c4c60d41e07d9935399f358d789a40ffefeca19275123d4f3cef2034176",
+          "originalSha256": "fce1b244ef7a5a836172a0d786b90d37daef37d5999893ab3e031ce3c643c699"
+        },
+        {
+          "image": "sense-shortcuts-2560x1440-gui3-ascension-focus.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 3,
+          "scale": 3.0,
+          "shortcuts": [
+            {
+              "label": "创世 · 管理小世界",
+              "active": true,
+              "hovered": false,
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "focused": false
+            },
+            {
+              "label": "天仙渡劫",
+              "active": false,
+              "hovered": false,
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "focused": true
+            }
+          ],
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "native-sense-shortcuts-2560x1440-gui3-ascension-focus.jpg",
+          "sha256": "804dc0fa3cf60c6f02ad08ee955a2cc8285a3c7d6ddbffd9088f2367a8c6d88d",
+          "originalSha256": "9b5b672e2fe4ffb8c24264223762ed1cee8d451274d9955dd974f52f77a8bc44"
+        },
+        {
+          "image": "sense-shortcuts-2560x1440-gui3-disabled.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 3,
+          "scale": 3.0,
+          "shortcuts": [
+            {
+              "label": "创世 · 管理小世界",
+              "active": false,
+              "hovered": false,
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "focused": false
+            },
+            {
+              "label": "天仙渡劫",
+              "active": false,
+              "hovered": false,
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "native-sense-shortcuts-2560x1440-gui3-disabled.jpg",
+          "sha256": "820a62ce0a2ae2af5a4792e1f32dafb641a07372df487eefc56883aae1ab3084",
+          "originalSha256": "154843d1d0bafa31bcd23cdbd98996ef601ac5a0efa427e675820065d4452134"
+        },
+        {
+          "image": "sense-shortcuts-1920x1080-gui4-normal.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 4,
+          "scale": 2.0,
+          "shortcuts": [
+            {
+              "label": "创世 · 管理小世界",
+              "active": true,
+              "hovered": false,
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "focused": false
+            },
+            {
+              "label": "天仙渡劫",
+              "active": false,
+              "hovered": false,
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "native-sense-shortcuts-1920x1080-gui4-normal.jpg",
+          "sha256": "d9b241e27dcb43f5f62a371a3fd4d1cce7c0ca4b6bf3dce53ce91563e02d9c2e",
+          "originalSha256": "df0e46d5f9890c5b5f7c93985ce4bf680cea57e22336198f6fc3bbcd85607176"
+        },
+        {
+          "image": "sense-shortcuts-1920x1080-gui4-creation-hover.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 4,
+          "scale": 2.0,
+          "shortcuts": [
+            {
+              "label": "创世 · 管理小世界",
+              "active": true,
+              "hovered": true,
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "focused": false
+            },
+            {
+              "label": "天仙渡劫",
+              "active": false,
+              "hovered": false,
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "native-sense-shortcuts-1920x1080-gui4-creation-hover.jpg",
+          "sha256": "d7e435f7fbd5daf75840657c65e7447549bf9ba666e668795222d816c3d4b1a1",
+          "originalSha256": "b30de9d21f4e607809d0f81fbf1a066b5fa87b2e08d692f167519297a3018bfa"
+        },
+        {
+          "image": "sense-shortcuts-1920x1080-gui4-ascension-hover.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 4,
+          "scale": 2.0,
+          "shortcuts": [
+            {
+              "label": "创世 · 管理小世界",
+              "active": true,
+              "hovered": false,
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "focused": false
+            },
+            {
+              "label": "天仙渡劫",
+              "active": false,
+              "hovered": true,
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "native-sense-shortcuts-1920x1080-gui4-ascension-hover.jpg",
+          "sha256": "c85ae2b120cdcc33b760fe717d3ebb562fe2b250428925c7abe32a84ae146705",
+          "originalSha256": "9998a872282b46fbcb32e0b86f0e4fc2189e28d6891bbb9a5a8740e601241c91"
+        },
+        {
+          "image": "sense-shortcuts-1920x1080-gui4-creation-focus.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 4,
+          "scale": 2.0,
+          "shortcuts": [
+            {
+              "label": "创世 · 管理小世界",
+              "active": true,
+              "hovered": false,
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "focused": true
+            },
+            {
+              "label": "天仙渡劫",
+              "active": false,
+              "hovered": false,
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "native-sense-shortcuts-1920x1080-gui4-creation-focus.jpg",
+          "sha256": "c220393e42e1bf70ebcfa8b123b7260b0b11b31eb44eb381f8bde3ba71226d9f",
+          "originalSha256": "e02bf3aea34253bcf1f0fb2acb5aafa97215477ddc404bdd398ecbb444741abf"
+        },
+        {
+          "image": "sense-shortcuts-1920x1080-gui4-ascension-focus.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 4,
+          "scale": 2.0,
+          "shortcuts": [
+            {
+              "label": "创世 · 管理小世界",
+              "active": true,
+              "hovered": false,
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "focused": false
+            },
+            {
+              "label": "天仙渡劫",
+              "active": false,
+              "hovered": false,
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "focused": true
+            }
+          ],
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "native-sense-shortcuts-1920x1080-gui4-ascension-focus.jpg",
+          "sha256": "07e0d813b93907fce40ebfa0b6cb44599c72cc493e67e94b57f0025c63ff4eb9",
+          "originalSha256": "9cb3c5d826056c3933fb9163253a4e4b0d3c9be79239325c61f62de0613c3af7"
+        },
+        {
+          "image": "sense-shortcuts-1920x1080-gui4-disabled.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 4,
+          "scale": 2.0,
+          "shortcuts": [
+            {
+              "label": "创世 · 管理小世界",
+              "active": false,
+              "hovered": false,
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "focused": false
+            },
+            {
+              "label": "天仙渡劫",
+              "active": false,
+              "hovered": false,
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "native-sense-shortcuts-1920x1080-gui4-disabled.jpg",
+          "sha256": "9fe668ed6579fd6beab4fb8cadf0e8ea50b00f6241e9b47c54045994489dc0ad",
+          "originalSha256": "8f20d87faaf23b08bb09568de7d0c8c46c80ded22d36e904693bb516bccd43d3"
+        },
+        {
+          "image": "sense-shortcuts-2560x1440-gui4-normal.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 4,
+          "scale": 3.0,
+          "shortcuts": [
+            {
+              "label": "创世 · 管理小世界",
+              "active": true,
+              "hovered": false,
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "focused": false
+            },
+            {
+              "label": "天仙渡劫",
+              "active": false,
+              "hovered": false,
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "native-sense-shortcuts-2560x1440-gui4-normal.jpg",
+          "sha256": "6a3ea13ed262c1fcd27b52e46f44d1772f332671d01529cd937171e4dcbf140e",
+          "originalSha256": "a99d18de54c9cbb4e67e6a021fe7e2eec50c1750fea59cfb34753e0ad2da7512"
+        },
+        {
+          "image": "sense-shortcuts-2560x1440-gui4-creation-hover.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 4,
+          "scale": 3.0,
+          "shortcuts": [
+            {
+              "label": "创世 · 管理小世界",
+              "active": true,
+              "hovered": true,
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "focused": false
+            },
+            {
+              "label": "天仙渡劫",
+              "active": false,
+              "hovered": false,
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "native-sense-shortcuts-2560x1440-gui4-creation-hover.jpg",
+          "sha256": "875b19f018ad2e62691c129f853bfee21cf28c5d6fa021c2c54b7545e8edfd26",
+          "originalSha256": "0abd740eef81c84d2bfeb54faf102be1906f76a04c8ed362c4b0a9b19679b69e"
+        },
+        {
+          "image": "sense-shortcuts-2560x1440-gui4-ascension-hover.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 4,
+          "scale": 3.0,
+          "shortcuts": [
+            {
+              "label": "创世 · 管理小世界",
+              "active": true,
+              "hovered": false,
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "focused": false
+            },
+            {
+              "label": "天仙渡劫",
+              "active": false,
+              "hovered": true,
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "native-sense-shortcuts-2560x1440-gui4-ascension-hover.jpg",
+          "sha256": "3e6f4606fb4235d8dca0a9c88d6559c7fc31890dd99d0543621f3ee3adaf89d4",
+          "originalSha256": "ffadffbc6154163fa26c4ca325c11eb7f0c80b0a51e9b2e966b3cfa7502e9ce6"
+        },
+        {
+          "image": "sense-shortcuts-2560x1440-gui4-creation-focus.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 4,
+          "scale": 3.0,
+          "shortcuts": [
+            {
+              "label": "创世 · 管理小世界",
+              "active": true,
+              "hovered": false,
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "focused": true
+            },
+            {
+              "label": "天仙渡劫",
+              "active": false,
+              "hovered": false,
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "native-sense-shortcuts-2560x1440-gui4-creation-focus.jpg",
+          "sha256": "775e0f9af1d68db89719bcb729932bedeeb8e1457334fe70f6e38dc12625d470",
+          "originalSha256": "ebeeb89a28d07218f7fd6985ab3a4d129bb6ebf2d626f6bf1c26d0943826b9ad"
+        },
+        {
+          "image": "sense-shortcuts-2560x1440-gui4-ascension-focus.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 4,
+          "scale": 3.0,
+          "shortcuts": [
+            {
+              "label": "创世 · 管理小世界",
+              "active": true,
+              "hovered": false,
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "focused": false
+            },
+            {
+              "label": "天仙渡劫",
+              "active": false,
+              "hovered": false,
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "focused": true
+            }
+          ],
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "native-sense-shortcuts-2560x1440-gui4-ascension-focus.jpg",
+          "sha256": "61c9991317eb713357dd65c780986f05af861543fe7c36267ce3c81a0fa87337",
+          "originalSha256": "c196a4959b643d32e0fdc0732af8c8d0a15713aeef036ed628faaf19419ebc23"
+        },
+        {
+          "image": "sense-shortcuts-2560x1440-gui4-disabled.png",
+          "vertices": 0,
+          "shaderPack": false,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 4,
+          "scale": 3.0,
+          "shortcuts": [
+            {
+              "label": "创世 · 管理小世界",
+              "active": false,
+              "hovered": false,
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "focused": false
+            },
+            {
+              "label": "天仙渡劫",
+              "active": false,
+              "hovered": false,
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "native-sense-shortcuts-2560x1440-gui4-disabled.jpg",
+          "sha256": "44d658847497bdbf6190f34ce286afd2fdfd6417b598c9a182eb4e6aa4fbbe0b",
+          "originalSha256": "cbe8352eb61da768d75f52a91d5b50f0395ffb698995deb932d28ecf8c0dd0d2"
         }
       ],
       "pointer": {
+        "cursorMode": 212993,
+        "checkedFrames": 2665,
         "captureViolations": 0,
         "passed": true,
-        "blockedGrabs": 5,
-        "cursorMode": 212993,
-        "checkedFrames": 2830
+        "blockedGrabs": 9
       },
+      "uiPointer": {
+        "cursorMode": 212993,
+        "checkedFrames": 1180,
+        "captureViolations": 0,
+        "passed": true,
+        "blockedGrabs": 9
+      },
+      "fullSpeed": true,
       "material": [
         {
+          "check": "shipping-glsl-periodicity",
           "passed": true,
           "comparisons": 16,
-          "maxChannelError": 0.0001697540283203125,
-          "check": "shipping-glsl-periodicity"
+          "maxChannelError": 0.0001697540283203125
         }
       ]
     },
@@ -476,111 +2136,120 @@
       "rows": [
         {
           "image": "skin-0-meteor_prism-side.png",
-          "vertices": 3900,
+          "vertices": 21224,
           "shaderPack": true,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 0.27058077,
+          "yaw": 962.55334,
+          "view": "near-side",
           "file": "solas-skin-0-meteor_prism-side.jpg",
-          "sha256": "149d7ea07831bc9c573784825785b8596f2e12b12022b9cd8ea9d9b9f681d4ed",
-          "originalSha256": "75af35dda8f44f8bcafa4ba7b6488402619258b9368321b6c1103226ee765ee1"
+          "sha256": "100db37eafef762fed37671d986be8da4d13aa07321f04567695345a67a1d2bd",
+          "originalSha256": "4b9a22d25c7d25b899232a6311e000d59229859db8c186a3303df117f884b643"
         },
         {
           "image": "skin-0-meteor_prism-turn.png",
-          "vertices": 4732,
+          "vertices": 21120,
           "shaderPack": true,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 7.5749063,
+          "yaw": 1019.91064,
+          "view": "near-axis",
           "file": "solas-skin-0-meteor_prism-turn.jpg",
-          "sha256": "5dbd452c04ae66cc077cac0f1f16259b90630965620e07cb31663ea4a1fcf843",
-          "originalSha256": "33882f25a6a3426a6c35c8b99ab25e5a16cf50f6f05e7cf9112adc930b440c36"
+          "sha256": "f60b6ed1a5d7b05decfaf4015ec17050f084ef13a1ec727903a89ed7ed8a8192",
+          "originalSha256": "b4f46fd4eb7ff2955f71d2ed45b8d59f09a5c973a04fc6e95bd3dbff2207ad10"
         },
         {
           "image": "skin-1-meteor_flame-side.png",
-          "vertices": 5344,
+          "vertices": 27808,
           "shaderPack": true,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 0.6311804,
+          "yaw": 1176.0055,
+          "view": "near-side",
           "file": "solas-skin-1-meteor_flame-side.jpg",
-          "sha256": "15a298eff42e6a94e3f57ba8b5dae40e21c7581ac41120ab85c4a6a8c709e4d0",
-          "originalSha256": "b51e015d35fd8b568ec8c196430f2d2b43b82d90ff49c3a22d23307fdfb3634f"
+          "sha256": "0ac2a2b29eb1d20034551e72500c27160fb920d96e46dfbb8da6933ebaab1023",
+          "originalSha256": "cc3025600415bb1353ab61bdc10928a1256d688483fa00d168ca38cde5d645f4"
         },
         {
           "image": "skin-1-meteor_flame-turn.png",
-          "vertices": 6628,
+          "vertices": 27692,
           "shaderPack": true,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 7.6766253,
+          "yaw": 1235.7391,
+          "view": "near-axis",
           "file": "solas-skin-1-meteor_flame-turn.jpg",
-          "sha256": "bd77111243c09b79a30e5c1a240fcad905cb779812e27b6fff2b151fb02f179e",
-          "originalSha256": "4d4ec43620ee09a5f8c998cc84aba00d999d910ac53988ed5e6f0db82ef268c7"
+          "sha256": "1e8e97b747372c599bf5526203224b9ebe857227dde3f38a96d0b8e61e1843af",
+          "originalSha256": "6702e71a82c09e88564b32b035a56a19ca2cecc179cbfb2414e9abe40576f503"
         },
         {
           "image": "skin-2-needle-side.png",
-          "vertices": 1764,
+          "vertices": 12928,
           "shaderPack": true,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 0.6326008,
+          "yaw": 1385.6139,
+          "view": "near-side",
           "file": "solas-skin-2-needle-side.jpg",
-          "sha256": "bc8bf415b1db5cf25fa947c1469d3fc0aa23b9b49d1bc5ca339d7a09aa1e016a",
-          "originalSha256": "8159da1b22f36f6e110f50a276d32e60cc10b66a50502b4d4253847d9190555a"
+          "sha256": "24d2f5c544b41f6ab24ef38eb6fc46f39c16852ead8aa8e946ea5a5b45011742",
+          "originalSha256": "b8acc75cb63cdb53da75fc1122011488e324bee8652e380bb3955da8a8cb305a"
         },
         {
           "image": "skin-2-needle-turn.png",
-          "vertices": 2404,
+          "vertices": 12948,
           "shaderPack": true,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 7.677026,
+          "yaw": 1432.7909,
+          "view": "near-axis",
           "file": "solas-skin-2-needle-turn.jpg",
-          "sha256": "08e385985fdaefafc5f622880dee3ae669a89bd8d8f6ada6ad68f7dd461b5a61",
-          "originalSha256": "1e6d38469bb25b7f2c8061e36f044661f0bc17a0a489eea664db3271fb921d95"
+          "sha256": "340b67b51e0b8cf5fa6bd456605febbb51fa192dd473cde85696d04434a52545",
+          "originalSha256": "2323256d6aad5d0a127d2b6bce9f932eedd16f75404778478a818add9dc409fb"
         },
         {
           "image": "skin-3-feather-side.png",
-          "vertices": 4476,
+          "vertices": 12948,
           "shaderPack": true,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 0.63260645,
+          "yaw": 1595.6173,
+          "view": "near-side",
           "file": "solas-skin-3-feather-side.jpg",
-          "sha256": "7f882b3aaeade478b5e357ea344b89141503dd55bb49fc551619f08cbd577821",
-          "originalSha256": "cfd1939c87b019f32878771b1de1e2a6e07440dc9296016045b7f6283491ad9f"
+          "sha256": "00188f8657bbe2066851c71aebaf121ecc3d8291b01f43577e5d3a8b7968130a",
+          "originalSha256": "816331a667fa9de9eb74ca3e497c9fc3c487431841f3f3961ccffa531b1fbc26"
         },
         {
           "image": "skin-3-feather-turn.png",
-          "vertices": 4860,
+          "vertices": 13092,
           "shaderPack": true,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 7.6770277,
+          "yaw": 1642.4283,
+          "view": "near-axis",
           "file": "solas-skin-3-feather-turn.jpg",
-          "sha256": "f3b77c4c7cc3f0f1349ca6702e1ba070d501cd2bd3fa8a3fb8ff8c0d8db1c70a",
-          "originalSha256": "0ee666ea86511c826b49d00175a9063317cb8205bb8dd722e05f6f8bb45cc869"
+          "sha256": "702248df0cb487393a9f693f26be19520d9b95ff0424d1f31ba9a3fbd9d590aa",
+          "originalSha256": "02e975ac26fab59d86fdf7dceea7e6bdbdb37f98228d020270b1e6b6620422a5"
         },
         {
           "image": "skin-4-smoke-side.png",
-          "vertices": 120,
+          "vertices": 124,
           "shaderPack": true,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 0.63260645,
+          "yaw": 1806.7009,
+          "view": "near-side",
           "file": "solas-skin-4-smoke-side.jpg",
-          "sha256": "50039725b0fa7e3fdf0359e54c6dc6d6c4ac8d5763724d5a1ea3e80b1f390d7b",
-          "originalSha256": "b29a10bdcbfeaeb7de520411cab3a3aaf7d22f967fd2efa9b65a84acde1328b6"
+          "sha256": "e726aa437af1e640b0644e7d2ac69a39350114937bd8fb1067c2a8cb80bc4cf8",
+          "originalSha256": "223bec0bf5350d65053b4f93b7adc2366e5c817b00bed9f14b84e6e97842b2b6"
         },
         {
           "image": "skin-4-smoke-turn.png",
@@ -589,86 +2258,93 @@
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 7.6770277,
+          "yaw": 1854.1392,
+          "view": "near-axis",
           "file": "solas-skin-4-smoke-turn.jpg",
-          "sha256": "30bbec26a010d653fa63b2247a332a4ad83d65892805ad9f002b9ddd1697413f",
-          "originalSha256": "12dec43ecfe36420a86ceb83a55a768719dbcc68644fa4d8ffbe2064eb1ff108"
+          "sha256": "efd6d9f78eabca0879481220cfcf773a5e495756a69c1f40dff5976240b43c5b",
+          "originalSha256": "693cbd9e4573b19dc595f0444b3da04be3d85d5cfe99e497498d7f9d7ed0b463"
         },
         {
           "image": "skin-5-flame-side.png",
+          "vertices": 7772,
+          "shaderPack": true,
+          "glError": 0,
+          "stage": 2,
+          "strength": 1.0,
+          "yaw": 2012.4464,
+          "view": "near-side",
+          "file": "solas-skin-5-flame-side.jpg",
+          "sha256": "b54f515b14721cf9b3d69a4d54e5574b7eca66ee540ebe78b18f60a83a5b3bfc",
+          "originalSha256": "ddde33156d51abb835e37051d9446a974bc5dba0a9c291b68b4a19615a6e0aaa"
+        },
+        {
+          "image": "skin-5-flame-turn.png",
           "vertices": 7916,
           "shaderPack": true,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 0.63260645,
-          "file": "solas-skin-5-flame-side.jpg",
-          "sha256": "c20407261614340e964bef12ce6c6be7dfb23196b6faf38b4418e348d5692953",
-          "originalSha256": "aa902fa7d63a1eb6834d45bcff92e6d74e1de390d7a2dd4a273f791b6ce5736f"
-        },
-        {
-          "image": "skin-5-flame-turn.png",
-          "vertices": 7912,
-          "shaderPack": true,
-          "glError": 0,
-          "stage": 2,
-          "strength": 1.0,
-          "yaw": 7.6770277,
+          "yaw": 2061.2598,
+          "view": "near-axis",
           "file": "solas-skin-5-flame-turn.jpg",
-          "sha256": "41b687d6dc3fe3248f23bdc4fa8b4d3a8163e7bda5c42491ec4b2a534f818d9e",
-          "originalSha256": "d90b37d524210d094e5934787f61ec6bc637fe57949e3f3360ff464195aa608d"
+          "sha256": "58b597398f7dd5d9814d7d9e7cc846a59a63a6893e8c96ffba7bc965601eac96",
+          "originalSha256": "33a6355dbf22e49a61c49cbb74c5961b6707aa7b5895484c064ebe720f395109"
         },
         {
           "image": "skin-6-fan-side.png",
-          "vertices": 4932,
+          "vertices": 25452,
           "shaderPack": true,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 0.63260645,
+          "yaw": 2222.208,
+          "view": "near-side",
           "file": "solas-skin-6-fan-side.jpg",
-          "sha256": "fa0222590c353f8ea1cc6c1b7e7fc36efdff35b1c1af6f138061bc21efeef2a9",
-          "originalSha256": "3062fe967adcf4b508142ff8162d45367fb4e9c3cfd6230912e7eb27747244ef"
+          "sha256": "f3df7399bb534adacbc4d6c343438fd2d6e7b5580121491e20236730bbbe662e",
+          "originalSha256": "ac522e0c92b6a6156039ca00e041fc2b479289b276f997be86da9a890c744d77"
         },
         {
           "image": "skin-6-fan-turn.png",
-          "vertices": 5472,
+          "vertices": 25020,
           "shaderPack": true,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 7.6770277,
+          "yaw": 2282.1807,
+          "view": "near-axis",
           "file": "solas-skin-6-fan-turn.jpg",
-          "sha256": "980c5d642c7163be71d05a852161f477ba7a4a8f491d95fa4fd603d933d3c67f",
-          "originalSha256": "5865ac99cf4b10747a633d346d1dd7b55fb00ad4efa78e4eaf11ff80dbb63579"
+          "sha256": "49a97546f03b8b7e3a702a9b1e611eedd9b660b57368dee2ddcf5a9414d5e174",
+          "originalSha256": "e164fb4118e0fffc33c99a3f0237dea0bceada44212a4d4594eb1dcdebfbcce9"
         },
         {
           "image": "skin-7-dense-side.png",
-          "vertices": 14440,
+          "vertices": 113148,
           "shaderPack": true,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 0.63260645,
+          "yaw": 2444.209,
+          "view": "near-side",
           "file": "solas-skin-7-dense-side.jpg",
-          "sha256": "d5397f64d43990df2481bf9debeec504b5a3a01064dad7f5a0684eb32ff23e74",
-          "originalSha256": "fdad68caaafa08410ed5896a1061f6d4703b4235409fc3984a6c9353ea01d947"
+          "sha256": "296bfc23c91a828898797a7a1f20051ad15ad6d0781c21f5a0f1fe9196fad9ca",
+          "originalSha256": "512cf84d782ba5279a4ed90b42f5cb9de6e016bc59aacfe9f4c262f42fc3ad1b"
         },
         {
           "image": "skin-7-dense-turn.png",
-          "vertices": 20076,
+          "vertices": 112796,
           "shaderPack": true,
           "glError": 0,
           "stage": 2,
           "strength": 1.0,
-          "yaw": 7.6770277,
+          "yaw": 2483.9617,
+          "view": "near-axis",
           "file": "solas-skin-7-dense-turn.jpg",
-          "sha256": "35cac76f64e9ca3456a2b5ad47611f00a45aaf9dd077e92dd9d72d10ad21c0a5",
-          "originalSha256": "43ba38b16442c26609be532cd6d2035ede9eeb409ef05bb0d01ffbd11a84d447"
+          "sha256": "d7ee6e74f21757ec61fe5d236ad1a9ff6003f01f76ab95f9e06772dccab8754d",
+          "originalSha256": "cbe1755679fdd87427c0215dad28fe8008ccb5d5dc919fc6fb1ae3b62bba36c7"
         },
         {
           "image": "settings-1920x1080-gui3-normal.png",
-          "vertices": 25528,
+          "vertices": 0,
           "shaderPack": true,
           "glError": 0,
           "size": [
@@ -677,16 +2353,28 @@
           ],
           "guiOption": 3,
           "scale": 2.0,
-          "skinButtons": 8,
+          "skinOptions": 8,
+          "closedButtons": 1,
           "clicks": true,
           "pageWidth": 388,
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
           "file": "solas-settings-1920x1080-gui3-normal.jpg",
-          "sha256": "439a1f4ea8711b3d9de96bc7f092751f0f574833e5717efb0d54cfd814710b87",
-          "originalSha256": "765bd626d8c6394c275096356aadcd0cb7f6dfb2372e885b99215d5be0849a84"
+          "sha256": "a943ed88ee69edc5ebb54b6fcf7f253dab1cb7025a32f93fde86b9ecfa75782f",
+          "originalSha256": "ce399543b70aadf879d5b79ad54b8b27b6e085b7db6d221b07e22b96f616c92e"
         },
         {
           "image": "settings-1920x1080-gui3-hover.png",
-          "vertices": 25532,
+          "vertices": 0,
           "shaderPack": true,
           "glError": 0,
           "size": [
@@ -695,16 +2383,28 @@
           ],
           "guiOption": 3,
           "scale": 2.0,
-          "skinButtons": 8,
+          "skinOptions": 8,
+          "closedButtons": 1,
           "clicks": true,
           "pageWidth": 388,
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
           "file": "solas-settings-1920x1080-gui3-hover.jpg",
-          "sha256": "1efa8635f67f42376d34a122fe67f0101830628fc86155c1b31710405a2cefd6",
-          "originalSha256": "94eee96e884de38888db8489c2981bc695cc2ab1c3f54ad0c8366091cf6ab36c"
+          "sha256": "9b8482c7dcc48d30af154a66fb5e8eb840bbc9bbf59db16d26b0ee6fa57606b0",
+          "originalSha256": "8162ea427b8dda7e7c365991ca84a4a3a82934a22a20e57cf6ea72dc7368488d"
         },
         {
-          "image": "settings-1920x1080-gui3-focus-disabled.png",
-          "vertices": 25528,
+          "image": "settings-1920x1080-gui3-focus.png",
+          "vertices": 0,
           "shaderPack": true,
           "glError": 0,
           "size": [
@@ -713,16 +2413,89 @@
           ],
           "guiOption": 3,
           "scale": 2.0,
-          "skinButtons": 8,
+          "skinOptions": 8,
+          "closedButtons": 1,
           "clicks": true,
           "pageWidth": 388,
-          "file": "solas-settings-1920x1080-gui3-focus-disabled.jpg",
-          "sha256": "fe6db735e3a7cb4b2ceb54d9b1f1f292a24a5d7725467795b1eb0d2b2561ec3e",
-          "originalSha256": "398918cabf333ab3a0cb57d469f5bccb7ee875529a93ec2abc0bfb1af0068e9b"
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
+          "file": "solas-settings-1920x1080-gui3-focus.jpg",
+          "sha256": "201f0181e844903fc05a5f74132241406a03891f6536139cab9d536283f903ff",
+          "originalSha256": "0a1c1ca938ce617c1ebc4839f4e4eee54715e9093570ceec4d03972f1d3d6b13"
+        },
+        {
+          "image": "settings-1920x1080-gui3-disabled.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 3,
+          "scale": 2.0,
+          "skinOptions": 8,
+          "closedButtons": 1,
+          "clicks": true,
+          "pageWidth": 388,
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
+          "file": "solas-settings-1920x1080-gui3-disabled.jpg",
+          "sha256": "579636415f5a46efcc551ec62a71ab2c21283d122ecaad963d6f0cdb5feba750",
+          "originalSha256": "9046d17691161b1c43914c1bf9506699e2873c95da1d2218a75c356f702d8fa9"
+        },
+        {
+          "image": "settings-1920x1080-gui3-expanded-focus-disabled.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 3,
+          "scale": 2.0,
+          "skinOptions": 8,
+          "closedButtons": 1,
+          "clicks": true,
+          "pageWidth": 388,
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 570,
+          "expandedOptionsVisible": 8,
+          "file": "solas-settings-1920x1080-gui3-expanded-focus-disabled.jpg",
+          "sha256": "baabd89e9b8825de70ecda602b61c064c99f8e5ce5f612fa48843ed3c9a7b392",
+          "originalSha256": "b7bf70843f8121234045a1e2b00e0b7590e6ae8539ac3b0330a26920dd534eca"
         },
         {
           "image": "settings-2560x1440-gui3-normal.png",
-          "vertices": 25528,
+          "vertices": 0,
           "shaderPack": true,
           "glError": 0,
           "size": [
@@ -731,16 +2504,28 @@
           ],
           "guiOption": 3,
           "scale": 3.0,
-          "skinButtons": 8,
+          "skinOptions": 8,
+          "closedButtons": 1,
           "clicks": true,
           "pageWidth": 388,
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
           "file": "solas-settings-2560x1440-gui3-normal.jpg",
-          "sha256": "e0d323e5e01cb9afab747128aee47ea5a109551155f2026a91b9bd9703b2b81e",
-          "originalSha256": "5a0722bf25b87e09528d821ea195c8e99bf3f1a816ad719f7eb01ddaa36a63c1"
+          "sha256": "66a6f55a8037b7c983590d49b3843c297dc2ff630282e1514b5f7badc233f242",
+          "originalSha256": "aa9c3962fb819b18b7292a1f2ff1b6b9046543c7dcc802165a628d39db54f019"
         },
         {
           "image": "settings-2560x1440-gui3-hover.png",
-          "vertices": 25528,
+          "vertices": 0,
           "shaderPack": true,
           "glError": 0,
           "size": [
@@ -749,16 +2534,28 @@
           ],
           "guiOption": 3,
           "scale": 3.0,
-          "skinButtons": 8,
+          "skinOptions": 8,
+          "closedButtons": 1,
           "clicks": true,
           "pageWidth": 388,
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
           "file": "solas-settings-2560x1440-gui3-hover.jpg",
-          "sha256": "5dd9f4f2ece6fa05a750fe72fcfe688682c48e7f6f7a3e4f60853c01fab865de",
-          "originalSha256": "41018f477add1ef215873441ed8cd7340c3eea461dcd062b4b24e49990336c95"
+          "sha256": "236c21255da015b14db160e0022bff17cdf8cd4843bfd203e988d78a6991be9c",
+          "originalSha256": "3f22fe3a96ad407edcbebf234c1a1bd6efc0321770686401bd563f309eff5325"
         },
         {
-          "image": "settings-2560x1440-gui3-focus-disabled.png",
-          "vertices": 25532,
+          "image": "settings-2560x1440-gui3-focus.png",
+          "vertices": 0,
           "shaderPack": true,
           "glError": 0,
           "size": [
@@ -767,16 +2564,89 @@
           ],
           "guiOption": 3,
           "scale": 3.0,
-          "skinButtons": 8,
+          "skinOptions": 8,
+          "closedButtons": 1,
           "clicks": true,
           "pageWidth": 388,
-          "file": "solas-settings-2560x1440-gui3-focus-disabled.jpg",
-          "sha256": "54fbdf3b7829f056d7073adf6611aef22155f75b1321c6023775388a30eb81db",
-          "originalSha256": "daba072b19d5ab064df73e5ad58162213568b68a16c42e4048915c4b0f2f86d0"
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
+          "file": "solas-settings-2560x1440-gui3-focus.jpg",
+          "sha256": "f1bc5dab312521b9563e6e8ccf7db6cc898edae7a18f276cfff473633e6f21eb",
+          "originalSha256": "1b890dd34047ac82c49d00ef528778701dd7e74e3c8cd1a3ee2e0f3132f0ea0b"
+        },
+        {
+          "image": "settings-2560x1440-gui3-disabled.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 3,
+          "scale": 3.0,
+          "skinOptions": 8,
+          "closedButtons": 1,
+          "clicks": true,
+          "pageWidth": 388,
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
+          "file": "solas-settings-2560x1440-gui3-disabled.jpg",
+          "sha256": "a0805ce28bfbefc74f28d4b8eb7824109fc6e7a78498b624fa34f85b03f0c99e",
+          "originalSha256": "fb2e5a253453e5d912ff2aff9f5c81806ed78a966121d7a52f805d8ff5f522a2"
+        },
+        {
+          "image": "settings-2560x1440-gui3-expanded-focus-disabled.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 3,
+          "scale": 3.0,
+          "skinOptions": 8,
+          "closedButtons": 1,
+          "clicks": true,
+          "pageWidth": 388,
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 570,
+          "expandedOptionsVisible": 8,
+          "file": "solas-settings-2560x1440-gui3-expanded-focus-disabled.jpg",
+          "sha256": "ac249bdbcf0cb32a687da9dfe914baf88bd69365f174d604a58346317f112c80",
+          "originalSha256": "ab30142d14558d0cd56d1ad1abbf268146df0baea07abd12d549e761bf064f16"
         },
         {
           "image": "settings-1920x1080-gui4-normal.png",
-          "vertices": 25528,
+          "vertices": 0,
           "shaderPack": true,
           "glError": 0,
           "size": [
@@ -785,16 +2655,28 @@
           ],
           "guiOption": 4,
           "scale": 2.0,
-          "skinButtons": 8,
+          "skinOptions": 8,
+          "closedButtons": 1,
           "clicks": true,
           "pageWidth": 388,
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
           "file": "solas-settings-1920x1080-gui4-normal.jpg",
-          "sha256": "27a755a5b419619a8eb1c0f4db649632ec6d8f721bbfd3506f9ffa37de4b19b9",
-          "originalSha256": "b20a2da2f729679345232eba695fba723f529d7c07243a4ca9a9901ba9f992c8"
+          "sha256": "1c472e13a3144f9e208acd97adbae2acc7eb182fa9146e58416ad83d68d56488",
+          "originalSha256": "a6047b0ebfa063a83fa8ccb4fbd9714c4407cd43289a19c6efa768bd9b7732f1"
         },
         {
           "image": "settings-1920x1080-gui4-hover.png",
-          "vertices": 25528,
+          "vertices": 0,
           "shaderPack": true,
           "glError": 0,
           "size": [
@@ -803,16 +2685,28 @@
           ],
           "guiOption": 4,
           "scale": 2.0,
-          "skinButtons": 8,
+          "skinOptions": 8,
+          "closedButtons": 1,
           "clicks": true,
           "pageWidth": 388,
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
           "file": "solas-settings-1920x1080-gui4-hover.jpg",
-          "sha256": "c2e7c2fbda7281257682b7d2afa2e0f6cd919709a84a4f1105044df5a748695d",
-          "originalSha256": "490f6490f1ee4b143d81aaf1a4bf61b5c9ff92d91bc0b6c92ddb7c28d4efc901"
+          "sha256": "234a711d9ed0f05d74e06beaff0880a1cea7157c0e2de734496d8607b81cf532",
+          "originalSha256": "38c0cfbdcecabe457d6bdf1e987334b89bae91eba83a8d1161dc738406f28099"
         },
         {
-          "image": "settings-1920x1080-gui4-focus-disabled.png",
-          "vertices": 25528,
+          "image": "settings-1920x1080-gui4-focus.png",
+          "vertices": 0,
           "shaderPack": true,
           "glError": 0,
           "size": [
@@ -821,16 +2715,89 @@
           ],
           "guiOption": 4,
           "scale": 2.0,
-          "skinButtons": 8,
+          "skinOptions": 8,
+          "closedButtons": 1,
           "clicks": true,
           "pageWidth": 388,
-          "file": "solas-settings-1920x1080-gui4-focus-disabled.jpg",
-          "sha256": "76c8fdffeef7c0c9c9c7b91d49636c911cc071c4c74029313d425002ea77cf85",
-          "originalSha256": "5b4931cc42c68bb472a825249d48f3fac559cf1e9f236b081771c6f87727a48a"
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
+          "file": "solas-settings-1920x1080-gui4-focus.jpg",
+          "sha256": "5a5732c2addfdd9f213641ef1242b54fce92434b0d99a608cbfd8f0eeb76ffc6",
+          "originalSha256": "b3e305c1fa618c052d22c588595de8fe5d2411744596c3e410a43fc65568916a"
+        },
+        {
+          "image": "settings-1920x1080-gui4-disabled.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 4,
+          "scale": 2.0,
+          "skinOptions": 8,
+          "closedButtons": 1,
+          "clicks": true,
+          "pageWidth": 388,
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
+          "file": "solas-settings-1920x1080-gui4-disabled.jpg",
+          "sha256": "4f309b1fb9ef3b650db319ab7f57ae0b54e8d999854c31e69054a7cae5b9668a",
+          "originalSha256": "e25952afb4b1a52b6f224c12fe416a0debcc130060890e60d4a37d68b7abad0a"
+        },
+        {
+          "image": "settings-1920x1080-gui4-expanded-focus-disabled.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 4,
+          "scale": 2.0,
+          "skinOptions": 8,
+          "closedButtons": 1,
+          "clicks": true,
+          "pageWidth": 388,
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 570,
+          "expandedOptionsVisible": 8,
+          "file": "solas-settings-1920x1080-gui4-expanded-focus-disabled.jpg",
+          "sha256": "580726d6fea3fe0e25be1d6df0b79e9d89ddd7c008d32b22d645357cd3f9519c",
+          "originalSha256": "09e21a2d2ae457b1b6a85d8316ba2a45ee137e9634859fd9d1d75652d5953aeb"
         },
         {
           "image": "settings-2560x1440-gui4-normal.png",
-          "vertices": 25528,
+          "vertices": 0,
           "shaderPack": true,
           "glError": 0,
           "size": [
@@ -839,16 +2806,28 @@
           ],
           "guiOption": 4,
           "scale": 3.0,
-          "skinButtons": 8,
+          "skinOptions": 8,
+          "closedButtons": 1,
           "clicks": true,
           "pageWidth": 388,
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
           "file": "solas-settings-2560x1440-gui4-normal.jpg",
-          "sha256": "11dac5d4751aff1f08116cbdfb5d3ee93d11af9e91eba181283836ea26a0bb47",
-          "originalSha256": "8164f0c5746e834127e538eb73c75c805965ad59fdbb634d337bb2da0db14859"
+          "sha256": "99763cf3eb8eac4789965be92701f3eb7c9ec56b0a0a5fb02604fa73248f6546",
+          "originalSha256": "c5df41e7d4b709d790362d548efe0b11645aa2920d6a379c735191d666843c54"
         },
         {
           "image": "settings-2560x1440-gui4-hover.png",
-          "vertices": 25528,
+          "vertices": 0,
           "shaderPack": true,
           "glError": 0,
           "size": [
@@ -857,16 +2836,28 @@
           ],
           "guiOption": 4,
           "scale": 3.0,
-          "skinButtons": 8,
+          "skinOptions": 8,
+          "closedButtons": 1,
           "clicks": true,
           "pageWidth": 388,
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
           "file": "solas-settings-2560x1440-gui4-hover.jpg",
-          "sha256": "b12a11137101402dc515e377821851d3b7a6e62f43e995e021032e5b3e7874af",
-          "originalSha256": "142919a8ab490606ddce0aabf3beabdb554233d3ed52579e3d172e75298f6d83"
+          "sha256": "0b0de0f87eaca1635061d0a75e317c5130d60cc17e8b52cb5f99db986798e13d",
+          "originalSha256": "a765a95911ebf72a26db9f1b63d6b4cb023fe1a7590594b071e6f96a75769a5e"
         },
         {
-          "image": "settings-2560x1440-gui4-focus-disabled.png",
-          "vertices": 25528,
+          "image": "settings-2560x1440-gui4-focus.png",
+          "vertices": 0,
           "shaderPack": true,
           "glError": 0,
           "size": [
@@ -875,27 +2866,1356 @@
           ],
           "guiOption": 4,
           "scale": 3.0,
-          "skinButtons": 8,
+          "skinOptions": 8,
+          "closedButtons": 1,
           "clicks": true,
           "pageWidth": 388,
-          "file": "solas-settings-2560x1440-gui4-focus-disabled.jpg",
-          "sha256": "8ba4899c27b3cbe4d8d74ac1038d1909781302c89c7ac2d75b1c92b150c2e538",
-          "originalSha256": "87565e3e25f0df762c3e20cae03ebec96f04f7560715095192a970297ff3a396"
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
+          "file": "solas-settings-2560x1440-gui4-focus.jpg",
+          "sha256": "f23d057e178896f424f4fe42b9f89d31622d13a19437cb7a8028c8ee07ce5eb1",
+          "originalSha256": "effbfcf03b828999a4d8b59774fd00c01fd0f3e1d2724ebc3825ce396a174c56"
+        },
+        {
+          "image": "settings-2560x1440-gui4-disabled.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 4,
+          "scale": 3.0,
+          "skinOptions": 8,
+          "closedButtons": 1,
+          "clicks": true,
+          "pageWidth": 388,
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 458,
+          "file": "solas-settings-2560x1440-gui4-disabled.jpg",
+          "sha256": "a9e9da95afb5c2f7bc70b43a88643777cba6b39629119beaee02bc31d535c565",
+          "originalSha256": "8b64c257fd0390d25858f4e68d6407ef2548e63fc081afb709d502a822410977"
+        },
+        {
+          "image": "settings-2560x1440-gui4-expanded-focus-disabled.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 4,
+          "scale": 3.0,
+          "skinOptions": 8,
+          "closedButtons": 1,
+          "clicks": true,
+          "pageWidth": 388,
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "settings",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 570,
+          "expandedOptionsVisible": 8,
+          "file": "solas-settings-2560x1440-gui4-expanded-focus-disabled.jpg",
+          "sha256": "69e1046e72d73bc7867604738e3f2af81dd18e785ab6f18cc825664a576b55ef",
+          "originalSha256": "d4b76b03cd5ab7c20f0087f90a925056b95ae6f89489aaf8812d9bd2dd213d52"
+        },
+        {
+          "image": "sense-shortcuts-1920x1080-gui3-normal.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 3,
+          "scale": 2.0,
+          "shortcuts": [
+            {
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false
+            },
+            {
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "solas-sense-shortcuts-1920x1080-gui3-normal.jpg",
+          "sha256": "dc9861a5f9a0c64271ee12994bffbaf034eb27a108f44fdaab335c7373838a82",
+          "originalSha256": "575934aaaf16aaeae78ef7d34f01f97e5a4827100e943a9c27f9a909d3bf2f9d"
+        },
+        {
+          "image": "sense-shortcuts-1920x1080-gui3-creation-hover.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 3,
+          "scale": 2.0,
+          "shortcuts": [
+            {
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "hovered": true,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false
+            },
+            {
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "solas-sense-shortcuts-1920x1080-gui3-creation-hover.jpg",
+          "sha256": "0454e62a0d800942f1d4db16f37f3dd950538a9cf5fba9b9d14fce9804096d03",
+          "originalSha256": "68451ceda8ad0d8adb93d02de62076e27f510062676b9f0f08dadcee4b849815"
+        },
+        {
+          "image": "sense-shortcuts-1920x1080-gui3-ascension-hover.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 3,
+          "scale": 2.0,
+          "shortcuts": [
+            {
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false
+            },
+            {
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "hovered": true,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "solas-sense-shortcuts-1920x1080-gui3-ascension-hover.jpg",
+          "sha256": "fbb9bc28123a45a8ba7e45997ea8dea3531a19aaa243d3c03d9df4b160598f0b",
+          "originalSha256": "3e62f0f3d747476680c71817857a3ab0705a6d00a36a7fcea719bfcb8450490b"
+        },
+        {
+          "image": "sense-shortcuts-1920x1080-gui3-creation-focus.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 3,
+          "scale": 2.0,
+          "shortcuts": [
+            {
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": true
+            },
+            {
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "solas-sense-shortcuts-1920x1080-gui3-creation-focus.jpg",
+          "sha256": "469259114e9538a6e5bc5e96e85fa067d2bcfbbd3d9786b0028503373056674d",
+          "originalSha256": "6bc4532e4c58992b9b6857c753dbec3d525b51ed5f6821ff214defdc973c01e4"
+        },
+        {
+          "image": "sense-shortcuts-1920x1080-gui3-ascension-focus.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 3,
+          "scale": 2.0,
+          "shortcuts": [
+            {
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false
+            },
+            {
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": true
+            }
+          ],
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "solas-sense-shortcuts-1920x1080-gui3-ascension-focus.jpg",
+          "sha256": "250a7a5d5bf1bb914e31194c071beab966f7083d28b839fe96f37553019ac35a",
+          "originalSha256": "bd81eb1ed6036a3967eeda8e9bbca5f9e05d8d08c9032dbbb9933cdef7188bf9"
+        },
+        {
+          "image": "sense-shortcuts-1920x1080-gui3-disabled.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 3,
+          "scale": 2.0,
+          "shortcuts": [
+            {
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "hovered": false,
+              "active": false,
+              "label": "创世 · 管理小世界",
+              "focused": false
+            },
+            {
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "solas-sense-shortcuts-1920x1080-gui3-disabled.jpg",
+          "sha256": "ae380dd16c30a0c768f055b37ea3500b9fb13a1dd3ad48daee2ab6c30ef43f36",
+          "originalSha256": "97eb0c39aaea7d0e7a8ae0047b6659a506cb8cb8f7dbccd69c21bf28896bbafb"
+        },
+        {
+          "image": "sense-shortcuts-2560x1440-gui3-normal.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 3,
+          "scale": 3.0,
+          "shortcuts": [
+            {
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false
+            },
+            {
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "solas-sense-shortcuts-2560x1440-gui3-normal.jpg",
+          "sha256": "e14d98049fa11aa9fbcb008ae3c7e01629b8ac9fd33d4878b00eff76a5a6adda",
+          "originalSha256": "04f0f29fe1977742393576f69514ba406c551035b4a691644dbf15ccc354057b"
+        },
+        {
+          "image": "sense-shortcuts-2560x1440-gui3-creation-hover.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 3,
+          "scale": 3.0,
+          "shortcuts": [
+            {
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "hovered": true,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false
+            },
+            {
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "solas-sense-shortcuts-2560x1440-gui3-creation-hover.jpg",
+          "sha256": "0c7d8c0cf8030140fb4acf1b247797fefbc03f185c8b161294a3046fb91a6ea5",
+          "originalSha256": "558c64f7ffe6681cc8e0a26b23cdfd6828d60412165faec15e756f2014cb2a22"
+        },
+        {
+          "image": "sense-shortcuts-2560x1440-gui3-ascension-hover.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 3,
+          "scale": 3.0,
+          "shortcuts": [
+            {
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false
+            },
+            {
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "hovered": true,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "solas-sense-shortcuts-2560x1440-gui3-ascension-hover.jpg",
+          "sha256": "3be03e70f41593364bd313af4dce45a6e29ae12ace091410a2cccb4448b9a1d3",
+          "originalSha256": "1a758971c4b6ca68a002e4b0b7f334f63a630c085eb70f006134e5209fa28df1"
+        },
+        {
+          "image": "sense-shortcuts-2560x1440-gui3-creation-focus.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 3,
+          "scale": 3.0,
+          "shortcuts": [
+            {
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": true
+            },
+            {
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "solas-sense-shortcuts-2560x1440-gui3-creation-focus.jpg",
+          "sha256": "c64c1a9b0ff633a42cbad24e44fd3a99cc5bf012a8157091de43581879f2bd8d",
+          "originalSha256": "6c672b5bb5ba3b77bfbb73bad4c8725b717c8da673e480034ca240b6081b183c"
+        },
+        {
+          "image": "sense-shortcuts-2560x1440-gui3-ascension-focus.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 3,
+          "scale": 3.0,
+          "shortcuts": [
+            {
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false
+            },
+            {
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": true
+            }
+          ],
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "solas-sense-shortcuts-2560x1440-gui3-ascension-focus.jpg",
+          "sha256": "b0477f148d8ea4566f1986ac64f2d9ff07db3fa275eae2912ecff86014edc68f",
+          "originalSha256": "e17c560ec9763db75071e728b7e5434f99cdb8b19cd10acd94d7b46376f96361"
+        },
+        {
+          "image": "sense-shortcuts-2560x1440-gui3-disabled.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 3,
+          "scale": 3.0,
+          "shortcuts": [
+            {
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "hovered": false,
+              "active": false,
+              "label": "创世 · 管理小世界",
+              "focused": false
+            },
+            {
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "solas-sense-shortcuts-2560x1440-gui3-disabled.jpg",
+          "sha256": "c689c53e30ec43e0092bd6b2fd43facdbc503c555bd12a6693ea1a54670a3e3b",
+          "originalSha256": "07caed875e587331f9f9028de64736b2beaaf4b44190aaeb2265f62579a830ad"
+        },
+        {
+          "image": "sense-shortcuts-1920x1080-gui4-normal.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 4,
+          "scale": 2.0,
+          "shortcuts": [
+            {
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false
+            },
+            {
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "solas-sense-shortcuts-1920x1080-gui4-normal.jpg",
+          "sha256": "2369f637e01b1cb53d6d3489e7476294f4a4a65b5a61449ca3932473a7a7b005",
+          "originalSha256": "874e5052e050de35b3b7bc15fd92794c0eb0f5a03f080f4b39ad2ce2da0d4346"
+        },
+        {
+          "image": "sense-shortcuts-1920x1080-gui4-creation-hover.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 4,
+          "scale": 2.0,
+          "shortcuts": [
+            {
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "hovered": true,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false
+            },
+            {
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "solas-sense-shortcuts-1920x1080-gui4-creation-hover.jpg",
+          "sha256": "66b9113e01c8b491f1c3360ffc3da218d4fd6bb5c507a5876752934d86157058",
+          "originalSha256": "40452aa4de084ad0cb19994e3a8fd90a95cdacfe84a0580466a0a920d4e4b797"
+        },
+        {
+          "image": "sense-shortcuts-1920x1080-gui4-ascension-hover.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 4,
+          "scale": 2.0,
+          "shortcuts": [
+            {
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false
+            },
+            {
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "hovered": true,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "solas-sense-shortcuts-1920x1080-gui4-ascension-hover.jpg",
+          "sha256": "1c6f9e2781d8e4405585703eb7276f464dde6b97d55ca427bfe422bcbb047b0a",
+          "originalSha256": "15446183572c6b9f7bd5cae5d801fba1260576a833421f573b46b672dcae39cc"
+        },
+        {
+          "image": "sense-shortcuts-1920x1080-gui4-creation-focus.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 4,
+          "scale": 2.0,
+          "shortcuts": [
+            {
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": true
+            },
+            {
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "solas-sense-shortcuts-1920x1080-gui4-creation-focus.jpg",
+          "sha256": "94c3c065fc226a3865073f0d4cc0d9c42b7f4411a5d5ca3d17aa0795b54e5e55",
+          "originalSha256": "5aa9ae259bf2a77328730d05943fe2fe0125ad45e9954a4b2b1ce825177a821c"
+        },
+        {
+          "image": "sense-shortcuts-1920x1080-gui4-ascension-focus.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 4,
+          "scale": 2.0,
+          "shortcuts": [
+            {
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false
+            },
+            {
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": true
+            }
+          ],
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "solas-sense-shortcuts-1920x1080-gui4-ascension-focus.jpg",
+          "sha256": "f17999940cd35c93fe0f2afa054973739432d904f608294a173fc1aab49e43d5",
+          "originalSha256": "a7644dcdbddad157d99c6f6532badfd5ccf0b303e25da3e8ec593c3175d59f64"
+        },
+        {
+          "image": "sense-shortcuts-1920x1080-gui4-disabled.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            1920,
+            1080
+          ],
+          "guiOption": 4,
+          "scale": 2.0,
+          "shortcuts": [
+            {
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "hovered": false,
+              "active": false,
+              "label": "创世 · 管理小世界",
+              "focused": false
+            },
+            {
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            1920,
+            1080
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            316,
+            151
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "solas-sense-shortcuts-1920x1080-gui4-disabled.jpg",
+          "sha256": "d5eb3cc19667d21809650dd2da5bc3eb4b16c8bfe8f17665c18518afec3a45f9",
+          "originalSha256": "165c54e3f100c1caab73e7be7d5a91d06fd07749e4fef064a6d2780193a9e809"
+        },
+        {
+          "image": "sense-shortcuts-2560x1440-gui4-normal.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 4,
+          "scale": 3.0,
+          "shortcuts": [
+            {
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false
+            },
+            {
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "solas-sense-shortcuts-2560x1440-gui4-normal.jpg",
+          "sha256": "f3adefdb73fab8b49cd09f7bbf8f275b3ae41da8ed7e34f68e3a9e1cfb871527",
+          "originalSha256": "91d31a0607f946d0655da41b28fdac38c6de934db1e42d4e5673156949ee2e75"
+        },
+        {
+          "image": "sense-shortcuts-2560x1440-gui4-creation-hover.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 4,
+          "scale": 3.0,
+          "shortcuts": [
+            {
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "hovered": true,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false
+            },
+            {
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "solas-sense-shortcuts-2560x1440-gui4-creation-hover.jpg",
+          "sha256": "94c41774a2bcdd439d86476c502aab89e609be841eb7f43ca8a7056a12267f19",
+          "originalSha256": "61895ed6f60629f54611e09c25551b6c586e790a01cbad6a6ac7759dd12227f2"
+        },
+        {
+          "image": "sense-shortcuts-2560x1440-gui4-ascension-hover.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 4,
+          "scale": 3.0,
+          "shortcuts": [
+            {
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false
+            },
+            {
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "hovered": true,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "solas-sense-shortcuts-2560x1440-gui4-ascension-hover.jpg",
+          "sha256": "4059a254f4a34589b42a6875cf6d7dc355462e93b3f36962788fbf1728bebbd0",
+          "originalSha256": "3de2f3df65004fd38df12afa377f9a9aa461b3d1b1065b83a4d79b0a78391dff"
+        },
+        {
+          "image": "sense-shortcuts-2560x1440-gui4-creation-focus.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 4,
+          "scale": 3.0,
+          "shortcuts": [
+            {
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": true
+            },
+            {
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "solas-sense-shortcuts-2560x1440-gui4-creation-focus.jpg",
+          "sha256": "8cd6e7494192e88885494547061f51c87d8e2f3905f499e3cee43c9ec8d05167",
+          "originalSha256": "53c0429ac25c22ba763fec8b1aae239736cda3a733b8a0aa41a77bda311bce5b"
+        },
+        {
+          "image": "sense-shortcuts-2560x1440-gui4-ascension-focus.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 4,
+          "scale": 3.0,
+          "shortcuts": [
+            {
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false
+            },
+            {
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": true
+            }
+          ],
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "solas-sense-shortcuts-2560x1440-gui4-ascension-focus.jpg",
+          "sha256": "e1443f130e16614efe3b619306d33e48cbae55c10df4793159e8133412e32005",
+          "originalSha256": "e37655e1f97b5dc736300d19701553d56e3b5ea43643cfdf466f93cb4cc20375"
+        },
+        {
+          "image": "sense-shortcuts-2560x1440-gui4-disabled.png",
+          "vertices": 0,
+          "shaderPack": true,
+          "glError": 0,
+          "size": [
+            2560,
+            1440
+          ],
+          "guiOption": 4,
+          "scale": 3.0,
+          "shortcuts": [
+            {
+              "bounds": [
+                12,
+                222,
+                213,
+                22
+              ],
+              "hovered": false,
+              "active": false,
+              "label": "创世 · 管理小世界",
+              "focused": false
+            },
+            {
+              "bounds": [
+                233,
+                222,
+                143,
+                22
+              ],
+              "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false
+            }
+          ],
+          "actualImageSize": [
+            2560,
+            1440
+          ],
+          "pageId": "sense",
+          "contentOrigin": [
+            263,
+            121
+          ],
+          "pageScale": 1.0,
+          "scroll": 0,
+          "file": "solas-sense-shortcuts-2560x1440-gui4-disabled.jpg",
+          "sha256": "2c0ade37596f6dfc14ea6785930fc9b3a339ee2d8d3e577847363d1544da5209",
+          "originalSha256": "7feba6be4b5e2e20fb173bac2655a9fdf77ca86967def4f33bc9d4e340e56975"
         }
       ],
       "pointer": {
-        "cursorMode": 212993,
-        "blockedGrabs": 5,
         "passed": true,
         "captureViolations": 0,
-        "checkedFrames": 2630
+        "checkedFrames": 2412,
+        "cursorMode": 212993,
+        "blockedGrabs": 9
       },
+      "uiPointer": {
+        "passed": true,
+        "captureViolations": 0,
+        "checkedFrames": 1015,
+        "cursorMode": 212993,
+        "blockedGrabs": 9
+      },
+      "fullSpeed": true,
       "material": [
         {
+          "passed": true,
           "check": "shipping-glsl-periodicity",
           "maxChannelError": 0.0001697540283203125,
-          "comparisons": 16,
-          "passed": true
+          "comparisons": 16
         }
       ]
     }

@@ -68,7 +68,7 @@ final class HuahongSkinGeometry {
             double q=i/36.0;Frame f=back(q*length);
             rows.add(new Row(f.p().add(forward.scale(.22*(1-q))),-q*length,width*Math.pow(Math.sin(Math.PI*q),.65)*Math.exp(-q*1.2),strength*opacity*(float)(1-q),color,null));
         }
-        strip(rows,22);
+        strip(rows,22,true);
     }
     private void needle(){
         strip(history(5.8,.30,0xffc55a,0,0,false),10);
@@ -124,7 +124,7 @@ final class HuahongSkinGeometry {
                 rows.add(new Row(p,q*5+k*.63,w,strength*(float)Math.pow(1-q,1.3)*.85F,k%3==0?0x947bff:0x54bcff,s));
                 rib.add(new Row(p,q*5+k*.63,.016*(1-q),strength*(float)(1-q)*.65F,0xc7edff,null));
             }
-            strip(rows,16);strip(rib,22);
+            strip(rows,16);strip(rib,22,true);
         }
         for(int k=0;k<3;k++)strip(history(3.2,.045,0x709cff,k,.18,true),16);
         nucleus(0xccefff,1.1,.12,.85F);
@@ -207,17 +207,26 @@ final class HuahongSkinGeometry {
         vertex(r.p().subtract(right).add(up),Math.floor(r.u())*4,mode+1,r.alpha(),r.color());
     }
     private void strip(List<Row> rows,int mode){
+        strip(rows,mode,false);
+    }
+    private void strip(List<Row> rows,int mode,boolean localHead){
+        if(!localHead){strip(rows,mode,false,false);return;}
+        strip(rows,mode,true,false);strip(rows,mode,true,true);
+    }
+    private void strip(List<Row> rows,int mode,boolean localHead,boolean crossPlane){
         Vec3 previous=null,previousSide=null;Row old=null;
         for(int i=0;i<rows.size();i++){
             Row row=rows.get(i);Vec3 f=rows.get(Math.min(rows.size()-1,i+1)).p().subtract(rows.get(Math.max(0,i-1)).p());
-            if(f.lengthSqr()<1e-12)continue;f=f.normalize();Vec3 s=row.side()==null?f.cross(eye.subtract(row.p())):row.side().subtract(f.scale(row.side().dot(f)));
+            if(f.lengthSqr()<1e-12)continue;f=f.normalize();Vec3 s=row.side()==null?(localHead?path.ribbonSide(row.p(),f,eye):f.cross(eye.subtract(row.p()))):row.side().subtract(f.scale(row.side().dot(f)));
+            if(crossPlane)s=f.cross(s);
             if(s.lengthSqr()<1e-10)s=side(f);else s=s.normalize();
             if(previousSide!=null&&s.dot(previousSide)<0)s=s.scale(-1);s=s.scale(row.width());
             if(previous!=null){
-                vertex(previous.subtract(previousSide),old.u(),mode,old.alpha(),old.color());
-                vertex(previous.add(previousSide),old.u(),mode+1,old.alpha(),old.color());
-                vertex(row.p().add(s),row.u(),mode+1,row.alpha(),row.color());
-                vertex(row.p().subtract(s),row.u(),mode,row.alpha(),row.color());
+                float opacity=localHead?.70710677F:1;
+                vertex(previous.subtract(previousSide),old.u(),mode,old.alpha()*opacity,old.color());
+                vertex(previous.add(previousSide),old.u(),mode+1,old.alpha()*opacity,old.color());
+                vertex(row.p().add(s),row.u(),mode+1,row.alpha()*opacity,row.color());
+                vertex(row.p().subtract(s),row.u(),mode,row.alpha()*opacity,row.color());
             }
             previous=row.p();previousSide=s;old=row;
         }
