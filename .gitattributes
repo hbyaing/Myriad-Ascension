@@ -8,3 +8,5 @@
 *.blend binary
 *.bbmodel text
 *.zip binary
+# Approved palette exports and their source contract have byte-stable hashes.
+src/main/resources/assets/wuxingxiantu/mindscape/** text eol=lf
