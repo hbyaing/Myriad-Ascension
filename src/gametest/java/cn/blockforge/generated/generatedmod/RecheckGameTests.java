@@ -279,6 +279,130 @@ public final class RecheckGameTests {
         } catch(RuntimeException|AssertionError failure) {MindscapeManager.abort(p,true);p.close();throw failure;}
         });
     }
+    private static void bossTracking(net.minecraft.server.level.ServerLevel level,net.minecraft.world.entity.Entity boss,boolean visible){
+        bossChunkVisibility(level,boss.chunkPosition(),visible);
+    }
+    private static void bossChunkVisibility(net.minecraft.server.level.ServerLevel level,net.minecraft.world.level.ChunkPos chunk,boolean visible){
+        try {
+            var field=net.minecraft.server.level.ServerLevel.class.getDeclaredField("entityManager");field.setAccessible(true);
+            var manager=(net.minecraft.world.level.entity.PersistentEntitySectionManager<?>)field.get(level);
+            manager.updateChunkStatus(chunk,visible?net.minecraft.world.level.entity.Visibility.TICKING:net.minecraft.world.level.entity.Visibility.HIDDEN);
+        } catch(ReflectiveOperationException error){throw new IllegalStateException(error);}
+    }
+    public static final class BossJoinCapture {
+        final java.util.UUID owner;net.minecraft.world.entity.Mob boss;
+        BossJoinCapture(java.util.UUID owner){this.owner=owner;}
+        @net.minecraftforge.eventbus.api.SubscribeEvent public void joined(net.minecraftforge.event.entity.EntityJoinLevelEvent event){
+            var tag=event.getEntity().getPersistentData();
+            if(event.getEntity() instanceof net.minecraft.world.entity.Mob mob&&tag.hasUUID("MindscapeOwner")&&owner.equals(tag.getUUID("MindscapeOwner")))boss=mob;
+        }
+    }
+    public static final class KeepFreshBossHidden {
+        final GameTestPlayer player;final net.minecraft.server.level.ServerLevel level;final net.minecraft.world.level.ChunkPos chunk;
+        KeepFreshBossHidden(GameTestPlayer player,net.minecraft.world.entity.Mob boss){this.player=player;level=player.serverLevel();chunk=boss.chunkPosition();}
+        @net.minecraftforge.eventbus.api.SubscribeEvent(priority=net.minecraftforge.eventbus.api.EventPriority.HIGHEST)
+        public void tick(net.minecraftforge.event.TickEvent.PlayerTickEvent event){
+            if(event.player==player&&event.phase==net.minecraftforge.event.TickEvent.Phase.END&&player.level()==level)bossChunkVisibility(level,chunk,false);
+        }
+    }
+    private static void activeMindscapeTick(GameTestPlayer p){
+        // Exercise the production check at the exact periodic boundary that used
+        // to mistake a just-created, not-yet-tracked entity for a missing boss.
+        p.tickCount=20;
+        MindscapeManager.tick(new net.minecraftforge.event.TickEvent.PlayerTickEvent(net.minecraftforge.event.TickEvent.Phase.END,p));
+    }
+    private static net.minecraft.world.entity.Mob freshMindscapeBoss(GameTestHelper h,GameTestPlayer p){
+        var level=p.server.getLevel(MindscapeManager.DIMENSION);
+        int slot=MindscapeInstances.get(level).allocate(p.getUUID(),java.util.UUID.randomUUID());
+        var spawn=MindscapeArenas.bossSpawn(MindscapeInstances.center(slot));
+        var chunk=new net.minecraft.world.level.ChunkPos(BlockPos.containing(spawn));
+        // Make the real entity manager's destination section HIDDEN before the
+        // production spawn, not after an already-successful first lookup.
+        bossChunkVisibility(level,chunk,false);
+        var capture=new BossJoinCapture(p.getUUID());net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(capture);
+        try {
+            h.assertTrue(MindscapeManager.enter(p,MindscapeChallenges.formalByIndex(0,8),true),"Fresh entry rejected");
+            h.assertTrue(capture.boss!=null&&level.getEntity(capture.boss.getUUID())==null,"New boss did not spawn into a real tracking gap");
+            return capture.boss;
+        } catch(RuntimeException|AssertionError error){bossChunkVisibility(level,chunk,true);throw error;}
+        finally {net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(capture);}
+    }
+    @GameTest(template="empty",timeoutTicks=400) public static void freshBossWaitsForFirstTrackingOnly(GameTestHelper h){
+        var p=player(h);
+        prepareMindscape(h,p,()->{
+            net.minecraft.world.entity.Mob boss=null;
+            try {
+                boss=freshMindscapeBoss(h,p);var level=p.serverLevel();
+                var tag=GeneratedMod.data(p).wuxingxiantu$getMindscapeData();var session=tag.getUUID("session");
+                bossTracking(level,boss,false);
+                h.assertTrue(level.getEntity(boss.getUUID())==null&&!boss.isRemoved(),"Fixture did not hide a live entity");
+                activeMindscapeTick(p);
+                h.assertTrue(MindscapeManager.state(p)==MindscapeState.CHALLENGE_ACTIVE&&tag.getUUID("session").equals(session)
+                        &&MindscapeExternalSnapshot.isSealed(p),"Initial tracking gap aborted the real session");
+                bossTracking(level,boss,true);activeMindscapeTick(p);
+                boss.discard();activeMindscapeTick(p);
+                h.assertTrue(p.level().dimension()!=MindscapeManager.DIMENSION&&!tag.hasUUID("session")
+                        &&MindscapeManager.state(p)==MindscapeState.UNSTABLE,"Already-tracked removal received fresh-boss grace");
+                h.succeed();
+            } finally {if(boss!=null){bossTracking((net.minecraft.server.level.ServerLevel)boss.level(),boss,true);if(!boss.isRemoved())boss.discard();}MindscapeManager.abort(p,true);p.close();}
+        });
+    }
+    @GameTest(template="empty",timeoutTicks=400) public static void freshBossChunkReloadCanReplaceItsInstance(GameTestHelper h){
+        var p=player(h);
+        prepareMindscape(h,p,()->{
+            net.minecraft.world.entity.Entity replacement=null;
+            try {
+                var boss=freshMindscapeBoss(h,p);var level=p.serverLevel();
+                var saved=new net.minecraft.nbt.CompoundTag();boss.saveWithoutId(saved);
+                var session=GeneratedMod.data(p).wuxingxiantu$getMindscapeData().getUUID("session");
+                boss.remove(net.minecraft.world.entity.Entity.RemovalReason.UNLOADED_TO_CHUNK);
+                activeMindscapeTick(p);
+                h.assertTrue(MindscapeManager.state(p)==MindscapeState.CHALLENGE_ACTIVE,"Saveable chunk unload was treated as discard");
+                bossTracking(level,boss,true);
+                replacement=boss.getType().create(level);h.assertTrue(replacement!=null,"Replacement could not be created");
+                replacement.load(saved);
+                h.assertTrue(replacement!=boss&&replacement.getUUID().equals(boss.getUUID()),"Fixture did not reload the same UUID into a new instance");
+                h.assertTrue(level.addFreshEntity(replacement),"Reloaded bound boss was rejected");
+                activeMindscapeTick(p);
+                h.assertTrue(level.getEntity(boss.getUUID())==replacement&&MindscapeManager.state(p)==MindscapeState.CHALLENGE_ACTIVE
+                        &&GeneratedMod.data(p).wuxingxiantu$getMindscapeData().getUUID("session").equals(session),"Reloaded instance could not take over initial tracking");
+                h.succeed();
+            } finally {MindscapeManager.abort(p,true);if(replacement!=null&&!replacement.isRemoved())replacement.discard();p.close();}
+        });
+    }
+    @GameTest(template="empty",timeoutTicks=400) public static void freshHiddenDiscardStillAbortsImmediately(GameTestHelper h){
+        var p=player(h);
+        prepareMindscape(h,p,()->{
+            try {
+                var boss=freshMindscapeBoss(h,p);var level=p.serverLevel();
+                bossTracking(level,boss,false);boss.discard();activeMindscapeTick(p);bossTracking(level,boss,true);
+                h.assertTrue(p.level().dimension()!=MindscapeManager.DIMENSION&&MindscapeManager.state(p)==MindscapeState.UNSTABLE
+                        &&!MindscapeExternalSnapshot.isSealed(p),"Explicit discard was hidden by initial tracking grace");
+                h.succeed();
+            } finally {MindscapeManager.abort(p,true);p.close();}
+        });
+    }
+    @GameTest(template="empty",timeoutTicks=400) public static void freshHiddenBossTimesOutAndIsCleaned(GameTestHelper h){
+        var p=player(h);
+        prepareMindscape(h,p,()->{
+            var boss=freshMindscapeBoss(h,p);var level=p.serverLevel();
+            var tag=GeneratedMod.data(p).wuxingxiantu$getMindscapeData();var session=tag.getUUID("session");int slot=tag.getInt("slot");
+            var hidden=new KeepFreshBossHidden(p,boss);net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(hidden);
+            bossTracking(level,boss,false);activeMindscapeTick(p);
+            h.assertTrue(MindscapeManager.state(p)==MindscapeState.CHALLENGE_ACTIVE,"Fresh hidden boss did not receive initial wait");
+            h.runAfterDelay(6,()->{
+                try {
+                    activeMindscapeTick(p);
+                    h.assertTrue(boss.isRemoved()&&!tag.hasUUID("session")&&!MindscapeExternalSnapshot.isSealed(p)
+                            &&p.level().dimension()!=MindscapeManager.DIMENSION&&!MindscapeInstances.get(level).owns(p.getUUID(),session,slot),
+                            "Tracking timeout leaked a hidden boss, lease or sealed snapshot");
+                    h.assertTrue(MindscapeManager.state(p)==MindscapeState.UNSTABLE&&tag.getList("completed_challenges",8).isEmpty(),
+                            "Tracking timeout granted victory or purification");
+                    h.succeed();
+                } finally {net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(hidden);MindscapeManager.abort(p,true);bossTracking(level,boss,true);if(!boss.isRemoved())boss.discard();p.close();}
+            });
+        });
+    }
     @GameTest(template="empty",timeoutTicks=400) public static void victoryLogoutPreservesSettlementAndRecovery(GameTestHelper h) {
         var p=player(h);var d=GeneratedMod.data(p);d.wuxingxiantu$setCultivation(67890);
         prepareMindscape(h,p,()->{

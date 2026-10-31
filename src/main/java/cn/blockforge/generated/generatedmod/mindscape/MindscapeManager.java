@@ -27,6 +27,9 @@ public final class MindscapeManager {
     public static final int MEDITATION_TICKS=300;
     private static final String OWNER="MindscapeOwner",SESSION="MindscapeSession";
     private static final String VICTORY_UNTIL="victory_display_until";
+    private static final int FIRST_BOSS_TRACKING_TICKS=5;
+    private record PendingBoss(UUID session,Mob boss,long spawnedAt){}
+    private static final Map<UUID,PendingBoss> PENDING_BOSSES=new HashMap<>();
     private record Meditation(ResourceKey<Level> dimension,UUID seat,Vec3 position,int ticks){}
     private static final Map<UUID,Meditation> MEDITATIONS=new HashMap<>();
     private static final Set<UUID> TRANSFERRING=new HashSet<>();
@@ -94,6 +97,29 @@ public final class MindscapeManager {
             }
             if(!validSession(p)){abort(p,true);return;}
             var center=MindscapeInstances.center(tag.getInt("slot"));keepInside(p);
+            var pending=PENDING_BOSSES.get(p.getUUID());
+            if(pending!=null){
+                // addFreshEntity can succeed while its section is still HIDDEN.
+                // Only initial tracking gets this bounded wait, never later loss.
+                Mob born=pending.boss();var reason=born.getRemovalReason();
+                boolean chunkUnload=reason==Entity.RemovalReason.UNLOADED_TO_CHUNK
+                        &&reason.shouldSave()&&!reason.shouldDestroy();
+                long age=p.serverLevel().getGameTime()-pending.spawnedAt();
+                if(!pending.session().equals(tag.getUUID("session"))||born.level()!=p.serverLevel()
+                        ||!boundBoss(p,born)||born.getHealth()<=0||(born.isRemoved()&&!chunkUnload)){
+                    abort(p,true);return;
+                }
+                Entity tracked=p.serverLevel().getEntity(tag.getUUID("boss"));
+                if(tracked==null){
+                    if(age<0||age>=FIRST_BOSS_TRACKING_TICKS)abort(p,true);
+                    return;
+                }
+                // A saved chunk may reload this same UUID into a new instance.
+                if(!(tracked instanceof LivingEntity living)||!living.isAlive()||!boundBoss(p,tracked)){
+                    abort(p,true);return;
+                }
+                PENDING_BOSSES.remove(p.getUUID());
+            }
             if(p.tickCount%20==0){
                 Entity boss=p.serverLevel().getEntity(tag.getUUID("boss"));
                 if(!(boss instanceof LivingEntity living)||!living.isAlive()||!boundBoss(p,boss)){abort(p,true);return;}
@@ -173,7 +199,9 @@ public final class MindscapeManager {
             if(boss instanceof cn.blockforge.generated.generatedmod.boss.VisualBossEntity visual)visual.beginChallenge(p,center,session);
             if(boss instanceof HeartDemonEntity heart)heart.beginChallenge(p,center,session);
             if(!level.addFreshEntity(boss))throw new IllegalStateException("Boss spawn rejected");
+            PENDING_BOSSES.put(p.getUUID(),new PendingBoss(session,boss,level.getGameTime()));
             transfer(p,level,MindscapeArenas.playerSpawn(center),0,0);
+            if(level.getEntity(boss.getUUID())==boss)PENDING_BOSSES.remove(p.getUUID());
             state(p,MindscapeState.IN_MINDSCAPE);state(p,MindscapeState.CHALLENGE_ACTIVE);send(p,0);GeneratedMod.sync(p);return true;
         }catch(RuntimeException exception){com.mojang.logging.LogUtils.getLogger().error("Cannot enter mindscape",exception);abort(p,true);return false;}
     }
@@ -238,6 +266,12 @@ public final class MindscapeManager {
     }
     private static void clearEncounter(ServerPlayer p){
         var tag=data(p);ServerLevel level=p.server.getLevel(DIMENSION);
+        var pending=PENDING_BOSSES.remove(p.getUUID());
+        if(pending!=null){
+            var born=pending.boss();var binding=born.getPersistentData();
+            if(binding.hasUUID(OWNER)&&binding.hasUUID(SESSION)&&p.getUUID().equals(binding.getUUID(OWNER))
+                    &&pending.session().equals(binding.getUUID(SESSION))&&!born.isRemoved())born.discard();
+        }
         if(level!=null){
             if(tag.hasUUID("boss")){var boss=level.getEntity(tag.getUUID("boss"));if(boss!=null&&boundBoss(p,boss))boss.discard();}
             if(tag.hasUUID("session")){
@@ -369,7 +403,7 @@ public final class MindscapeManager {
     @SubscribeEvent public static void travel(net.minecraftforge.event.entity.EntityTravelToDimensionEvent event){
         if(event.getDimension()==DIMENSION&&event.getEntity() instanceof ServerPlayer p&&!TRANSFERRING.contains(p.getUUID()))event.setCanceled(true);
     }
-    @SubscribeEvent public static void stopped(net.minecraftforge.event.server.ServerStoppedEvent event){MEDITATIONS.clear();TRANSFERRING.clear();}
+    @SubscribeEvent public static void stopped(net.minecraftforge.event.server.ServerStoppedEvent event){MEDITATIONS.clear();TRANSFERRING.clear();PENDING_BOSSES.clear();}
     @SubscribeEvent public static void started(net.minecraftforge.event.server.ServerStartedEvent event){
         var level=event.getServer().getLevel(DIMENSION);
         // Reconnect uses a safe abort. Old leases must not exhaust the finite grid after a crash.
