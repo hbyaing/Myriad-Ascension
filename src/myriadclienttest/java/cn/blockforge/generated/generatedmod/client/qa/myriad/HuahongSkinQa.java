@@ -56,7 +56,7 @@ final class HuahongSkinQa {
                 check(FlyingSwordConfig.HUAHONG_SKIN.get()==skin,"Skin hitbox/config mismatch "+skin);
                 page=(CultivationPage)get(host,"page");
                 check(!Boolean.TRUE.equals(get(page,"huahongSkinsExpanded")),"Selecting a skin did not collapse dropdown");
-                check(skinToggle(host).getMessage().getString().endsWith(skin.label),"Dropdown label omitted selected skin");
+                check(skinToggle(host).getMessage().getString().equals(skin.label+"  ▾"),"Dropdown label omitted selected skin or domain disclosure");
                 check(page.children().stream().noneMatch(w->w instanceof AbstractWidget a&&Arrays.stream(HuahongSkin.values()).anyMatch(s->s.label.equals(a.getMessage().getString()))),"Collapsed dropdown retained option buttons");
                 check(page.getFocused()==skinToggle(host)&&page.children().contains(page.getFocused()),"Mouse selection left focus on a retired widget");
                 check(host.keyPressed(org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER,0,0),"Focused skin selector ignored Enter");host.keyReleased(org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER,0,0);
@@ -181,7 +181,10 @@ final class HuahongSkinQa {
     }
     private static AbstractWidget skinToggle(CultivationMainScreen host)throws Exception{
         var page=(CultivationPage)get(host,"page");
-        return page.children().stream().filter(w->w instanceof AbstractWidget a&&a.getMessage().getString().startsWith("化虹皮肤：")).map(w->(AbstractWidget)w).findFirst().orElseThrow();
+        var selector=(AbstractWidget)get(page,"huahongSkinSelector");
+        check(page.children().contains(selector),"Dropdown selector is not a live page control");
+        check(selector instanceof CultivationUi.Action action&&action.chrome==1&&selector.getHeight()==20,"Dropdown no longer matches the domain control");
+        return selector;
     }
     private static void verifyDropdownVisible(CultivationMainScreen host)throws Exception{
         var page=(CultivationPage)get(host,"page");double scale=((Number)get(host,"pageScale")).doubleValue();

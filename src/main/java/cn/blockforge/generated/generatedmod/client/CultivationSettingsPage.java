@@ -62,21 +62,10 @@ public final class CultivationSettingsPage extends CultivationPage {
     }
     private void huahongSkinChoices() {
         var selected=FlyingSwordConfig.HUAHONG_SKIN.get();
-        huahongSkinSelector=new CultivationUi.Action(bodyX,HUAHONG_SELECTOR_Y,bodyW,22,
-                Component.literal("化虹皮肤："+selected.label),b->rebuildHuahongChoices(!huahongSkinsExpanded),()->huahongSkinsExpanded) {
-            @Override protected void renderWidget(GuiGraphics g,int mx,int my,float delta) {
-                surface(g,huahongSkinsExpanded);
-                int textWidth=getWidth()-29;
-                CultivationUi.fit(g,getMessage(),getX()+Math.max(5,(textWidth-font.width(getMessage()))/2),
-                        getY()+(getHeight()-8)/2,textWidth,!active?CultivationUi.MUTED:huahongSkinsExpanded?CultivationUi.GOLD:CultivationUi.TEXT,mx,my);
-                com.mojang.blaze3d.systems.RenderSystem.enableBlend();
-                com.mojang.blaze3d.systems.RenderSystem.defaultBlendFunc();
-                g.setColor(1,1,1,active?1:.5F);
-                ForgedUi.scrollArrow(g,getX()+getWidth()-15,getY()+(getHeight()-7)/2,!huahongSkinsExpanded);
-                g.setColor(1,1,1,1);
-                com.mojang.blaze3d.systems.RenderSystem.disableBlend();
-            }
-        };
+        // Reuse the domain selector's complete 20-high reference-atlas control.
+        huahongSkinSelector=new CultivationUi.Action(bodyX,HUAHONG_SELECTOR_Y,bodyW,20,
+                Component.literal(selected.label+"  ▾"),b->rebuildHuahongChoices(!huahongSkinsExpanded));
+        huahongSkinSelector.chrome=1;
         huahongSkinSelector.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(selected.description+"\n点击"+(huahongSkinsExpanded?"收起":"展开选择")+"；仅改变外观，速度和消耗不变。")));
         addRenderableWidget(huahongSkinSelector);
         if(!huahongSkinsExpanded)return;

@@ -282,8 +282,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "native-settings-1920x1080-gui3-normal.jpg",
-          "sha256": "083e21dea804b4d2a144e78d9f800f82018e729fbc0d51c3d10c54b8ab1540cf",
-          "originalSha256": "ce35d2e5f469247d40545ffd1ec5383c240f9abbe325a4b773887e74338266ea"
+          "sha256": "b5d182806bf39c0ba0cf587eee481fddca8b1d27276df0c84544fa7f0160a156",
+          "originalSha256": "ef4fcde7959054f4f403a12974caa8e2f5383c119c86071c56afe76962b3ac35"
         },
         {
           "image": "settings-1920x1080-gui3-hover.png",
@@ -312,8 +312,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "native-settings-1920x1080-gui3-hover.jpg",
-          "sha256": "eec11712c7603fabf4e583c3ea5ed99d5bcb2e54c66eeecc4ac5e5a9d47be021",
-          "originalSha256": "d60df338a31030f5217d997ffb84eafe3d179e7444996b9bb37db8d831cde7b7"
+          "sha256": "6946ae4aaceaaa2e0347901b1e6cfc6b95330f0d052539a499246036b3ded248",
+          "originalSha256": "15ee7b75a8f58df866cb0e602cdfcfe10d42c9d8d78acf7568efa59e069d651d"
         },
         {
           "image": "settings-1920x1080-gui3-focus.png",
@@ -342,8 +342,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "native-settings-1920x1080-gui3-focus.jpg",
-          "sha256": "632e7bdfe836065daf633ef03e8c738eba4ce30ed5e221714cf2ed5eb6955a11",
-          "originalSha256": "ab959bf9f2a140f1a897b0dfcbcab0aacde3892eadb180bad1303186d53fb2fb"
+          "sha256": "2017ab2b90ff8820d2cf36d2375bc6fdd2ba7047c6e2fe9ecf1959e1d7b8eaa6",
+          "originalSha256": "57707ad82f1fbfead0d3b98cbd889bd01d46957fed7190b92cca94297d87d5e1"
         },
         {
           "image": "settings-1920x1080-gui3-disabled.png",
@@ -372,8 +372,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "native-settings-1920x1080-gui3-disabled.jpg",
-          "sha256": "3ad651a1913b340f83598ad3881bec161aa0c5a4cf37b5ea724d3aae5e584807",
-          "originalSha256": "7328e9dc49cb0f707dc965085ddc2a9d9b10381e7725bb41935a99753f696ca9"
+          "sha256": "f122fa476168d0227ef39845d66bb1f3b2dbe990e27d01cc3fec69a4b91e8975",
+          "originalSha256": "a8edc89862d20ee4eaf5a0827b47108af6a55040512e91ce19d1f63fdcbc17d9"
         },
         {
           "image": "settings-1920x1080-gui3-expanded-focus-disabled.png",
@@ -403,8 +403,8 @@
           "scroll": 570,
           "expandedOptionsVisible": 8,
           "file": "native-settings-1920x1080-gui3-expanded-focus-disabled.jpg",
-          "sha256": "295dbcf138d510ebd51e249c661ff5e050f104a2aa08609f0ea14cd0854558fc",
-          "originalSha256": "54a28ead37953b3b06db220139f2f9f96d39956bb85203a23f0bb7b75c7fac07"
+          "sha256": "fb9ecc9d81d569c71bf7ce193e7fc0f32377415580d5246b77455ccd25b8d564",
+          "originalSha256": "927a672a6cb30d50707095a5e8301caea0d6e7467c8ecc7d0452f48ae17c9b43"
         },
         {
           "image": "settings-2560x1440-gui3-normal.png",
@@ -433,8 +433,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "native-settings-2560x1440-gui3-normal.jpg",
-          "sha256": "1b2670b516b463a542ad402739f4ba7e587b10d01be762a93e4330909aa8dd75",
-          "originalSha256": "32b2bf2846fea86ea825ffbe83870245f3ff4c3648ee94cc07c8d910795058f5"
+          "sha256": "42da587a1756a6f7046a076c0e78823ccdbaa32a9cdd8ffba092d639a97a76a8",
+          "originalSha256": "066537a12c081e13f0a306ab89cf156e84ee42404e9596b739b001f572c597c1"
         },
         {
           "image": "settings-2560x1440-gui3-hover.png",
@@ -463,8 +463,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "native-settings-2560x1440-gui3-hover.jpg",
-          "sha256": "e1093dcd33a00f263ae4c8216816a00883c341dac04eb26ea1c1c6cd2f9024ab",
-          "originalSha256": "d43c11a576b652d617bfd12427216fd476fa39ad76b620b460f2942631d98742"
+          "sha256": "5253ceef167b9bcd8bc3b9ee46d660aa3a19be8107a3bb2eef732a9a129d98ca",
+          "originalSha256": "4e5e86a4cf1c4de226c31ea7c383f7126ecca774757e944fd8a5c9241d80e5ba"
         },
         {
           "image": "settings-2560x1440-gui3-focus.png",
@@ -493,8 +493,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "native-settings-2560x1440-gui3-focus.jpg",
-          "sha256": "9718e46ba903808adb7b98d68a164fe92625b90602821cb4e113dafaab4197bf",
-          "originalSha256": "1718638966232dcf984089f4598ad2df15089c43ee9bd5b41aeedbd192387545"
+          "sha256": "197c232b9cf32c06e1d3ffeb4fb7e0e0cb7d0fffb2c7e206ad39a6625de061e9",
+          "originalSha256": "b01fb158745da43f4648677ef3261ac7b117c14fc09c788d97b332ffa434111c"
         },
         {
           "image": "settings-2560x1440-gui3-disabled.png",
@@ -523,8 +523,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "native-settings-2560x1440-gui3-disabled.jpg",
-          "sha256": "385500f63f38517fb2533240f78f64157c60cade4472458346617919f01551ac",
-          "originalSha256": "bf44cb230e6ac22ecd96bea6304642346e4877eb8ce02c14e9999e81b97055d7"
+          "sha256": "4688f216cf794a4560bd19f10ef3d0923c03fba22a1d180b2e6ed44166b8d803",
+          "originalSha256": "59be430642ff108194aa87d51db5390c0cbf0a08ac88c399f0911096be651506"
         },
         {
           "image": "settings-2560x1440-gui3-expanded-focus-disabled.png",
@@ -554,8 +554,8 @@
           "scroll": 570,
           "expandedOptionsVisible": 8,
           "file": "native-settings-2560x1440-gui3-expanded-focus-disabled.jpg",
-          "sha256": "1efb4243e0d8badfdca14e39b3d5c134e0c9ee6bd7ce6dba03a8b4fa519a15ff",
-          "originalSha256": "1b6f0f4f6af0e5bc0c703e236fd311447b72fdaea942ba686e39f9653f4c3965"
+          "sha256": "b07ee4090ad8c90818b05651867084938def118de038f04d039d770c02ff0bf6",
+          "originalSha256": "676d4daabd9f2963ad36b0f43f4b15d0e512a8148ac1d629f5e378d2e42979c6"
         },
         {
           "image": "settings-1920x1080-gui4-normal.png",
@@ -584,8 +584,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "native-settings-1920x1080-gui4-normal.jpg",
-          "sha256": "66e931c24050389a45f46d8f3ae8ce09cfbfd267f4c49165a8efb105c8514b6e",
-          "originalSha256": "5a5cb72c6a785ee898a2e28c7d52a955968f980e19a4a2523a787924c1f8c086"
+          "sha256": "e06ddf8268cd8c4d5a952265a56b7bd0508f94a1b6902f9552200ef81e2fcd82",
+          "originalSha256": "f5f982f7ecbe8683be00f28b1199ab364def1c5b3376cfd79718e2660522604b"
         },
         {
           "image": "settings-1920x1080-gui4-hover.png",
@@ -614,8 +614,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "native-settings-1920x1080-gui4-hover.jpg",
-          "sha256": "9c80be0a0cd03e0ea099a28d0a7808c6de6b81670bf99f91fea93b88459f1ae7",
-          "originalSha256": "e8308aff6be0bdda65ccda0f56e1b3a638ab474ecaf27982e472b73dd4947961"
+          "sha256": "2d78e5aa034940a22c458422d9d1be490ab8d091a7f1d2d9de23a40258806b7c",
+          "originalSha256": "5b0a98cfaa33c1819d1e24cb90a2d1ecd5e1454a301c670e1e1d6561e33d0328"
         },
         {
           "image": "settings-1920x1080-gui4-focus.png",
@@ -644,8 +644,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "native-settings-1920x1080-gui4-focus.jpg",
-          "sha256": "0ed3bd4d8fd7dc704d395a415d584046b825cef8028b4c673589136e01bb9903",
-          "originalSha256": "e9dbcfd4313790e4725e4031dbeae91429ca7c7ca7f2bd51cf576ae65d829867"
+          "sha256": "4969aa8050c4b201fc9ce29a3fee2a15fb38ece032fd5227e394627a4345183c",
+          "originalSha256": "fcb335e0fd2e73c82989b967dfbc074bdbb4dcc56a3a1de5ce5f9fea3e3b45be"
         },
         {
           "image": "settings-1920x1080-gui4-disabled.png",
@@ -674,8 +674,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "native-settings-1920x1080-gui4-disabled.jpg",
-          "sha256": "fa24f3b1351b92dee6ad5e1c8d91c8c5df699e69dc880b7da494226b9721d48f",
-          "originalSha256": "0a310ce44e18b81cc1a9b7a3e1d663e5d1c354b11b645f6c499caf55492814f0"
+          "sha256": "c60e1299761bef72cccde76e884d8716c479841ef11b6c320585fd7a1dfee65f",
+          "originalSha256": "4aac45e7667dd40acb0c9d39f48cf8794b0118a435ef0d6cd2606b7a05cf5311"
         },
         {
           "image": "settings-1920x1080-gui4-expanded-focus-disabled.png",
@@ -705,8 +705,8 @@
           "scroll": 570,
           "expandedOptionsVisible": 8,
           "file": "native-settings-1920x1080-gui4-expanded-focus-disabled.jpg",
-          "sha256": "49857e9069b93d72ae8f9f58fa0296137ffcac4e2da0bbc393b7a32991f12c5d",
-          "originalSha256": "37467f3fab0b407924b5bc0ada699c62c1a87ea674b1d1509b2aaaa5ac5bae15"
+          "sha256": "70d76a840e2c90ea603af74690b156e939e1d179cc1e15935c0891708d2dba85",
+          "originalSha256": "65fc7205a2bee7980383316503dfdcd216235f62caad7e32ac333ae3919a2ce5"
         },
         {
           "image": "settings-2560x1440-gui4-normal.png",
@@ -735,8 +735,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "native-settings-2560x1440-gui4-normal.jpg",
-          "sha256": "f720a38ac7da60ccb7b872be8e22d9e2b116f927f852117ea5a2e9c9df921a28",
-          "originalSha256": "86eaf2f6fdf9d372c932b1027466447d403cf4a30f5db01d76264376284af337"
+          "sha256": "a2f6d501b4c7e9aaf162202e8d341bcbf46634e217dfc4ac5f93657dfa13206b",
+          "originalSha256": "2520d9baa0d5e01fa38e72007740b3ed2d6607aac25c00ebdb443fbd3e140517"
         },
         {
           "image": "settings-2560x1440-gui4-hover.png",
@@ -765,8 +765,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "native-settings-2560x1440-gui4-hover.jpg",
-          "sha256": "3b34b650365cdf508d06fb64016756393af8613612f3354dd8e6c5397e1fcfc9",
-          "originalSha256": "b98399c5fef1d7b1e6acef7dc69ce95cd4d89ca5e819b6a6be71d4b207e1d278"
+          "sha256": "103c020cfe6699bdb2a6e5ff562d6006d1f4b8d626cae5b13fd357f355a4564a",
+          "originalSha256": "bde33013e9afaaba0b914f506f97a4891cfd806cc631aab0e61a0ecb136a5e0a"
         },
         {
           "image": "settings-2560x1440-gui4-focus.png",
@@ -795,8 +795,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "native-settings-2560x1440-gui4-focus.jpg",
-          "sha256": "858876de0133a3c861a6cb260a6265b4365a440447bf13a12da6c777c67b8be5",
-          "originalSha256": "2b0f6910762fc17a05207f6260673878fef5961f9ea965bd1126a5dbd6a84a8f"
+          "sha256": "214a4cf1cd0ba88b71924d35d0a20ba47a33f9d89ed654e275ed7e68be554885",
+          "originalSha256": "05cf20e0807426b7ab8b2d4852cad32d26a423153a398baf966cd59259c60061"
         },
         {
           "image": "settings-2560x1440-gui4-disabled.png",
@@ -825,8 +825,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "native-settings-2560x1440-gui4-disabled.jpg",
-          "sha256": "0670a058a215aae438f25dfc6419323871c764311200cecf5631e2f3f4f98cda",
-          "originalSha256": "76e466926fc4dc1132c9621e2aa82033762f2de8812cbbb8eac6758e16416396"
+          "sha256": "5b2130b249fbe29e09468a37e5b72098be22a0fb4fbafcff9b2c8ab0167879f5",
+          "originalSha256": "f8d3c8dde2f0d1915742b7f9bc00215a46db8869d5b8269b3886809d543d1cbc"
         },
         {
           "image": "settings-2560x1440-gui4-expanded-focus-disabled.png",
@@ -856,8 +856,8 @@
           "scroll": 570,
           "expandedOptionsVisible": 8,
           "file": "native-settings-2560x1440-gui4-expanded-focus-disabled.jpg",
-          "sha256": "9c8c3dcb733270cefd164a51572b0a545590b849959d076657159a8d72215949",
-          "originalSha256": "ba70e47711b58b4a945ed1c00af5ebed839f63eaf59f448cab249f45044087cd"
+          "sha256": "019d719a6400a303469e61c86e390710ab711b14c349e4f2e9913309d624c816",
+          "originalSha256": "9a3e1052d3b99c7daea8c55ade2ce30106b3a9735daa239ec96d4bd0131945ea"
         },
         {
           "image": "sense-shortcuts-1920x1080-gui3-normal.png",
@@ -872,28 +872,28 @@
           "scale": 2.0,
           "shortcuts": [
             {
-              "label": "创世 · 管理小世界",
-              "active": true,
               "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false,
               "bounds": [
                 12,
                 222,
                 213,
                 22
-              ],
-              "focused": false
+              ]
             },
             {
-              "label": "天仙渡劫",
-              "active": false,
               "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false,
               "bounds": [
                 233,
                 222,
                 143,
                 22
-              ],
-              "focused": false
+              ]
             }
           ],
           "actualImageSize": [
@@ -908,8 +908,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "native-sense-shortcuts-1920x1080-gui3-normal.jpg",
-          "sha256": "df70d76cc2ac776ad93932a3650161096e52d671faebcafc1d5261b484966832",
-          "originalSha256": "8fdd67d3a0121bc40955dd1a2b0ef4b6454b285f4970f9ace083d832317abd2f"
+          "sha256": "86dbea473ed55cdf32eb57d90600f9bfc2109adea59ca395c082ab40096f36a8",
+          "originalSha256": "b74af6d6ff012512319358bbaa1216adb9ec133d773d15e33dd97d31b8a2aac5"
         },
         {
           "image": "sense-shortcuts-1920x1080-gui3-creation-hover.png",
@@ -924,28 +924,28 @@
           "scale": 2.0,
           "shortcuts": [
             {
-              "label": "创世 · 管理小世界",
-              "active": true,
               "hovered": true,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false,
               "bounds": [
                 12,
                 222,
                 213,
                 22
-              ],
-              "focused": false
+              ]
             },
             {
-              "label": "天仙渡劫",
-              "active": false,
               "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false,
               "bounds": [
                 233,
                 222,
                 143,
                 22
-              ],
-              "focused": false
+              ]
             }
           ],
           "actualImageSize": [
@@ -960,8 +960,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "native-sense-shortcuts-1920x1080-gui3-creation-hover.jpg",
-          "sha256": "d7bfaa6cfe49cf4e892fef14d325e4ff1d462f080740e1d06eeadf83129783d0",
-          "originalSha256": "d9e845fd426cb7d609c92375dd363d4999d1b63719028b2939db836c373ebaf9"
+          "sha256": "1551c38f36ad1065eaa62b0533bd0c12156e485822713e435135efe7bb83ed56",
+          "originalSha256": "f2219de940d0fd4662e71a0340b163ddc5e0062f9229e435f27752a32e9471c6"
         },
         {
           "image": "sense-shortcuts-1920x1080-gui3-ascension-hover.png",
@@ -976,28 +976,28 @@
           "scale": 2.0,
           "shortcuts": [
             {
-              "label": "创世 · 管理小世界",
-              "active": true,
               "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false,
               "bounds": [
                 12,
                 222,
                 213,
                 22
-              ],
-              "focused": false
+              ]
             },
             {
-              "label": "天仙渡劫",
-              "active": false,
               "hovered": true,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false,
               "bounds": [
                 233,
                 222,
                 143,
                 22
-              ],
-              "focused": false
+              ]
             }
           ],
           "actualImageSize": [
@@ -1012,8 +1012,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "native-sense-shortcuts-1920x1080-gui3-ascension-hover.jpg",
-          "sha256": "d85c0405b4ecaad464fe575921c2378497fa1c3cd7eb971c9e66f42f1c7e6102",
-          "originalSha256": "f59651a1ab8eb3da7de69ba5ad1bea2671f9449aa1fe928e90948fb8bc712152"
+          "sha256": "d6530127058df9dbf8bc6db67441178e4fdb64304c5a715c9edac1002c979778",
+          "originalSha256": "4907ef52359c3d586869c2b7494f2ca6897852773e7e01bc5140346bf00f2788"
         },
         {
           "image": "sense-shortcuts-1920x1080-gui3-creation-focus.png",
@@ -1028,28 +1028,28 @@
           "scale": 2.0,
           "shortcuts": [
             {
-              "label": "创世 · 管理小世界",
-              "active": true,
               "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": true,
               "bounds": [
                 12,
                 222,
                 213,
                 22
-              ],
-              "focused": true
+              ]
             },
             {
-              "label": "天仙渡劫",
-              "active": false,
               "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false,
               "bounds": [
                 233,
                 222,
                 143,
                 22
-              ],
-              "focused": false
+              ]
             }
           ],
           "actualImageSize": [
@@ -1064,8 +1064,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "native-sense-shortcuts-1920x1080-gui3-creation-focus.jpg",
-          "sha256": "fe98bf3b32e8a572fa3151f1211e6df836774917d51fc0edbd2f4f75a0667504",
-          "originalSha256": "d51da08e113ebef1cbad1fbd21716d1b62289ed308214eae891355e0b62c1e65"
+          "sha256": "a95919a245fc52f751116f9218f33c22e5711c3db689a3774460ecb640f50650",
+          "originalSha256": "4b5ed4f2b5f36d26306e99e9488a1e3fb8de8fd592808e174b9a04f698cb1a30"
         },
         {
           "image": "sense-shortcuts-1920x1080-gui3-ascension-focus.png",
@@ -1080,28 +1080,28 @@
           "scale": 2.0,
           "shortcuts": [
             {
-              "label": "创世 · 管理小世界",
-              "active": true,
               "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false,
               "bounds": [
                 12,
                 222,
                 213,
                 22
-              ],
-              "focused": false
+              ]
             },
             {
-              "label": "天仙渡劫",
-              "active": false,
               "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": true,
               "bounds": [
                 233,
                 222,
                 143,
                 22
-              ],
-              "focused": true
+              ]
             }
           ],
           "actualImageSize": [
@@ -1116,8 +1116,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "native-sense-shortcuts-1920x1080-gui3-ascension-focus.jpg",
-          "sha256": "bcf811f86d77c8619f35546ad2ad48ff6e719bd7a046c3a2a7938224b344c950",
-          "originalSha256": "6e5ef8b8509e44ccafdcb300e5350947294ba513b30dde36112ce31a9141ffab"
+          "sha256": "ebcbacb5198affb0ca9e1933f928957024e30bf1155319f96e23aa1e48242542",
+          "originalSha256": "dfc59183423ea1cfffb7f7896c968c3ff0c01a59a342bd42cf0d498d3de6f611"
         },
         {
           "image": "sense-shortcuts-1920x1080-gui3-disabled.png",
@@ -1132,28 +1132,28 @@
           "scale": 2.0,
           "shortcuts": [
             {
-              "label": "创世 · 管理小世界",
-              "active": false,
               "hovered": false,
+              "active": false,
+              "label": "创世 · 管理小世界",
+              "focused": false,
               "bounds": [
                 12,
                 222,
                 213,
                 22
-              ],
-              "focused": false
+              ]
             },
             {
-              "label": "天仙渡劫",
-              "active": false,
               "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false,
               "bounds": [
                 233,
                 222,
                 143,
                 22
-              ],
-              "focused": false
+              ]
             }
           ],
           "actualImageSize": [
@@ -1168,8 +1168,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "native-sense-shortcuts-1920x1080-gui3-disabled.jpg",
-          "sha256": "e5bb6f21eb2c0cd6fec3a4d2b503d74f9b27b5679589b30dad52532db0d9e3d9",
-          "originalSha256": "62bc847730d2018bbad3326dfc7851f1dc0a90097ee05450a8bbc65a64301ffe"
+          "sha256": "8d57d3733589176d92f0c3ab0e69ad6a7711df883fa0c275db9b9f3615718d87",
+          "originalSha256": "3eb999a519074f7d58b80918a214153bfe234aa24b74c9d95dc22f2252b10d25"
         },
         {
           "image": "sense-shortcuts-2560x1440-gui3-normal.png",
@@ -1184,28 +1184,28 @@
           "scale": 3.0,
           "shortcuts": [
             {
-              "label": "创世 · 管理小世界",
-              "active": true,
               "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false,
               "bounds": [
                 12,
                 222,
                 213,
                 22
-              ],
-              "focused": false
+              ]
             },
             {
-              "label": "天仙渡劫",
-              "active": false,
               "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false,
               "bounds": [
                 233,
                 222,
                 143,
                 22
-              ],
-              "focused": false
+              ]
             }
           ],
           "actualImageSize": [
@@ -1220,8 +1220,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "native-sense-shortcuts-2560x1440-gui3-normal.jpg",
-          "sha256": "66e30e13e95073ba47a298db9d38dd654f75a486d9e436e2d9bb9f0478bc9e1a",
-          "originalSha256": "6300d9837520c41e213ea3e9c6166c101764bcb7162c3fbea87cd44b916f9464"
+          "sha256": "0d34edd6a251eaf2b312ff3ba9409af5133044b6168a41d75e76833d99a4b0ef",
+          "originalSha256": "250462a7707a7ca2045b9f1c388a134e6d3a3204dffb8dc3e58d60275e43d8cf"
         },
         {
           "image": "sense-shortcuts-2560x1440-gui3-creation-hover.png",
@@ -1236,28 +1236,28 @@
           "scale": 3.0,
           "shortcuts": [
             {
-              "label": "创世 · 管理小世界",
-              "active": true,
               "hovered": true,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false,
               "bounds": [
                 12,
                 222,
                 213,
                 22
-              ],
-              "focused": false
+              ]
             },
             {
-              "label": "天仙渡劫",
-              "active": false,
               "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false,
               "bounds": [
                 233,
                 222,
                 143,
                 22
-              ],
-              "focused": false
+              ]
             }
           ],
           "actualImageSize": [
@@ -1272,8 +1272,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "native-sense-shortcuts-2560x1440-gui3-creation-hover.jpg",
-          "sha256": "0888a34e78eeb0d7fc93cd7ca46b0f13e941c4f81361d0f59aee2afd68d763f8",
-          "originalSha256": "51f085a9f412aa0898c34ca3413d296e302378d7ffe35c6c55d07aa59949d8bc"
+          "sha256": "9445dbdc428d10af6995851261d5b1b3adc2fec8cc175b4d9922d834f0a31815",
+          "originalSha256": "d976136787c2bf94a9d677bbacfe6d499a3e50a093e670b6981e7ea6df9c459e"
         },
         {
           "image": "sense-shortcuts-2560x1440-gui3-ascension-hover.png",
@@ -1288,28 +1288,28 @@
           "scale": 3.0,
           "shortcuts": [
             {
-              "label": "创世 · 管理小世界",
-              "active": true,
               "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false,
               "bounds": [
                 12,
                 222,
                 213,
                 22
-              ],
-              "focused": false
+              ]
             },
             {
-              "label": "天仙渡劫",
-              "active": false,
               "hovered": true,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false,
               "bounds": [
                 233,
                 222,
                 143,
                 22
-              ],
-              "focused": false
+              ]
             }
           ],
           "actualImageSize": [
@@ -1324,8 +1324,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "native-sense-shortcuts-2560x1440-gui3-ascension-hover.jpg",
-          "sha256": "b7b1b0d7c1b68fd5c928cdd09e6678bddb952dc4ec0831e707dbfabd4383aa58",
-          "originalSha256": "3d44b8a6006481292c2f9db57f656c31c84492ee840577b6f9417b1cf0b16932"
+          "sha256": "3dfa6c4ee26601b8c93e9eff52d2a243440aa44acaf5399defc96dfbc06ca445",
+          "originalSha256": "3ce1638bb961da9ae2cbbc8af834c68257adc5fa958bce5e5597810da470caf3"
         },
         {
           "image": "sense-shortcuts-2560x1440-gui3-creation-focus.png",
@@ -1340,28 +1340,28 @@
           "scale": 3.0,
           "shortcuts": [
             {
-              "label": "创世 · 管理小世界",
-              "active": true,
               "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": true,
               "bounds": [
                 12,
                 222,
                 213,
                 22
-              ],
-              "focused": true
+              ]
             },
             {
-              "label": "天仙渡劫",
-              "active": false,
               "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false,
               "bounds": [
                 233,
                 222,
                 143,
                 22
-              ],
-              "focused": false
+              ]
             }
           ],
           "actualImageSize": [
@@ -1376,8 +1376,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "native-sense-shortcuts-2560x1440-gui3-creation-focus.jpg",
-          "sha256": "28d01c4c60d41e07d9935399f358d789a40ffefeca19275123d4f3cef2034176",
-          "originalSha256": "fce1b244ef7a5a836172a0d786b90d37daef37d5999893ab3e031ce3c643c699"
+          "sha256": "1af9c9c421ea1891bf3acc193cff8637cf5aa11c17fc436e309acb53fdfa243a",
+          "originalSha256": "2183d420f3a2c88a42af07cf3cfaca29afb0d3dbf3f44798ea171689e120105d"
         },
         {
           "image": "sense-shortcuts-2560x1440-gui3-ascension-focus.png",
@@ -1392,28 +1392,28 @@
           "scale": 3.0,
           "shortcuts": [
             {
-              "label": "创世 · 管理小世界",
-              "active": true,
               "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false,
               "bounds": [
                 12,
                 222,
                 213,
                 22
-              ],
-              "focused": false
+              ]
             },
             {
-              "label": "天仙渡劫",
-              "active": false,
               "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": true,
               "bounds": [
                 233,
                 222,
                 143,
                 22
-              ],
-              "focused": true
+              ]
             }
           ],
           "actualImageSize": [
@@ -1428,8 +1428,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "native-sense-shortcuts-2560x1440-gui3-ascension-focus.jpg",
-          "sha256": "804dc0fa3cf60c6f02ad08ee955a2cc8285a3c7d6ddbffd9088f2367a8c6d88d",
-          "originalSha256": "9b5b672e2fe4ffb8c24264223762ed1cee8d451274d9955dd974f52f77a8bc44"
+          "sha256": "acaf109388a12ebde43bc223e1e781d729c549c45f01508242189f5c473b44af",
+          "originalSha256": "ff203d68caf46f5f13b6214cea7e899949408154fb2d91951bbeed91b30ea5e7"
         },
         {
           "image": "sense-shortcuts-2560x1440-gui3-disabled.png",
@@ -1444,28 +1444,28 @@
           "scale": 3.0,
           "shortcuts": [
             {
-              "label": "创世 · 管理小世界",
-              "active": false,
               "hovered": false,
+              "active": false,
+              "label": "创世 · 管理小世界",
+              "focused": false,
               "bounds": [
                 12,
                 222,
                 213,
                 22
-              ],
-              "focused": false
+              ]
             },
             {
-              "label": "天仙渡劫",
-              "active": false,
               "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false,
               "bounds": [
                 233,
                 222,
                 143,
                 22
-              ],
-              "focused": false
+              ]
             }
           ],
           "actualImageSize": [
@@ -1480,8 +1480,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "native-sense-shortcuts-2560x1440-gui3-disabled.jpg",
-          "sha256": "820a62ce0a2ae2af5a4792e1f32dafb641a07372df487eefc56883aae1ab3084",
-          "originalSha256": "154843d1d0bafa31bcd23cdbd98996ef601ac5a0efa427e675820065d4452134"
+          "sha256": "9df4e277d682118eddf6c178788eb83622629df6b4c759ca1c70d8cd51bcdd82",
+          "originalSha256": "118b2c519efa129cf4028abcfec453511509a60a4df9f041ef9415ec1e349d96"
         },
         {
           "image": "sense-shortcuts-1920x1080-gui4-normal.png",
@@ -1496,28 +1496,28 @@
           "scale": 2.0,
           "shortcuts": [
             {
-              "label": "创世 · 管理小世界",
-              "active": true,
               "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false,
               "bounds": [
                 12,
                 222,
                 213,
                 22
-              ],
-              "focused": false
+              ]
             },
             {
-              "label": "天仙渡劫",
-              "active": false,
               "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false,
               "bounds": [
                 233,
                 222,
                 143,
                 22
-              ],
-              "focused": false
+              ]
             }
           ],
           "actualImageSize": [
@@ -1532,8 +1532,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "native-sense-shortcuts-1920x1080-gui4-normal.jpg",
-          "sha256": "d9b241e27dcb43f5f62a371a3fd4d1cce7c0ca4b6bf3dce53ce91563e02d9c2e",
-          "originalSha256": "df0e46d5f9890c5b5f7c93985ce4bf680cea57e22336198f6fc3bbcd85607176"
+          "sha256": "ce0b53c155af96693a4fd64366e9cc6e687de03f9d5046e179cf89a725493b3d",
+          "originalSha256": "3aa5551ef2f50b92830aef25566c3a36672ecf4724ce7e6684e8829c12bd8cc3"
         },
         {
           "image": "sense-shortcuts-1920x1080-gui4-creation-hover.png",
@@ -1548,28 +1548,28 @@
           "scale": 2.0,
           "shortcuts": [
             {
-              "label": "创世 · 管理小世界",
-              "active": true,
               "hovered": true,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false,
               "bounds": [
                 12,
                 222,
                 213,
                 22
-              ],
-              "focused": false
+              ]
             },
             {
-              "label": "天仙渡劫",
-              "active": false,
               "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false,
               "bounds": [
                 233,
                 222,
                 143,
                 22
-              ],
-              "focused": false
+              ]
             }
           ],
           "actualImageSize": [
@@ -1584,8 +1584,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "native-sense-shortcuts-1920x1080-gui4-creation-hover.jpg",
-          "sha256": "d7e435f7fbd5daf75840657c65e7447549bf9ba666e668795222d816c3d4b1a1",
-          "originalSha256": "b30de9d21f4e607809d0f81fbf1a066b5fa87b2e08d692f167519297a3018bfa"
+          "sha256": "afd85ca262db0c762c51507f3e512cdd0b73ebf4337351d975385ccb40bd05f0",
+          "originalSha256": "0ff713e86cfc53dc4bcde7f4416cf718e317d21521b1dc92239a077dbfb35c92"
         },
         {
           "image": "sense-shortcuts-1920x1080-gui4-ascension-hover.png",
@@ -1600,28 +1600,28 @@
           "scale": 2.0,
           "shortcuts": [
             {
-              "label": "创世 · 管理小世界",
-              "active": true,
               "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false,
               "bounds": [
                 12,
                 222,
                 213,
                 22
-              ],
-              "focused": false
+              ]
             },
             {
-              "label": "天仙渡劫",
-              "active": false,
               "hovered": true,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false,
               "bounds": [
                 233,
                 222,
                 143,
                 22
-              ],
-              "focused": false
+              ]
             }
           ],
           "actualImageSize": [
@@ -1636,8 +1636,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "native-sense-shortcuts-1920x1080-gui4-ascension-hover.jpg",
-          "sha256": "c85ae2b120cdcc33b760fe717d3ebb562fe2b250428925c7abe32a84ae146705",
-          "originalSha256": "9998a872282b46fbcb32e0b86f0e4fc2189e28d6891bbb9a5a8740e601241c91"
+          "sha256": "717f8d991659dad0ff21a7e8452ff16d97f818a8f6a1793119e1835b8d56de78",
+          "originalSha256": "9001fc9e201b220973297a8a44b62e59ea73764353d8ed1ac529b1b9663efa1f"
         },
         {
           "image": "sense-shortcuts-1920x1080-gui4-creation-focus.png",
@@ -1652,28 +1652,28 @@
           "scale": 2.0,
           "shortcuts": [
             {
-              "label": "创世 · 管理小世界",
-              "active": true,
               "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": true,
               "bounds": [
                 12,
                 222,
                 213,
                 22
-              ],
-              "focused": true
+              ]
             },
             {
-              "label": "天仙渡劫",
-              "active": false,
               "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false,
               "bounds": [
                 233,
                 222,
                 143,
                 22
-              ],
-              "focused": false
+              ]
             }
           ],
           "actualImageSize": [
@@ -1688,8 +1688,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "native-sense-shortcuts-1920x1080-gui4-creation-focus.jpg",
-          "sha256": "c220393e42e1bf70ebcfa8b123b7260b0b11b31eb44eb381f8bde3ba71226d9f",
-          "originalSha256": "e02bf3aea34253bcf1f0fb2acb5aafa97215477ddc404bdd398ecbb444741abf"
+          "sha256": "321b65daa882ce00615997687ab0d773748fd02f676f07d28c775ee995d8de8c",
+          "originalSha256": "f0da0e1e1df1ac63ead22b1e02edce4fe5d7eabcf5c120e482d3d8853ff8cb11"
         },
         {
           "image": "sense-shortcuts-1920x1080-gui4-ascension-focus.png",
@@ -1704,28 +1704,28 @@
           "scale": 2.0,
           "shortcuts": [
             {
-              "label": "创世 · 管理小世界",
-              "active": true,
               "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false,
               "bounds": [
                 12,
                 222,
                 213,
                 22
-              ],
-              "focused": false
+              ]
             },
             {
-              "label": "天仙渡劫",
-              "active": false,
               "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": true,
               "bounds": [
                 233,
                 222,
                 143,
                 22
-              ],
-              "focused": true
+              ]
             }
           ],
           "actualImageSize": [
@@ -1740,8 +1740,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "native-sense-shortcuts-1920x1080-gui4-ascension-focus.jpg",
-          "sha256": "07e0d813b93907fce40ebfa0b6cb44599c72cc493e67e94b57f0025c63ff4eb9",
-          "originalSha256": "9cb3c5d826056c3933fb9163253a4e4b0d3c9be79239325c61f62de0613c3af7"
+          "sha256": "5d09ffc1bdba8a6201abf292e14f0aed938165740dc78c298155ac47d2c6f93b",
+          "originalSha256": "937aba74d1e74c92d76f792e3cf7d8be5a39e1a367bf64860efe2827497176d7"
         },
         {
           "image": "sense-shortcuts-1920x1080-gui4-disabled.png",
@@ -1756,28 +1756,28 @@
           "scale": 2.0,
           "shortcuts": [
             {
-              "label": "创世 · 管理小世界",
-              "active": false,
               "hovered": false,
+              "active": false,
+              "label": "创世 · 管理小世界",
+              "focused": false,
               "bounds": [
                 12,
                 222,
                 213,
                 22
-              ],
-              "focused": false
+              ]
             },
             {
-              "label": "天仙渡劫",
-              "active": false,
               "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false,
               "bounds": [
                 233,
                 222,
                 143,
                 22
-              ],
-              "focused": false
+              ]
             }
           ],
           "actualImageSize": [
@@ -1792,8 +1792,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "native-sense-shortcuts-1920x1080-gui4-disabled.jpg",
-          "sha256": "9fe668ed6579fd6beab4fb8cadf0e8ea50b00f6241e9b47c54045994489dc0ad",
-          "originalSha256": "8f20d87faaf23b08bb09568de7d0c8c46c80ded22d36e904693bb516bccd43d3"
+          "sha256": "4bdfb7a2affaad32cd38b83e264b0c260057c11a600222a6fb0e3cd63032463f",
+          "originalSha256": "468e0463b844bb6f108d102e203647fcb8b8e5098a1a12671763b28bbd2afbfc"
         },
         {
           "image": "sense-shortcuts-2560x1440-gui4-normal.png",
@@ -1808,28 +1808,28 @@
           "scale": 3.0,
           "shortcuts": [
             {
-              "label": "创世 · 管理小世界",
-              "active": true,
               "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false,
               "bounds": [
                 12,
                 222,
                 213,
                 22
-              ],
-              "focused": false
+              ]
             },
             {
-              "label": "天仙渡劫",
-              "active": false,
               "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false,
               "bounds": [
                 233,
                 222,
                 143,
                 22
-              ],
-              "focused": false
+              ]
             }
           ],
           "actualImageSize": [
@@ -1844,8 +1844,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "native-sense-shortcuts-2560x1440-gui4-normal.jpg",
-          "sha256": "6a3ea13ed262c1fcd27b52e46f44d1772f332671d01529cd937171e4dcbf140e",
-          "originalSha256": "a99d18de54c9cbb4e67e6a021fe7e2eec50c1750fea59cfb34753e0ad2da7512"
+          "sha256": "99077b4b7f796542ef26762c0ef461ea6e5ed30494b13d88da609bd2854ee283",
+          "originalSha256": "52437343d6a474ed403f748f2bfbcc3baebd5bf0dc1b11b960b84ca1f10c125b"
         },
         {
           "image": "sense-shortcuts-2560x1440-gui4-creation-hover.png",
@@ -1860,28 +1860,28 @@
           "scale": 3.0,
           "shortcuts": [
             {
-              "label": "创世 · 管理小世界",
-              "active": true,
               "hovered": true,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false,
               "bounds": [
                 12,
                 222,
                 213,
                 22
-              ],
-              "focused": false
+              ]
             },
             {
-              "label": "天仙渡劫",
-              "active": false,
               "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false,
               "bounds": [
                 233,
                 222,
                 143,
                 22
-              ],
-              "focused": false
+              ]
             }
           ],
           "actualImageSize": [
@@ -1896,8 +1896,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "native-sense-shortcuts-2560x1440-gui4-creation-hover.jpg",
-          "sha256": "875b19f018ad2e62691c129f853bfee21cf28c5d6fa021c2c54b7545e8edfd26",
-          "originalSha256": "0abd740eef81c84d2bfeb54faf102be1906f76a04c8ed362c4b0a9b19679b69e"
+          "sha256": "0dc3d5fe744c27084bb12bc71c32652ae404e8d924750e276eb914670d76bb2e",
+          "originalSha256": "5efc28cfab1c1f0ce223049ae271b872bb01080c158354101e8eb8f0a2898c5a"
         },
         {
           "image": "sense-shortcuts-2560x1440-gui4-ascension-hover.png",
@@ -1912,28 +1912,28 @@
           "scale": 3.0,
           "shortcuts": [
             {
-              "label": "创世 · 管理小世界",
-              "active": true,
               "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false,
               "bounds": [
                 12,
                 222,
                 213,
                 22
-              ],
-              "focused": false
+              ]
             },
             {
-              "label": "天仙渡劫",
-              "active": false,
               "hovered": true,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false,
               "bounds": [
                 233,
                 222,
                 143,
                 22
-              ],
-              "focused": false
+              ]
             }
           ],
           "actualImageSize": [
@@ -1948,8 +1948,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "native-sense-shortcuts-2560x1440-gui4-ascension-hover.jpg",
-          "sha256": "3e6f4606fb4235d8dca0a9c88d6559c7fc31890dd99d0543621f3ee3adaf89d4",
-          "originalSha256": "ffadffbc6154163fa26c4ca325c11eb7f0c80b0a51e9b2e966b3cfa7502e9ce6"
+          "sha256": "355ccce4102c98027b8aca8c8380a0bad7834b34a9b259fd430ab22c179c6670",
+          "originalSha256": "4c168cf181095784116a951b4a154bffae95aee95b7b04ebf0bb8d983c113500"
         },
         {
           "image": "sense-shortcuts-2560x1440-gui4-creation-focus.png",
@@ -1964,28 +1964,28 @@
           "scale": 3.0,
           "shortcuts": [
             {
-              "label": "创世 · 管理小世界",
-              "active": true,
               "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": true,
               "bounds": [
                 12,
                 222,
                 213,
                 22
-              ],
-              "focused": true
+              ]
             },
             {
-              "label": "天仙渡劫",
-              "active": false,
               "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false,
               "bounds": [
                 233,
                 222,
                 143,
                 22
-              ],
-              "focused": false
+              ]
             }
           ],
           "actualImageSize": [
@@ -2000,8 +2000,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "native-sense-shortcuts-2560x1440-gui4-creation-focus.jpg",
-          "sha256": "775e0f9af1d68db89719bcb729932bedeeb8e1457334fe70f6e38dc12625d470",
-          "originalSha256": "ebeeb89a28d07218f7fd6985ab3a4d129bb6ebf2d626f6bf1c26d0943826b9ad"
+          "sha256": "b4631c3de1105ce842c05f2dacff83fdb9b3f584b9ae26ef0556b1e644a657f8",
+          "originalSha256": "116b44e0db791b124161600b86cc60d194d7607219a9a3b69566d592823b48ae"
         },
         {
           "image": "sense-shortcuts-2560x1440-gui4-ascension-focus.png",
@@ -2016,28 +2016,28 @@
           "scale": 3.0,
           "shortcuts": [
             {
-              "label": "创世 · 管理小世界",
-              "active": true,
               "hovered": false,
+              "active": true,
+              "label": "创世 · 管理小世界",
+              "focused": false,
               "bounds": [
                 12,
                 222,
                 213,
                 22
-              ],
-              "focused": false
+              ]
             },
             {
-              "label": "天仙渡劫",
-              "active": false,
               "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": true,
               "bounds": [
                 233,
                 222,
                 143,
                 22
-              ],
-              "focused": true
+              ]
             }
           ],
           "actualImageSize": [
@@ -2052,8 +2052,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "native-sense-shortcuts-2560x1440-gui4-ascension-focus.jpg",
-          "sha256": "61c9991317eb713357dd65c780986f05af861543fe7c36267ce3c81a0fa87337",
-          "originalSha256": "c196a4959b643d32e0fdc0732af8c8d0a15713aeef036ed628faaf19419ebc23"
+          "sha256": "7a1cfe22f73c8904d0a980fb6361061ef4d0119a6d2aec8a7bba943f7771eb00",
+          "originalSha256": "be3ff727db81e608b6e8a120f897b3789201549f94c27a071552d635b9284657"
         },
         {
           "image": "sense-shortcuts-2560x1440-gui4-disabled.png",
@@ -2068,28 +2068,28 @@
           "scale": 3.0,
           "shortcuts": [
             {
-              "label": "创世 · 管理小世界",
-              "active": false,
               "hovered": false,
+              "active": false,
+              "label": "创世 · 管理小世界",
+              "focused": false,
               "bounds": [
                 12,
                 222,
                 213,
                 22
-              ],
-              "focused": false
+              ]
             },
             {
-              "label": "天仙渡劫",
-              "active": false,
               "hovered": false,
+              "active": false,
+              "label": "天仙渡劫",
+              "focused": false,
               "bounds": [
                 233,
                 222,
                 143,
                 22
-              ],
-              "focused": false
+              ]
             }
           ],
           "actualImageSize": [
@@ -2104,8 +2104,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "native-sense-shortcuts-2560x1440-gui4-disabled.jpg",
-          "sha256": "44d658847497bdbf6190f34ce286afd2fdfd6417b598c9a182eb4e6aa4fbbe0b",
-          "originalSha256": "cbe8352eb61da768d75f52a91d5b50f0395ffb698995deb932d28ecf8c0dd0d2"
+          "sha256": "23e998f331c32a1c86bef563ee3bc796f6821449300a7399d692359e36873de8",
+          "originalSha256": "1ca856b2b9b58a6abcd1f44defe7b648afd6f283c378dff5cb563d22487fd647"
         }
       ],
       "pointer": {
@@ -2116,11 +2116,11 @@
         "blockedGrabs": 9
       },
       "uiPointer": {
+        "checkedFrames": 1208,
         "cursorMode": 212993,
-        "checkedFrames": 1180,
-        "captureViolations": 0,
+        "blockedGrabs": 9,
         "passed": true,
-        "blockedGrabs": 9
+        "captureViolations": 0
       },
       "fullSpeed": true,
       "material": [
@@ -2369,8 +2369,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "solas-settings-1920x1080-gui3-normal.jpg",
-          "sha256": "a943ed88ee69edc5ebb54b6fcf7f253dab1cb7025a32f93fde86b9ecfa75782f",
-          "originalSha256": "ce399543b70aadf879d5b79ad54b8b27b6e085b7db6d221b07e22b96f616c92e"
+          "sha256": "54f52131b67544af8c512eab145cfacd2a21cbf8f1f978d3dad177ba6a611d45",
+          "originalSha256": "aa79aaecbade5ac675ec40461fc0ef58e972bf4a413c5167d73cbaf486989859"
         },
         {
           "image": "settings-1920x1080-gui3-hover.png",
@@ -2399,8 +2399,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "solas-settings-1920x1080-gui3-hover.jpg",
-          "sha256": "9b8482c7dcc48d30af154a66fb5e8eb840bbc9bbf59db16d26b0ee6fa57606b0",
-          "originalSha256": "8162ea427b8dda7e7c365991ca84a4a3a82934a22a20e57cf6ea72dc7368488d"
+          "sha256": "54007a081411c23be0f5e7092e5c3a9f487098d8a1ce8cf82073c71598ef4acd",
+          "originalSha256": "800049863e0fb7c59a2e0c73057cbb81d68d60e754c983f58f3d7affc77e2953"
         },
         {
           "image": "settings-1920x1080-gui3-focus.png",
@@ -2429,8 +2429,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "solas-settings-1920x1080-gui3-focus.jpg",
-          "sha256": "201f0181e844903fc05a5f74132241406a03891f6536139cab9d536283f903ff",
-          "originalSha256": "0a1c1ca938ce617c1ebc4839f4e4eee54715e9093570ceec4d03972f1d3d6b13"
+          "sha256": "57b65d0682b23ee2cad6343155696736d6bb815425f84187367311cf61475c30",
+          "originalSha256": "4db27b1ad40882ab0c85f602bd0ece1c99137b8ddc7494d9057a7cb3f9c9be35"
         },
         {
           "image": "settings-1920x1080-gui3-disabled.png",
@@ -2459,8 +2459,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "solas-settings-1920x1080-gui3-disabled.jpg",
-          "sha256": "579636415f5a46efcc551ec62a71ab2c21283d122ecaad963d6f0cdb5feba750",
-          "originalSha256": "9046d17691161b1c43914c1bf9506699e2873c95da1d2218a75c356f702d8fa9"
+          "sha256": "4d842e23f364c6d4c1c7c96d030ea7e039a04a8f1c1e8a56ab619c239c296582",
+          "originalSha256": "04db20c3ca0f397d802ff59395971ee293773cba97a638b023dc897c8fa6a10e"
         },
         {
           "image": "settings-1920x1080-gui3-expanded-focus-disabled.png",
@@ -2490,8 +2490,8 @@
           "scroll": 570,
           "expandedOptionsVisible": 8,
           "file": "solas-settings-1920x1080-gui3-expanded-focus-disabled.jpg",
-          "sha256": "baabd89e9b8825de70ecda602b61c064c99f8e5ce5f612fa48843ed3c9a7b392",
-          "originalSha256": "b7bf70843f8121234045a1e2b00e0b7590e6ae8539ac3b0330a26920dd534eca"
+          "sha256": "b43c6243937b1d3b8d1eb4a70caf6fe2ecd559b1e6376cc0e613fcd8cb6310c8",
+          "originalSha256": "a9ee073c0d982ff2cb9a0864262dfcb8f85cc2f99ac7c1903fbc47bdda76a6bd"
         },
         {
           "image": "settings-2560x1440-gui3-normal.png",
@@ -2520,8 +2520,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "solas-settings-2560x1440-gui3-normal.jpg",
-          "sha256": "66a6f55a8037b7c983590d49b3843c297dc2ff630282e1514b5f7badc233f242",
-          "originalSha256": "aa9c3962fb819b18b7292a1f2ff1b6b9046543c7dcc802165a628d39db54f019"
+          "sha256": "8591f2373985428cc096d9bc124d533e4ef7695588dddb309a7b9d94175bced9",
+          "originalSha256": "8f645468917724270e97b5dfd371ea110590217e1d1ae04f63d48c380414f538"
         },
         {
           "image": "settings-2560x1440-gui3-hover.png",
@@ -2550,8 +2550,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "solas-settings-2560x1440-gui3-hover.jpg",
-          "sha256": "236c21255da015b14db160e0022bff17cdf8cd4843bfd203e988d78a6991be9c",
-          "originalSha256": "3f22fe3a96ad407edcbebf234c1a1bd6efc0321770686401bd563f309eff5325"
+          "sha256": "31af0d9cffd60f5c77952bafcc318988e9fdb39f06eb09d6d4ca9fadb9f8c2eb",
+          "originalSha256": "b70744ae45c542aa36a2438c9c5dfc70f7327ab80fc01aef9f5d2cdcf70eb73a"
         },
         {
           "image": "settings-2560x1440-gui3-focus.png",
@@ -2580,8 +2580,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "solas-settings-2560x1440-gui3-focus.jpg",
-          "sha256": "f1bc5dab312521b9563e6e8ccf7db6cc898edae7a18f276cfff473633e6f21eb",
-          "originalSha256": "1b890dd34047ac82c49d00ef528778701dd7e74e3c8cd1a3ee2e0f3132f0ea0b"
+          "sha256": "1ed6185ce073ef287477fbcd4b155d7c5cf982ae35824e6352b94575483228cd",
+          "originalSha256": "2fb14ef7962e3918780b26d2964bc630ea80df03e0879a8bd9e97613f9da2bf4"
         },
         {
           "image": "settings-2560x1440-gui3-disabled.png",
@@ -2610,8 +2610,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "solas-settings-2560x1440-gui3-disabled.jpg",
-          "sha256": "a0805ce28bfbefc74f28d4b8eb7824109fc6e7a78498b624fa34f85b03f0c99e",
-          "originalSha256": "fb2e5a253453e5d912ff2aff9f5c81806ed78a966121d7a52f805d8ff5f522a2"
+          "sha256": "fad8618a1354d2882f4e2d621748abb6ff8ccf42cf863965443b3e17f11abe8d",
+          "originalSha256": "b817429dbc0f493537cf22588464b72d8482d09e4bf263ba9d15933e8b23d0c4"
         },
         {
           "image": "settings-2560x1440-gui3-expanded-focus-disabled.png",
@@ -2641,8 +2641,8 @@
           "scroll": 570,
           "expandedOptionsVisible": 8,
           "file": "solas-settings-2560x1440-gui3-expanded-focus-disabled.jpg",
-          "sha256": "ac249bdbcf0cb32a687da9dfe914baf88bd69365f174d604a58346317f112c80",
-          "originalSha256": "ab30142d14558d0cd56d1ad1abbf268146df0baea07abd12d549e761bf064f16"
+          "sha256": "7f5cc12d7d30d5daff04b93323e2c75874c1d29bda8c695a8e9c63789987b2b3",
+          "originalSha256": "a4df8383e84f45dc75fab1869ba144320bc330963500edfefacd9f756a2dafd0"
         },
         {
           "image": "settings-1920x1080-gui4-normal.png",
@@ -2671,8 +2671,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "solas-settings-1920x1080-gui4-normal.jpg",
-          "sha256": "1c472e13a3144f9e208acd97adbae2acc7eb182fa9146e58416ad83d68d56488",
-          "originalSha256": "a6047b0ebfa063a83fa8ccb4fbd9714c4407cd43289a19c6efa768bd9b7732f1"
+          "sha256": "8d38aa7eb4498e3a3210e384e60417248cf5031ebd71933bba00f8cf97289319",
+          "originalSha256": "a6df964a0b988cd8ac5726ca432c68ae78fef0aa1dfd85cf2cc6df8ab11a017f"
         },
         {
           "image": "settings-1920x1080-gui4-hover.png",
@@ -2701,8 +2701,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "solas-settings-1920x1080-gui4-hover.jpg",
-          "sha256": "234a711d9ed0f05d74e06beaff0880a1cea7157c0e2de734496d8607b81cf532",
-          "originalSha256": "38c0cfbdcecabe457d6bdf1e987334b89bae91eba83a8d1161dc738406f28099"
+          "sha256": "d2a4e96645f6b9e8e25b4c7899a00de241602d511157e4ca91a35f5a43c2065f",
+          "originalSha256": "6a3dbc636074d0930b17c0f11743a2f226e498bac0f5e6129da27a41e83e913b"
         },
         {
           "image": "settings-1920x1080-gui4-focus.png",
@@ -2731,8 +2731,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "solas-settings-1920x1080-gui4-focus.jpg",
-          "sha256": "5a5732c2addfdd9f213641ef1242b54fce92434b0d99a608cbfd8f0eeb76ffc6",
-          "originalSha256": "b3e305c1fa618c052d22c588595de8fe5d2411744596c3e410a43fc65568916a"
+          "sha256": "353f32cb83fdae89ed90a9b39752cf6b83587c85573b032ea376a1371cbd0577",
+          "originalSha256": "e057eca30c2d9eeec40741d54f9332a971102fc1650aca64604b70e0e49d34d6"
         },
         {
           "image": "settings-1920x1080-gui4-disabled.png",
@@ -2761,8 +2761,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "solas-settings-1920x1080-gui4-disabled.jpg",
-          "sha256": "4f309b1fb9ef3b650db319ab7f57ae0b54e8d999854c31e69054a7cae5b9668a",
-          "originalSha256": "e25952afb4b1a52b6f224c12fe416a0debcc130060890e60d4a37d68b7abad0a"
+          "sha256": "2f2b5df1dbd8da660ccef712635cb24cd770f4ce44a35ee4eee10a8d618b1ea7",
+          "originalSha256": "6ec17d9417475a8d9fd351a72cb5bd042f727280f9606a7939dfb09820970efb"
         },
         {
           "image": "settings-1920x1080-gui4-expanded-focus-disabled.png",
@@ -2792,8 +2792,8 @@
           "scroll": 570,
           "expandedOptionsVisible": 8,
           "file": "solas-settings-1920x1080-gui4-expanded-focus-disabled.jpg",
-          "sha256": "580726d6fea3fe0e25be1d6df0b79e9d89ddd7c008d32b22d645357cd3f9519c",
-          "originalSha256": "09e21a2d2ae457b1b6a85d8316ba2a45ee137e9634859fd9d1d75652d5953aeb"
+          "sha256": "229feb123db4d4f691add6380ff3ef55dc8dcbe8f298ae89bfa44efd08c4d6c3",
+          "originalSha256": "c6b9bcf566b17013739eedc2299f0300d45f6fb8b219088ea001745af63b2621"
         },
         {
           "image": "settings-2560x1440-gui4-normal.png",
@@ -2822,8 +2822,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "solas-settings-2560x1440-gui4-normal.jpg",
-          "sha256": "99763cf3eb8eac4789965be92701f3eb7c9ec56b0a0a5fb02604fa73248f6546",
-          "originalSha256": "c5df41e7d4b709d790362d548efe0b11645aa2920d6a379c735191d666843c54"
+          "sha256": "044b22882e5eaf6e677a5a1b59de22b48e46b56795675b07ab8ca749b84339c5",
+          "originalSha256": "bdb43dca22e298d52e5c8aefcef90fe950db434854880b6b78aeb3ae8c74dde9"
         },
         {
           "image": "settings-2560x1440-gui4-hover.png",
@@ -2852,8 +2852,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "solas-settings-2560x1440-gui4-hover.jpg",
-          "sha256": "0b0de0f87eaca1635061d0a75e317c5130d60cc17e8b52cb5f99db986798e13d",
-          "originalSha256": "a765a95911ebf72a26db9f1b63d6b4cb023fe1a7590594b071e6f96a75769a5e"
+          "sha256": "ec7cbdc092f8ea52cf5c1df7fce0c3c154e4553682e24d2fe7004fd999e3a29d",
+          "originalSha256": "2b088f43d2d31991f43ae17b0ae83e16fd20956a853c5deaa32b7848779437d3"
         },
         {
           "image": "settings-2560x1440-gui4-focus.png",
@@ -2882,8 +2882,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "solas-settings-2560x1440-gui4-focus.jpg",
-          "sha256": "f23d057e178896f424f4fe42b9f89d31622d13a19437cb7a8028c8ee07ce5eb1",
-          "originalSha256": "effbfcf03b828999a4d8b59774fd00c01fd0f3e1d2724ebc3825ce396a174c56"
+          "sha256": "5937a6d127a23f2d8055b053039cb7a7ba8423cd08fe4cef002ef551f8e68482",
+          "originalSha256": "9085d9eaa6f4078d711a7062065984649dee93fef94cb1ffadf92617e359e6b2"
         },
         {
           "image": "settings-2560x1440-gui4-disabled.png",
@@ -2912,8 +2912,8 @@
           "pageScale": 1.0,
           "scroll": 458,
           "file": "solas-settings-2560x1440-gui4-disabled.jpg",
-          "sha256": "a9e9da95afb5c2f7bc70b43a88643777cba6b39629119beaee02bc31d535c565",
-          "originalSha256": "8b64c257fd0390d25858f4e68d6407ef2548e63fc081afb709d502a822410977"
+          "sha256": "2b466872c092ea9687c51329224ec02f6eadeb8a137559c6d43cda1c23a1a03c",
+          "originalSha256": "87611ee48b55d4be30af48b94fe2a17ad05087e67dc3c6609e8e61c78c368ac4"
         },
         {
           "image": "settings-2560x1440-gui4-expanded-focus-disabled.png",
@@ -2943,8 +2943,8 @@
           "scroll": 570,
           "expandedOptionsVisible": 8,
           "file": "solas-settings-2560x1440-gui4-expanded-focus-disabled.jpg",
-          "sha256": "69e1046e72d73bc7867604738e3f2af81dd18e785ab6f18cc825664a576b55ef",
-          "originalSha256": "d4b76b03cd5ab7c20f0087f90a925056b95ae6f89489aaf8812d9bd2dd213d52"
+          "sha256": "74e06f4825b3753d47fc5a281b78cbf7b97cc3f9c7772bcd67954ec73781c694",
+          "originalSha256": "264d5b9f972dd840c60330caf991f34c7b8685f6c5c3742b32d7e28782616f26"
         },
         {
           "image": "sense-shortcuts-1920x1080-gui3-normal.png",
@@ -2965,10 +2965,10 @@
                 213,
                 22
               ],
-              "hovered": false,
-              "active": true,
+              "focused": false,
               "label": "创世 · 管理小世界",
-              "focused": false
+              "active": true,
+              "hovered": false
             },
             {
               "bounds": [
@@ -2977,10 +2977,10 @@
                 143,
                 22
               ],
-              "hovered": false,
-              "active": false,
+              "focused": false,
               "label": "天仙渡劫",
-              "focused": false
+              "active": false,
+              "hovered": false
             }
           ],
           "actualImageSize": [
@@ -2995,8 +2995,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "solas-sense-shortcuts-1920x1080-gui3-normal.jpg",
-          "sha256": "dc9861a5f9a0c64271ee12994bffbaf034eb27a108f44fdaab335c7373838a82",
-          "originalSha256": "575934aaaf16aaeae78ef7d34f01f97e5a4827100e943a9c27f9a909d3bf2f9d"
+          "sha256": "09bc3d2d523a56d36dd5e3899b53017f59dd0c11476648c18e7ce29bbd651862",
+          "originalSha256": "e1ba91af4377dbba925f1b9ccd4e9df87120d7e26550c4881c4d724761bb166c"
         },
         {
           "image": "sense-shortcuts-1920x1080-gui3-creation-hover.png",
@@ -3017,10 +3017,10 @@
                 213,
                 22
               ],
-              "hovered": true,
-              "active": true,
+              "focused": false,
               "label": "创世 · 管理小世界",
-              "focused": false
+              "active": true,
+              "hovered": true
             },
             {
               "bounds": [
@@ -3029,10 +3029,10 @@
                 143,
                 22
               ],
-              "hovered": false,
-              "active": false,
+              "focused": false,
               "label": "天仙渡劫",
-              "focused": false
+              "active": false,
+              "hovered": false
             }
           ],
           "actualImageSize": [
@@ -3047,8 +3047,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "solas-sense-shortcuts-1920x1080-gui3-creation-hover.jpg",
-          "sha256": "0454e62a0d800942f1d4db16f37f3dd950538a9cf5fba9b9d14fce9804096d03",
-          "originalSha256": "68451ceda8ad0d8adb93d02de62076e27f510062676b9f0f08dadcee4b849815"
+          "sha256": "15dd7f67d9de9cf711caa2aac8a07570702e0d17c4ca63d95a4174d8cf96f2c0",
+          "originalSha256": "6c135c0dbeee2c47affdc17ca794ae3dab83906546f08fc98b32b2f9035979b3"
         },
         {
           "image": "sense-shortcuts-1920x1080-gui3-ascension-hover.png",
@@ -3069,10 +3069,10 @@
                 213,
                 22
               ],
-              "hovered": false,
-              "active": true,
+              "focused": false,
               "label": "创世 · 管理小世界",
-              "focused": false
+              "active": true,
+              "hovered": false
             },
             {
               "bounds": [
@@ -3081,10 +3081,10 @@
                 143,
                 22
               ],
-              "hovered": true,
-              "active": false,
+              "focused": false,
               "label": "天仙渡劫",
-              "focused": false
+              "active": false,
+              "hovered": true
             }
           ],
           "actualImageSize": [
@@ -3099,8 +3099,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "solas-sense-shortcuts-1920x1080-gui3-ascension-hover.jpg",
-          "sha256": "fbb9bc28123a45a8ba7e45997ea8dea3531a19aaa243d3c03d9df4b160598f0b",
-          "originalSha256": "3e62f0f3d747476680c71817857a3ab0705a6d00a36a7fcea719bfcb8450490b"
+          "sha256": "e22e99ba712ec43ece9e9e62c796ed783b490a85ba99c01dfe39df9a62971e47",
+          "originalSha256": "0290fc41d2febee95bafbb16fa6ecf423a6e1c8612f6ec2151836a7cea74781b"
         },
         {
           "image": "sense-shortcuts-1920x1080-gui3-creation-focus.png",
@@ -3121,10 +3121,10 @@
                 213,
                 22
               ],
-              "hovered": false,
-              "active": true,
+              "focused": true,
               "label": "创世 · 管理小世界",
-              "focused": true
+              "active": true,
+              "hovered": false
             },
             {
               "bounds": [
@@ -3133,10 +3133,10 @@
                 143,
                 22
               ],
-              "hovered": false,
-              "active": false,
+              "focused": false,
               "label": "天仙渡劫",
-              "focused": false
+              "active": false,
+              "hovered": false
             }
           ],
           "actualImageSize": [
@@ -3151,8 +3151,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "solas-sense-shortcuts-1920x1080-gui3-creation-focus.jpg",
-          "sha256": "469259114e9538a6e5bc5e96e85fa067d2bcfbbd3d9786b0028503373056674d",
-          "originalSha256": "6bc4532e4c58992b9b6857c753dbec3d525b51ed5f6821ff214defdc973c01e4"
+          "sha256": "dbe64d462b8f70043d31f3bfb3a8dec9a90dea057833ed962362deebf50e2a04",
+          "originalSha256": "337fbc7cdd8e30bf79376599f67967c0cdb2afd97eb107315e67209c8572b596"
         },
         {
           "image": "sense-shortcuts-1920x1080-gui3-ascension-focus.png",
@@ -3173,10 +3173,10 @@
                 213,
                 22
               ],
-              "hovered": false,
-              "active": true,
+              "focused": false,
               "label": "创世 · 管理小世界",
-              "focused": false
+              "active": true,
+              "hovered": false
             },
             {
               "bounds": [
@@ -3185,10 +3185,10 @@
                 143,
                 22
               ],
-              "hovered": false,
-              "active": false,
+              "focused": true,
               "label": "天仙渡劫",
-              "focused": true
+              "active": false,
+              "hovered": false
             }
           ],
           "actualImageSize": [
@@ -3203,8 +3203,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "solas-sense-shortcuts-1920x1080-gui3-ascension-focus.jpg",
-          "sha256": "250a7a5d5bf1bb914e31194c071beab966f7083d28b839fe96f37553019ac35a",
-          "originalSha256": "bd81eb1ed6036a3967eeda8e9bbca5f9e05d8d08c9032dbbb9933cdef7188bf9"
+          "sha256": "139603c5bc8268ca0a5d9dc3425bcfd477980326b1b81c30cd161e3bd7b914cc",
+          "originalSha256": "0c44f924fe49fd387873ef680ad58afca55f7cfa9153043d4f23772d385b8190"
         },
         {
           "image": "sense-shortcuts-1920x1080-gui3-disabled.png",
@@ -3225,10 +3225,10 @@
                 213,
                 22
               ],
-              "hovered": false,
-              "active": false,
+              "focused": false,
               "label": "创世 · 管理小世界",
-              "focused": false
+              "active": false,
+              "hovered": false
             },
             {
               "bounds": [
@@ -3237,10 +3237,10 @@
                 143,
                 22
               ],
-              "hovered": false,
-              "active": false,
+              "focused": false,
               "label": "天仙渡劫",
-              "focused": false
+              "active": false,
+              "hovered": false
             }
           ],
           "actualImageSize": [
@@ -3255,8 +3255,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "solas-sense-shortcuts-1920x1080-gui3-disabled.jpg",
-          "sha256": "ae380dd16c30a0c768f055b37ea3500b9fb13a1dd3ad48daee2ab6c30ef43f36",
-          "originalSha256": "97eb0c39aaea7d0e7a8ae0047b6659a506cb8cb8f7dbccd69c21bf28896bbafb"
+          "sha256": "bdcd37b8c0a9cde232d3290d3041baa2e8e61603e459399b3efd9e2cb5724da1",
+          "originalSha256": "725b5bbf7efa0c060d0714a682178fc9989a6ba675d373b8e0185a93c1a63ac1"
         },
         {
           "image": "sense-shortcuts-2560x1440-gui3-normal.png",
@@ -3277,10 +3277,10 @@
                 213,
                 22
               ],
-              "hovered": false,
-              "active": true,
+              "focused": false,
               "label": "创世 · 管理小世界",
-              "focused": false
+              "active": true,
+              "hovered": false
             },
             {
               "bounds": [
@@ -3289,10 +3289,10 @@
                 143,
                 22
               ],
-              "hovered": false,
-              "active": false,
+              "focused": false,
               "label": "天仙渡劫",
-              "focused": false
+              "active": false,
+              "hovered": false
             }
           ],
           "actualImageSize": [
@@ -3307,8 +3307,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "solas-sense-shortcuts-2560x1440-gui3-normal.jpg",
-          "sha256": "e14d98049fa11aa9fbcb008ae3c7e01629b8ac9fd33d4878b00eff76a5a6adda",
-          "originalSha256": "04f0f29fe1977742393576f69514ba406c551035b4a691644dbf15ccc354057b"
+          "sha256": "fcee16132273f84cfae349d4741ecf819ff2c2cc6ecd5c4252233551869f4138",
+          "originalSha256": "c8f0d206bd99ade1c4a4f69d1596c41e1379fada2ee9df2da677564c4e3c8930"
         },
         {
           "image": "sense-shortcuts-2560x1440-gui3-creation-hover.png",
@@ -3329,10 +3329,10 @@
                 213,
                 22
               ],
-              "hovered": true,
-              "active": true,
+              "focused": false,
               "label": "创世 · 管理小世界",
-              "focused": false
+              "active": true,
+              "hovered": true
             },
             {
               "bounds": [
@@ -3341,10 +3341,10 @@
                 143,
                 22
               ],
-              "hovered": false,
-              "active": false,
+              "focused": false,
               "label": "天仙渡劫",
-              "focused": false
+              "active": false,
+              "hovered": false
             }
           ],
           "actualImageSize": [
@@ -3359,8 +3359,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "solas-sense-shortcuts-2560x1440-gui3-creation-hover.jpg",
-          "sha256": "0c7d8c0cf8030140fb4acf1b247797fefbc03f185c8b161294a3046fb91a6ea5",
-          "originalSha256": "558c64f7ffe6681cc8e0a26b23cdfd6828d60412165faec15e756f2014cb2a22"
+          "sha256": "da93ecdfe79b805c0f48d209ca69141258957d0c6bea9f1d607e0409ff761fb6",
+          "originalSha256": "dfe148ab0c28c2f405a3d760821eaa14e2db03473debf8cd6694a1382a6f1acb"
         },
         {
           "image": "sense-shortcuts-2560x1440-gui3-ascension-hover.png",
@@ -3381,10 +3381,10 @@
                 213,
                 22
               ],
-              "hovered": false,
-              "active": true,
+              "focused": false,
               "label": "创世 · 管理小世界",
-              "focused": false
+              "active": true,
+              "hovered": false
             },
             {
               "bounds": [
@@ -3393,10 +3393,10 @@
                 143,
                 22
               ],
-              "hovered": true,
-              "active": false,
+              "focused": false,
               "label": "天仙渡劫",
-              "focused": false
+              "active": false,
+              "hovered": true
             }
           ],
           "actualImageSize": [
@@ -3411,8 +3411,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "solas-sense-shortcuts-2560x1440-gui3-ascension-hover.jpg",
-          "sha256": "3be03e70f41593364bd313af4dce45a6e29ae12ace091410a2cccb4448b9a1d3",
-          "originalSha256": "1a758971c4b6ca68a002e4b0b7f334f63a630c085eb70f006134e5209fa28df1"
+          "sha256": "4547d6e3ba355c3478f727f8eff2370be1e651b06450986f81359aac47b5118c",
+          "originalSha256": "bac8a685a194ba63569d0645772fd737bc2413f4042797850cdf27022c8daf49"
         },
         {
           "image": "sense-shortcuts-2560x1440-gui3-creation-focus.png",
@@ -3433,10 +3433,10 @@
                 213,
                 22
               ],
-              "hovered": false,
-              "active": true,
+              "focused": true,
               "label": "创世 · 管理小世界",
-              "focused": true
+              "active": true,
+              "hovered": false
             },
             {
               "bounds": [
@@ -3445,10 +3445,10 @@
                 143,
                 22
               ],
-              "hovered": false,
-              "active": false,
+              "focused": false,
               "label": "天仙渡劫",
-              "focused": false
+              "active": false,
+              "hovered": false
             }
           ],
           "actualImageSize": [
@@ -3463,8 +3463,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "solas-sense-shortcuts-2560x1440-gui3-creation-focus.jpg",
-          "sha256": "c64c1a9b0ff633a42cbad24e44fd3a99cc5bf012a8157091de43581879f2bd8d",
-          "originalSha256": "6c672b5bb5ba3b77bfbb73bad4c8725b717c8da673e480034ca240b6081b183c"
+          "sha256": "ff1c0d59681d45d917e1aa91bcf21ebd664ebbbbaf75640df02b4ce4c99e379b",
+          "originalSha256": "7516907a3a87c88839a93d4fe224d758a1d24453fc522639911535b9f9366108"
         },
         {
           "image": "sense-shortcuts-2560x1440-gui3-ascension-focus.png",
@@ -3485,10 +3485,10 @@
                 213,
                 22
               ],
-              "hovered": false,
-              "active": true,
+              "focused": false,
               "label": "创世 · 管理小世界",
-              "focused": false
+              "active": true,
+              "hovered": false
             },
             {
               "bounds": [
@@ -3497,10 +3497,10 @@
                 143,
                 22
               ],
-              "hovered": false,
-              "active": false,
+              "focused": true,
               "label": "天仙渡劫",
-              "focused": true
+              "active": false,
+              "hovered": false
             }
           ],
           "actualImageSize": [
@@ -3515,8 +3515,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "solas-sense-shortcuts-2560x1440-gui3-ascension-focus.jpg",
-          "sha256": "b0477f148d8ea4566f1986ac64f2d9ff07db3fa275eae2912ecff86014edc68f",
-          "originalSha256": "e17c560ec9763db75071e728b7e5434f99cdb8b19cd10acd94d7b46376f96361"
+          "sha256": "9414248eb895991d41a6a5f68df7e540223253823a65a9b6eee417e22cc61812",
+          "originalSha256": "1845aa2f1e062fd791fc5081a46f75537cd40b6f1f50a7285032e88a474ab2cf"
         },
         {
           "image": "sense-shortcuts-2560x1440-gui3-disabled.png",
@@ -3537,10 +3537,10 @@
                 213,
                 22
               ],
-              "hovered": false,
-              "active": false,
+              "focused": false,
               "label": "创世 · 管理小世界",
-              "focused": false
+              "active": false,
+              "hovered": false
             },
             {
               "bounds": [
@@ -3549,10 +3549,10 @@
                 143,
                 22
               ],
-              "hovered": false,
-              "active": false,
+              "focused": false,
               "label": "天仙渡劫",
-              "focused": false
+              "active": false,
+              "hovered": false
             }
           ],
           "actualImageSize": [
@@ -3567,8 +3567,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "solas-sense-shortcuts-2560x1440-gui3-disabled.jpg",
-          "sha256": "c689c53e30ec43e0092bd6b2fd43facdbc503c555bd12a6693ea1a54670a3e3b",
-          "originalSha256": "07caed875e587331f9f9028de64736b2beaaf4b44190aaeb2265f62579a830ad"
+          "sha256": "f80d0d2a9a8515142949767015916ee8ca5b49c0ab83f648eb2d288281e439e5",
+          "originalSha256": "f9101015b1d7479262f3712152563b9c9d2929ec58ef7673ee982130bacc89a0"
         },
         {
           "image": "sense-shortcuts-1920x1080-gui4-normal.png",
@@ -3589,10 +3589,10 @@
                 213,
                 22
               ],
-              "hovered": false,
-              "active": true,
+              "focused": false,
               "label": "创世 · 管理小世界",
-              "focused": false
+              "active": true,
+              "hovered": false
             },
             {
               "bounds": [
@@ -3601,10 +3601,10 @@
                 143,
                 22
               ],
-              "hovered": false,
-              "active": false,
+              "focused": false,
               "label": "天仙渡劫",
-              "focused": false
+              "active": false,
+              "hovered": false
             }
           ],
           "actualImageSize": [
@@ -3619,8 +3619,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "solas-sense-shortcuts-1920x1080-gui4-normal.jpg",
-          "sha256": "2369f637e01b1cb53d6d3489e7476294f4a4a65b5a61449ca3932473a7a7b005",
-          "originalSha256": "874e5052e050de35b3b7bc15fd92794c0eb0f5a03f080f4b39ad2ce2da0d4346"
+          "sha256": "dafa413d84ec78e3888e914f67789026b545011a4d2d4f9fe419f9c71bc730ad",
+          "originalSha256": "b4d3143ebb6ca29b9fdcb19c53c3ccccb155e0bc3a0c004b0032c22dbb6e7866"
         },
         {
           "image": "sense-shortcuts-1920x1080-gui4-creation-hover.png",
@@ -3641,10 +3641,10 @@
                 213,
                 22
               ],
-              "hovered": true,
-              "active": true,
+              "focused": false,
               "label": "创世 · 管理小世界",
-              "focused": false
+              "active": true,
+              "hovered": true
             },
             {
               "bounds": [
@@ -3653,10 +3653,10 @@
                 143,
                 22
               ],
-              "hovered": false,
-              "active": false,
+              "focused": false,
               "label": "天仙渡劫",
-              "focused": false
+              "active": false,
+              "hovered": false
             }
           ],
           "actualImageSize": [
@@ -3671,8 +3671,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "solas-sense-shortcuts-1920x1080-gui4-creation-hover.jpg",
-          "sha256": "66b9113e01c8b491f1c3360ffc3da218d4fd6bb5c507a5876752934d86157058",
-          "originalSha256": "40452aa4de084ad0cb19994e3a8fd90a95cdacfe84a0580466a0a920d4e4b797"
+          "sha256": "37c38b2ef06f0303edcacf028fa735a7644e04f177af826dc1f54cfe60d62900",
+          "originalSha256": "e8c765e2200ac8da6ee19d3a81ed59f6f7f7e32aa60d5232a89dae6c98da05ef"
         },
         {
           "image": "sense-shortcuts-1920x1080-gui4-ascension-hover.png",
@@ -3693,10 +3693,10 @@
                 213,
                 22
               ],
-              "hovered": false,
-              "active": true,
+              "focused": false,
               "label": "创世 · 管理小世界",
-              "focused": false
+              "active": true,
+              "hovered": false
             },
             {
               "bounds": [
@@ -3705,10 +3705,10 @@
                 143,
                 22
               ],
-              "hovered": true,
-              "active": false,
+              "focused": false,
               "label": "天仙渡劫",
-              "focused": false
+              "active": false,
+              "hovered": true
             }
           ],
           "actualImageSize": [
@@ -3723,8 +3723,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "solas-sense-shortcuts-1920x1080-gui4-ascension-hover.jpg",
-          "sha256": "1c6f9e2781d8e4405585703eb7276f464dde6b97d55ca427bfe422bcbb047b0a",
-          "originalSha256": "15446183572c6b9f7bd5cae5d801fba1260576a833421f573b46b672dcae39cc"
+          "sha256": "a99b12ec7f71f89fff35d4349793688d885c86001ffdb6b022fff6d2a74faa4a",
+          "originalSha256": "83c55be23cd267de18fb72c1866fa15d252c1340f118417e835a5e216c60030f"
         },
         {
           "image": "sense-shortcuts-1920x1080-gui4-creation-focus.png",
@@ -3745,10 +3745,10 @@
                 213,
                 22
               ],
-              "hovered": false,
-              "active": true,
+              "focused": true,
               "label": "创世 · 管理小世界",
-              "focused": true
+              "active": true,
+              "hovered": false
             },
             {
               "bounds": [
@@ -3757,10 +3757,10 @@
                 143,
                 22
               ],
-              "hovered": false,
-              "active": false,
+              "focused": false,
               "label": "天仙渡劫",
-              "focused": false
+              "active": false,
+              "hovered": false
             }
           ],
           "actualImageSize": [
@@ -3775,8 +3775,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "solas-sense-shortcuts-1920x1080-gui4-creation-focus.jpg",
-          "sha256": "94c3c065fc226a3865073f0d4cc0d9c42b7f4411a5d5ca3d17aa0795b54e5e55",
-          "originalSha256": "5aa9ae259bf2a77328730d05943fe2fe0125ad45e9954a4b2b1ce825177a821c"
+          "sha256": "ebb2cdc9d3e502f49226caf3622d532963f3630cb521c0ddccc575af9f34e541",
+          "originalSha256": "a1886f9cdd7301458defa6ac267f6134df1c570f7ab8af8bbe15473e6914115b"
         },
         {
           "image": "sense-shortcuts-1920x1080-gui4-ascension-focus.png",
@@ -3797,10 +3797,10 @@
                 213,
                 22
               ],
-              "hovered": false,
-              "active": true,
+              "focused": false,
               "label": "创世 · 管理小世界",
-              "focused": false
+              "active": true,
+              "hovered": false
             },
             {
               "bounds": [
@@ -3809,10 +3809,10 @@
                 143,
                 22
               ],
-              "hovered": false,
-              "active": false,
+              "focused": true,
               "label": "天仙渡劫",
-              "focused": true
+              "active": false,
+              "hovered": false
             }
           ],
           "actualImageSize": [
@@ -3827,8 +3827,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "solas-sense-shortcuts-1920x1080-gui4-ascension-focus.jpg",
-          "sha256": "f17999940cd35c93fe0f2afa054973739432d904f608294a173fc1aab49e43d5",
-          "originalSha256": "a7644dcdbddad157d99c6f6532badfd5ccf0b303e25da3e8ec593c3175d59f64"
+          "sha256": "69ce6fee3d281e79bc87fbd07562c34c07aaaab7c8215cca71afc38c538427a6",
+          "originalSha256": "f1a237418238c8eae586ccc1adb74fdf5f92749f6c0dbfe9e0ca6682af5bb0e5"
         },
         {
           "image": "sense-shortcuts-1920x1080-gui4-disabled.png",
@@ -3849,10 +3849,10 @@
                 213,
                 22
               ],
-              "hovered": false,
-              "active": false,
+              "focused": false,
               "label": "创世 · 管理小世界",
-              "focused": false
+              "active": false,
+              "hovered": false
             },
             {
               "bounds": [
@@ -3861,10 +3861,10 @@
                 143,
                 22
               ],
-              "hovered": false,
-              "active": false,
+              "focused": false,
               "label": "天仙渡劫",
-              "focused": false
+              "active": false,
+              "hovered": false
             }
           ],
           "actualImageSize": [
@@ -3879,8 +3879,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "solas-sense-shortcuts-1920x1080-gui4-disabled.jpg",
-          "sha256": "d5eb3cc19667d21809650dd2da5bc3eb4b16c8bfe8f17665c18518afec3a45f9",
-          "originalSha256": "165c54e3f100c1caab73e7be7d5a91d06fd07749e4fef064a6d2780193a9e809"
+          "sha256": "a734bb808f5efc8c8c18afe01cb901f576bf13eb54a839ce11d96ec321e2b3da",
+          "originalSha256": "e5fcb3a55baed27f73f0d9dd508b3fc3fa7496ad9eb4b818a7c2c5496e84ab3f"
         },
         {
           "image": "sense-shortcuts-2560x1440-gui4-normal.png",
@@ -3901,10 +3901,10 @@
                 213,
                 22
               ],
-              "hovered": false,
-              "active": true,
+              "focused": false,
               "label": "创世 · 管理小世界",
-              "focused": false
+              "active": true,
+              "hovered": false
             },
             {
               "bounds": [
@@ -3913,10 +3913,10 @@
                 143,
                 22
               ],
-              "hovered": false,
-              "active": false,
+              "focused": false,
               "label": "天仙渡劫",
-              "focused": false
+              "active": false,
+              "hovered": false
             }
           ],
           "actualImageSize": [
@@ -3931,8 +3931,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "solas-sense-shortcuts-2560x1440-gui4-normal.jpg",
-          "sha256": "f3adefdb73fab8b49cd09f7bbf8f275b3ae41da8ed7e34f68e3a9e1cfb871527",
-          "originalSha256": "91d31a0607f946d0655da41b28fdac38c6de934db1e42d4e5673156949ee2e75"
+          "sha256": "484e2474a29ef72104ed82f2fa75332f220d5d0c366292ae06e76572524f9aff",
+          "originalSha256": "82089e02cc2b40f41ed0e785ec6aa0b5206e0969824ba9de07c0890b550357ea"
         },
         {
           "image": "sense-shortcuts-2560x1440-gui4-creation-hover.png",
@@ -3953,10 +3953,10 @@
                 213,
                 22
               ],
-              "hovered": true,
-              "active": true,
+              "focused": false,
               "label": "创世 · 管理小世界",
-              "focused": false
+              "active": true,
+              "hovered": true
             },
             {
               "bounds": [
@@ -3965,10 +3965,10 @@
                 143,
                 22
               ],
-              "hovered": false,
-              "active": false,
+              "focused": false,
               "label": "天仙渡劫",
-              "focused": false
+              "active": false,
+              "hovered": false
             }
           ],
           "actualImageSize": [
@@ -3983,8 +3983,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "solas-sense-shortcuts-2560x1440-gui4-creation-hover.jpg",
-          "sha256": "94c41774a2bcdd439d86476c502aab89e609be841eb7f43ca8a7056a12267f19",
-          "originalSha256": "61895ed6f60629f54611e09c25551b6c586e790a01cbad6a6ac7759dd12227f2"
+          "sha256": "eca4eb84f8cba44cd79fb9414b8fa751001fa81e70f75a63aeb666c8567115d7",
+          "originalSha256": "59cd3dcf57a2a7860021cb0bb0a752476ac0467df9453990c3c5bbc8cad70ac9"
         },
         {
           "image": "sense-shortcuts-2560x1440-gui4-ascension-hover.png",
@@ -4005,10 +4005,10 @@
                 213,
                 22
               ],
-              "hovered": false,
-              "active": true,
+              "focused": false,
               "label": "创世 · 管理小世界",
-              "focused": false
+              "active": true,
+              "hovered": false
             },
             {
               "bounds": [
@@ -4017,10 +4017,10 @@
                 143,
                 22
               ],
-              "hovered": true,
-              "active": false,
+              "focused": false,
               "label": "天仙渡劫",
-              "focused": false
+              "active": false,
+              "hovered": true
             }
           ],
           "actualImageSize": [
@@ -4035,8 +4035,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "solas-sense-shortcuts-2560x1440-gui4-ascension-hover.jpg",
-          "sha256": "4059a254f4a34589b42a6875cf6d7dc355462e93b3f36962788fbf1728bebbd0",
-          "originalSha256": "3de2f3df65004fd38df12afa377f9a9aa461b3d1b1065b83a4d79b0a78391dff"
+          "sha256": "bf83121ff3944cbbedb518eab05c1ab836ca0aaa83c51437b112596549adb297",
+          "originalSha256": "ec827d61553166717016f4417563f2f316ea7f6be37fc5c018ec3f2be35d4bca"
         },
         {
           "image": "sense-shortcuts-2560x1440-gui4-creation-focus.png",
@@ -4057,10 +4057,10 @@
                 213,
                 22
               ],
-              "hovered": false,
-              "active": true,
+              "focused": true,
               "label": "创世 · 管理小世界",
-              "focused": true
+              "active": true,
+              "hovered": false
             },
             {
               "bounds": [
@@ -4069,10 +4069,10 @@
                 143,
                 22
               ],
-              "hovered": false,
-              "active": false,
+              "focused": false,
               "label": "天仙渡劫",
-              "focused": false
+              "active": false,
+              "hovered": false
             }
           ],
           "actualImageSize": [
@@ -4087,8 +4087,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "solas-sense-shortcuts-2560x1440-gui4-creation-focus.jpg",
-          "sha256": "8cd6e7494192e88885494547061f51c87d8e2f3905f499e3cee43c9ec8d05167",
-          "originalSha256": "53c0429ac25c22ba763fec8b1aae239736cda3a733b8a0aa41a77bda311bce5b"
+          "sha256": "5cfb29ce275cfd176b00894614cc1d8354946a3ba77d64f6b31bac0b19517f67",
+          "originalSha256": "93bad1f1d81a28f6d71674522816fc7e0f5bb85c2763ccb6e34550769d8153fe"
         },
         {
           "image": "sense-shortcuts-2560x1440-gui4-ascension-focus.png",
@@ -4109,10 +4109,10 @@
                 213,
                 22
               ],
-              "hovered": false,
-              "active": true,
+              "focused": false,
               "label": "创世 · 管理小世界",
-              "focused": false
+              "active": true,
+              "hovered": false
             },
             {
               "bounds": [
@@ -4121,10 +4121,10 @@
                 143,
                 22
               ],
-              "hovered": false,
-              "active": false,
+              "focused": true,
               "label": "天仙渡劫",
-              "focused": true
+              "active": false,
+              "hovered": false
             }
           ],
           "actualImageSize": [
@@ -4139,8 +4139,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "solas-sense-shortcuts-2560x1440-gui4-ascension-focus.jpg",
-          "sha256": "e1443f130e16614efe3b619306d33e48cbae55c10df4793159e8133412e32005",
-          "originalSha256": "e37655e1f97b5dc736300d19701553d56e3b5ea43643cfdf466f93cb4cc20375"
+          "sha256": "96cb51b6fe7b9f34f8cff0208a86c7ec3e51ae4f5552e7fed9dbe29c8ea04034",
+          "originalSha256": "7e1fadbc1121164097349ee3d55e5a60c0978a5a0662bce320eddff699dc477b"
         },
         {
           "image": "sense-shortcuts-2560x1440-gui4-disabled.png",
@@ -4161,10 +4161,10 @@
                 213,
                 22
               ],
-              "hovered": false,
-              "active": false,
+              "focused": false,
               "label": "创世 · 管理小世界",
-              "focused": false
+              "active": false,
+              "hovered": false
             },
             {
               "bounds": [
@@ -4173,10 +4173,10 @@
                 143,
                 22
               ],
-              "hovered": false,
-              "active": false,
+              "focused": false,
               "label": "天仙渡劫",
-              "focused": false
+              "active": false,
+              "hovered": false
             }
           ],
           "actualImageSize": [
@@ -4191,8 +4191,8 @@
           "pageScale": 1.0,
           "scroll": 0,
           "file": "solas-sense-shortcuts-2560x1440-gui4-disabled.jpg",
-          "sha256": "2c0ade37596f6dfc14ea6785930fc9b3a339ee2d8d3e577847363d1544da5209",
-          "originalSha256": "7feba6be4b5e2e20fb173bac2655a9fdf77ca86967def4f33bc9d4e340e56975"
+          "sha256": "b09e1ffbd8e2dd4e8dcc8b2a1d0588a5c196593af6ede961f202510b9ab31f74",
+          "originalSha256": "135374a1f8b7a26e9583db802b87c617741784965055c920f0d1d110a6c14ea9"
         }
       ],
       "pointer": {
@@ -4203,11 +4203,11 @@
         "blockedGrabs": 9
       },
       "uiPointer": {
-        "passed": true,
         "captureViolations": 0,
-        "checkedFrames": 1015,
+        "passed": true,
+        "blockedGrabs": 9,
         "cursorMode": 212993,
-        "blockedGrabs": 9
+        "checkedFrames": 981
       },
       "fullSpeed": true,
       "material": [
