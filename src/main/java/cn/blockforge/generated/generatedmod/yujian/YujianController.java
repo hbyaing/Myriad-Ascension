@@ -437,7 +437,7 @@ public final class YujianController {
         double pulse=ride.rollPulseTicks>0?Math.sin(Math.PI*(1.0D-ride.rollPulseTicks/(double)FlyingSwordConfig.ROLL_PULSE_TICKS.get())):0;
         if(ride.rollPulseTicks>0)ride.rollPulseTicks--;
         double cruiseCeiling=ceiling*FlyingSwordConfig.CRUISE_FRACTION.get();
-        if(ride.forward&&!ride.brake)ride.cruiseTarget=Math.min(cruiseCeiling,ride.cruiseTarget+definition.acceleration());
+        if(ride.forward&&!ride.brake)ride.cruiseTarget=Math.min(cruiseCeiling,ride.cruiseTarget+definition.advanced().cruiseAcceleration(definition));
         else ride.cruiseTarget=Math.max(0,ride.cruiseTarget-YujianTuning.DECELERATION);
         double bonus=Math.min(FlyingSwordConfig.SPIRAL_BONUS.get(),FlyingSwordConfig.ROLL_PULSE_BONUS.get());
         double targetSpeed=Math.min(ceiling,ride.cruiseTarget*(1.0D+bonus*pulse));
@@ -512,8 +512,9 @@ public final class YujianController {
         }
         // Waiting for terrain is not a wall impact: retain the cruise target
         // and phase, while still moving only through the validated loaded path.
-        if(blocked){ride.huahong.exit();sword.huahong(ride.huahong.stage(),ride.huahong.strength());}
-        if ((blocked&&sweep.loaded())||sword.horizontalCollision||sword.verticalCollision) {
+        boolean impact=(blocked&&sweep.loaded())||sword.horizontalCollision||sword.verticalCollision;
+        if(impact){ride.huahong.exit();sword.huahong(ride.huahong.stage(),ride.huahong.strength());}
+        if (impact) {
             changePhase(sword,player,ride,YujianPhase.BASIC);
             ride.cruiseTarget=Math.min(ride.cruiseTarget,definition.baseSpeed());
             if(ride.collisionTicks==0){sword.impactNow();FlightFeedbackEvent.emit(sword,FlightFeedbackEvent.Kind.BLOCK_IMPACT);}
@@ -536,10 +537,15 @@ public final class YujianController {
         double normal=definition.advanced().maxSpeed(ride.phase,definition)*FlyingSwordConfig.CRUISE_FRACTION.get();
         boolean eligible=HuahongFlight.supported(SwordProfile.of(source).tier())
                 && ProgressionGate.canYujianPhase(player,source,YujianPhase.DUNXU)
-                && ride.forward&&ride.sprint&&!ride.brake&&ride.collisionTicks==0
-                && Math.abs(Mth.wrapDegrees(ride.desiredYaw-sword.getYRot()))<55
-                && Math.abs(ride.desiredPitch-sword.getXRot())<45;
-        if(eligible){
+                && ride.forward&&!ride.brake&&ride.collisionTicks==0;
+        // Initial gathering still requires a clear, reasonably aligned route.
+        // Once active, steering and a distant/unready prediction cannot cancel
+        // the form: the actual per-tick sweep below remains authoritative.
+        if(eligible&&ride.huahong.stage()==0){
+            eligible=ride.sprint&&Math.abs(Mth.wrapDegrees(ride.desiredYaw-sword.getYRot()))<75
+                    &&Math.abs(ride.desiredPitch-sword.getXRot())<60;
+        }
+        if(eligible&&ride.huahong.stage()==0){
             AABB volume=FlightFrame.riderBounds(sword.position(),sword.getYRot(),sword.getXRot(),sword.roll(),sword.riderOffset())
                     .minmax(player.getBoundingBox()).minmax(sword.getBoundingBox());
             // Look ahead along momentum AND the steered direction; never loads terrain.
@@ -556,7 +562,7 @@ public final class YujianController {
         upkeep=cn.blockforge.generated.generatedmod.crafting.EquipmentCrafting.upkeep(source,upkeep);
         boolean funded=data.wuxingxiantu$getAura()>=(ride.huahong.stage()==0?entry+upkeep:upkeep);
         int before=ride.huahong.stage();
-        if(ride.huahong.tick(eligible,sword.flightSpeed()>=normal*HuahongFlight.ENTRY_RATIO,funded))
+        if(ride.huahong.tick(eligible,sword.flightSpeed()>=normal*HuahongFlight.ENTRY_RATIO,funded,ride.sprint))
             data.wuxingxiantu$setAura(data.wuxingxiantu$getAura()-entry);
         if(ride.huahong.stage()==1||ride.huahong.stage()==2){
             // tickAdvanced already charged ordinary upkeep. Refund it, except Dunxu's independent cost.

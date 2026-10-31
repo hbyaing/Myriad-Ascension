@@ -3,6 +3,6 @@
   "minVersion": "0.8",
   "package": "cn.blockforge.generated.generatedmod.client.qa.myriad.mixin",
   "compatibilityLevel": "JAVA_17",
-  "client": ["NoPointerGrabMixin", "HuahongInputMixin"],
+  "client": ["NoPointerGrabMixin", "HuahongInputMixin", "HuahongMeshCaptureMixin", "HuahongGeometryCaptureMixin", "HuahongPrismCaptureMixin"],
   "injectors": {"defaultRequire": 1}
 }

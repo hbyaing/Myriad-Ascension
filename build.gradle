@@ -42,7 +42,7 @@ if (project.hasProperty('myriadCapture')) {
     minecraft.runs {
         client {
             workingDirectory project.file(project.hasProperty('mindscapeCapture') ? 'build/mindscape-client' : 'build/myriad-client')
-            jvmArgs '-Xmx2G', '-XX:ActiveProcessorCount=4', '-XX:CICompilerCount=2'
+            jvmArgs (project.hasProperty('huahongDynamics') ? '-Xmx6G' : '-Xmx2G'), '-XX:ActiveProcessorCount=4', '-XX:CICompilerCount=2'
             args '--mixin', 'wuxingxiantu.myriad-qa-pointer.mixins.json'
             property 'wuxingxiantu.myriadCapture', (!project.hasProperty('myriadWorldgen') && !project.hasProperty('myriadUiOnly') && !project.hasProperty('creativeTabsCapture')).toString()
             if (project.hasProperty('creativeTabsCapture')) property 'wuxingxiantu.creativeTabsCapture', 'true'
@@ -70,6 +70,9 @@ if (project.hasProperty('myriadCapture')) {
             if (project.hasProperty('huahongMotion')) property 'wuxingxiantu.huahongMotion', 'true'
             if (project.hasProperty('huahongFullSpeed')) property 'wuxingxiantu.huahongFullSpeed', 'true'
             if (project.hasProperty('huahongUiOnly')) property 'wuxingxiantu.huahongUiOnly', 'true'
+            if (project.hasProperty('huahongDynamics')) property 'wuxingxiantu.huahongDynamics', 'true'
+            if (project.hasProperty('huahongDynamicsSkin')) property 'wuxingxiantu.huahongDynamicsSkin', project.property('huahongDynamicsSkin')
+            if (project.hasProperty('huahongQaExposure')) property 'wuxingxiantu.huahongQaExposure', project.property('huahongQaExposure')
             if (project.hasProperty('huahongCapture')) {
                 property 'wuxingxiantu.huahongCapture', 'true'
                 property 'wuxingxiantu.myriadCapture', 'false'

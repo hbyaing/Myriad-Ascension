@@ -64,7 +64,10 @@ public final class FlyingSwordConfig {
             base=d;SERVER.push(d.itemId().getPath());
             add("handScale",d.handScale(),0.1,4);add("orbitScale",d.orbitScale(),0.1,4);
             add("flightScale",d.flightScale(),0.1,4);add("riderOffset",d.riderOffset(),0,1);
-            add("baseSpeed",d.baseSpeed(),0.05,2);add("sprintSpeed",d.sprintSpeed(),0.05,3);
+            SERVER.comment("Raw base speed before sword-tier scaling and the shared 1.5x ordinary flight gain; used by actual movement.");
+            add("baseSpeed",d.baseSpeed(),0.05,2);
+            SERVER.comment("Raw sprint speed before sword-tier scaling and the shared 1.5x ordinary flight gain; used by actual movement.");
+            add("sprintSpeed",d.sprintSpeed(),0.05,3);
             add("acceleration",d.acceleration(),0.01,0.5);add("drag",d.drag(),0.5,0.999);
             add("turnRate",d.turnRate(),0.02,0.35);add("pitchResponse",d.pitchResponse(),0,1);
             add("bankingStrength",d.bankingStrength(),0,2);add("rollAccelerationDegreesPerSecondSquared",160,20,300);

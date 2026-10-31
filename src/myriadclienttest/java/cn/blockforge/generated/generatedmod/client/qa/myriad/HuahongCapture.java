@@ -26,9 +26,10 @@ public final class HuahongCapture {
     private static final boolean ENABLED=Boolean.getBoolean("wuxingxiantu.huahongCapture");
     private static final Path OUT=Path.of(System.getProperty("wuxingxiantu.huahongOutput","../../reports/huahong-client"));
     private static final boolean UI_ONLY=Boolean.getBoolean("wuxingxiantu.huahongUiOnly");
+    private static final boolean DYNAMICS=HuahongDynamicsQa.ENABLED&&!UI_ONLY;
     private static final boolean SKINS=Boolean.getBoolean("wuxingxiantu.huahongSkins")||Boolean.getBoolean("wuxingxiantu.huahongFullSpeed")||UI_ONLY;
     private static final boolean MOTION=Boolean.getBoolean("wuxingxiantu.huahongMotion");
-    static final boolean FULL_SPEED=Boolean.getBoolean("wuxingxiantu.huahongFullSpeed")&&!UI_ONLY;
+    static final boolean FULL_SPEED=(Boolean.getBoolean("wuxingxiantu.huahongFullSpeed")||DYNAMICS)&&!UI_ONLY;
     private static final long START=System.nanoTime();
     private static final List<Object> ROWS=new ArrayList<>();
     private static final List<String> FAILURES=new ArrayList<>();
@@ -45,7 +46,7 @@ public final class HuahongCapture {
         var mc=Minecraft.getInstance();
         try{
             Files.createDirectories(OUT);GLFW.glfwHideWindow(mc.getWindow().getWindow());mc.setWindowActive(true);mc.options.pauseOnLostFocus=false;
-            if((System.nanoTime()-START)/1e9>420)throw new AssertionError("Huahong watchdog tick="+tick);
+            if((System.nanoTime()-START)/1e9>(DYNAMICS?1200:420))throw new AssertionError("Huahong watchdog tick="+tick);
             if(!opened&&mc.player!=null)throw new AssertionError("Refusing an existing world");
             if(!opened&&mc.getOverlay()==null&&(mc.screen instanceof net.minecraft.client.gui.screens.TitleScreen||mc.screen instanceof net.minecraft.client.gui.screens.AccessibilityOnboardingScreen)){
                 opened=true;mc.getWindow().setWindowed(1600,900);mc.resizeDisplay();mc.options.renderDistance().set(4);mc.options.simulationDistance().set(5);
@@ -55,7 +56,7 @@ public final class HuahongCapture {
                 mc.createWorldOpenFlows().createFreshLevel("huahong-qa-"+System.currentTimeMillis(),new LevelSettings("Huahong isolated",GameType.SURVIVAL,false,net.minecraft.world.Difficulty.PEACEFUL,true,rules,WorldDataConfiguration.DEFAULT),new WorldOptions(7215,false,false),net.minecraft.world.level.levelgen.presets.WorldPresets::createNormalWorldDimensions);return;
             }
             if(mc.player==null||mc.level==null||mc.getSingleplayerServer()==null||mc.getOverlay()!=null||mc.screen instanceof net.minecraft.client.gui.screens.ReceivingLevelScreen){
-                if(ready&&tick>0)input();return;
+                if(ready&&(tick>0||DYNAMICS))input();return;
             }
             if(mc.screen!=null&&(!SKINS||tick<900))mc.setScreen(null);
             if(!ready){
@@ -64,15 +65,18 @@ public final class HuahongCapture {
                     var p=mc.getSingleplayerServer().getPlayerList().getPlayer(id);var l=p.serverLevel();
                     for(int x=-2;x<=2;x++)for(int z=-3;z<=4;z++)l.getChunk(x,z);
                     l.setDayTime(9000);l.setWeatherParameters(12000,0,false,false);l.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false,l.getServer());
-                    p.teleportTo(l,8,FULL_SPEED?512:180,-24,0,0);p.setNoGravity(true);p.removeAllEffects();
+                    p.setNoGravity(true);p.removeAllEffects();
                     p.getInventory().setItem(0,new net.minecraft.world.item.ItemStack(WuXingItems.PURE_YANG_SWORD.get()));p.getInventory().selected=0;
                     var d=GeneratedMod.data(p);d.wuxingxiantu$setRealm(99);d.wuxingxiantu$learnArt(YujianController.FLIGHT);d.wuxingxiantu$setArtMastery(YujianController.FLIGHT,100);
                     d.wuxingxiantu$setMaxMana(1000000);d.wuxingxiantu$setAura(1000000);p.getPersistentData().putLong("YujianCooldown_DUNXU",Long.MAX_VALUE);
                     FlyingSwordConfig.SPEED_MULTIPLIER.set(FULL_SPEED?1.0:.1);GeneratedMod.sync(p);p.containerMenu.broadcastChanges();
+                    if(DYNAMICS)HuahongDynamicsQa.prepareWorld(p);
+                    p.teleportTo(l,8,DYNAMICS?300:FULL_SPEED?512:180,-24,0,0);
                 });return;
             }
-            if(work!=null){if(!work.isDone()){if(tick>0)input();return;}work.join();work=null;}
+            if(work!=null){if(!work.isDone()){if(tick>0||DYNAMICS)input();return;}work.join();work=null;}
             PointerSafety.verify();
+            if(DYNAMICS){if(!materialChecked)return;boolean finished=HuahongDynamicsQa.tick(mc,OUT);tick=HuahongDynamicsQa.tick();if(finished)finish(null);return;}
             if(UI_ONLY&&tick==0)tick=899;
             // A fixture state may span several real client ticks. Keep its cursor,
             // page, resolution and requested image together until a render consumes it.
@@ -142,6 +146,7 @@ public final class HuahongCapture {
     }
     private static void input(){
         if(UI_ONLY)return;
+        if(DYNAMICS){HuahongDynamicsQa.input();return;}
         var mc=Minecraft.getInstance();if(mc.player==null||mc.getConnection()==null)return;
         boolean brake=FULL_SPEED?tick>=880:tick>=200&&tick<225;
         float yaw=tick>=90&&tick<120?(tick-90)*.25F:tick>=120?7.5F:0;
@@ -168,7 +173,7 @@ public final class HuahongCapture {
         return Map.of("qaTick",tick,"clientStage",sword.huahongStage(),"clientStrength",sword.huahongStrength(),"clientSpeed",sword.flightSpeed(),
                 "clientPosition",List.of(sword.getX(),sword.getY(),sword.getZ()),"clientEntityTick",sword.tickCount,"lastServer",lastServerFlight);
     }
-    private static Map<String,Object> rideDiagnostics(net.minecraft.server.level.ServerPlayer player){
+    static Map<String,Object> rideDiagnostics(net.minecraft.server.level.ServerPlayer player){
         try{
             var ridesField=YujianController.class.getDeclaredField("RIDES");ridesField.setAccessible(true);
             Object ride=((Map<?,?>)ridesField.get(null)).get(player.getUUID());if(ride==null)return Map.of("state","absent");
@@ -185,7 +190,8 @@ public final class HuahongCapture {
         var transform=InterpolatedFlyingSwordTransform.get(s,(float)e.getPartialTick());
         var target=transform.position().add(0,.85,0);
         var eye=target.add(10,3.5,-14);
-        if(FULL_SPEED){
+        if(DYNAMICS)eye=HuahongDynamicsQa.camera(transform);
+        else if(FULL_SPEED){
             int phase=tick<320?0:(tick-320)%70;double desired=phase>=45&&tick<880?1:0;
             long nanos=System.nanoTime();double dt=cameraNanos==0?0:Math.min(.25,(nanos-cameraNanos)/1e9);cameraNanos=nanos;
             nearAxisMix+=(desired-nearAxisMix)*(1-Math.exp(-dt*12));
@@ -201,6 +207,11 @@ public final class HuahongCapture {
     @SubscribeEvent(priority=EventPriority.LOWEST) public static void frame(TickEvent.RenderTickEvent e){
         if(!ENABLED||done||e.phase!=TickEvent.Phase.END)return;
         maxVertices=Math.max(maxVertices,HuahongVisuals.vertices);
+        if(DYNAMICS){try{
+            if(ready&&work==null&&Minecraft.getInstance().player!=null&&!materialChecked){ROWS.add(HuahongMaterialQa.verify(Minecraft.getInstance()));ROWS.add(HuahongBlendQa.verify(Minecraft.getInstance()));materialChecked=true;}
+            HuahongVolumeRenderer.flushPending();
+            HuahongDynamicsQa.frame(Minecraft.getInstance(),e.renderTickTime);
+        }catch(Throwable error){finish(error);}return;}
         if(!UI_ONLY&&!pathChecked&&tick>=50)try{pathChecked=true;ROWS.add(HuahongPathQa.verify());}catch(Throwable error){finish(error);return;}
         if(!UI_ONLY&&SKINS&&!materialChecked&&tick>=50)try{materialChecked=true;ROWS.add(HuahongMaterialQa.verify(Minecraft.getInstance()));}catch(Throwable error){finish(error);return;}
         if(SKINS)try{HuahongSkinQa.frame(Minecraft.getInstance(),OUT,ROWS);}catch(Throwable error){finish(error);}
@@ -227,10 +238,15 @@ public final class HuahongCapture {
     }
     private static void finish(Throwable error){
         if(done)return;done=true;if(error!=null){error.printStackTrace();FAILURES.add(error.toString());}
-        if(FULL_SPEED)try{HuahongMotionQa.write(OUT);if(error==null)HuahongMotionQa.verify();}catch(Throwable verification){verification.printStackTrace();FAILURES.add(verification.toString());error=verification;}
+        if(DYNAMICS)try{HuahongDynamicsQa.finish(OUT);}catch(Throwable verification){verification.printStackTrace();FAILURES.add(verification.toString());error=verification;}
+        else if(FULL_SPEED)try{HuahongMotionQa.write(OUT);if(error==null)HuahongMotionQa.verify();}catch(Throwable verification){verification.printStackTrace();FAILURES.add(verification.toString());error=verification;}
         try{
-            Files.writeString(OUT.resolve("verification.json"),new GsonBuilder().setPrettyPrinting().create().toJson(Map.of("failures",FAILURES,"pointer",PointerSafety.snapshot(),"maxRatio",maxRatio,"maxVertices",maxVertices,"fullSpeed",FULL_SPEED,"uiOnly",UI_ONLY,"rows",ROWS)));
+            Files.writeString(OUT.resolve("verification.json"),new GsonBuilder().setPrettyPrinting().create().toJson(Map.of("failures",FAILURES,"pointer",PointerSafety.snapshot(),"maxRatio",maxRatio,"maxVertices",maxVertices,"fullSpeed",FULL_SPEED,"uiOnly",UI_ONLY,"dynamics",DYNAMICS,"rows",ROWS)));
             Files.writeString(OUT.resolve(error==null?"complete.txt":"failure.txt"),error==null?"PASS":error.toString());
         }catch(Exception ignored){}Minecraft.getInstance().stop();
     }
+    @SubscribeEvent public static void beginDynamicsFrame(TickEvent.RenderTickEvent e){if(ENABLED&&DYNAMICS&&e.phase==TickEvent.Phase.START)HuahongMotionQa.beginRender();}
+    @SubscribeEvent(priority=EventPriority.HIGHEST) public static void beforeDynamicsServerClock(TickEvent.LevelTickEvent e){if(ENABLED&&DYNAMICS&&e.phase==TickEvent.Phase.END&&e.level instanceof net.minecraft.server.level.ServerLevel level)HuahongDynamicsQa.beforeServerLevelTick(level);}
+    @SubscribeEvent(priority=EventPriority.HIGHEST) public static void dynamicsOrderedInput(TickEvent.LevelTickEvent e){if(ENABLED&&DYNAMICS&&e.phase==TickEvent.Phase.START&&e.level instanceof net.minecraft.server.level.ServerLevel level)HuahongDynamicsQa.inputServerLevelTick(level);}
+    @SubscribeEvent(priority=EventPriority.LOWEST) public static void dynamicsServerClock(TickEvent.LevelTickEvent e){if(ENABLED&&DYNAMICS&&e.phase==TickEvent.Phase.END&&e.level instanceof net.minecraft.server.level.ServerLevel level)HuahongDynamicsQa.serverLevelTick(level);}
 }

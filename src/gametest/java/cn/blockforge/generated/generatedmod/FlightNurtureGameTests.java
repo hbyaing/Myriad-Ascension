@@ -18,10 +18,13 @@ public final class FlightNurtureGameTests {
             double normal=sword.advanced().maxSpeed(YujianPhase.ACCELERATING,sword);
             double sprint=sword.advanced().maxSpeed(YujianPhase.JIYU,sword);
             h.assertTrue(sprint>=normal*1.24,"No useful sprint headroom: "+sword.itemId());
+            var item=net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(sword.itemId());
+            h.assertTrue(item instanceof SpiritSwordItem spirit&&sword.advanced().lingkongLevel(sword)==spirit.profile().lingkongLevel(),
+                    "Renamed sword ID lost its real tier scaling: "+sword.itemId());
             double multiplier=1+0.25*sword.advanced().lingkongLevel(sword);
-            double expected=YujianTuning.BASE_FLIGHT_SPEED*multiplier*cn.blockforge.generated.generatedmod.yujian.FlyingSwordConfig.SPEED_MULTIPLIER.get();
+            double expected=sword.baseSpeed()*YujianTuning.NORMAL_FLIGHT_GAIN*multiplier*cn.blockforge.generated.generatedmod.yujian.FlyingSwordConfig.SPEED_MULTIPLIER.get();
             h.assertTrue(Math.abs(normal-expected)<1e-8,"Normal speed was capped: "+sword.itemId());
-            h.assertTrue(Math.abs(sprint/normal-1.5)<1e-8,"Sprint speed was capped: "+sword.itemId());
+            h.assertTrue(Math.abs(sprint/normal-sword.sprintSpeed()/sword.baseSpeed())<1e-8,"Configured sprint speed was ignored: "+sword.itemId());
         }
         var fast=new net.minecraft.world.phys.Vec3(10,20,30);
         h.assertTrue(YujianTuning.finiteVelocity(fast).equals(fast),"Finite flight velocity was still clamped");
@@ -36,6 +39,42 @@ public final class FlightNurtureGameTests {
                 h.assertTrue(packet.equals(SwordFlightInputPacket.decode(buffer)),"Sprint/descent input fields became mixed");
             } finally {buffer.release();}
         }
+        h.succeed();
+    }
+
+    @GameTest(template="empty",timeoutTicks=200)
+    public static void perSwordConfiguredSpeedsDriveActualMovement(GameTestHelper h) {
+        var stack=new ItemStack(WuXingItems.DARK_IRON_SWORD.get());
+        var original=FlyingSwordRegistry.get(stack);
+        // Profile.read registers these exact fields after a server-config load.
+        // Unequal ratios expose movement that still substitutes global constants.
+        var configured=new FlyingSwordDefinition(original.itemId(),original.handScale(),original.orbitScale(),original.flightScale(),original.riderOffset(),
+                .90,1.80,original.acceleration(),original.drag(),original.turnRate(),original.pitchResponse(),original.bankingStrength(),
+                original.rollAcceleration(),original.maxRollSpeed(),original.spiralSpeedMultiplier(),original.impactDamage(),
+                original.modelYaw(),original.modelPitch(),original.modelRoll(),original.baked3d(),original.advanced());
+        var player=new GameTestPlayer(h.getLevel());
+        try {
+            FlyingSwordRegistry.register(configured);
+            var pos=h.absolutePos(new net.minecraft.core.BlockPos(0,0,0));
+            var start=new net.minecraft.world.phys.Vec3(pos.getX()+8,h.getLevel().getMaxBuildHeight()+10,pos.getZ()+8);
+            for(int x=-2;x<=2;x++)for(int z=-2;z<=2;z++)h.getLevel().getChunk((pos.getX()>>4)+x,(pos.getZ()>>4)+z);
+            player.setPos(start);player.join();player.getInventory().setItem(0,stack);
+            var data=GeneratedMod.data(player);data.wuxingxiantu$setRealm(99);data.wuxingxiantu$learnArt(YujianController.FLIGHT);
+            data.wuxingxiantu$setArtMastery(YujianController.FLIGHT,100);data.wuxingxiantu$setMaxMana(100000);data.wuxingxiantu$setAura(100000);
+            YujianController.cast(player,YujianController.FLIGHT,100);
+            var root=h.getLevel().getEntitiesOfClass(ControlledSwordEntity.class,player.getBoundingBox().inflate(8),e->e.flightRoot()&&player.getUUID().equals(e.ownerId)).get(0);
+            for(int i=0;i<14;i++)YujianController.tickFlightEntity(root,player);
+            for(boolean sprint:new boolean[]{false,true}) {
+                for(int i=0;i<100;i++) {
+                    root.setPos(start);root.positionRider(player);
+                    YujianController.handleInput(player,false,false,true,false,false,false,false,false,sprint,false,1,0,0,0);
+                    YujianController.tickFlightEntity(root,player);root.positionRider(player);
+                }
+                double raw=sprint?1.80:.90;
+                double expected=raw*YujianTuning.NORMAL_FLIGHT_GAIN*FlyingSwordConfig.SPEED_MULTIPLIER.get()*FlyingSwordConfig.CRUISE_FRACTION.get();
+                h.assertTrue(Math.abs(root.flightSpeed()-expected)<.002,"Actual movement ignored per-sword "+(sprint?"sprintSpeed":"baseSpeed")+": "+root.flightSpeed()+" / "+expected);
+            }
+        } finally {YujianController.stop(player);player.close();FlyingSwordRegistry.register(original);}
         h.succeed();
     }
 
