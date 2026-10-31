@@ -58,9 +58,14 @@ public final class ControlledSwordEntity extends Entity {
     public float jinghongStrength(){return jinghongStrength;}
     public float renderJinghong(float partial){return net.minecraft.util.Mth.lerp(partial,previousJinghong,visualJinghong);}
     private final FlightInterpolation flightInterpolation=new FlightInterpolation();
+    private long latestFlightSnapshot=Long.MIN_VALUE,phasingPresentationFence=Long.MIN_VALUE;
+    private boolean presentedPhasing;
     private long lastServerTick=Long.MIN_VALUE;
     long lastServerTick(){return lastServerTick;}
-    public void acceptSnapshot(FlightSnapshot snapshot){if(level().isClientSide)flightInterpolation.accept(snapshot,tickCount);}
+    public void acceptSnapshot(FlightSnapshot snapshot){if(level().isClientSide){
+        latestFlightSnapshot=Math.max(latestFlightSnapshot,snapshot.tick());
+        flightInterpolation.accept(snapshot,tickCount);
+    }}
 
     public ControlledSwordEntity(EntityType<? extends ControlledSwordEntity> type,Level level) { super(type,level);noPhysics=true;setNoGravity(true); }
     @Override protected void defineSynchedData(){entityData.define(ITEM,ItemStack.EMPTY);entityData.define(OWNER,-1);entityData.define(SUPPORT,false);entityData.define(FLIGHT_ROOT,false);entityData.define(SCALE,1.0F);entityData.define(ROLL,0.0F);entityData.define(BANK,0.0F);entityData.define(SPEED,0.0F);entityData.define(ANGULAR,0.0F);entityData.define(SPRINT,false);entityData.define(STATE,0);entityData.define(IMPACT,0);
@@ -84,6 +89,19 @@ public final class ControlledSwordEntity extends Entity {
     public ItemStack display(){return entityData.get(ITEM);}
     public boolean support(){return entityData.get(SUPPORT);}
     public boolean flightRoot(){return entityData.get(FLIGHT_ROOT);}
+    /** Mirrors the server's ordinary-wall permission for client presentation. */
+    public boolean phasesSolidBlocks(){
+        int rainbow=huahongStage();
+        return flightRoot()&&(advancedPhase()==YujianPhase.DUNXU||rainbow==1||rainbow==2);
+    }
+    /** Metadata is live, whereas positions play buffered history. After phase
+     * exit, retain presentation permission through the next ordered snapshot;
+     * clearing merely because the delayed rider has not reached the wall yet
+     * would restore wall clipping in the middle of the buffered crossing. */
+    public boolean bufferedPhasing(){
+        return phasesSolidBlocks()||flightRoot()&&presentedPhasing
+                &&(!flightInterpolation.active()||flightInterpolation.playbackTick()<phasingPresentationFence);
+    }
     public void flightRoot(boolean value){entityData.set(FLIGHT_ROOT,value);noPhysics=!value;setNoGravity(true);}
     public float roll(){return entityData.get(ROLL);}
     public void roll(float value){entityData.set(ROLL,value);}
@@ -109,6 +127,13 @@ public final class ControlledSwordEntity extends Entity {
     @Override public void onSyncedDataUpdated(EntityDataAccessor<?> key){
         super.onSyncedDataUpdated(key);
         if(FLIGHT_ROOT.equals(key)){noPhysics=!flightRoot();refreshDimensions();}
+        if(level().isClientSide&&(FLIGHT_ROOT.equals(key)||PHASE.equals(key)||DUNXU_STAGE.equals(key)||HUAHONG_STAGE.equals(key))){
+            noPhysics=!flightRoot()||phasesSolidBlocks();
+            if(!flightRoot()){presentedPhasing=false;phasingPresentationFence=Long.MIN_VALUE;}
+            else if(phasesSolidBlocks()){presentedPhasing=true;phasingPresentationFence=Long.MAX_VALUE;}
+            else if(presentedPhasing&&phasingPresentationFence==Long.MAX_VALUE)
+                phasingPresentationFence=latestFlightSnapshot==Long.MIN_VALUE?0:latestFlightSnapshot+1;
+        }
     }
     @Override public EntityDimensions getDimensions(Pose pose){return flightRoot()?EntityDimensions.scalable(0.85F,0.35F):super.getDimensions(pose);}
     // A null controlling passenger keeps vanilla vehicle movement packets non-authoritative.

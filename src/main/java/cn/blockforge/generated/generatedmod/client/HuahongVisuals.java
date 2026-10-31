@@ -18,13 +18,11 @@ import java.util.*;
 @Mod.EventBusSubscriber(modid=GeneratedMod.MOD_ID,value=Dist.CLIENT)
 public final class HuahongVisuals {
     private static final double WIDTH=.19,LIFE=116,SPREAD=.65,HEAD_LENGTH=.6+2.5*.65;
-    private record Spark(Vec3 origin,Vec3 forward,Vec3 side,Vec3 up,long born,double phase,double drift,double backward){}
     private record Row(Vec3 point,double arc,double width,float alpha,int color,Vec3 side){
         Row(Vec3 point,double arc,double width,float alpha,int color){this(point,arc,width,alpha,color,null);}
     }
     private static final class Trail {
         final SwordFlightTrailHistory history=new SwordFlightTrailHistory(.25,LIFE,160,720);
-        final ArrayDeque<Spark> sparks=new ArrayDeque<>();
         Vec3 last;long lastEmission;
         cn.blockforge.generated.generatedmod.yujian.HuahongSkin skin;
     }
@@ -47,19 +45,11 @@ public final class HuahongVisuals {
             }
             if(sword.huahongStrength()>.001F){
                 Vec3 center=sword.position().add(0,.85,0);trail.last=center;trail.lastEmission=tick;
-                if(tick%3==0&&sword.flightSpeed()>.05){
-                    long seed=tick+sword.getUUID().hashCode();
-                    if(random(seed)<6.0/14){
-                        Vec3 f=sword.getLookAngle().normalize(),side=perpendicular(f),up=side.cross(f).normalize();
-                        trail.sparks.addLast(new Spark(center,f,side,up,tick,random(seed+1)*Math.PI*2,
-                                (.18+random(seed+2)*.55)*SPREAD,.3+random(seed+4)));
-                    }
-                }
             }
         }
         TRAILS.entrySet().removeIf(e->{
             if(mc.player!=null&&e.getKey().distanceToSqr(mc.player)>4096)return true;
-            var t=e.getValue();t.sparks.removeIf(s->tick-s.born()>33);
+            var t=e.getValue();
             if((e.getKey().isRemoved()||e.getKey().huahongStage()==0)&&tick-t.lastEmission>LIFE)return true;
             if(t.last!=null)t.history.sample(point(t.last),tick,Math.max(8,e.getKey().flightSpeed()*1.7+3));
             return false;
@@ -144,21 +134,7 @@ public final class HuahongVisuals {
                     strip(buffer,pose,eye,rows,WIDTH*.3,.22F,6,path);
                 }
             }
-            for(var spark:trail.sparks){
-                double age=(now-spark.born())/20;if(age<.035||age>=1.65)continue;rows.clear();
-                for(int i=0;i<=8;i++){
-                    double t=Math.max(0,age-i*.016);
-                    Vec3 p=spark.origin().add(spark.forward().scale(-spark.backward()*t-.52*t*t))
-                            .add(spark.side().scale(Math.cos(spark.phase())*spark.drift()*t))
-                            .add(spark.up().scale(Math.sin(spark.phase())*spark.drift()*t-.11*t*t));
-                    rows.add(new Row(p,t*4,Math.max(0,Math.sin(Math.PI*i/8)),(float)Math.pow(1-age/1.65,1.6),0xe8faff));
-                }
-                strip(buffer,pose,eye,rows,.008+WIDTH*.03,.35F,8);
-            }
         }
-    }
-    private static void strip(VertexConsumer b,PoseStack.Pose pose,Vec3 eye,List<Row> rows,double width,float opacity,float mode){
-        strip(b,pose,eye,rows,width,opacity,mode,null);
     }
     /** Project a prolate glow envelope without normalizing projected flight direction.
      * The positive matrix square root stays continuous even when looking directly

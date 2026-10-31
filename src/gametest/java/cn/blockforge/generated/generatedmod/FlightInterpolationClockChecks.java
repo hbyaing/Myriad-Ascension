@@ -19,6 +19,15 @@ public final class FlightInterpolationClockChecks {
     private record Delivery(int client,long server) {}
     private static FlightSnapshot point(long tick){return point(tick,tick*SPEED);}
     private static FlightSnapshot point(long tick,double x){return new FlightSnapshot(1,tick,new Vec3(x,200,0),0,0,0,0,15,0,0);}
+    private static FlightSnapshot curve(long tick){
+        double angle=Math.toRadians(4),radius=30/(2*Math.sin(angle*.5));
+        return new FlightSnapshot(1,tick,new Vec3(radius*Math.sin(tick*angle),200,radius*(1-Math.cos(tick*angle))),
+                (float)(tick*4),0,0,0,30,0,0);
+    }
+    private static Vec3 curvePosition(double tick){
+        long first=(long)Math.floor(tick);
+        return curve(first).position().lerp(curve(first+1).position(),(float)(tick-first));
+    }
     private static void check(boolean value,String message){checks++;if(!value)throw new AssertionError(message);}
 
     public static String verify(){
@@ -103,6 +112,86 @@ public final class FlightInterpolationClockChecks {
         }
         check(coarseHolds==0,"Steady eight-tick packet batches still alternate fast playback and starvation holds");
 
+        // More than 32 consecutive validated packets can arrive between render
+        // samples after chunk/network work stalls. Evicting history must not
+        // force the presented head forward by twelve ticks (360 blocks at 30/t).
+        for(double speed:new double[]{15,30}){
+            var overflow=new FlightInterpolation();
+            for(int tick=0;tick<=10;tick++){overflow.accept(point(tick,tick*speed),tick);overflow.sample(tick);}
+            double prior=overflow.sample(10).position().x;
+            for(int tick=11;tick<=50;tick++)overflow.accept(point(tick,tick*speed),11);
+            for(int client=11;client<=500;client++){
+                long server=client+39;
+                if(client>11)overflow.accept(point(server,server*speed),client);
+                // Include three render samples per tick: the retained bridge
+                // endpoints must stay fixed while the receive buffer advances.
+                for(int frame=0;frame<3;frame++){
+                    double x=overflow.sample(client+frame/3.0).position().x;
+                    check(x>=prior-1e-5&&x<=server*speed+1e-5,"Overflow bridge rewound or extrapolated");
+                    check(x-prior<=speed*1.201*(client==11&&frame==0?1:1.0/3)+.001,
+                            "Evicted playback history forced a multi-tick presentation jump");
+                    prior=x;
+                }
+            }
+            check(overflow.playbackTick()>530,"Overflow bridge did not recover bounded normal playback");
+        }
+
+        // Straight endpoints cannot reveal a bridge that cuts across the real
+        // curve. These are legal 30-block fixed steps with a 4-degree turn;
+        // a 40-packet endpoint-only bridge departed from them by 36.75 blocks.
+        for(int batch:new int[]{40,96}){
+            var curved=new FlightInterpolation();
+            for(int tick=0;tick<=10;tick++){curved.accept(curve(tick),tick);curved.sample(tick);}
+            Vec3 prior=curved.sample(10).position(),expectedPrior=curvePosition(curved.playbackTick());
+            double priorTime=curved.playbackTick();Vec3 priorStep=null,priorExpectedStep=null;
+            for(int tick=11;tick<=10+batch;tick++)curved.accept(curve(tick),11);
+            for(int client=11;client<=900;client++){
+                long server=client+batch-1;
+                if(client>11)curved.accept(curve(server),client);
+                for(int frame=0;frame<3;frame++){
+                    Vec3 pose=curved.sample(client+frame/3.0).position(),expected=curvePosition(curved.playbackTick());
+                    check(curved.playbackTick()>=priorTime&&curved.playbackTick()<=server,"Retired curve playback rewound or extrapolated");
+                    check(pose.distanceTo(expected)<.0001,"Evicted curved waypoints were replaced by a fictitious chord: batch="+batch);
+                    Vec3 step=pose.subtract(prior),expectedStep=expected.subtract(expectedPrior);
+                    check(step.distanceTo(expectedStep)<.0002,"Retired/current boundary changed actual world velocity");
+                    if(priorStep!=null)check(step.subtract(priorStep).distanceTo(expectedStep.subtract(priorExpectedStep))<.0004,
+                            "Retired/current boundary introduced a world acceleration impulse");
+                    check(curved.retiredSamples()<=256,"Validated retired path exceeded its explicit memory budget");
+                    prior=pose;expectedPrior=expected;priorTime=curved.playbackTick();priorStep=step;priorExpectedStep=expectedStep;
+                }
+            }
+            check(curved.retiredSamples()==0,"Already presented overflow waypoints were never released");
+        }
+        // A genuine adjacent-tick teleport must retain its original one-tick
+        // segment, even when that segment has left the ordinary receive queue.
+        var retiredTeleport=new FlightInterpolation();
+        for(int tick=0;tick<=10;tick++){retiredTeleport.accept(point(tick,tick*30),tick);retiredTeleport.sample(tick);}
+        for(int tick=11;tick<=50;tick++)retiredTeleport.accept(point(tick,tick*30+(tick>=20?10000:0)),11);
+        for(int client=11;client<=70;client++){
+            if(client>11){long server=client+39;retiredTeleport.accept(point(server,server*30+10000),client);}
+            double x=retiredTeleport.sample(client).position().x,time=retiredTeleport.playbackTick();
+            long first=(long)Math.floor(time);float fraction=(float)(time-first);
+            double start=first*30+(first>=20?10000:0),end=(first+1)*30+(first+1>=20?10000:0);
+            check(Math.abs(x-(start+(end-start)*fraction))<.001,"Retired teleport was stretched across unrelated server ticks");
+        }
+        // A clock gap clears retired data as well. Over 256 unplayed retired
+        // waypoints deliberately starts a new segment, without unbounded growth
+        // or an invented interpolation across the discarded path.
+        var bounded=new FlightInterpolation();
+        for(int tick=0;tick<=10;tick++){bounded.accept(curve(tick),tick);bounded.sample(tick);}
+        int highWater=0,resets=0,lastRetired=0;
+        for(int tick=11;tick<=400;tick++){
+            bounded.accept(curve(tick),11);int count=bounded.retiredSamples();
+            check(count<=256,"An oversized backlog grew beyond its retired waypoint budget");
+            highWater=Math.max(highWater,count);if(count==0&&lastRetired>200)resets++;lastRetired=count;
+        }
+        check(highWater==256&&resets==1,"An over-budget backlog did not explicitly start a new segment");
+        Vec3 resetPose=bounded.sample(11).position();
+        check(bounded.playbackTick()>100&&resetPose.distanceTo(curvePosition(bounded.playbackTick()))<.0001,
+                "Budget reset drew a fictitious chord from its discarded segment");
+        bounded.accept(point(1000,17),12);
+        check(bounded.retiredSamples()==0&&bounded.sample(12).position().x==17,"A discontinuous server clock retained old overflow waypoints");
+
         // Half-rate server, bounded network jitter, dropped samples, a batch
         // arriving in reverse order, and rejected same-tick corrections.
         List<Delivery> deliveries=new ArrayList<>();
@@ -125,7 +214,7 @@ public final class FlightInterpolationClockChecks {
         check(teleport.sample(60).position().x>10000,"An adjacent-tick teleport was capped or mistaken for a slow-clock reset");
         teleport.accept(point(1000,17),61);
         check(teleport.sample(61).position().x==17,"A discontinuous server tick no longer starts a fresh validated segment");
-        return "Flight interpolation clock checks passed: "+checks+"; 15 blocks/server-tick, rate 1/1..1/4, stall/refill, catch-up batches, jitter/loss/order, teleport";
+        return "Flight interpolation clock checks passed: "+checks+"; 15/30 blocks/server-tick, rate 1/1..1/4, stall/refill, straight/curved bounded overflow, jitter/loss/order, teleport";
     }
     public static void main(String[] args){System.out.println(verify());}
     @GameTest(template="empty") public static void interpolationTracksValidatedSlowServerClocks(GameTestHelper helper){

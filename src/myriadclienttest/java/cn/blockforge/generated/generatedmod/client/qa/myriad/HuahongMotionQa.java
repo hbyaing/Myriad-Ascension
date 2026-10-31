@@ -173,7 +173,7 @@ public final class HuahongMotionQa {
         return Map.of("passed",true,"checks",checks,"maxFinalCornerStep",maxCornerStep,"sample","Actual production noseGlow corners across frontal/axial directions");
     }
     public static VertexConsumer captureBuffer(VertexConsumer delegate,PoseStack.Pose pose,Vec3 eye,double now,float partial){
-        if(!HuahongDynamicsQa.ENABLED||!HuahongDynamicsQa.started())return delegate;
+        if(!HuahongDynamicsQa.ENABLED||!HuahongDynamicsQa.started()||HuahongDynamicsQa.FRAME_ONLY)return delegate;
         var mc=Minecraft.getInstance();if(mc.player==null||!(mc.player.getVehicle() instanceof ControlledSwordEntity sword))return delegate;
         boolean collect=submittedMesh==null;double exposure=HuahongDynamicsQa.exposure(renderSerial);
         HuahongVolumeRenderer.setExposure((float)exposure);

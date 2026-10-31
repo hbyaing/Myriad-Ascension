@@ -20,6 +20,12 @@ public final class SwordFlightTrailHistory {
     }
     private final ArrayList<Node> nodes=new ArrayList<>();
     private final List<Node> view=Collections.unmodifiableList(nodes);
+    // Entity rendering still interpolates the previous fixed-tick interval.
+    // Its tail may need nodes that the new fixed sample has already evicted.
+    // Keep one bounded previous sample plus its cutoff predecessor, so the
+    // exact render boundary can be interpolated even with irregular spacing.
+    private final ArrayList<Node> previousNodes=new ArrayList<>();
+    private final ArrayList<Node> renderSource=new ArrayList<>();
     private final ArrayList<Node> presentation=new ArrayList<>();
     private double lastTick=Double.NEGATIVE_INFINITY,arc;
     public List<Node> nodes(){return view;}
@@ -28,14 +34,18 @@ public final class SwordFlightTrailHistory {
     public List<Node> renderNodes(double now,Point attachment){
         presentation.clear();
         if(!attachment.finite()||nodes.isEmpty())return presentation;
+        renderSource.clear();
+        double firstArc=nodes.get(0).arc();
+        for(var node:previousNodes)if(node.arc()<firstArc)renderSource.add(node);
+        renderSource.addAll(nodes);
         int i=0;
-        while(i<nodes.size()&&nodes.get(i).tick()<=now)presentation.add(nodes.get(i++));
+        while(i<renderSource.size()&&renderSource.get(i).tick()<=now)presentation.add(renderSource.get(i++));
         if(presentation.isEmpty())return presentation;
         Node last=presentation.get(presentation.size()-1);
         double headArc=last.arc();
         boolean stationary=attachment.distance(last.point())<.00001;
-        if(!stationary&&i<nodes.size()){
-            Node next=nodes.get(i);
+        if(!stationary&&i<renderSource.size()){
+            Node next=renderSource.get(i);
             double fraction=Math.max(0,Math.min(1,(now-last.tick())/Math.max(1e-9,next.tick()-last.tick())));
             headArc+=(next.arc()-last.arc())*fraction;
         }else if(!stationary)headArc+=attachment.distance(last.point());
@@ -59,6 +69,22 @@ public final class SwordFlightTrailHistory {
             else if(fraction>=1-1e-8&&b!=head)presentation.add(b);
             presentation.add(head);
         }
+        // Clip against the interpolated head, not the newer simulation pose.
+        // At 30 blocks/tick the old sampler cutoff removed 30 still-bright
+        // world blocks at once while the rendered head had barely advanced.
+        double tailArc=headArc-MAX_LENGTH,tailTick=now-LIFETIME;
+        int first=0;
+        while(first+1<presentation.size()&&(presentation.get(first+1).arc()<=tailArc
+                ||presentation.get(first+1).tick()<=tailTick))first++;
+        if(first>0)presentation.subList(0,first).clear();
+        if(presentation.size()>1&&(presentation.get(0).arc()<tailArc||presentation.get(0).tick()<tailTick)){
+            Node a=presentation.get(0),b=presentation.get(1);
+            double fraction=Math.max((tailArc-a.arc())/Math.max(1e-9,b.arc()-a.arc()),
+                    (tailTick-a.tick())/Math.max(1e-9,b.tick()-a.tick()));
+            fraction=Math.max(0,Math.min(1,fraction));
+            presentation.set(0,new Node(a.point().lerp(b.point(),fraction),
+                    a.tick()+(b.tick()-a.tick())*fraction,a.arc()+(b.arc()-a.arc())*fraction));
+        }
         return presentation;
     }
     public void sample(Point point,double tick){
@@ -67,16 +93,23 @@ public final class SwordFlightTrailHistory {
     /** The caller supplies a server-validated per-tick speed allowance, not a guessed global cap. */
     public void sample(Point point,double tick,double allowedStep){
         if(!point.finite()||!Double.isFinite(tick))return;
-        if(tick<lastTick){nodes.clear();arc=0;}
+        if(tick<lastTick){nodes.clear();previousNodes.clear();arc=0;}
         else if(tick==lastTick)return;
+        Node predecessor=null;
+        if(!nodes.isEmpty())for(var node:previousNodes){
+            if(node.arc()<nodes.get(0).arc())predecessor=node;else break;
+        }
+        previousNodes.clear();
+        if(predecessor!=null)previousNodes.add(predecessor);
+        previousNodes.addAll(nodes);
         double previousTick=lastTick;lastTick=tick;
         nodes.removeIf(n->tick-n.tick()>LIFETIME);
-        if(nodes.isEmpty()){nodes.add(new Node(point,tick,arc));return;}
+        if(nodes.isEmpty()){previousNodes.clear();nodes.add(new Node(point,tick,arc));return;}
         var last=nodes.get(nodes.size()-1);
         double distance=last.point().distance(point);
         double permitted=Double.isFinite(allowedStep)&&allowedStep>0?allowedStep:8;
         if(distance>permitted*Math.max(1,tick-previousTick)){
-            nodes.clear();arc=0;nodes.add(new Node(point,tick,arc));return;
+            nodes.clear();previousNodes.clear();arc=0;nodes.add(new Node(point,tick,arc));return;
         }
         // A stationary sword must not refresh the age of its old plume.
         if(distance<.002)return;

@@ -71,6 +71,9 @@ if (project.hasProperty('myriadCapture')) {
             if (project.hasProperty('huahongFullSpeed')) property 'wuxingxiantu.huahongFullSpeed', 'true'
             if (project.hasProperty('huahongUiOnly')) property 'wuxingxiantu.huahongUiOnly', 'true'
             if (project.hasProperty('huahongDynamics')) property 'wuxingxiantu.huahongDynamics', 'true'
+            if (project.hasProperty('huahongColdStreaming')) property 'wuxingxiantu.huahongColdStreaming', 'true'
+            if (project.hasProperty('huahongFrameOnly')) property 'wuxingxiantu.huahongFrameOnly', 'true'
+            if (project.hasProperty('huahongWallQa')) property 'wuxingxiantu.huahongWallQa', 'true'
             if (project.hasProperty('huahongDynamicsSkin')) property 'wuxingxiantu.huahongDynamicsSkin', project.property('huahongDynamicsSkin')
             if (project.hasProperty('huahongQaExposure')) property 'wuxingxiantu.huahongQaExposure', project.property('huahongQaExposure')
             if (project.hasProperty('huahongCapture')) {

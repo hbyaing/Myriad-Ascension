@@ -163,10 +163,83 @@ public final class SwordTrailPhaseRegression {
         require(clock.setLevel(null)&&!clock.initialized()&&clock.tick()==0,"Disconnect clears the level-local clock");
         clock.advance(500,true);require(!clock.initialized()&&clock.tick()==0,"Ticks without a level cannot seed or advance history time");
     }
+    /** The real client samples the new pose, then renders the previous interval.
+     * Check the WORLD tail, including its velocity and acceleration at 60 FPS;
+     * a stable carrier-local nucleus cannot detect a bright 30-block tail cut. */
+    private static void highSpeedWorldClipping(){
+        for(boolean ordinary:new boolean[]{false,true})for(double speed:new double[]{15,30})for(boolean curved:new boolean[]{false,true}){
+            double length=ordinary?22:160;int capacity=ordinary?256:720;
+            var history=new SwordFlightTrailHistory(ordinary?.09:.25,ordinary?22:116,length,capacity);
+            for(int tick=0;tick<=20;tick++)history.sample(flightPoint(tick,speed,curved),tick,speed*1.7+3);
+            SwordFlightTrailHistory.Point previous=null,expectedPrevious=null,velocity=null,expectedVelocity=null;
+            for(int tick=21;tick<=44;tick++){
+                history.sample(flightPoint(tick,speed,curved),tick,speed*1.7+3);
+                require(history.nodes().size()<=capacity,"Fixed history remains capacity bounded with the render guard");
+                for(int frame=0;frame<3;frame++){
+                    double now=tick-1+frame/3.0;
+                    var head=flightPoint(now,speed,curved);
+                    var rows=history.renderNodes(now,head);
+                    require(rows.size()>2&&rows.size()<=capacity*2+2,"Render guard contains at most two bounded fixed histories");
+                    var tail=rows.get(0);var expected=flightPoint(now-length/speed,speed,curved);
+                    near(tail.point().distance(expected),0,2e-7,"High-speed world tail follows render time rather than the newer fixed sample [speed="+speed+", curved="+curved+", tick="+tick+", frame="+frame+", headArc="+rows.get(rows.size()-1).arc()+", tailTick="+tail.tick()+"]");
+                    near(rows.get(rows.size()-1).arc()-tail.arc(),length,2e-7,"Visible world wake retains its exact spatial length across sample ticks");
+                    near(tail.tick(),now-length/speed,2e-8,"Tail birth tick is interpolated with world position and arc");
+                    require(rows.get(rows.size()-1).point().equals(head),"Tail clipping cannot move the actual model attachment");
+                    for(var row:rows)require(row.tick()<=now+1e-9,"Render guard never exposes a future sample");
+                    if(previous!=null){
+                        var step=subtract(tail.point(),previous);
+                        var expectedStep=subtract(expected,expectedPrevious);
+                        near(step.distance(expectedStep),0,4e-7,"Adjacent-frame world tail velocity includes no sampler-size jump");
+                        if(velocity!=null)near(subtract(step,velocity).distance(subtract(expectedStep,expectedVelocity)),0,8e-7,
+                                "Adjacent-frame world acceleration follows the real path, without a fixed-tick impulse");
+                        velocity=step;expectedVelocity=expectedStep;
+                    }
+                    previous=tail.point();expectedPrevious=expected;
+                }
+                // A nearly coincident pair straddles the actual fixed sample.
+                double before=tick-1e-6,after=tick+1e-6;
+                var a=history.renderNodes(before,flightPoint(before,speed,curved));
+                var tailBefore=a.get(0).point();
+                history.sample(flightPoint(tick+1,speed,curved),tick+1,speed*1.7+3);
+                var b=history.renderNodes(after,flightPoint(after,speed,curved));
+                require(b.get(0).point().distance(tailBefore)<speed*.000003,
+                        "Tick crossing cannot evict one whole bright world-space displacement");
+            }
+        }
+        // Lifetime eviction has the same one-tick look-ahead as length eviction.
+        for(double speed:new double[]{15,30}){
+            var history=new SwordFlightTrailHistory(.25,4,160,720);
+            for(int tick=0;tick<=10;tick++)history.sample(flightPoint(tick,speed,false),tick,speed*1.7+3);
+            for(int frame=0;frame<=30;frame++){
+                double now=9+frame/30.0;
+                var rows=history.renderNodes(now,flightPoint(now,speed,false));
+                near(rows.get(0).point().x(),(now-4)*speed,2e-7,"Lifetime boundary uses interpolated render age");
+                near(rows.get(0).tick(),now-4,1e-9,"Expired prefix ends exactly at the render lifetime boundary");
+            }
+            history.sample(new SwordFlightTrailHistory.Point(1000000,0,0),11,speed*1.7+3);
+            var teleported=history.renderNodes(11,new SwordFlightTrailHistory.Point(1000000,0,0));
+            require(teleported.size()==1&&teleported.get(0).arc()==0,"A real teleport also clears the render guard");
+            history.sample(new SwordFlightTrailHistory.Point(0,0,0),1,speed*1.7+3);
+            var reset=history.renderNodes(1,new SwordFlightTrailHistory.Point(0,0,0));
+            require(reset.size()==1&&reset.get(0).arc()==0,"Clock rollback cannot reconnect the previous guarded segment");
+        }
+    }
+    private static SwordFlightTrailHistory.Point subtract(SwordFlightTrailHistory.Point a,SwordFlightTrailHistory.Point b){
+        return new SwordFlightTrailHistory.Point(a.x()-b.x(),a.y()-b.y(),a.z()-b.z());
+    }
+    /** Position seen by the real entity renderer: interpolation of fixed poses. */
+    private static SwordFlightTrailHistory.Point flightPoint(double time,double speed,boolean curved){
+        if(!curved)return new SwordFlightTrailHistory.Point(time*speed,0,0);
+        double tick=Math.floor(time),fraction=time-tick,turn=Math.toRadians(4),radius=speed/(2*Math.sin(turn*.5));
+        var a=new SwordFlightTrailHistory.Point(radius*Math.sin(tick*turn),0,radius*(1-Math.cos(tick*turn)));
+        var b=new SwordFlightTrailHistory.Point(radius*Math.sin((tick+1)*turn),0,radius*(1-Math.cos((tick+1)*turn)));
+        return a.lerp(b,fraction);
+    }
     public static void run(){
         attachmentContinuity();
         longFlight(2.61,1400);longFlight(12,420);
         correctedWorldTime();
+        highSpeedWorldClipping();
         for(double arc:new double[]{-21.17,0,.37,255.93,1024.77,1e8+.37}){
             double origin=SwordTrailPhase.origin(arc,42);
             float u=SwordTrailPhase.coordinate(arc,origin);

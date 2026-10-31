@@ -171,7 +171,6 @@ public final class FlyingSwordEffects {
                 DIAGNOSTICS.add(new TrailDiagnostics(sword.getId(),nodes.size(),nodes.get(start).arc(),headArc,
                         origin,SwordTrailPhase.coordinate(headArc,origin),effectTime,strength,width,anchor,vec(nodes.get(nodes.size()-1).point())));
                 drawHistory(buffer,pose.last(),nodes,start,eye,headArc,length,now,width,alpha,origin);
-                sparks(buffer,pose.last(),nodes,start,eye,headArc,length,now,sword.getUUID().hashCode());
                 spiralPass=true;
                 spiral(buffer,pose.last(),f,anchor,eye,jinghong,SwordTrailPhase.coordinate(headArc,origin));
                 spiralPass=false;
@@ -274,26 +273,6 @@ public final class FlyingSwordEffects {
         Vec3 side=cross.lengthSqr()<1e-10?perpendicular(tangent.normalize()):cross.normalize();
         vertex(buffer,pose,a.add(side.scale(aw)),au,mode,aa);vertex(buffer,pose,a.subtract(side.scale(aw)),au,mode+1,aa);
         vertex(buffer,pose,c.subtract(side.scale(cw)),cu,mode+1,ca);vertex(buffer,pose,c.add(side.scale(cw)),cu,mode,ca);renderedSegments++;
-    }
-    private static void sparks(VertexConsumer buffer,PoseStack.Pose pose,List<SwordFlightTrailHistory.Node> nodes,int start,Vec3 eye,double headArc,double length,double now,int seed){
-        int emitted=0;
-        for(int i=start+1;i<nodes.size()-2&&emitted<9;i++){
-            var node=nodes.get(i);int cell=(int)Math.floor(node.arc()/.65);
-            if(cell==(int)Math.floor(nodes.get(i-1).arc()/.65)||((cell*31+seed)&3)!=0)continue;
-            double age=now-node.tick();if(age<2||age>18)continue;
-            Vec3 center=vec(node.point()),tangent=vec(nodes.get(i+1).point()).subtract(center);
-            if(tangent.lengthSqr()<1e-10)continue;
-            Vec3 side=perpendicular(tangent.normalize()),up=side.cross(tangent.normalize());
-            double phase=cell*2.399+(seed&63)*.11;
-            center=center.add(side.scale(Math.cos(phase)*(.10+age*.007))).add(up.scale(Math.sin(phase)*(.10+age*.006)));
-            Vec3 facing=eye.subtract(center);if(facing.lengthSqr()<1e-10)continue;
-            Vec3 right=perpendicular(facing.normalize()),vertical=facing.normalize().cross(right);
-            double size=.030+.015*(.5+.5*Math.sin(phase));float alpha=(float)(fade(node,headArc,length,now)*.78);
-            vertex(buffer,pose,center.subtract(right.scale(size)).subtract(vertical.scale(size)),0,4,alpha);
-            vertex(buffer,pose,center.add(right.scale(size)).subtract(vertical.scale(size)),1,4,alpha);
-            vertex(buffer,pose,center.add(right.scale(size)).add(vertical.scale(size)),1,5,alpha);
-            vertex(buffer,pose,center.subtract(right.scale(size)).add(vertical.scale(size)),0,5,alpha);emitted++;
-        }
     }
     private static boolean finite(Vec3 p){return Double.isFinite(p.x)&&Double.isFinite(p.y)&&Double.isFinite(p.z);}
     private static void vertex(VertexConsumer buffer,PoseStack.Pose pose,Vec3 p,float u,float v,float alpha){

@@ -2475,7 +2475,7 @@
   "item.wuxingxiantu.sealed_alchemy_batch": "Sealed Alchemy Extract (Not Drinkable)",
   "item.wuxingxiantu.alchemy_residue": "Uncondensed Residue (Not Consumable)",
   "item.wuxingxiantu.v5_pill": "Uncertified V5 Pill (Not Usable)",
-  "tooltip.wuxingxiantu.huahong": "Rainbow Flight: hold sprint at 65% of cruise speed for 0.3s to unite rider and sword as light, doubling speed. Entry: 0.25% max mana; upkeep: 0.5%/s. Turns and brief sprint releases retain the form. Stop moving forward, brake, run out of mana or collide to exit.",
+  "tooltip.wuxingxiantu.huahong": "Rainbow Flight: sprint at 65% cruise speed for 0.3s to merge rider and blade and double speed; costs 0.25% maximum mana to enter and 0.5% per second. Gathering and flight pass ordinary solid walls; forbidden blocks and containers still stop you. Turning or briefly releasing sprint retains the form. Releasing forward, braking, low mana or a forbidden obstacle ends it with a safe exit from the wall.",
   "yujian.wuxingxiantu.huahong.stage.1": "Gathering Light",
   "yujian.wuxingxiantu.huahong.stage.2": "Rainbow Flight",
   "yujian.wuxingxiantu.huahong.stage.3": "Returning to Form"
