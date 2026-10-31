@@ -1,0 +1,32 @@
+{
+  "schema": "mindscape-palette/1",
+  "palette": {
+    "goldBase": [
+      1.55,
+      0.72,
+      0.06
+    ],
+    "goldHighlight": [
+      1.9,
+      0.95,
+      0.12
+    ],
+    "redBase": [
+      4.92,
+      0.02350261112501315,
+      0.02350261112501315
+    ],
+    "spiritBase": [
+      0,
+      0,
+      0
+    ],
+    "spiritEmission": [
+      0,
+      0,
+      0
+    ],
+    "spiritStrength": 1,
+    "exposure": 1
+  }
+}

@@ -66,6 +66,33 @@ public final class RecheckGameTests {
             }
         }).thenExecute(()->{ready[0]=true;action.run();});
     }
+    private static void awaitVictoryReturn(GameTestHelper h,GameTestPlayer p,long cultivation) {
+        var data=GeneratedMod.data(p);var tag=data.wuxingxiantu$getMindscapeData();
+        var session=tag.getUUID("session");int slot=tag.getInt("slot");
+        var level=p.serverLevel();int settledCount=tag.getList("completed_challenges",8).size();
+        h.assertTrue(MindscapeManager.state(p)==MindscapeState.COMPLETED&&p.level().dimension()==MindscapeManager.DIMENSION,
+                "Natural victory did not enter its purification window");
+        h.assertTrue(MindscapeExternalSnapshot.isSealed(p)&&MindscapeInstances.get(level).owns(p.getUUID(),session,slot),
+                "Victory released its snapshot or arena before the visual window");
+        h.assertTrue(!MindscapeManager.complete(p,false)&&!MindscapeManager.complete(p,true),"Victory settled twice");
+        h.runAfterDelay(MindscapeState.PURIFICATION_TICKS,()->{
+            h.assertTrue(p.level().dimension()==MindscapeManager.DIMENSION&&MindscapeManager.state(p)==MindscapeState.COMPLETED,
+                    "Victory returned before the purified hold");
+            h.assertTrue(MindscapeExternalSnapshot.isSealed(p)&&MindscapeInstances.get(level).owns(p.getUUID(),session,slot),
+                    "Purified hold lost the player's recovery data or lease");
+        });
+        h.runAfterDelay(MindscapeState.VICTORY_DISPLAY_TICKS+2,()->{
+            try {
+                h.assertTrue(p.level().dimension()!=MindscapeManager.DIMENSION&&!MindscapeExternalSnapshot.isSealed(p),
+                        "Victory window did not return and restore the owner");
+                h.assertTrue(!MindscapeInstances.get(level).owns(p.getUUID(),session,slot),"Victory leaked its arena lease");
+                h.assertTrue(!tag.contains("victory_display_until")&&!tag.hasUUID("session"),"Victory transient state survived return");
+                h.assertTrue(tag.getList("completed_challenges",8).size()==settledCount,"Display ticks repeated victory settlement");
+                h.assertTrue(data.wuxingxiantu$getCultivation()==cultivation,"Challenge changed external cultivation");
+                h.succeed();
+            } finally {MindscapeManager.abort(p,true);p.close();}
+        });
+    }
     @GameTest(template="empty") public static void playerFixtureTicksAndUnregisters(GameTestHelper h) {
         h.setBlock(new BlockPos(2,0,2),Blocks.STONE);
         var p=player(h);
@@ -194,10 +221,10 @@ public final class RecheckGameTests {
         finally {boss.discard();p.close();}
         h.succeed();
     }
-    @GameTest(template="empty",timeoutTicks=400) public static void phaseTwoPlayerKillCompletesChallenge(GameTestHelper h) {
+    @GameTest(template="empty",timeoutTicks=500) public static void phaseTwoPlayerKillCompletesChallenge(GameTestHelper h) {
         phaseTwoKillCompletesChallenge(h,false);
     }
-    @GameTest(template="empty",timeoutTicks=400) public static void heartTruePhaseTwoKillCompletesChallenge(GameTestHelper h) {
+    @GameTest(template="empty",timeoutTicks=500) public static void heartTruePhaseTwoKillCompletesChallenge(GameTestHelper h) {
         phaseTwoKillCompletesChallenge(h,true);
     }
     private static void phaseTwoKillCompletesChallenge(GameTestHelper h,boolean heartTrue) {
@@ -215,6 +242,8 @@ public final class RecheckGameTests {
             if(heartTrue)cn.blockforge.generated.generatedmod.combat.HeartSwordCombatProfile.applyHeartTrueDamage(p,boss,1000000);
             else boss.hurt(p.damageSources().playerAttack(p),1000000);
             h.assertTrue(boss.isAlive()&&boss.visualPhase()==HeartDemonEntity.VisualPhase.PHASE_2,"First phase did not transition");
+            h.assertTrue(MindscapeManager.state(p)==MindscapeState.CHALLENGE_ACTIVE&&!d.wuxingxiantu$getMindscapeData().getBoolean("boss_completed"),
+                    "First-phase defeat incorrectly purified the mindscape");
             int phaseStartTick=boss.tickCount;
             h.startSequence().thenWaitUntil(()->h.assertTrue(boss.tickCount-phaseStartTick>=20,
                     "Waiting for the boss entity to finish its phase transition")).thenExecute(()->{
@@ -223,10 +252,8 @@ public final class RecheckGameTests {
                     if(heartTrue)cn.blockforge.generated.generatedmod.combat.HeartSwordCombatProfile.applyHeartTrueDamage(p,boss,1000000);
                     else boss.hurt(p.damageSources().playerAttack(p),1000000);
                     h.assertTrue(!boss.isAlive(),"Second phase survived ordinary lethal damage");
-                    h.assertTrue(p.level().dimension()!=MindscapeManager.DIMENSION&&!MindscapeExternalSnapshot.isSealed(p),"Owner kill did not complete and restore challenge");
-                    h.assertTrue(d.wuxingxiantu$getCultivation()==12345,"Challenge changed external cultivation");
-                    h.succeed();
-                } finally {MindscapeManager.abort(p,true);p.close();}
+                    awaitVictoryReturn(h,p,12345);
+                } catch(RuntimeException|AssertionError failure) {MindscapeManager.abort(p,true);p.close();throw failure;}
             });
             });
         } catch(RuntimeException|AssertionError failure) {MindscapeManager.abort(p,true);p.close();throw failure;}
@@ -243,12 +270,61 @@ public final class RecheckGameTests {
                 try {
                     h.assertTrue(p.level().dimension()!=MindscapeManager.DIMENSION&&!d.wuxingxiantu$getMindscapeData().hasUUID("session"),"Removed boss left a stale session");
                     h.assertTrue(d.wuxingxiantu$getMindscapeData().getList("completed_challenges",8).isEmpty(),"Removing boss granted trial victory");
+                    h.assertTrue(d.wuxingxiantu$isDaoHeartUnstable()&&MindscapeManager.state(p)==MindscapeState.UNSTABLE,
+                            "Removing a boss purified a failed challenge");
                     h.succeed();
                 } finally {MindscapeManager.abort(p,true);p.close();}
             });
             });
         } catch(RuntimeException|AssertionError failure) {MindscapeManager.abort(p,true);p.close();throw failure;}
         });
+    }
+    @GameTest(template="empty",timeoutTicks=400) public static void victoryLogoutPreservesSettlementAndRecovery(GameTestHelper h) {
+        var p=player(h);var d=GeneratedMod.data(p);d.wuxingxiantu$setCultivation(67890);
+        prepareMindscape(h,p,()->{
+            try {
+                h.assertTrue(MindscapeManager.enter(p,MindscapeChallenges.formalByIndex(0,8),true),"Cannot enter victory recovery fixture");
+                whenBossLoaded(h,p,()->{
+                    try {
+                        var tag=d.wuxingxiantu$getMindscapeData();var level=p.serverLevel();
+                        var session=tag.getUUID("session");int slot=tag.getInt("slot");
+                        var boss=(net.minecraft.world.entity.LivingEntity)level.getEntity(tag.getUUID("boss"));
+                        h.assertTrue(!MindscapeManager.complete(p,false),"A living boss granted purification");
+                        boss.setHealth(0);
+                        h.assertTrue(MindscapeManager.complete(p,false),"Validated defeated boss could not settle");
+                        int settled=tag.getList("completed_challenges",8).size();
+                        MindscapeManager.logout(new net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent(p));
+                        h.assertTrue(MindscapeManager.state(p)==MindscapeState.RETURNING&&MindscapeExternalSnapshot.isSealed(p),
+                                "Logout lost the durable victory recovery record");
+                        h.assertTrue(!MindscapeInstances.get(level).owns(p.getUUID(),session,slot),"Logout leaked the completed lease");
+                        MindscapeManager.login(new net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent(p));
+                        h.assertTrue(p.level().dimension()!=MindscapeManager.DIMENSION&&!MindscapeExternalSnapshot.isSealed(p),
+                                "Login did not restore the completed owner");
+                        h.assertTrue(!d.wuxingxiantu$isDaoHeartUnstable()&&MindscapeManager.state(p)==MindscapeState.NONE,
+                                "Victory recovery reapplied corruption");
+                        h.assertTrue(d.wuxingxiantu$getCultivation()==67890&&tag.getList("completed_challenges",8).size()==settled,
+                                "Recovery changed cultivation or repeated settlement");
+                        h.succeed();
+                    } finally {MindscapeManager.abort(p,true);p.close();}
+                });
+            } catch(RuntimeException|AssertionError failure) {MindscapeManager.abort(p,true);p.close();throw failure;}
+        });
+    }
+    @GameTest(template="empty") public static void mindscapeStatePacketCarriesOptionalSession(GameTestHelper h) {
+        var session=java.util.UUID.randomUUID();
+        var message=new cn.blockforge.generated.generatedmod.network.packet.mindscape.MindscapeStatePacket(false,
+                MindscapeState.COMPLETED.ordinal(),MindscapeState.VICTORY_DISPLAY_TICKS,"wuxingxiantu:heart_demon_final",session,63);
+        var buffer=new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.buffer());
+        try {
+            cn.blockforge.generated.generatedmod.network.packet.mindscape.MindscapeStatePacket.encode(message,buffer);
+            h.assertTrue(message.equals(cn.blockforge.generated.generatedmod.network.packet.mindscape.MindscapeStatePacket.decode(buffer)),
+                    "Session-bound visual state failed its packet round trip");
+            var empty=new cn.blockforge.generated.generatedmod.network.packet.mindscape.MindscapeStatePacket(true,MindscapeState.UNSTABLE.ordinal(),0,"");
+            cn.blockforge.generated.generatedmod.network.packet.mindscape.MindscapeStatePacket.encode(empty,buffer);
+            h.assertTrue(empty.equals(cn.blockforge.generated.generatedmod.network.packet.mindscape.MindscapeStatePacket.decode(buffer)),
+                    "Empty visual session failed its packet round trip");
+            h.succeed();
+        } finally {buffer.release();}
     }
     @GameTest(template="empty",timeoutTicks=400) public static void directMindscapeEnterAndAdminCompletionPreserveCultivation(GameTestHelper h) {
         var p=player(h);var d=GeneratedMod.data(p);d.wuxingxiantu$setCultivation(123456);

@@ -69,7 +69,7 @@ import cn.blockforge.generated.generatedmod.*;
 
 public final class NetworkChannel {
     // New formation block/menu registries require matching client and server builds.
-    private static final String VERSION = "108";
+    private static final String VERSION = "109";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(GeneratedMod.MOD_ID, "main"), () -> VERSION, VERSION::equals, VERSION::equals);
     private static final java.util.Set<Integer> IDS=new java.util.HashSet<>();

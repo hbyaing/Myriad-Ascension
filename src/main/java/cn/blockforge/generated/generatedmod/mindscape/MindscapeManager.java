@@ -26,6 +26,7 @@ public final class MindscapeManager {
     public static final ResourceKey<Level> DIMENSION=ResourceKey.create(Registries.DIMENSION,new ResourceLocation(GeneratedMod.MOD_ID,"mindscape"));
     public static final int MEDITATION_TICKS=300;
     private static final String OWNER="MindscapeOwner",SESSION="MindscapeSession";
+    private static final String VICTORY_UNTIL="victory_display_until";
     private record Meditation(ResourceKey<Level> dimension,UUID seat,Vec3 position,int ticks){}
     private static final Map<UUID,Meditation> MEDITATIONS=new HashMap<>();
     private static final Set<UUID> TRANSFERRING=new HashSet<>();
@@ -63,8 +64,16 @@ public final class MindscapeManager {
     }
     private static void send(ServerPlayer p,int ticks){
         var capability=GeneratedMod.data(p);if(capability==null)return;
+        var tag=data(p);MindscapeState current=state(p);
+        int remaining=current==MindscapeState.MEDITATING?Math.max(0,MEDITATION_TICKS-ticks)
+                :current==MindscapeState.COMPLETED?victoryRemaining(p):0;
+        UUID session=tag.hasUUID("session")?tag.getUUID("session"):null;
         Network.CHANNEL.send(net.minecraftforge.network.PacketDistributor.PLAYER.with(()->p),new cn.blockforge.generated.generatedmod.network.packet.mindscape.MindscapeStatePacket(
-                capability.wuxingxiantu$isDaoHeartUnstable(),state(p).ordinal(),Math.max(0,MEDITATION_TICKS-ticks),data(p).getString("challenge")));
+                capability.wuxingxiantu$isDaoHeartUnstable(),current.ordinal(),remaining,tag.getString("challenge"),session,session==null?-1:tag.getInt("slot")));
+    }
+    private static int victoryRemaining(ServerPlayer p){
+        long remaining=data(p).getLong(VICTORY_UNTIL)-p.serverLevel().getGameTime();
+        return (int)Math.max(0,Math.min(MindscapeState.VICTORY_DISPLAY_TICKS,remaining));
     }
     public static void cancelMeditation(ServerPlayer p){
         var capability=GeneratedMod.data(p);if(capability==null)return;
@@ -76,12 +85,15 @@ public final class MindscapeManager {
         if(event.phase!=TickEvent.Phase.END||!(event.player instanceof ServerPlayer p)||GeneratedMod.data(p)==null||!p.isAlive())return;
         var capability=GeneratedMod.data(p);var tag=data(p);
         if(p.level().dimension()==DIMENSION){
-            if(!validSession(p)){abort(p,true);return;}
-            var center=MindscapeInstances.center(tag.getInt("slot"));
-            if(!MindscapeArenas.inside(center,p.position())){
-                var spawn=MindscapeArenas.playerSpawn(center);
-                YujianController.stop(p);p.stopRiding();p.teleportTo(spawn.x,spawn.y,spawn.z);p.setDeltaMovement(Vec3.ZERO);
+            if(state(p)==MindscapeState.COMPLETED){
+                if(!tag.getBoolean("boss_completed")||!validLease(p)){abort(p,true);return;}
+                keepInside(p);
+                if(victoryRemaining(p)==0){release(p);returnHome(p);GeneratedMod.sync(p);}
+                else if(p.tickCount%20==0)send(p,0);
+                return;
             }
+            if(!validSession(p)){abort(p,true);return;}
+            var center=MindscapeInstances.center(tag.getInt("slot"));keepInside(p);
             if(p.tickCount%20==0){
                 Entity boss=p.serverLevel().getEntity(tag.getUUID("boss"));
                 if(!(boss instanceof LivingEntity living)||!living.isAlive()||!boundBoss(p,boss)){abort(p,true);return;}
@@ -113,6 +125,13 @@ public final class MindscapeManager {
             else if(!enter(p,challenge,false))cancelMeditation(p);
         }
     }
+    private static void keepInside(ServerPlayer p){
+        var center=MindscapeInstances.center(data(p).getInt("slot"));
+        if(!MindscapeArenas.inside(center,p.position())){
+            var spawn=MindscapeArenas.playerSpawn(center);
+            YujianController.stop(p);p.stopRiding();p.teleportTo(spawn.x,spawn.y,spawn.z);p.setDeltaMovement(Vec3.ZERO);
+        }
+    }
     public static boolean enter(ServerPlayer p,MindscapeChallenges.Definition challenge,boolean developer){
         var capability=GeneratedMod.data(p);
         if(capability==null||challenge==null||!p.isAlive()||p.isSpectator()||p.level().dimension()==DIMENSION
@@ -132,6 +151,7 @@ public final class MindscapeManager {
         tag.putDouble("original_x",p.getX());tag.putDouble("original_y",p.getY());tag.putDouble("original_z",p.getZ());
         tag.putFloat("original_yaw",p.getYRot());tag.putFloat("original_pitch",p.getXRot());
         tag.putUUID("owner",p.getUUID());tag.putUUID("session",session);tag.putInt("slot",slot);
+        tag.remove(VICTORY_UNTIL);
         tag.putString("challenge",challenge.id().toString());tag.putString("boss_entity_id",challenge.boss().toString());
         tag.putBoolean("boss_completed",false);tag.putBoolean("is_final",challenge.isFinal());
         capability.wuxingxiantu$setDaoXin(4);state(p,MindscapeState.ENTERING);
@@ -165,10 +185,14 @@ public final class MindscapeManager {
             p.setDeltaMovement(Vec3.ZERO);
         }finally{TRANSFERRING.remove(p.getUUID());}
     }
-    private static boolean validSession(ServerPlayer p){
-        var tag=data(p);return p.level().dimension()==DIMENSION&&tag.hasUUID("session")&&tag.hasUUID("owner")&&p.getUUID().equals(tag.getUUID("owner"))
-                &&tag.hasUUID("boss")&&state(p)==MindscapeState.CHALLENGE_ACTIVE
+    private static boolean validLease(ServerPlayer p){
+        var tag=data(p);int slot=tag.getInt("slot");
+        return p.level().dimension()==DIMENSION&&tag.hasUUID("session")&&tag.hasUUID("owner")&&p.getUUID().equals(tag.getUUID("owner"))
+                &&slot>=0&&slot<MindscapeInstances.LIMIT
                 &&MindscapeInstances.get(p.serverLevel()).owns(p.getUUID(),tag.getUUID("session"),tag.getInt("slot"));
+    }
+    private static boolean validSession(ServerPlayer p){
+        return validLease(p)&&data(p).hasUUID("boss")&&state(p)==MindscapeState.CHALLENGE_ACTIVE;
     }
     private static boolean boundBoss(ServerPlayer p,Entity boss){
         var tag=data(p);var binding=boss.getPersistentData();
@@ -201,12 +225,18 @@ public final class MindscapeManager {
         CultivationData settled = GeneratedMod.data(p);
         if(!developer){String form=net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(boss.getType()).toString();if(cn.blockforge.generated.generatedmod.boss.combat.BossPlayerSkills.FORMS.contains(form)){settled.wuxingxiantu$addPossessedForm(form);p.displayClientMessage(Component.literal("七十二变已解锁：").append(boss.getType().getDescription()),false);}}
         settled.wuxingxiantu$resolveHeartDemonInvasion();
-        send(p,0);
         MindscapeProgression.clearPending(p);
         p.displayClientMessage(Component.translatable("message.wuxingxiantu.mindscape_completed"),false);
-        release(p);returnHome(p);GeneratedMod.sync(p);return true;
+        if(developer){release(p);returnHome(p);}
+        else{
+            // Settle once now, but retain the sealed snapshot and lease until the
+            // owner has seen the authoritative purification and short gold hold.
+            tag.putLong(VICTORY_UNTIL,p.serverLevel().getGameTime()+MindscapeState.VICTORY_DISPLAY_TICKS);
+            clearEncounter(p);send(p,0);
+        }
+        GeneratedMod.sync(p);return true;
     }
-    private static void release(ServerPlayer p){
+    private static void clearEncounter(ServerPlayer p){
         var tag=data(p);ServerLevel level=p.server.getLevel(DIMENSION);
         if(level!=null){
             if(tag.hasUUID("boss")){var boss=level.getEntity(tag.getUUID("boss"));if(boss!=null&&boundBoss(p,boss))boss.discard();}
@@ -222,8 +252,12 @@ public final class MindscapeManager {
                     return false;
                 }).forEach(Entity::discard);
             }
-            MindscapeInstances.get(level).releaseOwner(p.getUUID());
         }
+    }
+    private static void release(ServerPlayer p){
+        clearEncounter(p);var level=p.server.getLevel(DIMENSION);
+        if(level!=null)MindscapeInstances.get(level).releaseOwner(p.getUUID());
+        data(p).remove(VICTORY_UNTIL);
     }
     public static void abort(ServerPlayer p,boolean returnNow){
         if(GeneratedMod.data(p)==null)return;cancelMeditation(p);
@@ -295,7 +329,7 @@ public final class MindscapeManager {
             state(p,MindscapeState.RETURNING);
             return;
         }
-        for(String key:List.of("session","boss","owner","slot","challenge","boss_entity_id","original_dimension","original_x","original_y","original_z","original_yaw","original_pitch","boss_completed","is_final"))tag.remove(key);
+        for(String key:List.of("session","boss","owner","slot","challenge","boss_entity_id","original_dimension","original_x","original_y","original_z","original_yaw","original_pitch","boss_completed","is_final",VICTORY_UNTIL))tag.remove(key);
         state(p,GeneratedMod.data(p).wuxingxiantu$isDaoHeartUnstable()?MindscapeState.UNSTABLE:MindscapeState.NONE);send(p,0);
     }
     @SubscribeEvent public static void damage(LivingDamageEvent event){
@@ -304,6 +338,8 @@ public final class MindscapeManager {
     @SubscribeEvent(priority=EventPriority.HIGHEST) public static void isolate(LivingAttackEvent event){
         if(event.getSource().is(net.minecraft.tags.DamageTypeTags.BYPASSES_INVULNERABILITY))return;
         Entity victim=event.getEntity();if(victim.level().isClientSide||victim.level().dimension()!=DIMENSION)return;
+        if(victim instanceof ServerPlayer p&&GeneratedMod.data(p)!=null&&state(p)==MindscapeState.COMPLETED
+                &&data(p).getBoolean("boss_completed")){event.setCanceled(true);return;}
         Entity attacker=event.getSource().getEntity();
         if(victim.getPersistentData().hasUUID(OWNER)){
             if(!(attacker instanceof ServerPlayer p)||!victim.getPersistentData().getUUID(OWNER).equals(p.getUUID())
