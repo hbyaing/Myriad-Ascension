@@ -29,6 +29,7 @@ public final class YujianClientController {
     private static boolean inputLeft, inputRight;
     private static int rollHoldTime;
     private static long lastFrame;
+    private static ControlledSwordEntity lastPhasingCarrier;
     private static cn.blockforge.generated.generatedmod.network.packet.yujian.SwordFlightInputPacket lastInput;
     private static int lastInputTick;
     private static final java.lang.reflect.Method CAMERA_POSITION=net.minecraftforge.fml.util.ObfuscationReflectionHelper.findMethod(
@@ -36,11 +37,31 @@ public final class YujianClientController {
 
     private YujianClientController() {}
 
+    /** The authoritative phase may end before its buffered pose leaves a wall.
+     * Keep only the mounted presentation clear until that pose is outside. */
+    private static boolean phasingPresentation(ControlledSwordEntity sword){
+        var mc=Minecraft.getInstance();
+        if(mc.player==null||mc.level==null||mc.player.getVehicle()!=sword||!sword.flightRoot()){
+            lastPhasingCarrier=null;return false;
+        }
+        if(sword.bufferedPhasing()){lastPhasingCarrier=sword;return true;}
+        if(lastPhasingCarrier==sword&&mc.level.getBlockCollisions(mc.player,mc.player.getBoundingBox()).iterator().hasNext())return true;
+        lastPhasingCarrier=null;return false;
+    }
+
+    @SubscribeEvent public static void phasingOverlay(net.minecraftforge.client.event.RenderBlockScreenEffectEvent event){
+        var player=Minecraft.getInstance().player;
+        if(event.getOverlayType()==net.minecraftforge.client.event.RenderBlockScreenEffectEvent.OverlayType.BLOCK
+                &&player!=null&&player.getVehicle() instanceof ControlledSwordEntity sword&&phasingPresentation(sword))
+            event.setCanceled(true);
+    }
+
     public static void setActive(boolean value) {
         Minecraft client=Minecraft.getInstance();
         boolean mounted=client.player!=null && client.player.getVehicle() instanceof ControlledSwordEntity sword && sword.flightRoot();
         // Passenger tracking can arrive a tick after the state packet. Change camera only on the actual mount edge.
         if(value!=mounted && client.player!=null)return;
+        if(!value)lastPhasingCarrier=null;
         if (value==active) return;
         if (value) {
             previousCamera=client.options.getCameraType();
@@ -163,6 +184,7 @@ public final class YujianClientController {
         var camera=event.getCamera();
         var start=frame.position().add(0,sword.riderOffset()+client.player.getEyeHeight()+.3*frame.spiralFactor(),0);
         boolean first=client.options.getCameraType().isFirstPerson();
+        boolean phasing=phasingPresentation(sword);
         if(first){
             // Eyes belong to the standing deck frame, not the world vertical axis.
             // No third-person distance/spiral lift or filtered bank in this branch.
@@ -172,13 +194,13 @@ public final class YujianClientController {
         if(!first)start=start.add(frame.forward().scale(FlyingSwordConfig.CAMERA_AHEAD.get()*(.35*frame.sprintFactor()+.65*frame.spiralFactor())));
         var direction=net.minecraft.world.phys.Vec3.directionFromRotation(event.getPitch(),event.getYaw()).scale(-1);
         double allowed=first?0:distance;
-        for(int i=0;!first&&i<8;i++){
+        for(int i=0;!first&&!phasing&&i<8;i++){
             var corner=start.add((i&1)==0?-0.15:0.15,(i&2)==0?-0.15:0.15,(i&4)==0?-0.15:0.15);
             var hit=client.level.clip(new net.minecraft.world.level.ClipContext(corner,corner.add(direction.scale(allowed)),
                     net.minecraft.world.level.ClipContext.Block.VISUAL,net.minecraft.world.level.ClipContext.Fluid.NONE,client.player));
             if(hit.getType()!=net.minecraft.world.phys.HitResult.Type.MISS)allowed=Math.min(allowed,Math.max(0,hit.getLocation().distanceTo(corner)-0.05));
         }
-        collisionDistance=allowed<collisionDistance?allowed:smooth(collisionDistance,allowed,dt,.55);
+        collisionDistance=!phasing&&allowed<collisionDistance?allowed:smooth(collisionDistance,allowed,dt,phasing?.25:.55);
         try{CAMERA_POSITION.invoke(camera,start.add(direction.scale(first?0:collisionDistance)));}
         catch(ReflectiveOperationException ex){throw new IllegalStateException("Cannot position sword flight camera",ex);}
     }

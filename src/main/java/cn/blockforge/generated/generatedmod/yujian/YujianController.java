@@ -2,8 +2,6 @@ package cn.blockforge.generated.generatedmod.yujian;
 
 import cn.blockforge.generated.generatedmod.*;
 import cn.blockforge.generated.generatedmod.items.CultivationLogic;
-import cn.blockforge.generated.generatedmod.arts.ArtParticleLibrary;
-import cn.blockforge.generated.generatedmod.network.packet.cultivation.ArtVisualPacket;
 import cn.blockforge.generated.generatedmod.robe.YujianSlot;
 import cn.blockforge.generated.generatedmod.robe.RobeSlots;
 import cn.blockforge.generated.generatedmod.registry.ModEntities;
@@ -51,6 +49,7 @@ public final class YujianController {
         boolean extremeEmitted;
         final JinghongBurst jinghong=new JinghongBurst();
         final HuahongFlight huahong=new HuahongFlight();
+        final FlightTerrainGovernor terrainGovernor=new FlightTerrainGovernor();
         double cruiseTarget;
         int rollPulseTicks, rollPulseCooldown;
         boolean wasRolling;
@@ -161,8 +160,6 @@ public final class YujianController {
         ItemStack source=YujianSlot.equipFromMainHand(p);if(source.isEmpty())return;
         sword.bind(p,source,0,true);sword.flightRoot(true);sword.setPos(p.position().add(0,1.1,0));
         if(!p.serverLevel().addFreshEntity(sword))return;
-        ArtParticleLibrary.emit(p.serverLevel(), FLIGHT, ArtVisualPacket.AURA,
-                p.position().add(0, 1.0, 0), p.position(), 1.6D, 0);
         var data=GeneratedMod.data(p);
         // All summon inputs share the Art startup cost; phase upkeep is charged in tickAdvanced.
         data.wuxingxiantu$setAura(data.wuxingxiantu$getAura()-ArtCatalog.finalManaCost(FLIGHT,CultivationLogic.maxAura(data)));
@@ -180,6 +177,7 @@ public final class YujianController {
         FlightFeedbackEvent.emit(sword,FlightFeedbackEvent.Kind.SUMMON);
     }
     public static void stop(ServerPlayer p){
+        FlightChunkStreaming.release(p);
         Ride ride=RIDES.remove(p.getUUID());
         if(ride!=null){
             var level=p.server.getLevel(ride.dimension);
@@ -189,7 +187,7 @@ public final class YujianController {
                 if(!(entity instanceof ControlledSwordEntity)&&p.getVehicle() instanceof ControlledSwordEntity vehicle
                         &&ride.entity.equals(vehicle.getUUID()))entity=vehicle;
                 if(entity instanceof ControlledSwordEntity sword){
-                if(p.isAlive() && p.level()==level && ride.phase==YujianPhase.DUNXU)restoreSafePosition(sword,p,ride);
+                if(p.isAlive() && p.level()==level && collisionPhasing(ride))restoreSafePosition(sword,p,ride);
                 sword.huahong(0,0);ride.huahong.reset();
                 sword.noPhysics=false;sword.advancedPhase(YujianPhase.BASIC);sword.dunxuStage(0);
                 if(p.getVehicle()==sword)p.stopRiding();
@@ -262,6 +260,10 @@ public final class YujianController {
         if (Float.isFinite(yaw)) ride.desiredYaw=Mth.wrapDegrees(yaw);
         if (Float.isFinite(pitch)) ride.desiredPitch=Mth.clamp(pitch,-75.0F,75.0F);
         if (togglePressed && (ride.state==FlyingSwordState.FLYING || ride.state==FlyingSwordState.MOUNT_TRANSITION)) {
+            if(collisionPhasing(ride)&&(!(player.getVehicle() instanceof ControlledSwordEntity sword)
+                    ||!ride.entity.equals(sword.getUUID())||!restoreSafePosition(sword,player,ride))){
+                stop(player);return;
+            }
             ride.state=FlyingSwordState.DISMOUNT_TRANSITION; ride.stateTicks=0;
         }
         if (!summonHeld && (ride.state==FlyingSwordState.SUMMONING || ride.state==FlyingSwordState.ORBITING)) {
@@ -290,7 +292,16 @@ public final class YujianController {
     @SubscribeEvent public static void login(net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent e){if(e.getEntity() instanceof ServerPlayer p)stop(p);}
     @SubscribeEvent public static void dimension(net.minecraftforge.event.entity.player.PlayerEvent.PlayerChangedDimensionEvent e){if(e.getEntity() instanceof ServerPlayer p)stop(p);}
     @SubscribeEvent public static void death(net.minecraftforge.event.entity.living.LivingDeathEvent e){if(e.getEntity() instanceof ServerPlayer p)stop(p);}
-    @SubscribeEvent public static void serverStopped(net.minecraftforge.event.server.ServerStoppedEvent e){RIDES.clear();}
+    @SubscribeEvent public static void serverStopped(net.minecraftforge.event.server.ServerStoppedEvent e){RIDES.clear();FlightChunkStreaming.releaseAll(e.getServer());}
+
+    @SubscribeEvent public static void phasingSuffocation(net.minecraftforge.event.entity.living.LivingAttackEvent event){
+        if(!(event.getEntity() instanceof ServerPlayer player)
+                ||!event.getSource().is(net.minecraft.world.damagesource.DamageTypes.IN_WALL))return;
+        Ride ride=RIDES.get(player.getUUID());
+        if(ride!=null&&ride.state==FlyingSwordState.FLYING&&collisionPhasing(ride)
+                &&player.getVehicle() instanceof ControlledSwordEntity sword
+                &&ride.entity.equals(sword.getUUID())&&player.getUUID().equals(sword.ownerId))event.setCanceled(true);
+    }
 
     /** Server-authoritative movement for the single flight-root entity. */
     public static void tickFlightEntity(ControlledSwordEntity sword, ServerPlayer player) {
@@ -305,14 +316,14 @@ public final class YujianController {
         if (!ProgressionGate.canYujian(player,GeneratedMod.data(player),source)) { stop(player); return; }
         FlyingSwordDefinition definition=FlyingSwordRegistry.get(source);
         if(definition==null){stop(player);return;}
-        if(ride.state==FlyingSwordState.FLYING&&ride.forward&&!ride.brake)
-            cn.blockforge.generated.generatedmod.flight.FlightTerrainStreaming.prefetch(player,sword.position(),
-                    direction(sword.getYRot(),sword.getXRot()).scale(Math.max(sword.flightSpeed(),definition.advanced().maxSpeed(ride.phase,definition))));
         sword.huahongSkin(HuahongSkin.fromId(player.getPersistentData().getInt(HuahongSkin.KEY)));
         ride.stateTicks++;
         sword.flightState(ride.state);
         sword.dunxuStage(ride.phase==YujianPhase.DUNXU?ride.dunxuStage:0);
-        if(ride.state!=FlyingSwordState.FLYING){ride.jinghong.cancelEffect();sword.jinghongStrength(0);ride.huahong.reset();sword.huahong(0,0);}
+        if(ride.state!=FlyingSwordState.FLYING){
+            if(collisionPhasing(ride)&&!restoreSafePosition(sword,player,ride)){stop(player);return;}
+            ride.jinghong.cancelEffect();sword.jinghongStrength(0);ride.huahong.reset();sword.huahong(0,0);ride.terrainGovernor.reset();
+        }
         if(ride.state==FlyingSwordState.FLYING)sword.visualScale(definition.flightScale());
         if(ride.state!=FlyingSwordState.FLYING && ride.phase!=YujianPhase.BASIC)changePhase(sword,player,ride,YujianPhase.BASIC);
         switch (ride.state) {
@@ -366,12 +377,13 @@ public final class YujianController {
     private static void tickFlight(ControlledSwordEntity sword, ServerPlayer player, Ride ride,
                                    FlyingSwordDefinition definition, ItemStack source) {
         if (!player.isPassenger() || player.getVehicle()!=sword) {
+            if(collisionPhasing(ride)&&!restoreSafePosition(sword,player,ride)){stop(player);return;}
             ride.state=FlyingSwordState.DISMOUNT_TRANSITION; ride.stateTicks=0; return;
         }
         player.setShiftKeyDown(false);
         if(sword.distanceToSqr(player)>64){stop(player);return;}
         if(!tickAdvanced(sword,player,ride,definition,source))return;
-        tickHuahong(sword,player,ride,definition,source);
+        if(!tickHuahong(sword,player,ride,definition,source))return;
         boolean hovering=ride.phase==YujianPhase.LINGKONG;
         float currentYaw=sword.getYRot();
         float currentPitch=sword.getXRot();
@@ -472,21 +484,39 @@ public final class YujianController {
         if(jinghongTriggered)allowed=Math.max(allowed,velocity.length());
         if(velocity.length()>allowed)velocity=velocity.normalize().scale(allowed);
         velocity=YujianTuning.finiteVelocity(velocity);
+        FlightChunkStreaming.update(player,sword,velocity,ride.desiredYaw,targetPitch,
+                Mth.clamp(steer,.03D,.35D),acceleration,targetSpeed,ride.brake||!ride.forward||hovering);
         Vec3 before=sword.position();
         Vec3 oldTip=before.add(direction(currentYaw,currentPitch).scale(1.2D*definition.flightScale()));
         AABB body=FlightFrame.riderBounds(before,nextYaw,nextPitch,sword.roll(),definition.riderOffset());
-        if(!FlightCollision.clear(player,body,ride.phase==YujianPhase.DUNXU)){
+        boolean phasing=collisionPhasing(ride);
+        if(!FlightCollision.clear(player,body,phasing)){
             sword.setYRot(currentYaw);sword.setXRot(currentPitch);sword.roll(currentRoll);
             ride.manualRoll.halt(Math.toRadians(currentRoll-ride.bank));
             body=FlightFrame.riderBounds(before,currentYaw,currentPitch,currentRoll,definition.riderOffset());
         }
         AABB volume=body.minmax(player.getBoundingBox()).minmax(sword.getBoundingBox());
-        var sweep=FlightCollision.sweep(player,volume,velocity,ride.phase==YujianPhase.DUNXU);
+        // Fixed loading deceleration and its readiness envelope must agree.
+        // Normal fully loaded flight retains its original acceleration/top speed.
+        double terrainBraking=FlightTerrainGovernor.BRAKING;
+        var terrain=FlightChunkStreaming.readiness(player,volume,velocity,terrainBraking);
+        double readyDistance=terrain.complete()?Double.POSITIVE_INFINITY:terrain.readyDistance();
+        boolean routeComplete=terrain.complete();
+        Vec3 previousVelocity=sword.getDeltaMovement();
+        if(previousVelocity.lengthSqr()>.0001){
+            var momentum=FlightChunkStreaming.readiness(player,volume,previousVelocity,terrainBraking);
+            if(!momentum.complete())readyDistance=Math.min(readyDistance,momentum.readyDistance());
+            routeComplete&=momentum.complete();
+        }
+        double plannedSpeed=velocity.length();
+        double governed=ride.terrainGovernor.limit(previousSpeed,plannedSpeed,targetSpeed,readyDistance,routeComplete);
+        if(plannedSpeed>1e-8&&governed<plannedSpeed)velocity=velocity.scale(governed/plannedSpeed);
+        var sweep=FlightCollision.sweep(player,volume,velocity,phasing);
         boolean blocked=sweep.blocked();velocity=sweep.movement();
         if(ride.collisionTicks>0){ride.collisionTicks--;velocity=velocity.scale(0.7);}
         sword.setDeltaMovement(velocity);
-        // Only the sword's already-validated displacement bypasses vanilla solid collision during DUNXU.
-        sword.noPhysics=ride.phase==YujianPhase.DUNXU;
+        // Only the already-validated displacement bypasses ordinary vanilla wall collision.
+        sword.noPhysics=phasing;
         try{sword.move(MoverType.SELF,velocity);}finally{sword.noPhysics=false;}
         double moved=sword.position().distanceTo(before);
         sword.flightSpeed((float)moved); player.fallDistance=0;
@@ -516,6 +546,7 @@ public final class YujianController {
         if(impact){ride.huahong.exit();sword.huahong(ride.huahong.stage(),ride.huahong.strength());}
         if (impact) {
             changePhase(sword,player,ride,YujianPhase.BASIC);
+            if(phasing&&!collisionPhasing(ride)&&!restoreSafePosition(sword,player,ride)){stop(player);return;}
             ride.cruiseTarget=Math.min(ride.cruiseTarget,definition.baseSpeed());
             if(ride.collisionTicks==0){sword.impactNow();FlightFeedbackEvent.emit(sword,FlightFeedbackEvent.Kind.BLOCK_IMPACT);}
             ride.collisionTicks=6;
@@ -530,8 +561,10 @@ public final class YujianController {
         for (Iterator<Map.Entry<UUID,Integer>> it=ride.hitCooldown.entrySet().iterator();it.hasNext();) if(it.next().getValue()<=player.tickCount)it.remove();
     }
 
-    /** Rainbow only changes speed/appearance. Collision always reads the original Dunxu phase. */
-    private static void tickHuahong(ControlledSwordEntity sword,ServerPlayer player,Ride ride,
+    private static boolean collisionPhasing(Ride ride){return ride.phase==YujianPhase.DUNXU||ride.huahong.phasing();}
+
+    /** Gathering/flying rainbow owns ordinary-wall permission independently of Dunxu. */
+    private static boolean tickHuahong(ControlledSwordEntity sword,ServerPlayer player,Ride ride,
                                     FlyingSwordDefinition definition,ItemStack source){
         var data=GeneratedMod.data(player);
         double normal=definition.advanced().maxSpeed(ride.phase,definition)*FlyingSwordConfig.CRUISE_FRACTION.get();
@@ -550,11 +583,12 @@ public final class YujianController {
                     .minmax(player.getBoundingBox()).minmax(sword.getBoundingBox());
             // Look ahead along momentum AND the steered direction; never loads terrain.
             double look=Math.max(normal*2,sword.flightSpeed())*2;
-            boolean phasing=ride.phase==YujianPhase.DUNXU;
-            var check=FlightCollision.sweep(player,volume,direction(sword.getYRot(),sword.getXRot()).scale(look),phasing);
+            // Gathering itself grants the same bounded ordinary-wall permission.
+            // Protected blocks/entities, world borders and unready chunks still block entry.
+            var check=FlightCollision.sweep(player,volume,direction(sword.getYRot(),sword.getXRot()).scale(look),true);
             eligible=!check.blocked();
             if(eligible&&sword.getDeltaMovement().lengthSqr()>.01)
-                eligible=!FlightCollision.sweep(player,volume,sword.getDeltaMovement().normalize().scale(look),phasing).blocked();
+                eligible=!FlightCollision.sweep(player,volume,sword.getDeltaMovement().normalize().scale(look),true).blocked();
         }
         float max=CultivationLogic.maxAura(data);
         float entry=Math.max(1,(float)(max*HuahongFlight.ENTRY_COST));
@@ -562,6 +596,7 @@ public final class YujianController {
         upkeep=cn.blockforge.generated.generatedmod.crafting.EquipmentCrafting.upkeep(source,upkeep);
         boolean funded=data.wuxingxiantu$getAura()>=(ride.huahong.stage()==0?entry+upkeep:upkeep);
         int before=ride.huahong.stage();
+        boolean wasPhasing=ride.huahong.phasing();
         if(ride.huahong.tick(eligible,sword.flightSpeed()>=normal*HuahongFlight.ENTRY_RATIO,funded,ride.sprint))
             data.wuxingxiantu$setAura(data.wuxingxiantu$getAura()-entry);
         if(ride.huahong.stage()==1||ride.huahong.stage()==2){
@@ -571,11 +606,13 @@ public final class YujianController {
             data.wuxingxiantu$setAura(Math.max(0,data.wuxingxiantu$getAura()+refund-upkeep));
         }
         int after=ride.huahong.stage();sword.huahong(after,ride.huahong.strength());
+        if(wasPhasing&&!collisionPhasing(ride)&&!restoreSafePosition(sword,player,ride)){stop(player);return false;}
         if(after!=before&&after!=0){
             player.displayClientMessage(net.minecraft.network.chat.Component.translatable("yujian.wuxingxiantu.huahong.stage."+after),true);
             if(after==2)player.serverLevel().playSound(null,sword.blockPosition(),net.minecraft.sounds.SoundEvents.TRIDENT_RIPTIDE_1,
                     net.minecraft.sounds.SoundSource.PLAYERS,.45F,1.65F);
         }
+        return true;
     }
 
     private static void tickDismount(ControlledSwordEntity sword, ServerPlayer player, Ride ride) {
@@ -633,34 +670,53 @@ public final class YujianController {
         AABB volume=FlightFrame.riderBounds(sword.position(),sword.getYRot(),sword.getXRot(),sword.roll(),sword.riderOffset())
                 .minmax(player.getBoundingBox()).minmax(sword.getBoundingBox());
         if(FlightCollision.clear(player,volume,false))return true;
+        // Leave a thin wall at its nearest free side instead of jumping back
+        // an entire high-speed tick. Every candidate and route stays loaded,
+        // within the world border and behind the existing phasing exclusions.
+        Vec3 forward=direction(sword.getYRot(),sword.getXRot()),side=direction(sword.getYRot()+90,0);
+        Vec3[] exits={forward,new Vec3(0,1,0),side,side.scale(-1),forward.scale(-1),
+                new Vec3(1,0,0),new Vec3(-1,0,0),new Vec3(0,0,1),new Vec3(0,0,-1),new Vec3(0,-1,0)};
+        for(double distance=.5;distance<=16;distance+=.5)for(Vec3 direction:exits){
+            Vec3 offset=direction.scale(distance);
+            if(exitPathClear(player,volume,offset)){
+                relocateFlight(sword,player,sword.position().add(offset));return true;
+            }
+        }
         for(var iterator=ride.safePositions.descendingIterator();iterator.hasNext();){
             Vec3 candidate=iterator.next();
-            if(FlightCollision.clear(player,volume.move(candidate.subtract(sword.position())),false)){
-                sword.setPos(candidate);player.setPos(candidate.add(0,sword.riderOffset(),0));sword.setDeltaMovement(Vec3.ZERO);return true;
+            if(exitPathClear(player,volume,candidate.subtract(sword.position()))){
+                relocateFlight(sword,player,candidate);return true;
             }
         }
         // A nearby block edit may invalidate the history. Search only bounded, already-loaded space.
         for(int y=1;y<=12;y++)for(int x=-2;x<=2;x++)for(int z=-2;z<=2;z++){
             Vec3 offset=new Vec3(x,y,z);
-            if(FlightCollision.clear(player,volume.move(offset),false)){
-                Vec3 point=sword.position().add(offset);sword.setPos(point);player.setPos(point.add(0,sword.riderOffset(),0));
-                sword.setDeltaMovement(Vec3.ZERO);return true;
+            if(exitPathClear(player,volume,offset)){
+                relocateFlight(sword,player,sword.position().add(offset));return true;
             }
         }
         // Last resort for terrain edits: a loaded, collision-free column above the flight route.
         for(int y=player.level().getMaxBuildHeight()-4;y>player.level().getMinBuildHeight();y--){
             Vec3 point=new Vec3(sword.getX(),y,sword.getZ());
-            if(FlightCollision.clear(player,volume.move(point.subtract(sword.position())),false)){
-                sword.setPos(point);player.setPos(point.add(0,sword.riderOffset(),0));sword.setDeltaMovement(Vec3.ZERO);return true;
+            if(exitPathClear(player,volume,point.subtract(sword.position()))){
+                relocateFlight(sword,player,point);return true;
             }
         }
         // Persist a normal respawn recovery instead of leaving a player embedded with phasing enabled.
         player.getPersistentData().putBoolean("YujianEmergencyReturn",true);
         return false;
     }
+    private static boolean exitPathClear(ServerPlayer player,AABB volume,Vec3 offset){
+        if(!FlightCollision.clear(player,volume.move(offset),false))return false;
+        var sweep=FlightCollision.sweep(player,volume,offset,true);
+        return !sweep.blocked()&&sweep.loaded()&&sweep.movement().distanceToSqr(offset)<1e-8;
+    }
+    private static void relocateFlight(ControlledSwordEntity sword,ServerPlayer player,Vec3 position){
+        sword.setPos(position);sword.positionRider(player);sword.setDeltaMovement(Vec3.ZERO);sword.flightSpeed(0);
+    }
     private static void changePhase(ControlledSwordEntity sword,ServerPlayer player,Ride ride,YujianPhase phase){
         if(ride.phase==phase)return;
-        if(ride.phase==YujianPhase.DUNXU)restoreSafePosition(sword,player,ride);
+        if(ride.phase==YujianPhase.DUNXU&&!ride.huahong.phasing())restoreSafePosition(sword,player,ride);
         ride.phase=phase;ride.phaseTicks=0;ride.extremeTicks=0;ride.extremeEmitted=false;
         ride.rollPulseTicks=0;
         if(phase!=YujianPhase.DUNXU){ride.dunxuStage=0;ride.dunxuStageTicks=0;ride.dunxuHoldTicks=0;}

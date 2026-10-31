@@ -14,7 +14,9 @@ public final class ArtVisualEffects {
     private static long budgetTick;
     private static int emitted;
     public static void accept(ArtVisualPacket p) {
-        if (p.art().equals("art_spirit_shield")) return;
+        // Flight has dedicated continuous sword/huahong renderers. Also ignore
+        // old flight packets without affecting any combat art's particle path.
+        if (p.art().equals("art_spirit_shield") || p.art().equals("art_sword_flight")) return;
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
         if (currentLevel != level || budgetTick != level.getGameTime()) {

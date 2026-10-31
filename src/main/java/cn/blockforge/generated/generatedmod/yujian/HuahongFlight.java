@@ -1,6 +1,6 @@
 package cn.blockforge.generated.generatedmod.yujian;
 
-/** Server-owned rainbow flight lifecycle. Orthogonal to Dunxu collision permission. */
+/** Server-owned rainbow flight lifecycle, including ordinary-wall phasing while gathering/flying. */
 public final class HuahongFlight {
     public static final int STABLE_TICKS=6, GATHER_TICKS=6, ACCEL_TICKS=8, EXIT_TICKS=8, COOLDOWN=20;
     public static final int SPRINT_GRACE_TICKS=12;
@@ -10,6 +10,7 @@ public final class HuahongFlight {
     public int stage(){return stage;}
     public float strength(){return strength;}
     public boolean boosting(){return stage==2;}
+    public boolean phasing(){return stage==1||stage==2;}
     public double multiplier(){return boosting()?1.0+smooth(Math.min(1,ticks/(double)ACCEL_TICKS)):1;}
     public static boolean supported(int tier){return tier>=6;}
     public boolean tick(boolean eligible,boolean atSpeed,boolean funded){

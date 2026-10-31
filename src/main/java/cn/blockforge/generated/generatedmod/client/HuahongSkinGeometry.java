@@ -190,7 +190,6 @@ final class HuahongSkinGeometry {
             }
             strip(remnant,24);
         }
-        embers(torn?0xff662b:0xffbd69,torn?.09:.05);
     }
     private void feather(){
         // Open V4 membrane family: irregular three-dimensional rear endpoints,
@@ -312,22 +311,11 @@ final class HuahongSkinGeometry {
         }
         slices.sort(Comparator.comparingDouble((Cloud c)->c.p().distanceToSqr(eye)).reversed());
         for(var c:slices)billboard(new Row(c.p(),c.seed(),c.radius(),c.alpha(),c.color(),null),c.mode());
-        embers(0xff341b,.026);
     }
     private void dense(){
         // Only the compact source nucleus uses a sprite. The surrounding body
         // is the independent ray-integrated world field, queued by HuahongVisuals.
         if(strength>.001F)billboard(new Row(center,0,.12+3.5*.045+.52*.10,strength*.74F,0xe6fbff,null),32);
-    }
-    private void embers(int color,double size){
-        for(var b:births(1.65,34,1.2)){
-            if(rnd(b.cell()+31)>.32)continue;
-            double age=(now-b.tick())/20;if(age<.035)continue;
-            double phase=b.cell()*2.399;Frame f=frame(b.p(),b.direction());
-            Vec3 p=b.p().add(Math.sin(phase)*age*.42,Math.cos(phase)*age*.31+age*age*.17,Math.sin(phase*1.7)*age*.31);
-            float a=(float)(fade(age,1.2)*smooth(34,27,headArc()-b.arc())*.34);
-            strip(List.of(new Row(p,b.arc()-origin,size,a,color,f.side()),new Row(p.subtract(f.forward().scale(.14+age*.1)),b.arc()-origin-.2,0,0,color,f.side())),24);
-        }
     }
     private void billboard(Row r,int mode){
         Vec3 normal=eye.subtract(r.p()).normalize(),right=side(normal).scale(r.width()),up=normal.cross(right).normalize().scale(r.width());

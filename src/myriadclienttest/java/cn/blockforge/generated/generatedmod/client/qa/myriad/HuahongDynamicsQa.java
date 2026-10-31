@@ -22,8 +22,15 @@ import net.minecraft.world.phys.Vec3;
 final class HuahongDynamicsQa {
     static final boolean ENABLED=Boolean.getBoolean("wuxingxiantu.huahongDynamics");
     private static final HuahongSkin[] SKINS=skins();
-    private static final int CYCLE=280;
-    private static final List<Map<String,Object>> FRAMES=new ArrayList<>(),SERVER=new ArrayList<>();
+    static final boolean FRAME_ONLY=Boolean.getBoolean("wuxingxiantu.huahongFrameOnly");
+    static final boolean COLD=Boolean.getBoolean("wuxingxiantu.huahongColdStreaming");
+    private static final int CYCLE=COLD?640:280;
+    private static volatile long serverStartedNanos;
+    private static volatile double lastServerTickWallMs;
+    private static long previousRenderNanos;
+    private static final List<Map<String,Object>> FRAMES=new ArrayList<>(),SERVER=new ArrayList<>(),ALL_FRAMES=new ArrayList<>(),SERVER_TIMINGS=new ArrayList<>();
+    private static Map<String,Object> activeProfileFrame;
+    private static long activeProfileStarted,previousAllRenderNanos;
     private static final List<String> FAILURES=Collections.synchronizedList(new ArrayList<>());
     private static final ExecutorService WRITER=Executors.newFixedThreadPool(4,r->{var t=new Thread(r,"huahong-qa-mesh");t.setDaemon(true);return t;});
     private static final ExecutorService IMAGE_WRITER=Executors.newFixedThreadPool(2,r->{var t=new Thread(r,"huahong-qa-images");t.setDaemon(true);return t;});
@@ -42,6 +49,7 @@ final class HuahongDynamicsQa {
     private static Path output;
     private static CompletableFuture<?> warm;
     private static long lastWarm=-20;
+    private static int savedHeadMeshFrames;
     private static int chosen=-1,geometryJumps,droppedImages,fullMeshFrames,maxMeshBacklog,maxImageBacklog;
     private static String previousArtifactSegment="";
     private static int supplementedWorldTicks;
@@ -60,7 +68,7 @@ final class HuahongDynamicsQa {
     static int tick(){return (int)clock;}
     static double exposure(long frame){
         String value=System.getProperty("wuxingxiantu.huahongQaExposure","cycle");
-        int phase=control().phase();boolean normalSequence=SKINS[control().skin()]==HuahongSkin.METEOR_PRISM&&phase>=180&&phase<210&&UTURN_IMAGES.getOrDefault(SKINS[control().skin()].name(),0)<12||phase>=84&&phase<90||phase>=224&&phase<230||phase>=244&&phase<250;
+        int phase=control().phase();boolean normalSequence=SKINS[control().skin()]==HuahongSkin.METEOR_PRISM&&phase>=(COLD?490:180)&&phase<(COLD?550:210)&&UTURN_IMAGES.getOrDefault(SKINS[control().skin()].name(),0)<12||phase>=84&&phase<90||phase>=224&&phase<230||phase>=244&&phase<250;
         double exposure=value.equalsIgnoreCase("cycle")?(normalSequence?1:new double[]{1,.25,.0625}[(int)Math.floorMod(frame,3)]):Double.parseDouble(value);
         if(exposure<=0||exposure>1||!Double.isFinite(exposure))throw new IllegalArgumentException("Invalid QA exposure "+value);
         return exposure;
@@ -70,12 +78,14 @@ final class HuahongDynamicsQa {
     }
     private static Control control(long scenarioClock){
         int skin=Math.min(SKINS.length-1,(int)(scenarioClock/CYCLE)),phase=(int)(scenarioClock%CYCLE);float base=skin*180;
-        float yaw=phase<110?base:phase<140?base-90:phase<170?base:base+180;
-        boolean brake=scenarioClock>=SKINS.length*CYCLE||phase>=250;
-        boolean coast=phase>=230&&phase<236;
-        boolean releaseSprint=phase>=210&&phase<216;
+        int left=COLD?320:110,right=COLD?400:140,turn=COLD?480:170,sprintOff=COLD?560:210,sprintOn=COLD?566:216,stop=COLD?590:230,recover=COLD?596:236,brakeAt=COLD?610:250;
+        float yaw=phase<left?base:phase<right?base-90:phase<turn?base:base+180;
+        boolean brake=scenarioClock>=SKINS.length*CYCLE||phase>=brakeAt;
+        boolean coast=phase>=stop&&phase<recover;
+        boolean releaseSprint=phase>=sprintOff&&phase<sprintOn;
         boolean forward=!brake&&!coast&&(scenarioClock>=20);
-        String segment=phase<80?"accelerate":phase<110?"straight":phase<140?"left-90":phase<170?"right-90":phase<210?"uturn-180":phase<216?"release-sprint":phase<230?"recover-sprint":phase<236?"release-forward":phase<250?"recover-forward":"brake-exit";
+        String segment=phase<80?"accelerate":phase<left?"straight":phase<right?"left-90":phase<turn?"right-90":phase<sprintOff?"uturn-180":phase<sprintOn?"release-sprint":phase<stop?"recover-sprint":phase<recover?"release-forward":phase<brakeAt?"recover-forward":"brake-exit";
+        if(HuahongWallQa.ENABLED){yaw=base;brake=phase>=160&&phase<200||phase>=250||scenarioClock>=SKINS.length*CYCLE;forward=!brake&&scenarioClock>=20;releaseSprint=false;segment=phase<100?"wall-approach":phase<130?"wall-pass":phase<145?"wall-clear":phase<160?"wall-enter":phase<200?"wall-inside-brake":phase<250?"wall-recover":"brake-exit";}
         return new Control(skin,phase,yaw,0,forward,forward&&!releaseSprint,brake,segment);
     }
     static void input(){
@@ -88,7 +98,7 @@ final class HuahongDynamicsQa {
             mc.options.framerateLimit().set(30);HuahongSkinPreferences.select(SKINS[0]);chosen=0;
             FlyingSwordConfig.TRAIL_PATH.set(Boolean.getBoolean("wuxingxiantu.myriadExternalShaders")?FlyingSwordConfig.TrailPath.AUTO:FlyingSwordConfig.TrailPath.NORMAL_TRAIL_RENDER_PATH);
         }
-        input();var c=control();
+        input();var c=control();HuahongWallQa.clientTick(mc,c.phase());
         if(chosen!=c.skin()){chosen=c.skin();HuahongSkinPreferences.select(SKINS[chosen]);}
         return clock>=SKINS.length*CYCLE;
     }
@@ -104,10 +114,11 @@ final class HuahongDynamicsQa {
         long nextClock=nextWorldTick-epoch;var c=control(nextClock);
         YujianController.handleInput(player,nextClock<20,!summoned.getAndSet(true),c.forward(),c.brake(),false,false,false,false,c.sprint(),false,1,0,c.yaw(),c.pitch());
         SEND_COUNT.incrementAndGet();
-        if(player.getVehicle() instanceof ControlledSwordEntity sword)refreshNearCorridor(player,sword,c);
-        if(nextClock-lastWarm>=10&&player.getVehicle() instanceof ControlledSwordEntity sword){
+        if(!COLD&&player.getVehicle() instanceof ControlledSwordEntity sword)refreshNearCorridor(player,sword,c);
+        if(!COLD&&nextClock-lastWarm>=10&&player.getVehicle() instanceof ControlledSwordEntity sword){
             lastWarm=nextClock;warmFlightRoute(player,sword,nextClock);
         }
+        if(player.getVehicle() instanceof ControlledSwordEntity sword)HuahongWallQa.beforeInput(player,sword,c.phase());
     }
     static void prepareWorld(ServerPlayer player){
         var def=FlyingSwordRegistry.visual(player.getMainHandItem());
@@ -154,6 +165,16 @@ final class HuahongDynamicsQa {
         }));
         for(long chunk:ordered)player.serverLevel().getChunk(net.minecraft.world.level.ChunkPos.getX(chunk),net.minecraft.world.level.ChunkPos.getZ(chunk));
     }
+    static void serverTiming(boolean start){if(start)serverStartedNanos=System.nanoTime();else if(serverStartedNanos!=0){lastServerTickWallMs=(System.nanoTime()-serverStartedNanos)/1e6;if(started){var server=Minecraft.getInstance().getSingleplayerServer();if(server!=null)synchronized(SERVER_TIMINGS){SERVER_TIMINGS.add(Map.of("nanoTime",System.nanoTime(),"serverTick",server.getTickCount(),"wallClockMillis",System.currentTimeMillis(),"scenarioClock",clock,"wallMs",lastServerTickWallMs));}}}}
+    static void profileFrame(Minecraft mc){
+        activeProfileFrame=null;if(!started)return;HuahongFrameTimings.sceneClock=clock;long now=System.nanoTime();activeProfileStarted=now;
+        var row=new LinkedHashMap<String,Object>();row.put("frame",ALL_FRAMES.size());row.put("nanoTime",now);row.put("wallClockMillis",System.currentTimeMillis());row.put("frameLimit",mc.options.framerateLimit().get());row.put("clock",clock);row.put("phase",control().phase());row.put("segment",control().segment());row.put("renderIntervalWallMs",previousAllRenderNanos==0?0:(now-previousAllRenderNanos)/1e6);previousAllRenderNanos=now;
+        int stage=0;float strength=0;boolean mounted=mc.player!=null&&mc.player.getVehicle() instanceof ControlledSwordEntity;
+        if(mounted){var sword=(ControlledSwordEntity)mc.player.getVehicle();stage=sword.huahongStage();strength=sword.renderHuahong(mc.getFrameTime());row.put("speed",sword.flightSpeed());row.put("entityTick",sword.tickCount);row.put("skin",sword.huahongSkin().name());row.put("samplerTick",FlyingSwordEffects.capturedTrailTick());var transform=InterpolatedFlyingSwordTransform.get(sword,mc.getFrameTime());row.put("center",List.of(transform.position().x,transform.position().y+.85,transform.position().z));row.put("rotation",List.of(transform.yaw(),transform.pitch(),transform.roll()));row.put("shaderPack",TrailShaderBridge.shaderPackDetected());row.put("renderPath",FlyingSwordEffects.activeTrailRenderPath);}
+        row.put("mounted",mounted);row.put("stage",stage);row.put("strength",strength);row.put("fullRainbow",stage==2&&strength>=.995F);row.put("fixtureCaptureWorkMs",0.0);row.put("screenshotReadbackMs",0.0);row.put("meshMetricsMs",0.0);row.put("meshSubmitted",false);
+        activeProfileFrame=row;ALL_FRAMES.add(row);
+    }
+    static void profileFrameDone(){if(activeProfileFrame!=null)activeProfileFrame.put("fixtureCaptureWorkMs",(System.nanoTime()-activeProfileStarted)/1e6);}
     static void serverLevelTick(net.minecraft.server.level.ServerLevel level){
         if(!started||playerId==null)return;var player=level.getServer().getPlayerList().getPlayer(playerId);
         if(player==null||player.serverLevel()!=level)return;
@@ -177,6 +198,11 @@ final class HuahongDynamicsQa {
             row.put("supplementRootTickGrowth",sword.tickCount-beforeTick.entityTick());row.put("supplementPlayerTickGrowth",player.tickCount-beforeTick.playerTick());
         }
         row.put("actualInput",HuahongCapture.rideDiagnostics(player));
+        row.put("serverNanoTime",System.nanoTime());row.put("previousServerTickWallMs",lastServerTickWallMs);row.put("currentServerTickElapsedMs",serverStartedNanos==0?0:(System.nanoTime()-serverStartedNanos)/1e6);
+        row.put("actualVelocity",List.of(sword.getDeltaMovement().x,sword.getDeltaMovement().y,sword.getDeltaMovement().z));row.put("rawTargetSpeed",sword.targetSpeed());var definition=FlyingSwordRegistry.visual(sword.display());row.put("formalRainbowCruise",definition.advanced().maxSpeed(YujianPhase.JIYU,definition)*FlyingSwordConfig.CRUISE_FRACTION.get()*2);row.put("diagnosticAcceleration",sword.flightAcceleration());row.put("aheadLoaded",sword.aheadLoaded());row.put("colliding",sword.colliding());row.put("impact",sword.impact());
+        row.put("streamRider",FlightChunkStreaming.diagnostics(player));row.put("streamLevel",FlightChunkStreaming.diagnostics(level));
+        var readiness=FlightChunkStreaming.readiness(player,player.getBoundingBox().minmax(sword.getBoundingBox()),sword.getDeltaMovement(),.18);row.put("streamReadiness",readiness);row.put("streamReadinessScope","Post-movement recomputation with governor BRAKING=.18; not the prefix consumed by that same movement");
+        HuahongWallQa.serverRow(player,sword,row,c.phase());
         row.put("forward",c.forward());row.put("sprint",c.sprint());row.put("brake",c.brake());
         synchronized(SERVER){SERVER.add(row);}
     }
@@ -184,7 +210,7 @@ final class HuahongDynamicsQa {
         try{var method=ControlledSwordEntity.class.getDeclaredMethod("lastServerTick");method.setAccessible(true);return ((Number)method.invoke(sword)).longValue();}
         catch(ReflectiveOperationException error){throw new AssertionError("Unable to inspect production root ticking timestamp",error);}
     }
-    static String view(){int p=control().phase();return p>=100&&p<110||p>=230?"far":p>=90&&p<100||p>=140&&p<230?"near-chase":"three-quarter-side";}
+    static String view(){int p=control().phase();if(COLD)return p<160||p>=320&&p<400?"three-quarter-side":p<240||p>=400&&p<590?"near-chase":"far";return p>=100&&p<110||p>=230?"far":p>=90&&p<100||p>=140&&p<230?"near-chase":"three-quarter-side";}
     private static Vec3 desiredCamera(){return switch(view()){case "far"->new Vec3(16,6,-23);case "near-chase"->new Vec3(.3,.75,-8);default->new Vec3(5,2,-5);};}
     static boolean cameraSettled(){return cameraOffset.distanceTo(desiredCamera())<.03;}
     static Vec3 camera(InterpolatedFlyingSwordTransform transform){
@@ -196,46 +222,49 @@ final class HuahongDynamicsQa {
     static void frame(Minecraft mc,float partial)throws Exception{
         if(!started||mc.player==null||!(mc.player.getVehicle() instanceof ControlledSwordEntity sword))return;
         var mesh=HuahongMotionQa.submittedMesh();if(mesh==null||mesh.vertices.isEmpty())return;
-        var c=control(mesh.scenarioClock);var row=new LinkedHashMap<String,Object>();row.put("frame",mesh.serial);row.put("clock",mesh.scenarioClock);row.put("skin",mesh.skin);row.put("phase",c.phase());row.put("segment",c.segment());
+        long renderNanos=System.nanoTime();double renderWallMs=previousRenderNanos==0?0:(renderNanos-previousRenderNanos)/1e6;previousRenderNanos=renderNanos;
+        var c=control(mesh.scenarioClock);var row=new LinkedHashMap<String,Object>();row.put("frame",mesh.serial);row.put("clock",mesh.scenarioClock);row.put("skin",mesh.skin);row.put("phase",c.phase());row.put("segment",c.segment());row.put("clientNanoTime",renderNanos);row.put("renderIntervalWallMs",renderWallMs);
         row.put("samplerTick",FlyingSwordEffects.capturedTrailTick());row.put("partial",partial);row.put("entityTick",sword.tickCount);row.put("rawPosition",List.of(sword.getX(),sword.getY(),sword.getZ()));row.put("oldPosition",List.of(sword.xOld,sword.yOld,sword.zOld));
         var interpolationField=ControlledSwordEntity.class.getDeclaredField("flightInterpolation");interpolationField.setAccessible(true);var interpolation=(FlightInterpolation)interpolationField.get(sword);
-        row.put("serverClockRate",interpolation.clockRate());row.put("serverBufferDelay",interpolation.bufferDelay());row.put("playbackTick",interpolation.playbackTick());row.put("interpolationBuffering",interpolation.buffering());
+        row.put("bufferedPhasing",sword.bufferedPhasing());row.put("playerInsideWall",mc.player.isInWall());row.put("serverClockRate",interpolation.clockRate());row.put("serverBufferDelay",interpolation.bufferDelay());row.put("playbackTick",interpolation.playbackTick());row.put("interpolationBuffering",interpolation.buffering());
         row.put("entityId",mesh.entityId);row.put("center",List.of(mesh.center.x,mesh.center.y,mesh.center.z));row.put("rotation",List.of(sword.getYRot(),sword.getXRot(),sword.roll()));
         row.put("submittedPoseMatrix",mesh.poseMatrix);row.put("actualProjectionMatrix",mesh.projectionMatrix);
         row.put("stage",sword.huahongStage());row.put("strength",sword.renderHuahong(partial));row.put("speed",sword.flightSpeed());row.put("speedMultiplier",FlyingSwordConfig.SPEED_MULTIPLIER.get());
         row.put("hasChunkAt",mc.level.hasChunkAt(sword.blockPosition()));row.put("view",view());row.put("cameraSettled",cameraSettled());row.put("cameraPosition",List.of(mesh.eye.x,mesh.eye.y,mesh.eye.z));
         row.put("exposureAlphaMultiplier",mesh.exposure);row.put("shaderPack",TrailShaderBridge.shaderPackDetected());row.put("renderPath",FlyingSwordEffects.activeTrailRenderPath);
         if(mesh.skin.equals("DENSE"))row.put("volume",HuahongVolumeRenderer.diagnostics());
+        var profile=activeProfileFrame;if(profile!=null){profile.put("meshSubmitted",true);profile.put("meshSerial",mesh.serial);}long metricsStart=System.nanoTime();
         var continuity=mesh.continuity();row.putAll(continuity);
         var widths=mesh.projectedHeadWidths();row.put("projectedHeadWidths",widths);
-        boolean stable=(c.phase()>=84&&c.phase()<90)||(c.phase()>=224&&c.phase()<230)||(c.phase()>=244&&c.phase()<250);
+        boolean stable=COLD?(c.phase()>=150&&c.phase()<160)||(c.phase()>=584&&c.phase()<590):(c.phase()>=84&&c.phase()<90)||(c.phase()>=224&&c.phase()<230)||(c.phase()>=244&&c.phase()<250);
         if(stable&&cameraSettled()&&Boolean.TRUE.equals(continuity.get("comparable"))&&((Number)continuity.get("matchedHeadVertices")).intValue()>=32&&((Number)continuity.get("p99FinalHeadVertexStep")).doubleValue()>.35)geometryJumps++;
         row.put("stableContinuityWindow",stable);FRAMES.add(row);
         int gl=org.lwjgl.opengl.GL11.glGetError();if(gl!=0)throw new AssertionError("Dynamics GL error "+gl);
-        boolean imageWindow=c.phase()>=60;
-        NativeImage image=null;boolean normalSequence=mesh.skin.equals("METEOR_PRISM")&&c.phase()>=180&&c.phase()<210&&cameraSettled()&&UTURN_IMAGES.getOrDefault(mesh.skin,0)<12;
+        if(profile!=null)profile.put("meshMetricsMs",(System.nanoTime()-metricsStart)/1e6);
+        boolean imageWindow=!HuahongWallQa.ENABLED&&(COLD?(c.phase()>=100&&c.phase()<110)||(c.phase()>=350&&c.phase()<360)||(c.phase()>=430&&c.phase()<440)||(c.phase()>=520&&c.phase()<530):c.phase()>=60);
+        NativeImage image=null;boolean normalSequence=!COLD&&!HuahongWallQa.ENABLED&&mesh.skin.equals("METEOR_PRISM")&&c.phase()>=(COLD?490:180)&&c.phase()<(COLD?550:210)&&cameraSettled()&&UTURN_IMAGES.getOrDefault(mesh.skin,0)<12;
         String preview=mesh.skin+"|"+c.segment()+"|"+view()+"|"+mesh.exposure;
-        boolean mandatoryNormal=mesh.exposure==1&&(c.segment().equals("straight")&&view().equals("three-quarter-side")||c.segment().equals("uturn-180")&&view().equals("near-chase"));
+        boolean mandatoryNormal=!COLD&&!HuahongWallQa.ENABLED&&mesh.exposure==1&&(c.segment().equals("straight")&&view().equals("three-quarter-side")||c.segment().equals("uturn-180")&&view().equals("near-chase"));
         boolean realMoving=sword.flightSpeed()>=8;
         boolean submittedVolume=!mesh.skin.equals("DENSE")||((Number)HuahongVolumeRenderer.diagnostics().get("submitted")).intValue()>0;
         row.put("movingPhotoEligible",realMoving&&submittedVolume);
         normalSequence=normalSequence&&realMoving&&submittedVolume&&sword.huahongStage()==2&&sword.renderHuahong(partial)>=.995F;
         boolean previewDue=imageWindow&&!PREVIEWS.contains(preview)&&(!mandatoryNormal||realMoving&&submittedVolume&&cameraSettled()&&sword.huahongStage()==2&&sword.renderHuahong(partial)>=.995F);
         if(normalSequence||previewDue&&IMAGE_BACKLOG.get()<8){
-            image=Screenshot.takeScreenshot(mc.getMainRenderTarget());PREVIEWS.add(preview);
+            long screenshotStart=System.nanoTime();image=Screenshot.takeScreenshot(mc.getMainRenderTarget());if(profile!=null)profile.put("screenshotReadbackMs",(System.nanoTime()-screenshotStart)/1e6);PREVIEWS.add(preview);
             if(normalSequence)row.put("normalUturnSequenceIndex",UTURN_IMAGES.merge(mesh.skin,1,Integer::sum));
         }else if(previewDue)droppedImages++;
         if(image!=null&&!widths.isEmpty())row.put("tipRaster",tipRaster(image,widths.get(0)));
-        String artifactSegment=mesh.skin+"|"+c.segment();boolean full=mesh.serial%10==0||!artifactSegment.equals(previousArtifactSegment);previousArtifactSegment=artifactSegment;
+        String artifactSegment=mesh.skin+"|"+c.segment();boolean newSegment=!artifactSegment.equals(previousArtifactSegment);boolean sparse=COLD||HuahongWallQa.ENABLED;boolean full=mesh.serial%(sparse?60:10)==0||newSegment;boolean saveHead=!sparse||mesh.serial%10==0||newSegment;previousArtifactSegment=artifactSegment;if(!saveHead)row.remove("headMeshFile");else savedHeadMeshFrames++;
         if(full){row.put("fullMeshFile",String.format(Locale.ROOT,"mesh/full-%07d.bin",mesh.serial));fullMeshFrames++;}
-        row.put("meshWriterBacklog",BACKLOG.get());row.put("imageWriterBacklog",IMAGE_BACKLOG.get());BACKLOG.incrementAndGet();maxMeshBacklog=Math.max(maxMeshBacklog,BACKLOG.get());
+        row.put("meshWriterBacklog",BACKLOG.get());row.put("imageWriterBacklog",IMAGE_BACKLOG.get());if(saveHead){BACKLOG.incrementAndGet();maxMeshBacklog=Math.max(maxMeshBacklog,BACKLOG.get());
         WRITER.execute(()->{
             try{
-                mesh.write(output,false);if(full)mesh.write(output,true);
+                long writeStarted=System.nanoTime();mesh.write(output,false);if(full)mesh.write(output,true);if(profile!=null)profile.put("asyncMeshWriteMs",(System.nanoTime()-writeStarted)/1e6);
             }catch(Throwable error){FAILURES.add(error.toString());}finally{BACKLOG.decrementAndGet();}
-        });
+        });}
         if(image!=null){NativeImage captured=image;IMAGE_BACKLOG.incrementAndGet();maxImageBacklog=Math.max(maxImageBacklog,IMAGE_BACKLOG.get());
-            IMAGE_WRITER.execute(()->{try{Path directory=output.resolve("motion");Files.createDirectories(directory);String name=String.format(Locale.ROOT,"%s-%s-%s-e%.4f-%07d.png",mesh.skin,c.segment(),row.get("view"),mesh.exposure,mesh.serial);captured.writeToFile(directory.resolve(name));row.put("image","motion/"+name);}
+            IMAGE_WRITER.execute(()->{long writeStarted=System.nanoTime();try{Path directory=output.resolve("motion");Files.createDirectories(directory);String name=String.format(Locale.ROOT,"%s-%s-%s-e%.4f-%07d.png",mesh.skin,c.segment(),row.get("view"),mesh.exposure,mesh.serial);captured.writeToFile(directory.resolve(name));row.put("image","motion/"+name);if(profile!=null)profile.put("asyncPngEncodeWriteMs",(System.nanoTime()-writeStarted)/1e6);}
                 catch(Throwable error){FAILURES.add(error.toString());}finally{captured.close();IMAGE_BACKLOG.decrementAndGet();}});
         }
     }
@@ -247,28 +276,32 @@ final class HuahongDynamicsQa {
         while((!WRITER.isTerminated()||!IMAGE_WRITER.isTerminated())&&System.nanoTime()<deadline){WRITER.awaitTermination(250,TimeUnit.MILLISECONDS);IMAGE_WRITER.awaitTermination(250,TimeUnit.MILLISECONDS);}
         if(!WRITER.isTerminated()||!IMAGE_WRITER.isTerminated())FAILURES.add("Artifact writers did not finish in 55 seconds");
         var gson=new GsonBuilder().setPrettyPrinting().create();
+        HuahongFrameTimings.write(out);
         Files.writeString(out.resolve("dynamics-frames.json"),gson.toJson(FRAMES));
         Files.writeString(out.resolve("dynamics-server.json"),gson.toJson(serverSnapshot));
+        Files.writeString(out.resolve("all-render-frames.json"),gson.toJson(ALL_FRAMES));
+        synchronized(SERVER_TIMINGS){Files.writeString(out.resolve("server-tick-walltimes.json"),gson.toJson(SERVER_TIMINGS));}
         List<String> acceptance=new ArrayList<>(FAILURES);
-        var totalCoverage=clientCoverage(FRAMES);verifyCoverage("all skins",totalCoverage,100,acceptance);
+        var movementFrames=FRAME_ONLY?ALL_FRAMES.stream().filter(r->r.containsKey("center")).toList():FRAMES;
+        var totalCoverage=clientCoverage(movementFrames);if(!HuahongWallQa.ENABLED)verifyCoverage("all skins",totalCoverage,100,acceptance);
         var perSkinCoverage=new LinkedHashMap<String,Object>();
-        if(geometryJumps>0)acceptance.add("Actual submitted local-head p99 jumps > .35 blocks in "+geometryJumps+" stable frames");
-        for(var skin:SKINS){
+        if(!HuahongWallQa.ENABLED&&geometryJumps>0)acceptance.add("Actual submitted local-head p99 jumps > .35 blocks in "+geometryJumps+" stable frames");
+        if(!HuahongWallQa.ENABLED)for(var skin:SKINS){
             var rows=serverSnapshot.stream().filter(r->r.get("skin").equals(skin.name())).toList();
-            var coverage=clientCoverage(FRAMES.stream().filter(r->r.get("skin").equals(skin.name())).toList());perSkinCoverage.put(skin.name(),coverage);verifyCoverage(skin.name(),coverage,80,acceptance);
-            if(Boolean.getBoolean("wuxingxiantu.myriadExternalShaders")&&FRAMES.stream().noneMatch(r->r.get("skin").equals(skin.name())&&Boolean.TRUE.equals(r.get("shaderPack"))&&"POST_SHADER_TRAIL_RENDER_PATH".equals(r.get("renderPath"))&&((Number)r.get("speed")).doubleValue()>=8))acceptance.add("No actual enabled shader-pack POST moving frame: "+skin);
+            var coverage=clientCoverage(movementFrames.stream().filter(r->r.get("skin").equals(skin.name())).toList());perSkinCoverage.put(skin.name(),coverage);verifyCoverage(skin.name(),coverage,80,acceptance);
+            if(Boolean.getBoolean("wuxingxiantu.myriadExternalShaders")&&movementFrames.stream().noneMatch(r->r.get("skin").equals(skin.name())&&Boolean.TRUE.equals(r.get("shaderPack"))&&"POST_SHADER_TRAIL_RENDER_PATH".equals(r.get("renderPath"))&&((Number)r.get("speed")).doubleValue()>=8))acceptance.add("No actual enabled shader-pack POST moving frame: "+skin);
             if(rows.size()<80)acceptance.add("Missing server maneuver samples for "+skin);
             for(String segment:List.of("straight","left-90","right-90","uturn-180","release-sprint","recover-sprint","release-forward","recover-forward","brake-exit"))
                 if(rows.stream().noneMatch(r->segment.equals(r.get("segment"))))acceptance.add("Missing "+skin+" / "+segment);
             // Sprint release is covered by the product's 12-tick recovery window.
             // Releasing forward is a stop request and must leave rainbow promptly.
-            if(rows.stream().anyMatch(r->((Number)r.get("phase")).intValue()>=110&&((Number)r.get("phase")).intValue()<230&&((Number)r.get("stage")).intValue()!=2))acceptance.add("Rainbow interrupted during turns/sprint recovery window: "+skin);
-            if(rows.stream().noneMatch(r->((Number)r.get("phase")).intValue()>=230&&((Number)r.get("phase")).intValue()<=234&&(((Number)r.get("stage")).intValue()==3||((Number)r.get("stage")).intValue()==0)))acceptance.add("Releasing forward did not exit rainbow by phase 234: "+skin);
+            if(rows.stream().anyMatch(r->((Number)r.get("phase")).intValue()>=(COLD?320:110)&&((Number)r.get("phase")).intValue()<(COLD?590:230)&&((Number)r.get("stage")).intValue()!=2))acceptance.add("Rainbow interrupted during turns/sprint recovery window: "+skin);
+            if(rows.stream().noneMatch(r->((Number)r.get("phase")).intValue()>=(COLD?590:230)&&((Number)r.get("phase")).intValue()<=(COLD?594:234)&&(((Number)r.get("stage")).intValue()==3||((Number)r.get("stage")).intValue()==0)))acceptance.add("Releasing forward did not exit rainbow by phase 234: "+skin);
             // Phase 236..249 is recorded without requiring reentry: the existing
             // 20-tick cooldown intentionally exceeds this short recovery sample.
-            if(rows.stream().noneMatch(r->((Number)r.get("phase")).intValue()>=270&&((Number)r.get("stage")).intValue()==0))acceptance.add("Brake did not exit rainbow: "+skin);
-            if(rows.stream().noneMatch(r->((Number)r.get("phase")).intValue()>=202&&((Number)r.get("phase")).intValue()<210&&Math.abs(Mth.wrapDegrees(((Number)r.get("yaw")).floatValue()-((Number)r.get("desiredYaw")).floatValue()))<20))acceptance.add("No completed 180-degree turn: "+skin);
-            for(String required:List.of("straight|three-quarter-side","uturn-180|near-chase")){
+            if(rows.stream().noneMatch(r->((Number)r.get("phase")).intValue()>=(COLD?630:270)&&((Number)r.get("stage")).intValue()==0))acceptance.add("Brake did not exit rainbow: "+skin);
+            if(rows.stream().noneMatch(r->((Number)r.get("phase")).intValue()>=(COLD?552:202)&&((Number)r.get("phase")).intValue()<(COLD?560:210)&&Math.abs(Mth.wrapDegrees(((Number)r.get("yaw")).floatValue()-((Number)r.get("desiredYaw")).floatValue()))<20))acceptance.add("No completed 180-degree turn: "+skin);
+            if(!COLD)for(String required:List.of("straight|three-quarter-side","uturn-180|near-chase")){
                 boolean captured=FRAMES.stream().anyMatch(r->r.get("skin").equals(skin.name())&&required.equals(r.get("segment")+"|"+r.get("view"))&&r.containsKey("image")&&((Number)r.get("exposureAlphaMultiplier")).doubleValue()==1&&Boolean.TRUE.equals(r.get("cameraSettled"))&&Boolean.TRUE.equals(r.get("movingPhotoEligible"))&&((Number)r.get("stage")).intValue()==2&&((Number)r.get("strength")).doubleValue()>=.995);
                 if(!captured)acceptance.add("Missing real moving normal-exposure photograph: "+skin+" / "+required);
             }
@@ -286,17 +319,55 @@ final class HuahongDynamicsQa {
                 if(!submitted)acceptance.add("DENSE produced no real ready/compiled/submitted depth-tested volume packet");
             }
         }
-        var summary=new LinkedHashMap<String,Object>();summary.put("failures",acceptance);summary.put("frames",FRAMES.size());summary.put("serverSamples",SERVER.size());summary.put("geometryJumpFrames",geometryJumps);summary.put("droppedImages",droppedImages);summary.put("skins",Arrays.stream(SKINS).map(Enum::name).toList());summary.put("simulatedSeconds",clock/20.0);
+        Map<String,Object> modeResult=Map.of();
+        if(COLD){var modes=new LinkedHashMap<String,Object>(verifyCold(serverSnapshot,acceptance));modes.put("straightKinematics",kinematics(serverSnapshot));modeResult=modes;}
+        if(HuahongWallQa.ENABLED){try{var modes=new LinkedHashMap<String,Object>(HuahongWallQa.verify());var hot=serverSnapshot.stream().filter(r->((Number)r.get("phase")).intValue()>=220&&((Number)r.get("phase")).intValue()<250&&((Number)r.get("stage")).intValue()==2&&((Number)r.get("rawTargetSpeed")).doubleValue()>=((Number)r.get("formalRainbowCruise")).doubleValue()*.95&&((FlightChunkStreaming.Readiness)r.get("streamReadiness")).complete()&&((Number)r.get("speed")).doubleValue()>=((Number)r.get("rawTargetSpeed")).doubleValue()*.95).toList();modes.put("recoveredTo95PercentRawTargetRows",hot.size());if(hot.isEmpty())acceptance.add("Loaded wall recovery never regained >=95% of the unrestricted mature rainbow cruise target");modeResult=modes;}catch(Throwable error){acceptance.add(error.toString());}HuahongWallQa.write(out);}
+        var summary=new LinkedHashMap<String,Object>();summary.put("meshCaptureEnabled",!FRAME_ONLY);summary.put("allRenderFrameCount",ALL_FRAMES.size());summary.put("fullRainbowRenderFrameCount",ALL_FRAMES.stream().filter(r->Boolean.TRUE.equals(r.get("fullRainbow"))).count());summary.put("frameTiming",Map.of("allFrames",timing(ALL_FRAMES,"renderIntervalWallMs"),"fullRainbowFrames",timing(ALL_FRAMES.stream().filter(r->Boolean.TRUE.equals(r.get("fullRainbow"))).toList(),"renderIntervalWallMs"),"fixtureCaptureWork",timing(ALL_FRAMES,"fixtureCaptureWorkMs"),"screenshotReadback",timing(ALL_FRAMES,"screenshotReadbackMs"),"meshMetrics",timing(ALL_FRAMES,"meshMetricsMs"),"serverTickWall",timing(SERVER_TIMINGS,"wallMs"),"scope","All render END frames after scenario start, including stage0/no mesh. Positive sample timings exclude startup zero placeholders; full server durations are separately indexed."));summary.put("scenarioMode",HuahongWallQa.ENABLED?"wall":COLD?"cold-streaming":"visual-dynamics");summary.put("modeResult",modeResult);summary.put("failures",acceptance);summary.put("frames",FRAMES.size());summary.put("serverSamples",SERVER.size());summary.put("geometryJumpFrames",geometryJumps);summary.put("droppedImages",droppedImages);summary.put("skins",Arrays.stream(SKINS).map(Enum::name).toList());summary.put("simulatedSeconds",clock/20.0);
         summary.put("supplementedWorldTicks",supplementedWorldTicks);
-        summary.put("headMeshFrames",FRAMES.size());summary.put("fullMeshFrames",fullMeshFrames);summary.put("fullMeshCadence","Every tenth render frame and first real frame of each skin/segment; all frames retain every actual vertex within 8 blocks of the carrier.");
+        summary.put("headMetricFrames",FRAMES.size());summary.put("headMeshFrames",savedHeadMeshFrames);summary.put("headMeshCadence",COLD||HuahongWallQa.ENABLED?"Every tenth render and segment start; continuity computed every real render. Sparse artifacts avoid polluting chunk I/O measurements.":"Every actual submitted render.");summary.put("fullMeshFrames",fullMeshFrames);summary.put("fullMeshCadence",COLD||HuahongWallQa.ENABLED?"Every sixtieth render and segment start; every render still measures actual final vertices.":"Every tenth render frame and first real frame of each skin/segment; all frames retain every actual vertex within 8 blocks of the carrier.");
         summary.put("maxMeshWriterBacklog",maxMeshBacklog);summary.put("maxImageWriterBacklog",maxImageBacklog);summary.put("normalUturnSequenceImages",UTURN_IMAGES);summary.put("orderedControllerInputTicks",SEND_COUNT.get());
-        summary.put("warmupDriver","Before epoch generate first 110-tick straight corridor; refresh current and next 2 ticks of 3x3 chunks every server START; long route every 10 ticks: shipping turnRate*fastHandling*.65 and .55 minimum velocity interpolation; <=1 tick/16 block steps, future phase prediction, 60 ticks ahead with 2-chunk corridor; generation only, no forced tickets or physics changes.");
+        summary.put("warmupDriver",COLD?"NONE: no fixture getChunk, no initial route generation, no near refresh; only production FlightChunkStreaming + vanilla player/spawn tracking.":"Before epoch generate first 110-tick straight corridor; refresh current and next 2 ticks of 3x3 chunks every server START; long route every 10 ticks: shipping turnRate*fastHandling*.65 and .55 minimum velocity interpolation; <=1 tick/16 block steps, future phase prediction, 60 ticks ahead with 2-chunk corridor; generation only, no forced tickets or physics changes.");
         summary.put("inputDriver","QA server-level START calls the real YujianController.handleInput in tick order; no fixture C2S control packets. Physics and snapshot S2C stay real. This run is not C2S network-timing acceptance.");
         summary.put("realClientCoverage",totalCoverage);summary.put("perSkinClientCoverage",perSkinCoverage);
         summary.put("vertexFormat","Raw big endian HMQ3: magic(int), frame(long), renderTime(double), partial(float), entityId(int), skin(UTF), full(boolean), originalCount(int), storedCount(int), then originalIndex(int), sourceSpace(byte: 1 local/2 world), strip(int), originalStripIndex(int), x/y/z/u/v(float), ARGB(int), carrier-local x/y/z(float). No compression; head every frame, full at declared cadence.");
         summary.put("exposureNote","QA-only alpha attenuation, normal/emission shared consumer; exposures are neighboring real frames, not a postprocessed PNG or changed production shader.");
         Files.writeString(out.resolve("dynamics-summary.json"),gson.toJson(summary));
         if(!acceptance.isEmpty())throw new AssertionError("Dynamics acceptance: "+acceptance);
+    }
+    private static Map<String,Object> kinematics(List<Map<String,Object>> input){
+        var rows=input.stream().filter(r->"straight".equals(r.get("segment"))&&((Number)r.get("stage")).intValue()==2&&Boolean.TRUE.equals(r.get("forward"))&&!Boolean.TRUE.equals(r.get("brake"))).toList();
+        var changes=new ArrayList<Double>();var jerks=new ArrayList<Double>();int peaks=0,gaps=0,up=0,down=0;double sum=0,min=Double.POSITIVE_INFINITY,max=0;Double previousChange=null;
+        for(int i=0;i<rows.size();i++){
+            double speed=((Number)rows.get(i).get("speed")).doubleValue();sum+=speed;min=Math.min(min,speed);max=Math.max(max,speed);
+            if(i==0)continue;
+            if(((Number)rows.get(i).get("worldTick")).longValue()-((Number)rows.get(i-1).get("worldTick")).longValue()!=1){gaps++;previousChange=null;continue;}
+            double delta=speed-((Number)rows.get(i-1).get("speed")).doubleValue();changes.add(Math.abs(delta));if(delta>3)up++;if(delta< -2)down++;
+            if(previousChange!=null){jerks.add(Math.abs(delta-previousChange));if(previousChange>0&&delta<0)peaks++;}previousChange=delta;
+        }
+        changes.sort(Double::compare);jerks.sort(Double::compare);var out=new LinkedHashMap<String,Object>();out.put("scope","Stage2 straight, adjacent actual world ticks only; peaks are +delta followed by -delta, up>3/down<-2, jerk=|delta-now - delta-previous|");out.put("samples",rows.size());out.put("gaps",gaps);out.put("speedMean",rows.isEmpty()?0:sum/rows.size());out.put("speedMin",rows.isEmpty()?0:min);out.put("speedMax",max);out.put("speedPeaks",peaks);out.put("accelerationOver3",up);out.put("decelerationBelowMinus2",down);out.put("deltaVAbsoluteP95",changes.isEmpty()?0:changes.get(Math.min(changes.size()-1,(int)(changes.size()*.95))));out.put("jerkAbsoluteP95",jerks.isEmpty()?0:jerks.get(Math.min(jerks.size()-1,(int)(jerks.size()*.95))));out.put("jerkAbsoluteMax",jerks.isEmpty()?0:jerks.get(jerks.size()-1));return out;
+    }
+    private static Map<String,Object> timing(List<Map<String,Object>> rows,String key){
+        var values=rows.stream().map(r->r.get(key)).filter(Number.class::isInstance).map(v->((Number)v).doubleValue()).filter(v->v>0&&Double.isFinite(v)).sorted().toList();
+        if(values.isEmpty())return Map.of("samples",0);
+        return Map.of("samples",values.size(),"p50",values.get(values.size()/2),"p95",values.get(Math.min(values.size()-1,(int)(values.size()*.95))),"max",values.get(values.size()-1));
+    }
+    private static Map<String,Object> verifyCold(List<Map<String,Object>> rows,List<String> failures){
+        long requests=0,completed=0;int coldMax=0,missingMax=0,readyMax=0;double peak=0,msptMax=0;boolean slowed=false,resumed=false;
+        var times=new ArrayList<Double>();
+        for(var row:rows){
+            var rider=(Map<?,?>)row.get("streamRider");var level=(Map<?,?>)row.get("streamLevel");
+            requests=Math.max(requests,((Number)level.get("requests")).longValue());completed=Math.max(completed,((Number)level.get("completed")).longValue());
+            int cold=((Number)level.get("directColdDestinations")).intValue();coldMax=Math.max(coldMax,cold);
+            int tickets=((Number)rider.get("tickets")).intValue();if(tickets>FlightChunkStreaming.MAX_RIDER_TICKETS||((Number)level.get("totalTickets")).intValue()>FlightChunkStreaming.MAX_TOTAL_TICKETS||cold>FlightChunkStreaming.MAX_TOTAL_REQUESTS)failures.add("Cold streaming exceeded destination/ticket budget at "+row.get("clock"));
+            missingMax=Math.max(missingMax,((Number)(rider.containsKey("ticketsMissing")?rider.get("ticketsMissing"):0)).intValue());readyMax=Math.max(readyMax,((Number)(rider.containsKey("ticketsReady")?rider.get("ticketsReady"):0)).intValue());
+            double speed=((Number)row.get("speed")).doubleValue(),target=((Number)row.get("rawTargetSpeed")).doubleValue();peak=Math.max(peak,speed);
+            if(((Number)row.get("stage")).intValue()==2&&!Boolean.TRUE.equals(row.get("brake"))&&target>=8){if(speed<target*.65)slowed=true;else if(slowed&&speed>=target*.9)resumed=true;}
+            double ms=((Number)row.get("previousServerTickWallMs")).doubleValue();if(ms>0){times.add(ms);msptMax=Math.max(msptMax,ms);}
+        }
+        if(requests==0||completed==0||missingMax==0)failures.add("Cold route never exercised real asynchronous missing FULL generation");
+        if(peak<8)failures.add("Cold route never regained a real rainbow cruising speed >=8 blocks/tick");
+        times.sort(Double::compare);double p95=times.isEmpty()?0:times.get(Math.min(times.size()-1,(int)(times.size()*.95)));
+        return Map.of("fixtureWarmCalls",0,"requests",requests,"completed",completed,"maxDirectColdDestinations",coldMax,"maxMissingTickets",missingMax,"maxReadyTickets",readyMax,"peakActualSpeed",peak,"sawTerrainSlowdown",slowed,"sawCruiseResumeAfterSlowdown",resumed,"previousTickWallMs",Map.of("p95",p95,"max",msptMax));
     }
     private static Map<String,Object> clientCoverage(List<Map<String,Object>> frames){
         if(frames.isEmpty())return Map.of("frames",0,"entityTickGrowth",0,"samplerTickGrowth",0,"positionRange",0,"yawTravelDegrees",0);
@@ -328,7 +399,7 @@ final class HuahongDynamicsQa {
     }
     private static void runtimeEvidence(Path out)throws Exception{
         List<Object> rows=new ArrayList<>();
-        for(Class<?> type:List.of(GeneratedMod.class,HuahongVisuals.class,InterpolatedFlyingSwordTransform.class,ControlledSwordEntity.class,FlightInterpolation.class,HuahongFlightPath.class,HuahongVolumeRenderer.class,Class.forName("cn.blockforge.generated.generatedmod.client.HuahongSkinGeometry"))){
+        for(Class<?> type:List.of(GeneratedMod.class,HuahongVisuals.class,InterpolatedFlyingSwordTransform.class,ControlledSwordEntity.class,FlightInterpolation.class,YujianController.class,FlightCollision.class,FlightRootTicking.class,FlightChunkStreaming.class,Class.forName("cn.blockforge.generated.generatedmod.yujian.FlightTerrainGovernor"),HuahongFlightPath.class,HuahongVolumeRenderer.class,Class.forName("cn.blockforge.generated.generatedmod.client.HuahongSkinGeometry"))){
             var row=new LinkedHashMap<String,Object>();row.put("class",type.getName());var url=type.getProtectionDomain().getCodeSource().getLocation();row.put("codeSource",url.toString());
             try(var stream=type.getResourceAsStream("/"+type.getName().replace('.','/')+".class")){row.put("loadedClassSha256",HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(stream.readAllBytes())));}
             try{Path path=Path.of(url.toURI());row.put("loadMode",Files.isRegularFile(path)?"jar":"exploded development classes");
@@ -351,7 +422,7 @@ final class HuahongDynamicsQa {
             try(var stream=Minecraft.getInstance().getResourceManager().getResource(new net.minecraft.resources.ResourceLocation("wuxingxiantu",path)).orElseThrow().open()){
                 shaderHashes.put(path,HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(stream.readAllBytes())));
             }
-        Files.writeString(out.resolve("runtime.json"),new GsonBuilder().setPrettyPrinting().create().toJson(Map.of("classes",rows,"shaderRuntime",shaderRuntime,"runtimeResourceSha256",shaderHashes,"classHashScope","Runtime-resolved class resource bytes at capture startup; CodeSource identifies loader source. Post-Mixin JVM bytes are not instrumented.","speedMultiplier",FlyingSwordConfig.SPEED_MULTIPLIER.get(),"pointerProtection","QA source set only","plannedSimulatedSeconds",SKINS.length*CYCLE/20.0)));
+        Files.writeString(out.resolve("runtime.json"),new GsonBuilder().setPrettyPrinting().create().toJson(Map.of("classes",rows,"vsyncEnabled",Minecraft.getInstance().options.enableVsync().get(),"qaFrameLimitBeforeScenario",Minecraft.getInstance().options.framerateLimit().get(),"qaFrameOnly",FRAME_ONLY,"shaderRuntime",shaderRuntime,"runtimeResourceSha256",shaderHashes,"classHashScope","Runtime-resolved class resource bytes at capture startup; CodeSource identifies loader source. Post-Mixin JVM bytes are not instrumented.","speedMultiplier",FlyingSwordConfig.SPEED_MULTIPLIER.get(),"pointerProtection","QA source set only","plannedSimulatedSeconds",SKINS.length*CYCLE/20.0)));
     }
     private HuahongDynamicsQa(){}
 }

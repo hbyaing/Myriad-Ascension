@@ -9,13 +9,13 @@ final class HuahongFlightRegression {
         var f=new HuahongFlight();
         for(int i=0;i<100;i++)check(!f.tick(true,false,true)&&f.stage()==0,"stationary input must not charge");
         for(int i=0;i<HuahongFlight.STABLE_TICKS-1;i++)check(!f.tick(true,true,true),"stable interval");
-        check(f.tick(true,true,true)&&f.stage()==1,"one entry charge");
+        check(f.tick(true,true,true)&&f.stage()==1&&f.phasing(),"one entry charge and gathering wall permission");
         int charges=1;
         for(int i=0;i<100;i++){
             if(f.tick(true,true,true))charges++;
             check(f.multiplier()>=1&&f.multiplier()<=2,"bounded multiplier");
         }
-        check(charges==1&&f.stage()==2&&f.multiplier()==2,"sustained exact double without repeated charge");
+        check(charges==1&&f.stage()==2&&f.multiplier()==2&&f.phasing(),"sustained exact double and ordinary-wall permission without repeated charge");
         for(int i=0;i<40;i++)check(!f.tick(true,false,true)&&f.stage()==2,"entry speed is not a turn-time exit threshold");
         for(int i=0;i<HuahongFlight.SPRINT_GRACE_TICKS;i++)
             check(!f.tick(true,false,true,false)&&f.stage()==2,"brief sprint release should retain rainbow during deceleration");
@@ -24,20 +24,20 @@ final class HuahongFlightRegression {
         for(int i=0;i<HuahongFlight.SPRINT_GRACE_TICKS;i++)f.tick(true,false,true,false);
         check(f.stage()==2,"sprint grace should reset on a resumed input");
         f.tick(false,true,true);
-        check(f.stage()==3&&f.multiplier()==1,"brake immediately removes speed bonus");
+        check(f.stage()==3&&f.multiplier()==1&&!f.phasing(),"brake immediately removes speed bonus and wall permission");
         float previous=f.strength();
         for(int i=0;i<8;i++){f.tick(true,true,true);check(f.strength()<=previous,"exit opacity");previous=f.strength();}
-        check(f.stage()==0&&f.strength()==0,"fully restored");
+        check(f.stage()==0&&f.strength()==0&&!f.phasing(),"fully restored");
         for(int i=0;i<HuahongFlight.COOLDOWN-1;i++)check(!f.tick(true,true,true),"cooldown");
         for(int i=0;i<100;i++)f.tick(true,true,false);
         check(f.stage()==0,"cannot enter without mana");
         for(int i=0;i<34;i++)f.tick(true,true,true);
-        f.tick(true,true,false);check(f.stage()==3,"low mana exits");
+        f.tick(true,true,false);check(f.stage()==3&&!f.phasing(),"low mana exits and restores collision");
         f.reset();
         for(int i=0;i<HuahongFlight.STABLE_TICKS+HuahongFlight.GATHER_TICKS;i++)f.tick(true,true,true);
         for(int i=0;i<=HuahongFlight.SPRINT_GRACE_TICKS;i++)f.tick(true,false,true,false);
         check(f.stage()==3,"sustained sprint release still exits");
-        f.reset();check(f.stage()==0&&f.multiplier()==1&&f.strength()==0,"lifecycle reset");
+        f.reset();check(f.stage()==0&&f.multiplier()==1&&f.strength()==0&&!f.phasing(),"lifecycle reset");
         System.out.println("Huahong flight lifecycle regression passed");
     }
     private static void check(boolean condition,String message){if(!condition)throw new AssertionError("Huahong: "+message);}
