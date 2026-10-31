@@ -1,6 +1,6 @@
 # 心境识海背景实施说明（2026-10-31）
 
-用户已明确确认侵染与击败后两态配色，并授权实装。本轮从 `37d70c4` 的隔离工作树实现，并合并保留同期主线化虹提交 `bf07974`。这份说明记录本专项，不代表整个Mod已完成整体验收。
+用户已明确确认侵染与击败后两态配色，并授权实装。本轮从 `37d70c4` 的隔离工作树实现，并合并保留同期主线化虹提交 `bf07974`、`7c061ce`。这份说明记录本专项，不代表整个Mod已完成整体验收。
 
 ## 批准配色
 
@@ -64,10 +64,10 @@
 
 当前全覆盖与银白墨纹配色修复：
 
-- `reports/mindscape-full-coverage-build.log`记录本轮`build`成功；最终交付包仍须在剩余核验后重新构建。
-- `reports/mindscape/full-coverage-solas-wide/mindscape/verification.json`记录Solas独立客户端32图完成，`complete=true`、`failures=[]`，实际分辨率2560×1080。包含两态前后左右、正上正下、近边界与第三人称相机，以及资源重载、真实玻璃/透明粒子、胜利归返及外界管线恢复；额外击败后视角分别由真实主人击杀进入原72tick窗口，不直接灌客户端状态。
+- `reports/mindscape-full-coverage-merged-build-server.log`记录最终合并树`build`成功及511项服务端GameTests全部通过，包含4项新生Boss首次跟踪、同UUID重载、显式移除及超时清理回归。
+- `reports/mindscape/full-coverage-merged-wide/mindscape/verification.json`记录最终合并树Solas独立客户端34图完成，`complete=true`、`failures=[]`，实际分辨率2560×1080。包含两态前后左右、正上正下、近边界与第三人称相机，以及资源重载、真实玻璃/透明粒子、胜利归返及外界管线恢复；额外击败后视角分别由真实主人击杀进入原72tick窗口，不直接灌客户端状态。两个新增远相机图的实际`eyeLocal=[60,-41,75]`、归一化半径约1.60093，确实覆盖虚拟眼点压缩分支。此前32图先行报告保留在`full-coverage-solas-wide`。
 - 其中27个心境场景对材质场与实际`AFTER_SKY`目标进行192×108采样、8×6分块核对，均为`minimumAlpha=1`、`uncoveredAlphaRatio=0`、`divergentTiles=0`。纹理变化及目标一致性同时受检，避免仅把alpha写为1或填充常色而误判覆盖。银白材质本身允许近白区域，近白连通区只作诊断，不能单凭其存在判定背景漏洞。报告记录鼠标捕获违规为0，未使用真实鼠标输入。
-- `reports/mindscape/full-coverage-disabled-verified/mindscape/verification.json`记录当前安装Oculus/Embeddium但禁用光影的1600×900复验，32图完成且无失败；27次完整背景采样最低覆盖alpha为1、未覆盖样本为0，实际目标无分块偏差超限，快速连续重入也通过。前期失败的QA目录不计入通过数。
+- `reports/mindscape/full-coverage-disabled-verified/mindscape/verification.json`记录当前安装Oculus/Embeddium但禁用光影的1600×900复验，32图完成且无失败；27次完整背景采样最低覆盖alpha为1、未覆盖样本为0，实际目标无分块偏差超限，快速连续重入也通过。此组在最后合并化虹前完成；最终合并后以上述Solas34图复验。前期失败的QA目录不计入通过数。
 - `reports/mindscape-full-coverage-final-build-server.log`记录本轮构建和500项服务端GameTests通过，包含4项首次实体跟踪/重载/显式移除/超时清理回归。它对应后续主线并发合并前的本轮实现，合并后的最终结果另行记录。
 
 历史已发布版本`0e4a5e0`及其前序验证：
@@ -90,6 +90,6 @@
 
 合并同期主线后再次完成Solas的全部20图（`reports/mindscape/solas-merged/mindscape/verification.json`），核实公共着色器注册、新测试注入、资源重载、心境画面及外界管线恢复，报告无失败。以上80图与合并后20图均为本轮全覆盖和新配色之前的历史证据，不作为此次修复的复验；也不扩展为其他GPU或所有分辨率的验收结论。
 
-历史正式包CRC、当时两份配色字节哈希及测试类排除检查通过，见`reports/mindscape/production-jar-verification.json`。本轮终包仍须重新核对新配色、CRC及测试类排除。批准配色目录使用固定LF，避免Windows检出改变字节哈希。
+历史正式包CRC、当时两份配色字节哈希及测试类排除检查通过，见`reports/mindscape/production-jar-verification.json`。本轮终包CRC、当前两份配色字节哈希、shader与源文件一致性及测试类排除已重新核对，见`reports/mindscape/full-coverage-production-jar-verification.json`。批准配色目录使用固定LF，避免Windows检出改变字节哈希。
 
-历史发布包已安装到AXO「测试（1）」实例，SHA-256为`d01278dce5f1142e940c31da6ac417a584b44e77a29432c633cc64d506a70e7b`；它不包含本轮全覆盖与新配色修复。本轮正式安装包、提交及远端发布结果待主任务最终填写，不沿用旧JAR或旧安装记录。磁盘更新与正在运行的JVM是否加载新版仍分别记录，不结束用户游戏。
+本轮正式包已安装到AXO「测试（1）」实例，SHA-256为`6e061f90b3c26eb955666ae740e8ff682b206db453a069e90613ba7e37404270`；旧包已在`E:/垃圾/2026-10-31/万界仙途自动安装-234249-a273ae1f`保留可恢复备份，安装后仅一个本Mod有效JAR，记录见`reports/last-test-instance-installation.json`。磁盘更新与正在运行的JVM是否加载新版分别记录，未结束用户游戏。

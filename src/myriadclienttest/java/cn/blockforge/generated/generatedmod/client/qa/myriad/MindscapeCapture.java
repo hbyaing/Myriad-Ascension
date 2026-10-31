@@ -46,7 +46,7 @@ public final class MindscapeCapture {
     private static final String EXPECTED_PACK=System.getProperty("wuxingxiantu.myriadExpectedShaderPack","");
     private static final Path OUT=Path.of(System.getProperty("wuxingxiantu.myriadCaptureOutput","captures")).resolve("mindscape");
     private static final int WIDTH=Integer.getInteger("wuxingxiantu.mindscapeCaptureWidth",1600),
-            HEIGHT=Integer.getInteger("wuxingxiantu.mindscapeCaptureHeight",900),EXPECTED_CAPTURES=32;
+            HEIGHT=Integer.getInteger("wuxingxiantu.mindscapeCaptureHeight",900),EXPECTED_CAPTURES=34;
     private static final double MIN_BACKGROUND_COLOR_RATIO=.02;
     private static final long START=System.nanoTime();
     private static final List<Map<String,Object>> ROWS=new ArrayList<>();
@@ -56,16 +56,17 @@ public final class MindscapeCapture {
     private static final String FIRST="wuxingxiantu:six_thieves_1",FINAL="wuxingxiantu:heart_demon_final";
     private record View(Vec3 relative,float yaw,float pitch,int fov){}
     private static final View FRONT=new View(new Vec3(0,4,-23),0,-10,76);
+    private static final View FAR_CAMERA=new View(new Vec3(60,-40,75),140,-25,90);
     private static final View[] VIEWS={FRONT,new View(new Vec3(0,4,-23),55,-6,76),
             new View(new Vec3(0,4,-23),0,-10,100),new View(new Vec3(25.5,4,0),-90,-10,90),
             new View(new Vec3(0,3,-8),0,0,66)};
     private static final String[] VIEW_NAMES={"01-corrupted-front","02-corrupted-yaw","03-corrupted-wide-fov","04-corrupted-near-boundary","05-boss-entity-occlusion"};
     private static final View[] EXTRA_RED_VIEWS={new View(FRONT.relative(),180,0,76),new View(FRONT.relative(),90,0,76),
-            new View(FRONT.relative(),-90,0,76),new View(FRONT.relative(),0,-90,76),new View(FRONT.relative(),0,90,76)};
-    private static final String[] EXTRA_RED_NAMES={"05d-corrupted-back","05e-corrupted-left","05f-corrupted-right","05g-corrupted-up","05h-corrupted-down"};
+            new View(FRONT.relative(),-90,0,76),new View(FRONT.relative(),0,-90,76),new View(FRONT.relative(),0,90,76),FAR_CAMERA};
+    private static final String[] EXTRA_RED_NAMES={"05d-corrupted-back","05e-corrupted-left","05f-corrupted-right","05g-corrupted-up","05h-corrupted-down","05i-corrupted-far-camera"};
     private static final View[] GOLD_VIEWS={EXTRA_RED_VIEWS[0],EXTRA_RED_VIEWS[1],EXTRA_RED_VIEWS[2],EXTRA_RED_VIEWS[3],EXTRA_RED_VIEWS[4],
-            new View(new Vec3(0,3.4,-31.5),0,8,70),VIEWS[3]};
-    private static final String[] GOLD_NAMES={"17-gold-back","18-gold-left","19-gold-right","20-gold-up","21-gold-down","22-gold-third-person-boundary","23-gold-near-boundary"};
+            new View(new Vec3(0,3.4,-31.5),0,8,70),VIEWS[3],FAR_CAMERA};
+    private static final String[] GOLD_NAMES={"17-gold-back","18-gold-left","19-gold-right","20-gold-up","21-gold-down","22-gold-third-person-boundary","23-gold-near-boundary","24-gold-far-camera"};
     private enum Phase {BOOT,PREPARE,FIRST_ENTER,FIRST_VIEWS,EXTRA_RED,RELOAD_START,RELOAD_WAIT,THIRD_SETUP,THIRD_VIEW,
         TRANSPARENT_SETUP,TRANSPARENT_VIEW,TRANSPARENT_CLEAR,FIRST_KILL,FIRST_VICTORY,FIRST_RETURN,
         FINAL_ENTER,FINAL_PHASE_ONE,FINAL_FIRST_LETHAL,FINAL_PHASE_TWO,FINAL_SECOND_LETHAL,FINAL_VICTORY,FINAL_RETURN,
@@ -571,6 +572,15 @@ public final class MindscapeCapture {
             row.put("shaderPack",pipeline.get("loadedPackName"));row.put("width",mc.getMainRenderTarget().width);row.put("height",mc.getMainRenderTarget().height);
             verifyPipeline(pipeline,capture.expected!=null,capture.name);
             if(capture.expected!=null){var diagnostics=rendererDiagnostics();check(((Number)diagnostics.getOrDefault("draws",0)).longValue()>0,"Production mindscape renderer did not draw");check(diagnostics.get("failure")==null||String.valueOf(diagnostics.get("failure")).isBlank(),"Production renderer recorded failure: "+diagnostics.get("failure"));row.put("renderer",diagnostics);
+                if(capture.name.endsWith("-far-camera")){
+                    Object actualEye=diagnostics.get("eyeLocal");
+                    check(actualEye instanceof double[]&&((double[])actualEye).length==3,"Renderer omitted actual far-camera eyeLocal");
+                    double[] eye=(double[])actualEye;
+                    double qx=(eye[0]-3)/70,qy=(eye[1]-12)/43,qz=(eye[2]-17)/94;
+                    double radius=Math.sqrt(qx*qx+qy*qy+qz*qz);
+                    check(Double.isFinite(radius)&&radius>.9,"Far camera did not exercise production material-eye compression: "+radius);
+                    row.put("materialEyeProbe",Map.of("actualEyeLocal",List.of(eye[0],eye[1],eye[2]),"normalizedRadius",radius,"compressionThreshold",.9,"compressionBranchExpected",true));
+                }
                 if(capture.name.equals("05a-resource-reload")){
                     check(((Number)diagnostics.get("generation")).intValue()>((Number)beforeReload.get("generation")).intValue(),"Reload did not rebuild production GPU resources");
                     for(String key:List.of("corruptedPaletteSHA256","purifiedPaletteSHA256")){
@@ -623,7 +633,7 @@ public final class MindscapeCapture {
         report.put("mindscapeCompatibilityStrategy",EXTERNAL?"isolated VanillaRenderingPipeline inside mindscape; outside IrisRenderingPipeline automatically restored":"native rendering without an active third-party pack");
         report.put("outsideExtendedVertexFormatBaseline",outsideExtendedVertexFormat);
         report.put("captures",ROWS);report.put("expectedCaptures",EXPECTED_CAPTURES);report.put("serverActions",SERVER_ACTIONS);report.put("failures",FAILURES);report.put("complete",finished&&FAILURES.isEmpty()&&ROWS.size()==EXPECTED_CAPTURES);
-        report.put("scope","32 real-server captures cover red/gold front/back/left/right/exact up/down, third-person beyond arena and near boundary; seven additional gold views each use a separate true owner kill and unchanged 72-tick victory window. Whole field and actual after-sky targets are sampled before legitimate terrain occlusion, with tile/alpha/near-white connected-region evidence. Resource reload, transparent/particle depth and outside pipeline restoration remain checked. Mindscape owns an isolated VanillaRenderingPipeline, not simultaneous pack compositing. QA creative owner, controlled health/camera/foreground; screenshots still need visual review. Abort uses production abort API, not death/respawn. No fake client state or OS pointer input.");
+        report.put("scope",EXPECTED_CAPTURES+" real-server captures cover red/gold front/back/left/right/exact up/down, third-person beyond arena, near boundary and far optical cameras beyond the material-eye compression threshold; eight additional gold views each use a separate true owner kill and unchanged 72-tick victory window. Far views move only the QA camera, keeping the real player inside the arena, and assert renderer eyeLocal normalized radius > .9. Whole field and actual after-sky targets are sampled before legitimate terrain occlusion, with tile/alpha/near-white connected-region evidence. Resource reload, transparent/particle depth and outside pipeline restoration remain checked. Mindscape owns an isolated VanillaRenderingPipeline, not simultaneous pack compositing. QA creative owner, controlled health/camera/foreground; screenshots still need visual review. Abort uses production abort API, not death/respawn. No fake client state or OS pointer input.");
         Files.writeString(OUT.resolve("verification.json"),new GsonBuilder().setPrettyPrinting().create().toJson(report));
     }
     private static void fail(Minecraft mc,Throwable error){FAILURES.add(phase+": "+error);com.mojang.logging.LogUtils.getLogger().error("MINDSCAPE_QA",error);finish(mc);}
