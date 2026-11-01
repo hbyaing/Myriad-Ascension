@@ -52,6 +52,7 @@ public final class V5ClientAcceptance {
         if(mc.mouseHandler.isMouseGrabbed()||GLFW.glfwGetInputMode(mc.getWindow().getWindow(),GLFW.GLFW_CURSOR)!=GLFW.GLFW_CURSOR_NORMAL)violations++;
     }
     @SubscribeEvent public static void tick(TickEvent.ClientTickEvent event){
+        if(Boolean.getBoolean("wuxingxiantu.shaderStartupSmoke")){ShaderStartupSmoke.tick(event);return;}
         if(!System.getProperty("wuxingxiantu.v5NetworkRole","").isEmpty()){V5NetworkAcceptance.tick(event);return;}
         if(Boolean.getBoolean("wuxingxiantu.v5Migration")){AlchemyMigrationAcceptance.tick(event);return;}
         if(Boolean.getBoolean("wuxingxiantu.v5Inference")){ResearchInferenceAcceptance.tick(event);return;}
@@ -103,7 +104,7 @@ public final class V5ClientAcceptance {
                 ticks=0;return;
             }
             if(stage==306){if(ticks<10)return;capture(mc,"heat-gui3");mc.options.guiScale().set(4);mc.resizeDisplay();stage=307;ticks=0;return;}
-            if(stage==307){if(ticks<10)return;capture(mc,"heat-gui4-fit");finish(mc,true,null);return;}
+            if(stage==307){if(ticks<10)return;capture(mc,"heat-gui4-fit");if(Boolean.getBoolean("wuxingxiantu.v5Compatibility"))V5CompatibilityProbe.verify(mc,OUT);finish(mc,true,null);return;}
             if(stage==3){if(!menu.isBrewing()||ticks<110)return;capture(mc,"running-before-restart");
                 pending=mc.getSingleplayerServer().submit(()->{
                     var f=(AlchemyFurnaceBlockEntity)mc.getSingleplayerServer().overworld().getBlockEntity(POS);var d=f.v5ServerRecord();var core=V5Batch.core(d);check(core.tick()>0&&core.tick()<21,"Batch not active before restart");

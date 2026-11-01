@@ -476,7 +476,7 @@ tasks.register('validateResources', Exec) {
 }
 tasks.named('check') { dependsOn('validateResources') }
 
-def specialistScripts = ['check_talisman_frame', 'check_weapon_flames', 'check_heart_sword_assets', 'check_source_package', 'check_alchemy_art', 'check_exotic_burn_architecture', 'check_audit_contracts', 'check_entry_ui', 'check_boss_motions', 'check_art_particle_library']
+def specialistScripts = ['check_talisman_frame', 'check_weapon_flames', 'check_heart_sword_assets', 'check_source_package', 'check_alchemy_art', 'check_exotic_burn_architecture', 'check_audit_contracts', 'check_entry_ui', 'check_boss_motions', 'check_art_particle_library', 'check_shader_builtins']
 specialistScripts.each { script ->
     tasks.register(script, Exec) {
         commandLine providers.gradleProperty('pythonExecutable').orElse('python').get(), file("tools/${script}.py").absolutePath
@@ -716,6 +716,7 @@ if (project.hasProperty('v5BatchCapture')) {
             args '--mixin', 'wuxingxiantu.v5-qa.mixins.json'
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', file('build/createSrgToMcp/output.srg').absolutePath
+            property 'wuxingxiantu.shaderStartupSmoke', project.hasProperty('shaderStartupSmoke').toString()
             property 'wuxingxiantu.v5Heat', project.hasProperty('v5HeatCapture').toString()
             property 'wuxingxiantu.v5Resume', project.hasProperty('v5BatchResume').toString()
             property 'wuxingxiantu.v5Incidents', project.hasProperty('v5IncidentCapture').toString()

@@ -1,0 +1,15 @@
+{
+  "source": "C:\\Users\\zwr04\\Documents\\Codex\\2026-10-13\\new-chat\\work\\review-myriad-ascension\\deliverables\\20261102-shader-startup-fix\\Myriad-Ascension-1.20.1-shader-fix.jar",
+  "target": "D:\\我的世界\\.minecraft\\versions\\1.20.1-Forge_47.4.26\\mods\\Myriad-Ascension-1.20.1-shader-fix.jar",
+  "sha256": "5239b2c4216cb73362af2d0b4a011053364bcb8086a7c8e4e89ab0c09b325ebe",
+  "gameDir": "D:\\我的世界\\.minecraft\\versions\\1.20.1-Forge_47.4.26",
+  "backup": "deliverables\\mod-backups\\2026-11-02\\万界仙途自动安装-012421-1894f6db",
+  "old": [
+    {
+      "name": "Myriad-Ascension-1.20.1-introduction.jar",
+      "sha256": "6346f799cf2ec83fbad7c4baf27ab298e84003a079221cee5b7be79be329aa46"
+    }
+  ],
+  "status": "installed_on_disk",
+  "runtime": "Restart required if the game had already loaded the previous JAR; no process was stopped."
+}

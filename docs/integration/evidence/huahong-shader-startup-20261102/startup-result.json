@@ -1,0 +1,9 @@
+{
+  "resourceReload": true,
+  "shaderHash": "2a12af928c3bcae47ef4e77b0cce5e84fa06d63eda4ad3d325d6bcc5c30bb800",
+  "passed": true,
+  "error": "",
+  "shaderReady": true,
+  "gpu": "NVIDIA GeForce RTX 5060 Laptop GPU/PCIe/SSE2",
+  "captureViolations": 0
+}

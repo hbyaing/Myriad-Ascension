@@ -22,7 +22,7 @@ float hashCell(vec3 cell){
     cell=mod(cell,64.0);
     return fract(sin(dot(cell,vec3(19.173,73.719,41.137)))*15731.743);
 }
-float noise3(vec3 p){
+float huahongValueNoise3(vec3 p){
     vec3 cell=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);
     float a=mix(hashCell(cell),hashCell(cell+vec3(1,0,0)),f.x);
     float b=mix(hashCell(cell+vec3(0,1,0)),hashCell(cell+vec3(1,1,0)),f.x);
@@ -43,7 +43,7 @@ vec4 noiseGradient(vec3 p){
     return vec4(mix(low,high,f.z),dx,dy,(high-low)*derivative.z);
 }
 float filteredNoise(vec3 p,float footprint){
-    return mix(noise3(p),.5,smoothstep(.25,.85,footprint));
+    return mix(huahongValueNoise3(p),.5,smoothstep(.25,.85,footprint));
 }
 float clouds(vec3 p,float footprint){
     return filteredNoise(p,footprint)*.57
@@ -124,7 +124,7 @@ vec4 field(vec3 p,vec3 ray,float stepLength,vec3 pixelX,vec3 pixelY){
     vec2 variance=vec2(veinRadius*veinRadius)+(rayChange*rayChange+xChange*xChange+yChange*yChange)/12.0;
     float covariance=(rayChange.x*rayChange.y+xChange.x*xChange.y+yChange.x*yChange.y)/12.0;
     float determinant=max(veinRadius*veinRadius*veinRadius*veinRadius,variance.x*variance.y-covariance*covariance);
-    float hue=noise3(world*.5+vec3(23,3,41));
+    float hue=huahongValueNoise3(world*.5+vec3(23,3,41));
     float vein=0.0;vec3 veinLight=vec3(0);
     for(int j=0;j<3;j++)for(int k=0;k<3;k++){
         vec2 levels=vec2(.38)+vec2(float(j),float(k))*.12;

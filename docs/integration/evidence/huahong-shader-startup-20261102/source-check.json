@@ -1,0 +1,11 @@
+{
+  "baseline": "124f68b",
+  "oldDeclaration": "float noise3(vec3 p)",
+  "newDeclaration": "float huahongValueNoise3(vec3 p)",
+  "allCallSitesRenamed": true,
+  "onlyIdentifierChanged": true,
+  "shaderSha256": "7ac14a7d1858cc7f17a3f97830d27c463bbada135f6dffb74d6db8118724a095",
+  "reportGPU": "Intel UHD Graphics, driver 32.0.101.7088",
+  "reportedForge": "47.4.23",
+  "nativeTestForge": "47.4.10"
+}
