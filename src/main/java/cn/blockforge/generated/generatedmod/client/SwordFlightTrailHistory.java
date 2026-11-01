@@ -29,6 +29,29 @@ public final class SwordFlightTrailHistory {
     private final ArrayList<Node> presentation=new ArrayList<>();
     private double lastTick=Double.NEGATIVE_INFINITY,arc;
     public List<Node> nodes(){return view;}
+    /** Drawing stations belong to the moving head, not the fixed tick lattice.
+     * Preserve the canonical polyline/clock and keep distant node identities.
+     * Otherwise even a steady line changes its tapered triangles at 20Hz. */
+    public static List<Node> uniformHead(List<Node> source,double spacing,double window){
+        if(source.size()<2)return source;
+        if(!(spacing>0)||!Double.isFinite(spacing)||!(window>0)||!Double.isFinite(window))
+            throw new IllegalArgumentException("Invalid presentation grid");
+        Node head=source.get(source.size()-1);
+        double length=Math.min(window,Math.max(0,head.arc()-source.get(0).arc()));
+        var result=new ArrayList<Node>();double cutoff=head.arc()-length;
+        for(var n:source){if(n.arc()<cutoff-1e-9)result.add(n);else break;}
+        int intervals=(int)Math.floor(length/spacing+1e-9),cursor=0;
+        for(int i=intervals+1;i>=0;i--){
+            double behind=i==intervals+1?length:i*spacing;
+            if(i==intervals+1&&Math.abs(length-intervals*spacing)<1e-9)continue;
+            double arc=head.arc()-behind;
+            while(cursor<source.size()-2&&source.get(cursor+1).arc()<arc)cursor++;
+            Node a=source.get(cursor),b=source.get(cursor+1);
+            double t=Math.max(0,Math.min(1,(arc-a.arc())/Math.max(1e-12,b.arc()-a.arc())));
+            result.add(new Node(a.point().lerp(b.point(),t),a.tick()+(b.tick()-a.tick())*t,arc));
+        }
+        return result;
+    }
     /** Clip at the render time and finish at the very same model attachment.
      * Interpolate arc too: dropping the newest tick must never reset the material phase. */
     public List<Node> renderNodes(double now,Point attachment){

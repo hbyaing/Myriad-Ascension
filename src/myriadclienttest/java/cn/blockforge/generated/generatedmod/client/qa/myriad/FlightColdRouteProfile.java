@@ -53,7 +53,7 @@ public final class FlightColdRouteProfile {
             if((System.nanoTime()-STARTED)/1e9>1800)throw new AssertionError("Cold profile total watchdog; no stable/complete result asserted");
             if(!opened&&mc.player!=null)throw new AssertionError("Refusing an existing user world");
             if(!opened&&mc.getOverlay()==null&&(mc.screen instanceof net.minecraft.client.gui.screens.TitleScreen||mc.screen instanceof net.minecraft.client.gui.screens.AccessibilityOnboardingScreen)){
-                opened=true;mc.options.renderDistance().set(32);mc.options.simulationDistance().set(32);mc.options.framerateLimit().set(260);mc.options.enableVsync().set(true);mc.getWindow().updateVsync(true);
+                opened=true;mc.options.renderDistance().set(32);mc.options.simulationDistance().set(Integer.getInteger("wuxingxiantu.flightColdSimulation",32));mc.options.framerateLimit().set(260);mc.options.enableVsync().set(true);mc.getWindow().updateVsync(true);
                 mc.getWindow().setWindowed(2560,1440);mc.resizeDisplay();mc.options.fov().set(70);mc.options.cloudStatus().set(CloudStatus.FANCY);mc.options.bobView().set(false);mc.options.hideGui=true;mc.options.save();
                 mc.getTutorial().setStep(net.minecraft.client.tutorial.TutorialSteps.NONE);startJfr();
                 Path save=mc.gameDirectory.toPath().resolve("saves").resolve(WORLD);
@@ -133,7 +133,7 @@ public final class FlightColdRouteProfile {
         CLIENT.add(row);
     }
     private static void startJfr()throws Exception{
-        recording=new Recording(Configuration.getConfiguration("profile"));recording.setName("Cold32-"+(PREPARE?"prepare":"flight"));recording.setMaxSize(512L*1024*1024);recording.setMaxAge(Duration.ofMinutes(25));recording.start();
+        recording=new Recording(Configuration.getConfiguration("profile"));recording.enable("jdk.NativeMethodSample").withPeriod(Duration.ofMillis(10));recording.enable("jdk.JavaMonitorEnter").withThreshold(Duration.ofMillis(10));recording.enable("jdk.ThreadPark").withThreshold(Duration.ofMillis(10));recording.setName("Cold32-"+(PREPARE?"prepare":"flight"));recording.setMaxSize(512L*1024*1024);recording.setMaxAge(Duration.ofMinutes(25));recording.start();
     }
     private static void runtimeEvidence(Minecraft mc)throws Exception{
         var classes=new LinkedHashMap<String,Object>();
@@ -154,7 +154,7 @@ public final class FlightColdRouteProfile {
         if(done)return;done=true;if(error!=null){error.printStackTrace();ERRORS.add(error.toString());}
         try{
             if(recording!=null){recording.stop();recording.dump(OUT.resolve("profile.jfr"));recording.close();}
-            FlightChunkWorkTimings.write(OUT);HuahongFrameTimings.write(OUT);SUMMARY.put("termination",termination);SUMMARY.put("errors",ERRORS);SUMMARY.put("pointer",PointerSafety.snapshot());SUMMARY.put("world",WORLD);SUMMARY.put("prepareOnly",PREPARE);SUMMARY.put("warmup",WARMUP);synchronized(SERVER){SUMMARY.put("server",List.copyOf(SERVER));}SUMMARY.put("client",CLIENT);SUMMARY.put("flightTicksCompleted",clock);SUMMARY.put("wallSeconds",(System.nanoTime()-STARTED)/1e9);SUMMARY.put("scene","Normal terrain seed7215 with structures; real32/32, VSync setting on, maxFps260, unmodified sword speed and production SMOKE; stationary warmup then straight cold route. No future route getChunk calls, no screenshot or mesh readback.");
+            FlightChunkWorkTimings.write(OUT);FlightVfxWorkTimings.write(OUT);HuahongFrameTimings.write(OUT);SUMMARY.put("termination",termination);SUMMARY.put("errors",ERRORS);SUMMARY.put("pointer",PointerSafety.snapshot());SUMMARY.put("world",WORLD);SUMMARY.put("prepareOnly",PREPARE);SUMMARY.put("warmup",WARMUP);synchronized(SERVER){SUMMARY.put("server",List.copyOf(SERVER));}SUMMARY.put("client",CLIENT);SUMMARY.put("flightTicksCompleted",clock);SUMMARY.put("wallSeconds",(System.nanoTime()-STARTED)/1e9);SUMMARY.put("scene","Normal terrain seed7215 with structures; render32 with recorded simulation distance, VSync setting on, maxFps260, unmodified sword speed and production SMOKE; stationary warmup then straight cold route. No future route getChunk calls, no screenshot or mesh readback.");
             Files.writeString(OUT.resolve("profile-summary.json"),new GsonBuilder().setPrettyPrinting().create().toJson(SUMMARY));
             Files.writeString(OUT.resolve(ERRORS.isEmpty()?"complete.txt":"failure.txt"),ERRORS.isEmpty()?"RECORDED — performance analysis required":String.join("\n",ERRORS));
         }catch(Throwable write){write.printStackTrace();}Minecraft.getInstance().stop();

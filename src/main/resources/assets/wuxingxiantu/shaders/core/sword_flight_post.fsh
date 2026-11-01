@@ -57,7 +57,7 @@ vec4 swordMaterial(){
             // support; no screen blur may spread it in front of the pommel.
             float window=1.0-smoothstep(.72,1.0,abs(across));
             float glow=exp(-across*across*4.2)*window;
-            float pulse=.94+.06*cos(flowAngle(arc,12.0,-12.0));
+            float pulse=1.0;
             vec3 blueWhite=mix(vertexColor.rgb,vec3(.62,.88,1.0),.18);
             return vec4(blueWhite,glow*pulse*clamp(vertexColor.a,0.0,1.0));
         }

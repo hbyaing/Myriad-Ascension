@@ -11,6 +11,8 @@
     "HuahongPrismCaptureMixin",
     "HuahongMinecraftTimingMixin",
     "HuahongWindowTimingMixin",
+    "FlightVfxEffectsTimingMixin",
+    "FlightVfxPostTimingMixin",
     "OrdinaryHiltCaptureMixin",
     "OrdinaryHiltModelMixin",
     "OrdinaryHiltDirectLayerMixin",

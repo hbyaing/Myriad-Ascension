@@ -35,7 +35,9 @@ final class OrdinaryTrailFlickerQa {
         if(!body(current).equals(body(post)))throw new AssertionError("Actual native/post material differs");
         String marker="    bool spiral=trailCoord.y>1.5;";
         String unchanged=body(baseline).substring(0,body(baseline).indexOf(marker));
-        if(!unchanged.equals(body(current).substring(0,body(current).indexOf(marker))))throw new AssertionError("Nonordinary material/halo branch changed");
+        String candidatePrefix=body(current).substring(0,body(current).indexOf(marker));
+        candidatePrefix=candidatePrefix.replace("float pulse=1.0;","float pulse=.94+.06*cos(flowAngle(arc,12.0,-12.0));");
+        if(!unchanged.equals(candidatePrefix))throw new AssertionError("Nonordinary material/halo branch changed");
         int previousProgram=GL33.glGetInteger(GL33.GL_CURRENT_PROGRAM),previousVao=GL33.glGetInteger(GL33.GL_VERTEX_ARRAY_BINDING),
             previousDraw=GL33.glGetInteger(GL33.GL_DRAW_FRAMEBUFFER_BINDING),previousRead=GL33.glGetInteger(GL33.GL_READ_FRAMEBUFFER_BINDING),
             previousActive=GL33.glGetInteger(GL33.GL_ACTIVE_TEXTURE);GL33.glActiveTexture(GL33.GL_TEXTURE0);int previousTexture=GL33.glGetInteger(GL33.GL_TEXTURE_BINDING_2D);
@@ -65,6 +67,13 @@ final class OrdinaryTrailFlickerQa {
                 if(after.totalPower>1e-12||after.stepRms>1e-10||after.mean<.002)throw new AssertionError("Ordinary constant edge varies or disappeared: "+after);
                 edges.add(Map.of("band",band,"baseline",before,"candidate",after));
             }
+            var constantHalo=new ArrayList<Map<String,Object>>();
+            for(int band:new int[]{36}){
+                Stats steady=temporal(now,band,23.31F,.8F,true);
+                if(steady.totalPower>1e-12||steady.stepRms>1e-10||steady.worstMinMedian<.999||steady.halfPeakDropouts!=0||steady.mean<.002)
+                    throw new AssertionError("Persistent halo varies or disappeared: "+band+" / "+steady);
+                constantHalo.add(Map.of("band",band,"candidate",steady));
+            }
             double period=0,wrap=0;for(int band:new int[]{0,2})for(float arc:new float[]{-71.5F,0,23.31F,255.75F}){
                 float[] a=render(now,band,arc,1.7F,.8F,7.125F);
                 if(difference(a,render(now,band,arc+13.317F,1.7F,.8F,91.37F))>1e-6)throw new AssertionError("Constant ordinary emission depends on arc/time");
@@ -75,7 +84,7 @@ final class OrdinaryTrailFlickerQa {
             if(period>.025||wrap>.005)throw new AssertionError("Ordinary phase period/wrap failure "+period+" / "+wrap);
             int error=GL33.glGetError();if(error!=0)throw new AssertionError("Ordinary GPU GL error "+error);
             var result=new LinkedHashMap<String,Object>();result.put("passed",true);result.put("baselineShaderSha256",sha(baseline));result.put("nativeShaderSha256",sha(current));result.put("postShaderSha256",sha(post));
-            result.put("actualMaterialNativePostEqual",true);result.put("allNonordinaryMaterialAndHaloUnchanged",true);result.put("frames",FRAMES);result.put("fps",FPS);result.put("coreCases",cases);result.put("peripheralCases",edges);result.put("max128s256mPeriodDifference",period);result.put("timeWrapTwoMillisecondDifference",wrap);
+            result.put("actualMaterialNativePostEqual",true);result.put("huahongMaterialUnchangedOrdinaryHaloConstant",true);result.put("frames",FRAMES);result.put("fps",FPS);result.put("coreCases",cases);result.put("peripheralCases",edges);result.put("ordinaryConstantHalo",constantHalo);result.put("max128s256mPeriodDifference",period);result.put("timeWrapTwoMillisecondDifference",wrap);
             result.put("scope","Actual old/new shipping GLSL on the same head-relative local patches. Per-point minima/dropouts and absolute PSD complement real mesh/video; no claim of projected triangle subpixel coverage or pommel bounds from a shader fixture.");return result;
         }finally{
             GL33.glBindFramebuffer(GL33.GL_DRAW_FRAMEBUFFER,previousDraw);GL33.glBindFramebuffer(GL33.GL_READ_FRAMEBUFFER,previousRead);GL33.glActiveTexture(GL33.GL_TEXTURE0);GL33.glBindTexture(GL33.GL_TEXTURE_2D,previousTexture);GL33.glActiveTexture(previousActive);GL33.glUseProgram(previousProgram);GL33.glBindVertexArray(previousVao);GL33.glViewport(viewport[0],viewport[1],viewport[2],viewport[3]);

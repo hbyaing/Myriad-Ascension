@@ -32,11 +32,19 @@ public final class SwordFlightTrailRenderer {
         event.registerShader(new ShaderInstance(event.getResourceProvider(),ResourceLocation.fromNamespaceAndPath(GeneratedMod.MOD_ID,"sword_flight_post"),DefaultVertexFormat.POSITION_TEX_COLOR),s->post=s);
         generation++;
     }
+    private static void lightBlend(){
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(org.lwjgl.opengl.GL11.GL_ONE,org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA,
+                org.lwjgl.opengl.GL11.GL_ONE,org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA);
+        org.lwjgl.opengl.GL11.glEnable(org.lwjgl.opengl.GL11.GL_BLEND);
+        org.lwjgl.opengl.GL14.glBlendFuncSeparate(org.lwjgl.opengl.GL11.GL_ONE,org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA,
+                org.lwjgl.opengl.GL11.GL_ONE,org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA);
+        org.lwjgl.opengl.GL20.glBlendEquationSeparate(org.lwjgl.opengl.GL14.GL_FUNC_ADD,org.lwjgl.opengl.GL14.GL_FUNC_ADD);
+    }
     private static abstract class Types extends RenderType {
         private Types(){super("unused",DefaultVertexFormat.POSITION_TEX_COLOR,VertexFormat.Mode.QUADS,256,false,false,()->{},()->{});}
         static final TransparencyStateShard LIGHT_AND_SMOKE=new TransparencyStateShard("huahong_light_and_smoke",
-                ()->{RenderSystem.enableBlend();RenderSystem.blendFuncSeparate(org.lwjgl.opengl.GL11.GL_ONE,org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA,
-                        org.lwjgl.opengl.GL11.GL_ONE,org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA);},
+                SwordFlightTrailRenderer::lightBlend,
                 ()->{RenderSystem.disableBlend();RenderSystem.defaultBlendFunc();});
         static final RenderType TRAIL=create("wuxing_sword_flow",DefaultVertexFormat.POSITION_TEX_COLOR,VertexFormat.Mode.QUADS,65536,false,true,
                 CompositeState.builder().setShaderState(new ShaderStateShard(()->normal))
@@ -57,9 +65,17 @@ public final class SwordFlightTrailRenderer {
         try(var saved=new MeteorBloomRenderer.State()){
             var main=Minecraft.getInstance().getMainRenderTarget();main.bindWrite(true);
             RenderSystem.disableDepthTest();RenderSystem.depthMask(false);RenderSystem.disableCull();RenderSystem.disableScissor();
-            RenderSystem.enableBlend();RenderSystem.blendFuncSeparate(org.lwjgl.opengl.GL11.GL_ONE,org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA,
-                    org.lwjgl.opengl.GL11.GL_ONE,org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA);RenderSystem.colorMask(true,true,true,false);
+            // This late draw owns its blend state. Native calls also repair a
+            // wrapper cache left out of sync by an external renderer.
+            org.lwjgl.opengl.GL11.glDisable(org.lwjgl.opengl.GL11.GL_DEPTH_TEST);
+            org.lwjgl.opengl.GL11.glDepthMask(false);
+            org.lwjgl.opengl.GL11.glDisable(org.lwjgl.opengl.GL11.GL_CULL_FACE);
+            org.lwjgl.opengl.GL11.glDisable(org.lwjgl.opengl.GL11.GL_SCISSOR_TEST);
+            org.lwjgl.opengl.GL11.glDisable(org.lwjgl.opengl.GL11.GL_STENCIL_TEST);
+            lightBlend();RenderSystem.colorMask(true,true,true,false);
+            org.lwjgl.opengl.GL11.glColorMask(true,true,true,false);
             RenderSystem.setShaderColor(1,1,1,1);
+            post.safeGetUniform("EmissionPass").set(0F);
             post.safeGetUniform("TrailProjection").set(projection);
             post.safeGetUniform("OutputSize").set((float)main.viewWidth,(float)main.viewHeight);
             post.safeGetUniform("EffectTime").set(time);

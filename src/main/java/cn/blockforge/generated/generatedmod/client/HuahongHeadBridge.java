@@ -6,8 +6,8 @@ import net.minecraft.world.phys.Vec3;
 
 /** Presentation-only bridge from a rigid carrier head back to world history. */
 public final class HuahongHeadBridge {
-    public static final double FIXED_HEAD_LENGTH=2.5;
-    public static final double WORLD_HISTORY_DISTANCE=8;
+    public static final double FIXED_HEAD_LENGTH=6;
+    public static final double WORLD_HISTORY_DISTANCE=12;
     private HuahongHeadBridge(){}
     /** Attachment settles below visible opacity; brightness keeps its own lifecycle. */
     public static float attachmentWeight(float strength){

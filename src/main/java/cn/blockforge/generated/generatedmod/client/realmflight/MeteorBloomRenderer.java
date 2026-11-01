@@ -131,6 +131,7 @@ public final class MeteorBloomRenderer {
         final boolean[] mask=cn.blockforge.generated.generatedmod.client.NativeGlState.colorMask();
         final float[] color=RenderSystem.getShaderColor().clone();
         final float[] clearColor=new float[4];
+        final boolean stencil=GL11.glIsEnabled(GL11.GL_STENCIL_TEST);
         final boolean depth=GL11.glIsEnabled(GL11.GL_DEPTH_TEST),write=GL11.glGetBoolean(GL11.GL_DEPTH_WRITEMASK),blend=GL11.glIsEnabled(GL11.GL_BLEND),cull=GL11.glIsEnabled(GL11.GL_CULL_FACE),scissor=GL11.glIsEnabled(GL11.GL_SCISSOR_TEST);
         final int srcRGB=GL11.glGetInteger(GL14.GL_BLEND_SRC_RGB),dstRGB=GL11.glGetInteger(GL14.GL_BLEND_DST_RGB),srcAlpha=GL11.glGetInteger(GL14.GL_BLEND_SRC_ALPHA),dstAlpha=GL11.glGetInteger(GL14.GL_BLEND_DST_ALPHA);
         final int rgbEquation=GL11.glGetInteger(GL20.GL_BLEND_EQUATION_RGB),alphaEquation=GL11.glGetInteger(GL20.GL_BLEND_EQUATION_ALPHA);
@@ -154,6 +155,7 @@ public final class MeteorBloomRenderer {
             RenderSystem.viewport(viewport[0],viewport[1],viewport[2],viewport[3]);
             for(int i=0;i<3;i++){RenderSystem.setShaderTexture(i,shaderTextures[i]);GlStateManager._activeTexture(GL13.GL_TEXTURE0+i);GlStateManager._bindTexture(bound[i]);}
             GlStateManager._activeTexture(active);RenderSystem.setShader(()->previous);RenderSystem.setShaderColor(color[0],color[1],color[2],color[3]);
+            if(stencil)GL11.glEnable(GL11.GL_STENCIL_TEST);else GL11.glDisable(GL11.GL_STENCIL_TEST);
             RenderSystem.depthMask(write);if(depth)RenderSystem.enableDepthTest();else RenderSystem.disableDepthTest();
             if(cull)RenderSystem.enableCull();else RenderSystem.disableCull();
             RenderSystem.blendFuncSeparate(srcRGB,dstRGB,srcAlpha,dstAlpha);GL20.glBlendEquationSeparate(rgbEquation,alphaEquation);

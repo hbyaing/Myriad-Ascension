@@ -23,6 +23,22 @@ public final class HuahongHeadBridgeQa {
     }
     public static Map<String,Object> verify(){
         checks=0;
+        for(double speed:new double[]{.2,3.85,7,15}){
+            var h=new SwordFlightTrailHistory(.09,1000,160,2048);
+            for(int tick=0;tick<=128;tick++)h.sample(new SwordFlightTrailHistory.Point(0,0,tick*speed),tick,1000);
+            for(int phase=0;phase<60;phase++){
+                double t=127+phase/60.0;var source=h.renderNodes(t,new SwordFlightTrailHistory.Point(0,0,t*speed));
+                var saved=List.copyOf(source);var uniform=SwordFlightTrailHistory.uniformHead(source,.125,8);double arc=uniform.get(uniform.size()-1).arc();
+                check(source.equals(saved),"Presentation grid mutated history");
+                for(var n:uniform){double d=arc-n.arc();
+                    if(d>8+1e-8){check(source.stream().anyMatch(old->old==n),"Grid replaced distant source instance");continue;}
+                    check(Math.abs(d/.125-Math.rint(d/.125))<1e-7,"Drawing lattice still moves at tick rate");
+                    check(Math.abs(n.point().z()-(t*speed-d))<1e-8,"Uniform station left canonical line");
+                    check(Math.abs((t-n.tick())-d/speed)<1e-7,"Uniform station changed true age");
+                }
+            }
+        }
+
         for(float strength:new float[]{.015F,.02F,.05F,.1F,.25F,.5F,1F})check(HuahongHeadBridge.attachmentWeight(strength)==1,"Visible entry did not retain rigid attachment");
         check(HuahongHeadBridge.attachmentWeight(0)==0,"Invisible endpoint changed");
         double oldHeadPulse=0,newHeadPulse=0,windowError=0,defaultError=0;
@@ -42,29 +58,29 @@ public final class HuahongHeadBridgeQa {
                 for(int i=0;i<source.size();i++){
                     var raw=source.get(i);var shown=presentation.get(i);double d=arc-raw.arc();
                     check(raw.tick()==shown.tick()&&raw.arc()==shown.arc(),"Bridge changed material arc or age");
-                    if(d>=8)check(raw==shown,"Distant world history node was replaced");
-                    if(d<=2.5)check(vec(shown.point()).distanceTo(center.subtract(forward.scale(d)))<1e-10,"Rigid head presentation moved off carrier");
+                    if(d>=HuahongHeadBridge.WORLD_HISTORY_DISTANCE)check(raw==shown,"Distant world history node was replaced");
+                    if(d<=HuahongHeadBridge.FIXED_HEAD_LENGTH)check(vec(shown.point()).distanceTo(center.subtract(forward.scale(d)))<1e-10,"Rigid head presentation moved off carrier");
                 }
                 var old=new HuahongFlightPath(source,center,forward,side);
                 var disabled=new HuahongFlightPath(source,center,forward,side,Double.POSITIVE_INFINITY,false);
                 var zero=new HuahongFlightPath(source,center,forward,side,Double.POSITIVE_INFINITY,true,0);
                 var full=new HuahongFlightPath(source,center,forward,side,Double.POSITIVE_INFINITY,true);
                 var bounded=new HuahongFlightPath(source,center,forward,side,32,true);
-                for(double d:new double[]{0,.15,.5,1,2,2.5,3,5,8,12,24,26}){
+                for(double d:new double[]{0,.15,.5,1,2,2.5,3,4,5,6,8,12,24,26}){
                     double de=Math.max(error(old.behind(d),disabled.behind(d)),error(old.behind(d),zero.behind(d)));
                     defaultError=Math.max(defaultError,de);check(de==0,"Default/zero-weight path changed");
                     double we=error(full.behind(d),bounded.behind(d));windowError=Math.max(windowError,we);check(we<1e-9,"Bounded attached window changed a visible frame");
                     var frame=full.behind(d);
-                    if(d<=2.5){Vec3 relative=frame.p().subtract(center);check(Math.abs(relative.dot(side))<1e-10&&Math.abs(relative.dot(up))<1e-10&&Math.abs(relative.dot(forward)+d)<1e-10,"Attached body-local rigid head position oscillates");check(frame.forward().distanceTo(forward)<1e-12&&frame.side().distanceTo(side)<1e-12,"Attached rigid head basis changed");}
+                    if(d<=HuahongHeadBridge.FIXED_HEAD_LENGTH){Vec3 relative=frame.p().subtract(center);check(Math.abs(relative.dot(side))<1e-10&&Math.abs(relative.dot(up))<1e-10&&Math.abs(relative.dot(forward)+d)<1e-10,"Attached body-local rigid head position oscillates");check(frame.forward().distanceTo(forward)<1e-12&&frame.side().distanceTo(side)<1e-12,"Attached rigid head basis changed");}
                     if(d>=full.headTransitionLength()){check(frame.p().equals(old.behind(d).p()),"Attached path displaced original far curve");check(frame.forward().equals(old.behind(d).forward()),"Attached path changed original far tangent");}
                 }
                 oldLocal[k]=old.behind(2).p().subtract(center).dot(base);newLocal[k]=full.behind(2).p().subtract(center).dot(base);
                 if(k==17){
-                    derivative(full,2.5);derivative(full,full.headTransitionLength());
+                    derivative(full,HuahongHeadBridge.FIXED_HEAD_LENGTH);derivative(full,full.headTransitionLength());
                     for(double weight:new double[]{.001,.25,.5,.75,.999}){
-                        var fade=new HuahongFlightPath(source,center,forward,side,32,true,weight);derivative(fade,2.5);derivative(fade,fade.headTransitionLength());
+                        var fade=new HuahongFlightPath(source,center,forward,side,32,true,weight);derivative(fade,HuahongHeadBridge.FIXED_HEAD_LENGTH);derivative(fade,fade.headTransitionLength());
                         var faded=HuahongHeadBridge.presentationNodes(source,center,forward,(float)weight);
-                        for(int i=0;i<source.size();i++){var raw=source.get(i);var shown=faded.get(i);check(raw.arc()==shown.arc()&&raw.tick()==shown.tick(),"Fade changed source clocks");if(arc-raw.arc()>=8)check(raw==shown,"Fade replaced distant node");else check(vec(shown.point()).distanceTo(vec(raw.point()).lerp(vec(presentation.get(i).point()),(float)weight))<1e-10,"Presentation fade is discontinuous between endpoints");}
+                        for(int i=0;i<source.size();i++){var raw=source.get(i);var shown=faded.get(i);check(raw.arc()==shown.arc()&&raw.tick()==shown.tick(),"Fade changed source clocks");if(arc-raw.arc()>=HuahongHeadBridge.WORLD_HISTORY_DISTANCE)check(raw==shown,"Fade replaced distant node");else check(vec(shown.point()).distanceTo(vec(raw.point()).lerp(vec(presentation.get(i).point()),(float)weight))<1e-10,"Presentation fade is discontinuous between endpoints");}
                     }
                 }
             }

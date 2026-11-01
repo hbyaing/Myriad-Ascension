@@ -20,19 +20,20 @@ final class HuahongSkinGeometry {
     private final PoseStack.Pose pose;
     private final Vec3 eye,center,forward;
     private final List<SwordFlightTrailHistory.Node> nodes;
+    private final List<SwordFlightTrailHistory.Node> canonical;
     private final List<SwordFlightTrailHistory.Node> headNodes;
     private final Frame[] historyFrames;
     private final double now,origin;
     private final float strength;
     private int vertices;
     private HuahongSkinGeometry(HuahongSkin skin,VertexConsumer out,PoseStack.Pose pose,Vec3 eye,Vec3 center,Vec3 forward,Vec3 headSide,
-            List<SwordFlightTrailHistory.Node> nodes,double now,float strength){
-        this.out=out;this.pose=pose;this.eye=eye;this.center=center;this.forward=forward;this.nodes=nodes;this.now=now;this.strength=strength;
+            List<SwordFlightTrailHistory.Node> nodes,List<SwordFlightTrailHistory.Node> canonical,double now,float strength){
+        this.out=out;this.pose=pose;this.eye=eye;this.center=center;this.forward=forward;this.nodes=nodes;this.canonical=canonical;this.now=now;this.strength=strength;
         headNodes=skin==HuahongSkin.DENSE?nodes:HuahongHeadBridge.presentationNodes(nodes,center,forward,HuahongHeadBridge.attachmentWeight(strength));
         historyFrames=skin==HuahongSkin.DENSE?null:new Frame[nodes.size()];
         // DENSE's source sprite never queries a transported path. SMOKE uses
         // at most24.05m, including its zero-alpha last station, with32m reserve.
-        path=skin==HuahongSkin.DENSE?null:new HuahongFlightPath(nodes,center,forward,headSide,
+        path=skin==HuahongSkin.DENSE?null:new HuahongFlightPath(canonical,center,forward,headSide,
                 skin==HuahongSkin.SMOKE?32:Double.POSITIVE_INFINITY,true,HuahongHeadBridge.attachmentWeight(strength));
         // Keep material transport independent of travel speed. Geometry still
         // follows recorded world points, while the surface's phase is measured
@@ -40,8 +41,8 @@ final class HuahongSkinGeometry {
         origin=nodes.isEmpty()?0:nodes.get(nodes.size()-1).arc();
     }
     static int draw(HuahongSkin skin,VertexConsumer out,PoseStack.Pose pose,Vec3 eye,Vec3 center,Vec3 forward,Vec3 headSide,
-            List<SwordFlightTrailHistory.Node> nodes,double now,float strength){
-        var g=new HuahongSkinGeometry(skin,out,pose,eye,center,forward,headSide,nodes,now,strength);
+            List<SwordFlightTrailHistory.Node> nodes,List<SwordFlightTrailHistory.Node> canonical,double now,float strength){
+        var g=new HuahongSkinGeometry(skin,out,pose,eye,center,forward,headSide,nodes,canonical,now,strength);
         switch(skin){
             case NEEDLE -> g.needle();
             case METEOR_FLAME -> g.fire(false);
@@ -62,7 +63,11 @@ final class HuahongSkinGeometry {
     private HuahongFlightPath.Frame at(int i){
         if(historyFrames[i]!=null)return historyFrames[i];
         var node=nodes.get(i);
-        Frame frame=path.frame(vec(node.point()),vec(nodes.get(Math.min(nodes.size()-1,i+1)).point()).subtract(vec(nodes.get(Math.max(0,i-1)).point())));
+        double behind=origin-node.arc();
+        // Head stations have known arc distances. A nearest-position search can
+        // select another arm of a tight turn even when their centers are rigid.
+        Frame frame=behind<HuahongHeadBridge.WORLD_HISTORY_DISTANCE?path.behind(behind):
+                path.frame(vec(node.point()),vec(nodes.get(Math.min(nodes.size()-1,i+1)).point()).subtract(vec(nodes.get(Math.max(0,i-1)).point())));
         if(headNodes.get(i)!=node)frame=new Frame(vec(headNodes.get(i).point()),frame.forward(),frame.side(),frame.up());
         return historyFrames[i]=frame;
     }
@@ -80,11 +85,11 @@ final class HuahongSkinGeometry {
     /** Canonical world-arc births survive render-time head clipping and inserted nodes.
      * Position and birth time are interpolated together; the cell is the identity. */
     private List<Birth> births(double spacing,double length,double life){
-        var out=new ArrayList<Birth>();if(nodes.size()<2)return out;
-        double start=Math.max(nodes.get(0).arc(),headArc()-length);int i=0;
+        var out=new ArrayList<Birth>();if(canonical.size()<2)return out;
+        double start=Math.max(canonical.get(0).arc(),headArc()-length);int i=0;
         for(long cell=(long)Math.ceil(start/spacing);cell*spacing<=headArc()+1e-8;cell++){
-            double arc=cell*spacing;while(i<nodes.size()-2&&nodes.get(i+1).arc()<arc)i++;
-            var a=nodes.get(i);var b=nodes.get(i+1);double span=b.arc()-a.arc();if(span<1e-8)continue;
+            double arc=cell*spacing;while(i<canonical.size()-2&&canonical.get(i+1).arc()<arc)i++;
+            var a=canonical.get(i);var b=canonical.get(i+1);double span=b.arc()-a.arc();if(span<1e-8)continue;
             double t=Mth.clamp((arc-a.arc())/span,0,1),born=a.tick()+(b.tick()-a.tick())*t;
             if(now-born<0||now-born>life*20)continue;
             Vec3 direction=vec(b.point()).subtract(vec(a.point()));if(direction.lengthSqr()<1e-10)direction=forward;

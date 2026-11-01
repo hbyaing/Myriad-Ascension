@@ -21,6 +21,7 @@ import java.util.concurrent.*;
 @Mod.EventBusSubscriber(modid=GeneratedMod.MOD_ID,value=Dist.CLIENT)
 public final class HuahongReproCapture {
     private static final boolean ENABLED=Boolean.getBoolean("wuxingxiantu.huahongRepro");
+    private static final boolean USER_VIEW=Boolean.getBoolean("wuxingxiantu.huahongUserView");
     private static final boolean ORDINARY=Boolean.getBoolean("wuxingxiantu.huahongReproOrdinary");
     private static final boolean HILT_UTURN=Boolean.getBoolean("wuxingxiantu.huahongReproHiltUTurn");
     private static final boolean FOLLOWUP=Boolean.getBoolean("wuxingxiantu.huahongHeadFollowup"),CANDIDATE=Boolean.getBoolean("wuxingxiantu.huahongHeadFollowupCandidate");
@@ -28,6 +29,7 @@ public final class HuahongReproCapture {
     private static final String SINGLE_SKIN=System.getProperty("wuxingxiantu.huahongFollowupSingleSkin","");
     private static final int CYCLE_START=Integer.getInteger("wuxingxiantu.huahongFollowupCycleStart",160);
     private static final HuahongSkin SKIN=HuahongSkin.valueOf(System.getProperty("wuxingxiantu.huahongReproSkin","SMOKE").toUpperCase(Locale.ROOT));
+    private static final int CAPTURE_START=Integer.getInteger("wuxingxiantu.huahongReproCaptureStart",FOLLOWUP&&!ORDINARY?CYCLE_START-10:40);
     private static final int END_TICK=Integer.getInteger("wuxingxiantu.huahongReproEndTick",FOLLOWUP&&!ORDINARY?CYCLE_START+540:420);
     private static final Path OUT=Path.of(System.getProperty("wuxingxiantu.huahongReproOutput","../../reports/flight-repro"));
     private static final long START=System.nanoTime();
@@ -60,8 +62,8 @@ public final class HuahongReproCapture {
             if((System.nanoTime()-START)/1e9>600)throw new AssertionError("Reproduction watchdog");
             if(!opened&&mc.player!=null)throw new AssertionError("Refusing existing world");
             if(!opened&&mc.getOverlay()==null&&(mc.screen instanceof net.minecraft.client.gui.screens.TitleScreen||mc.screen instanceof net.minecraft.client.gui.screens.AccessibilityOnboardingScreen)){
-                opened=true;mc.options.enableVsync().set(false);mc.getWindow().updateVsync(false);mc.getWindow().setWindowed(1280,720);mc.resizeDisplay();mc.options.framerateLimit().set(60);mc.options.fov().set(70);mc.options.renderDistance().set(8);mc.options.simulationDistance().set(6);mc.options.cloudStatus().set(CloudStatus.FANCY);mc.options.bobView().set(false);mc.options.hideGui=false;
-                mc.getTutorial().setStep(net.minecraft.client.tutorial.TutorialSteps.NONE);if(FOLLOWUP)mc.options.hideGui=true;
+                opened=true;mc.options.enableVsync().set(false);mc.getWindow().updateVsync(false);mc.getWindow().setWindowed(1280,720);mc.resizeDisplay();mc.options.framerateLimit().set(60);mc.options.fov().set(70);mc.options.renderDistance().set(8);mc.options.simulationDistance().set(6);mc.options.cloudStatus().set(CloudStatus.FANCY);mc.options.bobView().set(USER_VIEW);mc.options.hideGui=false;
+                mc.getTutorial().setStep(net.minecraft.client.tutorial.TutorialSteps.NONE);if(FOLLOWUP)mc.options.hideGui=!USER_VIEW;
                 var rules=new GameRules();rules.getRule(GameRules.RULE_DOMOBSPAWNING).set(false,null);
                 if(!REUSE_WORLD.isBlank()){Path saves=mc.gameDirectory.toPath().resolve("saves").toAbsolutePath().normalize(),save=saves.resolve(REUSE_WORLD).normalize();if(!REUSE_WORLD.startsWith("flight-continuous-")||REUSE_WORLD.contains("/")||REUSE_WORLD.contains("\\")||!save.getParent().equals(saves)||!Files.isRegularFile(save.resolve("level.dat")))throw new AssertionError("Refusing non-QA flight world "+save);mc.createWorldOpenFlows().loadLevel(new net.minecraft.client.gui.screens.TitleScreen(),REUSE_WORLD);return;}
                 mc.createWorldOpenFlows().createFreshLevel("flight-continuous-"+System.currentTimeMillis(),new LevelSettings("Flight continuous reproduction",GameType.SURVIVAL,false,net.minecraft.world.Difficulty.PEACEFUL,true,rules,WorldDataConfiguration.DEFAULT),new WorldOptions(7215,false,false),a->a.registryOrThrow(net.minecraft.core.registries.Registries.WORLD_PRESET).getHolderOrThrow(net.minecraft.world.level.levelgen.presets.WorldPresets.FLAT).value().createWorldDimensions());return;
@@ -72,9 +74,9 @@ public final class HuahongReproCapture {
                 ready=true;playerId=mc.player.getUUID();FlyingSwordConfig.TRAILS.set(true);FlyingSwordConfig.TRAIL_PATH.set(FlyingSwordConfig.TrailPath.AUTO);HuahongSkinPreferences.select(chosenSkin());selected=chosenSkin();
                 preparation=mc.getSingleplayerServer().submitAsync(()->prepare(mc.getSingleplayerServer().getPlayerList().getPlayer(playerId)));return;
             }
-            if(preparation!=null){if(!preparation.isDone())return;preparation.join();preparation=null;PointerSafety.verify();runtimeEvidence(mc);if(FOLLOWUP){if(CANDIDATE){if(ORDINARY)SETUP_CHECKS.put("ordinaryFlicker",OrdinaryTrailFlickerQa.verify(mc));else{SETUP_CHECKS.put("headBridge",Class.forName("cn.blockforge.generated.generatedmod.client.qa.myriad.HuahongHeadBridgeQa").getMethod("verify").invoke(null));SETUP_CHECKS.put("pathWindow",Class.forName("cn.blockforge.generated.generatedmod.client.qa.myriad.HuahongPathWindowQa").getMethod("verify").invoke(null));}}else SETUP_CHECKS.put("baseline","Frozen d212 production outputs; no candidate-only synthetic checks.");}else if(OrdinaryHiltQa.LAYERS)SETUP_CHECKS.put("diagnosticOnly","Old frozen production outputs: layered observations; setup GPU checks not repeated against newly edited QA sources.");else{SETUP_CHECKS.put("sectionCadence",FlightSectionCadenceQa.verify());SETUP_CHECKS.put("material",HuahongMaterialQa.verify(mc));SETUP_CHECKS.put("path",HuahongPathQa.verify());if(SKIN==HuahongSkin.DENSE)SETUP_CHECKS.put("volumeMaterial",HuahongVolumeMaterialQa.verify(mc));}started=true;}
+            if(preparation!=null){if(!preparation.isDone())return;preparation.join();preparation=null;PointerSafety.verify();runtimeEvidence(mc);if(FOLLOWUP){if(CANDIDATE){if(ORDINARY)SETUP_CHECKS.put("ordinaryFlicker",OrdinaryTrailFlickerQa.verify(mc));else{SETUP_CHECKS.put("headBridge",Class.forName("cn.blockforge.generated.generatedmod.client.qa.myriad.HuahongHeadBridgeQa").getMethod("verify").invoke(null));SETUP_CHECKS.put("pathWindow",Class.forName("cn.blockforge.generated.generatedmod.client.qa.myriad.HuahongPathWindowQa").getMethod("verify").invoke(null));}}else SETUP_CHECKS.put("baseline","Frozen production outputs selected by huahongFrozenMain; actual runtime hashes recorded, no candidate-only synthetic checks.");}else if(OrdinaryHiltQa.LAYERS)SETUP_CHECKS.put("diagnosticOnly","Old frozen production outputs: layered observations; setup GPU checks not repeated against newly edited QA sources.");else{SETUP_CHECKS.put("sectionCadence",FlightSectionCadenceQa.verify());SETUP_CHECKS.put("material",HuahongMaterialQa.verify(mc));SETUP_CHECKS.put("path",HuahongPathQa.verify());if(SKIN==HuahongSkin.DENSE)SETUP_CHECKS.put("volumeMaterial",HuahongVolumeMaterialQa.verify(mc));}if(Boolean.getBoolean("wuxingxiantu.flightBlendStateProbe"))SETUP_CHECKS.put("postState",SwordTrailStateQa.verify(mc,CANDIDATE));started=true;}
             if(FOLLOWUP&&selected!=chosenSkin()){selected=chosenSkin();HuahongSkinPreferences.select(selected);}
-            if(mc.player.getVehicle() instanceof ControlledSwordEntity){if(!YujianClientController.active())YujianClientController.setActive(true);mc.options.setCameraType(FOLLOWUP&&!ORDINARY||clock<260?CameraType.THIRD_PERSON_FRONT:CameraType.THIRD_PERSON_BACK);}
+            if(mc.player.getVehicle() instanceof ControlledSwordEntity){if(!YujianClientController.active())YujianClientController.setActive(true);mc.options.setCameraType(USER_VIEW?CameraType.THIRD_PERSON_BACK:FOLLOWUP&&!ORDINARY||clock<260?CameraType.THIRD_PERSON_FRONT:CameraType.THIRD_PERSON_BACK);}
             mc.player.setYRot(yaw(clock));mc.player.setXRot(pitch(clock));
             if(clock>=END_TICK)finish(null);
         }catch(Throwable error){finish(error);}
@@ -84,7 +86,7 @@ public final class HuahongReproCapture {
         // Flat, explicitly loaded visual route: this recording is not cold-generation performance evidence.
         if(FOLLOWUP){YujianController.stop(p);p.stopRiding();for(var entity:l.getAllEntities())if(entity instanceof ControlledSwordEntity s&&p.getUUID().equals(s.ownerId))s.discard();p.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);warmCorridor(l);}else for(int x=-20;x<=32;x++)for(int z=-20;z<=32;z++)l.getChunk(x,z);
         l.setDayTime(18000);l.setWeatherParameters(12000,0,false,false);l.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false,l.getServer());
-        p.setNoGravity(true);p.removeAllEffects();p.getInventory().setItem(0,new net.minecraft.world.item.ItemStack(WuXingItems.PURE_YANG_SWORD.get()));p.getInventory().selected=0;
+        p.getPersistentData().remove("SwordFlightCooldown");p.setNoGravity(true);p.removeAllEffects();p.getInventory().setItem(0,new net.minecraft.world.item.ItemStack(WuXingItems.PURE_YANG_SWORD.get()));p.getInventory().selected=0;
         var d=GeneratedMod.data(p);d.wuxingxiantu$setRealm(99);d.wuxingxiantu$learnArt(YujianController.FLIGHT);d.wuxingxiantu$setArtMastery(YujianController.FLIGHT,100);d.wuxingxiantu$setMaxMana(1000000);d.wuxingxiantu$setAura(1000000);p.getPersistentData().putLong("YujianCooldown_DUNXU",Long.MAX_VALUE);
         FlyingSwordConfig.SPEED_MULTIPLIER.set(1.0);GeneratedMod.sync(p);p.teleportTo(l,8,113,-24,0,0);
     }
@@ -101,7 +103,7 @@ public final class HuahongReproCapture {
         YujianController.handleInput(p,clock<10,!summoned,forward,clock>=brakeAt,false,false,false,roll,sprint,false,1,0,yaw(clock),pitch(clock));summoned=true;
     }
     @SubscribeEvent public static void frame(TickEvent.RenderTickEvent event){
-        if(!ENABLED||!started||done||event.phase!=TickEvent.Phase.END||clock<(FOLLOWUP&&!ORDINARY?CYCLE_START-10:40)||clock>=END_TICK)return;
+        if(!ENABLED||!started||done||event.phase!=TickEvent.Phase.END||clock<CAPTURE_START||clock>=END_TICK)return;
         capturePartial=event.renderTickTime;capturePending=true;
     }
     /** After all END listeners and blitToScreen, before the real buffer swap. */
@@ -128,7 +130,7 @@ public final class HuahongReproCapture {
     }
     private static void warmCorridor(net.minecraft.server.level.ServerLevel l){
         // Loaded visual fixture only: warm a narrow predicted corridor, never a cold-route result.
-        Set<Long> chunks=new HashSet<>();for(double top:new double[]{5,15,30}){double x=8,z=-24,heading=0,speed=0;for(int t=0;t<END_TICK;t++){heading+=net.minecraft.util.Mth.wrapDegrees(yaw(t)-(float)heading)*.18;double target=t<10?0:t<160?2:top;speed+=(target-speed)*.2;double angle=Math.toRadians(heading);x-=Math.sin(angle)*speed;z+=Math.cos(angle)*speed;int cx=net.minecraft.util.Mth.floor(x)>>4,cz=net.minecraft.util.Mth.floor(z)>>4;for(int dx=-1;dx<=1;dx++)for(int dz=-1;dz<=1;dz++)chunks.add(net.minecraft.world.level.ChunkPos.asLong(cx+dx,cz+dz));}}for(long key:chunks){var p=new net.minecraft.world.level.ChunkPos(key);l.getChunk(p.x,p.z);}
+        Set<Long> chunks=new HashSet<>();for(double top:new double[]{5,15,30}){double x=8,z=-24,heading=0,speed=0;for(int t=0;t<END_TICK;t++){heading+=net.minecraft.util.Mth.wrapDegrees(yaw(t)-(float)heading)*.18;double target=t<10?0:!ORDINARY&&t<160?2:top;speed+=(target-speed)*.2;double angle=Math.toRadians(heading);x-=Math.sin(angle)*speed;z+=Math.cos(angle)*speed;int cx=net.minecraft.util.Mth.floor(x)>>4,cz=net.minecraft.util.Mth.floor(z)>>4;for(int dx=-3;dx<=3;dx++)for(int dz=-3;dz<=3;dz++)chunks.add(net.minecraft.world.level.ChunkPos.asLong(cx+dx,cz+dz));}}for(long key:chunks){var p=new net.minecraft.world.level.ChunkPos(key);l.getChunk(p.x,p.z);}
     }
     private static void runtimeEvidence(Minecraft mc)throws Exception{
         var classes=new LinkedHashMap<String,Object>();
@@ -163,6 +165,7 @@ public final class HuahongReproCapture {
             report.put("configuredScenarioEndTick",END_TICK);if(!FRAMES.isEmpty())report.put("actualLastCapturedTick",FRAMES.get(FRAMES.size()-1).get("clock"));
             report.put("hiltUTurnInput",HILT_UTURN);if(HILT_UTURN)report.put("uTurnSchedule","At tick120 target yaw steps exactly180deg from tick119 then holds30ticks; same at300 from299, holds30ticks. Outside those windows original yaw curve resumes. Real steering/velocity and shipping camera remain active.");
             if(SKIN==HuahongSkin.DENSE){var check=denseExitBasis();report.put("exitVolumeBasis",check);if(!Boolean.TRUE.equals(check.get("passed")))ERRORS.add("DENSE exit basis check failed: "+check);}
+            if(FRAMES.isEmpty())ERRORS.add("No actual mounted flight frames recorded");
             report.put("setupChecks",SETUP_CHECKS);Files.writeString(OUT.resolve("capture.json"),new GsonBuilder().setPrettyPrinting().create().toJson(report));Files.writeString(OUT.resolve(ERRORS.isEmpty()?"complete.txt":"failure.txt"),ERRORS.isEmpty()?"RECORDED — visual review required":String.join("\n",ERRORS));
         }catch(Throwable write){write.printStackTrace();}Minecraft.getInstance().stop();
     }
