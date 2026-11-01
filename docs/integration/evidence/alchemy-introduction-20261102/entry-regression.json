@@ -1,0 +1,7 @@
+{
+  "command": "gradle build runGameTestServer -PentryUiOnly",
+  "requiredTests": 286,
+  "passed": true,
+  "includes": "AlchemyCompendiumUseGameTests: no free formulas, first/repeated use, creative preservation and complete-volume permission gate",
+  "clientRendering": "not run"
+}

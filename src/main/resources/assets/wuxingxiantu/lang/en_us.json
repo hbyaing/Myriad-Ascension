@@ -1740,7 +1740,7 @@
   "tooltip.wuxingxiantu.intro.alchemy_guarding.action.0": "Read to unlock Clear Heart, Calming and Profound Water formulas.",
   "tooltip.wuxingxiantu.intro.alchemy_introduction.category": "Alchemy book",
   "tooltip.wuxingxiantu.intro.alchemy_introduction.lore": "An alchemy book recording pill formulas and the principles of refinement.",
-  "tooltip.wuxingxiantu.intro.alchemy_introduction.action.0": "Read to unlock the basic pill formulas of a mortal-grade furnace.",
+  "tooltip.wuxingxiantu.intro.alchemy_introduction.action.0": "Unlocks alchemy only. No formulas are granted; official formulas will be obtained separately.",
   "tooltip.wuxingxiantu.intro.alchemy_nourishing.category": "Alchemy book",
   "tooltip.wuxingxiantu.intro.alchemy_nourishing.lore": "An alchemy book recording pill formulas and the principles of refinement.",
   "tooltip.wuxingxiantu.intro.alchemy_nourishing.action.0": "Read to unlock Aura, Cultivation, Gathering, Bigu and Gale formulas.",
@@ -2478,5 +2478,10 @@
   "tooltip.wuxingxiantu.huahong": "Rainbow Flight: sprint at 65% cruise speed for 0.3s to merge rider and blade and double speed; costs 0.25% maximum mana to enter and 0.5% per second. Gathering and flight pass ordinary solid walls; forbidden blocks and containers still stop you. Turning or briefly releasing sprint retains the form. Releasing forward, braking, low mana or a forbidden obstacle ends it with a safe exit from the wall.",
   "yujian.wuxingxiantu.huahong.stage.1": "Gathering Light",
   "yujian.wuxingxiantu.huahong.stage.2": "Rainbow Flight",
-  "yujian.wuxingxiantu.huahong.stage.3": "Returning to Form"
+  "yujian.wuxingxiantu.huahong.stage.3": "Returning to Form",
+  "message.wuxingxiantu.compendium_already_learned": "Already learned; item retained. Inference also requires compatibility and heat concepts studied at the research table, plus actual brewing practice.",
+  "message.wuxingxiantu.compendium_research_next": "Next: study traditions on the research table Formula tab. Inference requires compatibility, heat knowledge and actual brewing; rereading does not grant practice.",
+  "message.wuxingxiantu.compendium_admin_only": "This complete compendium requires Creative mode or operator permission.",
+  "tooltip.wuxingxiantu.compendium_use": "Right-click the air to study. Already learned books are retained; research prerequisites are studied separately.",
+  "message.wuxingxiantu.alchemy_introduction_unlocked": "Alchemy unlocked. This introduction grants no formulas; official formulas will be obtained separately."
 }

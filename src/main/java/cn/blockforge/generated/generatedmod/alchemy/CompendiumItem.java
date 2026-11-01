@@ -18,16 +18,29 @@ public final class CompendiumItem extends Item {
         ItemStack stack = user.getItemInHand(hand);
         if (!(user instanceof ServerPlayer player)) return InteractionResultHolder.success(stack);
         if (compendium == AlchemyCompendium.COMPLETE && !player.isCreative() && !player.hasPermissions(2))
+        {
+            player.displayClientMessage(Component.translatable("message.wuxingxiantu.compendium_admin_only"), true);
             return InteractionResultHolder.fail(stack);
+        }
         boolean changed = FormulaKnowledge.unlock(player);
         int learned=0;
         for (PillCatalog pill : compendium.formulas())
             if(FormulaKnowledge.learn(player, new ResourceLocation(GeneratedMod.MOD_ID, pill.id),false))learned++;
         changed |= learned>0;
-        if (!changed) return InteractionResultHolder.fail(stack);
+        if (!changed) {
+            player.displayClientMessage(Component.translatable("message.wuxingxiantu.compendium_already_learned"), true);
+            return InteractionResultHolder.consume(stack);
+        }
         Component bookName = stack.getHoverName();
         if (!player.isCreative()) stack.shrink(1);
-        player.displayClientMessage(Component.translatable("message.wuxingxiantu.compendium_learned",bookName,learned), true);
+        player.displayClientMessage(compendium == AlchemyCompendium.INTRODUCTION
+                ? Component.translatable("message.wuxingxiantu.alchemy_introduction_unlocked")
+                : Component.translatable("message.wuxingxiantu.compendium_learned",bookName,learned), true);
+        player.displayClientMessage(Component.translatable("message.wuxingxiantu.compendium_research_next"), false);
         return InteractionResultHolder.consume(stack);
+    }
+    @Override public void appendHoverText(ItemStack stack, Level level, java.util.List<Component> lines, net.minecraft.world.item.TooltipFlag flag) {
+        super.appendHoverText(stack,level,lines,flag);
+        lines.add(Component.translatable("tooltip.wuxingxiantu.compendium_use").withStyle(net.minecraft.ChatFormatting.GRAY));
     }
 }

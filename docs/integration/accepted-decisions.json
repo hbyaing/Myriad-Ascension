@@ -444,6 +444,7 @@
     "sha256": "74c675aa1c34e8d64506fa93e149c4d5c386281ec8359c79f250b0f76bc86c36",
     "status": "authorized implementation target, not complete",
     "migration": "2026-10-29 user explicitly directs all old pills into V5; remove old medicinal tiers/quality presentation and active settlement; use unified grades 1–9, keep quantities and original backups, one-time deterministic conversion, no rerolls or automatic certification",
-    "extensibility": "User requires data-defined parameter/tag display with typed source and budget, separate presence/strength; allowlisted behavior registry, no arbitrary scripts"
+    "extensibility": "User requires data-defined parameter/tag display with typed source and budget, separate presence/strength; allowlisted behavior registry, no arbitrary scripts",
+    "introductionBook": "2026-11-02 user decision: alchemy_introduction unlocks alchemy only and grants no formulas. Existing learned formulas remain; other compendia unchanged. Official formulas will be added separately in a future task."
   }
 }

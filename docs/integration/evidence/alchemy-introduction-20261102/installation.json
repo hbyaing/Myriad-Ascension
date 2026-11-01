@@ -1,0 +1,15 @@
+{
+  "source": "C:\\Users\\zwr04\\Documents\\Codex\\2026-10-13\\new-chat\\work\\review-myriad-ascension\\deliverables\\20261102-alchemy-introduction\\Myriad-Ascension-1.20.1-introduction.jar",
+  "target": "D:\\我的世界\\.minecraft\\versions\\1.20.1-Forge_47.4.26\\mods\\Myriad-Ascension-1.20.1-introduction.jar",
+  "sha256": "6346f799cf2ec83fbad7c4baf27ab298e84003a079221cee5b7be79be329aa46",
+  "gameDir": "D:\\我的世界\\.minecraft\\versions\\1.20.1-Forge_47.4.26",
+  "backup": "deliverables\\mod-backups\\2026-11-02\\万界仙途自动安装-004908-24cb3104",
+  "old": [
+    {
+      "name": "Myriad-Ascension-1.20.1-heat-controls.jar",
+      "sha256": "08f462841741586e395f67c651d7403791cfedc28e33a4041bc6645e4d5dc10b"
+    }
+  ],
+  "status": "installed_on_disk",
+  "runtime": "Restart required if the game had already loaded the previous JAR; no process was stopped."
+}

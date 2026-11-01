@@ -1,0 +1,17 @@
+{
+  "command": "gradle verifyFull (final no-formula revision)",
+  "total": 517,
+  "passed": 515,
+  "failed": [
+    {
+      "test": "supplementalmovementstillwaitsatqueuedterrain",
+      "reason": "No ready/unrequested-FULL boundary for scheduling fixture"
+    },
+    {
+      "test": "holdreleasemountandexitedge",
+      "reason": "Release did not mount: mount_obstructed removed=true at (49.5, 240.0, 627.5)"
+    }
+  ],
+  "status": "failed; not waived",
+  "note": "The two failures are flight scheduling/mount tests. No flight production or fixture source was modified by this task. Source unchanged during this final run."
+}
