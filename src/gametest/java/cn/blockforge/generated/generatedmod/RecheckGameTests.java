@@ -297,6 +297,34 @@ public final class RecheckGameTests {
             if(event.getEntity() instanceof net.minecraft.world.entity.Mob mob&&tag.hasUUID("MindscapeOwner")&&owner.equals(tag.getUUID("MindscapeOwner")))boss=mob;
         }
     }
+    @GameTest(template="empty",timeoutTicks=600) public static void allFormalBossesFaceOwnerAtFirstSpawn(GameTestHelper h){
+        var p=player(h);
+        prepareMindscape(h,p,()->{
+            try {
+                int count=0;
+                for(var id:MindscapeChallenges.ids()){
+                    var challenge=MindscapeChallenges.get(id.toString());
+                    if(!challenge.triggerStage().equals("formal"))continue;
+                    var capture=new BossJoinCapture(p.getUUID());
+                    net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(capture);
+                    try {
+                        h.assertTrue(MindscapeManager.enter(p,challenge,true),"Entry rejected: "+id);
+                        var boss=capture.boss;h.assertTrue(boss!=null,"Spawn event missing: "+id);
+                        var delta=p.position().subtract(boss.position());
+                        float expected=(float)Math.toDegrees(Math.atan2(-delta.x,delta.z));
+                        for(float actual:new float[]{boss.getYRot(),boss.yBodyRot,boss.getYHeadRot(),boss.yRotO,boss.yBodyRotO,boss.yHeadRotO})
+                            h.assertTrue(Math.abs(net.minecraft.util.Mth.wrapDegrees(actual-expected))<.001,"Initial body/head/interpolation faces away: "+id+" actual="+actual+" expected="+expected);
+                        if(boss instanceof HeartDemonEntity heart){
+                            heart.setVisualPhase(2);
+                            h.assertTrue(Math.abs(net.minecraft.util.Mth.wrapDegrees(heart.yBodyRot-expected))<.001,"Phase two reversed body orientation");
+                        }
+                        count++;
+                    }finally{net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(capture);MindscapeManager.abort(p,true);}
+                }
+                h.assertTrue(count==10,"Expected all ten formal challenges, got "+count);h.succeed();
+            }finally{MindscapeManager.abort(p,true);p.close();}
+        });
+    }
     public static final class KeepFreshBossHidden {
         final GameTestPlayer player;final net.minecraft.server.level.ServerLevel level;final net.minecraft.world.level.ChunkPos chunk;
         KeepFreshBossHidden(GameTestPlayer player,net.minecraft.world.entity.Mob boss){this.player=player;level=player.serverLevel();chunk=boss.chunkPosition();}

@@ -46,7 +46,7 @@ public final class MindscapeCapture {
     private static final String EXPECTED_PACK=System.getProperty("wuxingxiantu.myriadExpectedShaderPack","");
     private static final Path OUT=Path.of(System.getProperty("wuxingxiantu.myriadCaptureOutput","captures")).resolve("mindscape");
     private static final int WIDTH=Integer.getInteger("wuxingxiantu.mindscapeCaptureWidth",1600),
-            HEIGHT=Integer.getInteger("wuxingxiantu.mindscapeCaptureHeight",900),EXPECTED_CAPTURES=34;
+            HEIGHT=Integer.getInteger("wuxingxiantu.mindscapeCaptureHeight",900),EXPECTED_CAPTURES=36;
     private static final double MIN_BACKGROUND_COLOR_RATIO=.02;
     private static final long START=System.nanoTime();
     private static final List<Map<String,Object>> ROWS=new ArrayList<>();
@@ -67,9 +67,9 @@ public final class MindscapeCapture {
     private static final View[] GOLD_VIEWS={EXTRA_RED_VIEWS[0],EXTRA_RED_VIEWS[1],EXTRA_RED_VIEWS[2],EXTRA_RED_VIEWS[3],EXTRA_RED_VIEWS[4],
             new View(new Vec3(0,3.4,-31.5),0,8,70),VIEWS[3],FAR_CAMERA};
     private static final String[] GOLD_NAMES={"17-gold-back","18-gold-left","19-gold-right","20-gold-up","21-gold-down","22-gold-third-person-boundary","23-gold-near-boundary","24-gold-far-camera"};
-    private enum Phase {BOOT,PREPARE,FIRST_ENTER,FIRST_VIEWS,EXTRA_RED,RELOAD_START,RELOAD_WAIT,THIRD_SETUP,THIRD_VIEW,
+    private enum Phase {BOOT,PREPARE,FIRST_ENTER,FIRST_FACING,FIRST_VIEWS,EXTRA_RED,RELOAD_START,RELOAD_WAIT,THIRD_SETUP,THIRD_VIEW,
         TRANSPARENT_SETUP,TRANSPARENT_VIEW,TRANSPARENT_CLEAR,FIRST_KILL,FIRST_VICTORY,FIRST_RETURN,
-        FINAL_ENTER,FINAL_PHASE_ONE,FINAL_FIRST_LETHAL,FINAL_PHASE_TWO,FINAL_SECOND_LETHAL,FINAL_VICTORY,FINAL_RETURN,
+        FINAL_ENTER,FINAL_FACING,FINAL_PHASE_ONE,FINAL_FIRST_LETHAL,FINAL_PHASE_TWO,FINAL_SECOND_LETHAL,FINAL_VICTORY,FINAL_RETURN,
         ABORT_ENTER,ABORT_ACTIVE,ABORT_DO,ABORT_RETURN,DEVELOPER_RETURN,DEVELOPER_COMPLETE,DONE,
         GOLD_SURVEY_ENTER,GOLD_SURVEY_ACTIVE,GOLD_SURVEY_WAIT,GOLD_SURVEY_RETURN}
     private static Phase phase=Phase.BOOT;
@@ -225,7 +225,8 @@ public final class MindscapeCapture {
             switch(phase){
                 case BOOT -> {if(ticks>=30)server(mc,MindscapeCapture::prepare,()->phase(Phase.PREPARE));}
                 case PREPARE -> {if(ticks>=15)request("00-overworld-before",null,0,0,()->phase(Phase.FIRST_ENTER));}
-                case FIRST_ENTER -> server(mc,p->enter(p,FIRST,true),()->{viewIndex=0;view(mc,VIEWS[0]);phase(Phase.FIRST_VIEWS);});
+                case FIRST_ENTER -> server(mc,p->enter(p,FIRST,true),()->{viewIndex=0;view(mc,new View(new Vec3(0,3,3),0,0,66));phase(Phase.FIRST_FACING);});
+                case FIRST_FACING -> {if(active(mc,FIRST)&&ticks>=12)request("00a-boss-facing-close",MindscapeState.CHALLENGE_ACTIVE,0,0,()->{view(mc,VIEWS[0]);phase(Phase.FIRST_VIEWS);});}
                 case FIRST_VIEWS -> {
                     if(!active(mc,FIRST)||ticks<12)return;
                     check(MindscapeClient.purification(0)==0,"Active challenge showed purified color");
@@ -287,8 +288,9 @@ public final class MindscapeCapture {
                     if(!active(mc,FINAL)||ticks<24)return;
                     var entity=mc.level.getEntity(bossId);
                     if(!(entity instanceof HeartDemonEntity heart)||heart.visualPhase()!=HeartDemonEntity.VisualPhase.PHASE_2)return;
-                    request("10-final-second-phase-still-corrupted",MindscapeState.CHALLENGE_ACTIVE,0,0,()->phase(Phase.FINAL_SECOND_LETHAL));
+                    request("10-final-second-phase-still-corrupted",MindscapeState.CHALLENGE_ACTIVE,0,0,()->{view(mc,new View(new Vec3(0,3,3),0,0,66));phase(Phase.FINAL_FACING);});
                 }
+                case FINAL_FACING -> {if(active(mc,FINAL)&&ticks>=12)request("10a-phase2-facing-close",MindscapeState.CHALLENGE_ACTIVE,0,0,()->{view(mc,FRONT);phase(Phase.FINAL_SECOND_LETHAL);});}
                 case FINAL_SECOND_LETHAL -> server(mc,p->{
                     var heart=(HeartDemonEntity)boss(p);check(heart.tickCount-firstLethalTick>=20,"Final transition entity ticks not elapsed");
                     lethal(p,true);
@@ -565,6 +567,14 @@ public final class MindscapeCapture {
             if(capture.expected!=null){check(capture.coverage!=null,"No full-screen after-sky coverage evidence for "+capture.name);row.put("backgroundCoverage",capture.coverage.evidence);}
             row.put("clientState",MindscapeClient.state().name());row.put("clientChallenge",MindscapeClient.challenge());row.put("purification",progress);
             row.put("clientSession",String.valueOf(MindscapeClient.sessionId()));row.put("clientOrigin",MindscapeClient.origin()==null?List.of():xyz(MindscapeClient.origin()));
+            if(capture.name.equals("00a-boss-facing-close")||capture.name.equals("09-final-first-phase")||capture.name.equals("10a-phase2-facing-close")){
+                var entity=mc.level.getEntity(bossId);check(entity instanceof Mob,"Facing capture lost client boss");var mob=(Mob)entity;
+                var delta=mc.player.position().subtract(mob.position());float expected=(float)Math.toDegrees(Math.atan2(-delta.x,delta.z));
+                float bodyError=Math.abs(net.minecraft.util.Mth.wrapDegrees(mob.yBodyRot-expected));
+                float headError=Math.abs(net.minecraft.util.Mth.wrapDegrees(mob.getYHeadRot()-expected));
+                check(bodyError<8&&headError<8,"Client boss renders facing away: body="+bodyError+" head="+headError);
+                row.put("bossFacing",Map.of("bodyYaw",mob.yBodyRot,"headYaw",mob.getYHeadRot(),"expectedYaw",expected,"bodyErrorDegrees",bodyError,"headErrorDegrees",headError,"passed",true));
+            }
             row.put("camera",xyz(mc.gameRenderer.getMainCamera().getPosition()));row.put("fov",mc.options.fov().get());row.put("glError",error);
             row.put("cameraType",mc.options.getCameraType().name());
             if(capture.name.equals("05-boss-entity-occlusion"))row.put("foregroundServer",foregroundServer);

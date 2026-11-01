@@ -61,6 +61,20 @@ public final class BossCombatGameTests {
         h.assertTrue(count==67,"Missing executable moves");h.succeed();
     }
     @GameTest(template="empty")
+    public static void waitingForHeartSwordKeepsBossFacingOwner(GameTestHelper h) {
+        try(var e=new Encounter(h,"muyan")) {
+            e.player.setItemInHand(InteractionHand.MAIN_HAND,net.minecraft.world.item.ItemStack.EMPTY);
+            for(Vec3 offset:java.util.List.of(new Vec3(-7,1,-8),new Vec3(7,1,8))) {
+                e.player.setPos(e.center.getX()+offset.x,e.center.getY()+offset.y,e.center.getZ()+offset.z);
+                e.fight.tick();Vec3 delta=e.player.position().subtract(e.boss.position());
+                float expected=(float)Math.toDegrees(Math.atan2(-delta.x,delta.z));
+                for(float actual:new float[]{e.boss.getYRot(),e.boss.yBodyRot,e.boss.getYHeadRot()})
+                    h.assertTrue(Math.abs(net.minecraft.util.Mth.wrapDegrees(actual-expected))<.001,"Waiting boss did not face owner after movement");
+                h.assertTrue(!e.fight.casting(),"Waiting boss attacked without a heart sword");
+            }
+        }h.succeed();
+    }
+    @GameTest(template="empty")
     public static void mechanicsRejectOtherPlayersAndCleanEntities(GameTestHelper h) {
         try(var e=new Encounter(h,"shenyin");var outsider=new GameTestPlayer(e.player.serverLevel())) {
             final int[] activations={0};var node=e.fight.node("knot",e.player.position().add(1,0,0),200,()->activations[0]++);

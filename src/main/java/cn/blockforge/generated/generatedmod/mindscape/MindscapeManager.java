@@ -195,12 +195,17 @@ public final class MindscapeManager {
             boss.getPersistentData().putUUID(OWNER,p.getUUID());boss.getPersistentData().putUUID(SESSION,session);
             boss.getPersistentData().putString("MindscapeChallenge",challenge.id().toString());
             var bossSpawn=MindscapeArenas.bossSpawn(center);
-            boss.moveTo(bossSpawn.x,bossSpawn.y,bossSpawn.z,180,0);tag.putUUID("boss",boss.getUUID());
+            var playerSpawn=MindscapeArenas.playerSpawn(center);
+            float facing=(float)Math.toDegrees(Math.atan2(bossSpawn.x-playerSpawn.x,playerSpawn.z-bossSpawn.z));
+            boss.moveTo(bossSpawn.x,bossSpawn.y,bossSpawn.z,facing,0);
+            boss.setYBodyRot(facing);boss.setYHeadRot(facing);
+            boss.yRotO=facing;boss.yBodyRotO=facing;boss.yHeadRotO=facing;
+            tag.putUUID("boss",boss.getUUID());
             if(boss instanceof cn.blockforge.generated.generatedmod.boss.VisualBossEntity visual)visual.beginChallenge(p,center,session);
             if(boss instanceof HeartDemonEntity heart)heart.beginChallenge(p,center,session);
             if(!level.addFreshEntity(boss))throw new IllegalStateException("Boss spawn rejected");
             PENDING_BOSSES.put(p.getUUID(),new PendingBoss(session,boss,level.getGameTime()));
-            transfer(p,level,MindscapeArenas.playerSpawn(center),0,0);
+            transfer(p,level,playerSpawn,0,0);
             if(level.getEntity(boss.getUUID())==boss)PENDING_BOSSES.remove(p.getUUID());
             state(p,MindscapeState.IN_MINDSCAPE);state(p,MindscapeState.CHALLENGE_ACTIVE);send(p,0);GeneratedMod.sync(p);return true;
         }catch(RuntimeException exception){com.mojang.logging.LogUtils.getLogger().error("Cannot enter mindscape",exception);abort(p,true);return false;}

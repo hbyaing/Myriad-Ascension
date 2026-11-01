@@ -107,6 +107,7 @@ public final class BossCombatController {
                 engaged=true;readyAt=clock+60;
                 fx(4,origin(),origin(),1,1,SAFE,60,80,sessionBound?"心境试炼｜观察前摇，寻找破绽":"交战开始｜观察前摇，寻找破绽");
             } else {
+                lookAt(player.position());
                 if(clock%80==1)player.displayClientMessage(Component.literal("凝出心剑后，试炼开始。场边符台可右键交互。"),true);
                 return;
             }
