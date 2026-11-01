@@ -209,7 +209,11 @@ public final class FlyingSwordGameTests {
     private static void loadedSkyTicks(ControlledSwordEntity sword,FakePlayer player,int count) {
         for(int i=0;i<count;i++) {
             int x=sword.blockPosition().getX()>>4,z=sword.blockPosition().getZ()>>4;
-            for(int dx=-1;dx<=1;dx++)for(int dz=-1;dz<=1;dz++)player.serverLevel().getChunk(x+dx,z+dz);
+            // These behavior fixtures require a loaded braking/look-ahead
+            // corridor, not just the immediate collision neighbourhood. With
+            // only 3x3 chunks the real terrain governor can reduce speed and
+            // hence the roll limit, depending on unrelated batch ticket loads.
+            for(int dx=-8;dx<=8;dx++)for(int dz=-8;dz<=8;dz++)player.serverLevel().getChunk(x+dx,z+dz);
             ticks(sword,player,1);
         }
     }
