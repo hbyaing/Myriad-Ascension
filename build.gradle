@@ -95,6 +95,8 @@ if (project.hasProperty('myriadCapture')) {
                 property 'wuxingxiantu.jindouReproOutput', project.file(project.findProperty('jindouReproOutput') ?: 'reports/jindou-repro').absolutePath
                 if (project.hasProperty('jindouReproWorld')) property 'wuxingxiantu.jindouReproWorld', project.property('jindouReproWorld').toString()
                 if (project.hasProperty('jindouReproChecksOnly')) property 'wuxingxiantu.jindouReproChecksOnly', 'true'
+                if (project.hasProperty('jindouReproEndTick')) property 'wuxingxiantu.jindouReproEndTick', project.property('jindouReproEndTick').toString()
+                if (project.hasProperty('jindouReproCameraSplit')) property 'wuxingxiantu.jindouReproCameraSplit', project.property('jindouReproCameraSplit').toString()
                 if (project.hasProperty('jindouReproCandidate')) property 'wuxingxiantu.jindouReproCandidate', 'true'
                 if (project.hasProperty('jindouReproSolas')) property 'wuxingxiantu.jindouReproSolas', 'true'
             }

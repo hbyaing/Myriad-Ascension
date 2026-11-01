@@ -23,6 +23,7 @@ public final class JindouReproCapture {
     private static final Path OUT=Path.of(System.getProperty("wuxingxiantu.jindouReproOutput","../../reports/jindou-repro"));
     private static final String REUSE_WORLD=System.getProperty("wuxingxiantu.jindouReproWorld","");
     private static final boolean CHECKS_ONLY=Boolean.getBoolean("wuxingxiantu.jindouReproChecksOnly");
+    private static final int END_TICK=Integer.getInteger("wuxingxiantu.jindouReproEndTick",400),CAMERA_SPLIT=Integer.getInteger("wuxingxiantu.jindouReproCameraSplit",230);
     private static final long START=System.nanoTime();
     private static final List<Map<String,Object>> FRAMES=new ArrayList<>(),SERVER=Collections.synchronizedList(new ArrayList<>());
     private static final List<String> ERRORS=Collections.synchronizedList(new ArrayList<>());
@@ -41,7 +42,7 @@ public final class JindouReproCapture {
     @SubscribeEvent(priority=EventPriority.HIGHEST) public static void input(TickEvent.ClientTickEvent event){
         if(!ENABLED||done||!started||event.phase!=TickEvent.Phase.START)return;var mc=Minecraft.getInstance();if(mc.player==null)return;
         clock=mc.player.tickCount-epoch;mc.options.keyUp.setDown(forward());mc.options.keySprint.setDown(sprint());mc.options.keyDown.setDown(false);mc.options.keyLeft.setDown(false);mc.options.keyRight.setDown(false);mc.options.keyJump.setDown(false);mc.options.keyShift.setDown(false);
-        mc.player.setYRot(yaw(clock));mc.player.setXRot(-2);mc.options.setCameraType(clock<230?CameraType.THIRD_PERSON_FRONT:CameraType.THIRD_PERSON_BACK);
+        mc.player.setYRot(yaw(clock));mc.player.setXRot(-2);mc.options.setCameraType(clock<CAMERA_SPLIT?CameraType.THIRD_PERSON_FRONT:CameraType.THIRD_PERSON_BACK);
     }
     @SubscribeEvent public static void client(TickEvent.ClientTickEvent event){
         if(!ENABLED||done||event.phase!=TickEvent.Phase.END)return;var mc=Minecraft.getInstance();
@@ -67,7 +68,7 @@ public final class JindouReproCapture {
                 if(!"jin_dou_yun".equals(GeneratedMod.data(mc.player).wuxingxiantu$getActiveDivineArt())||!mc.player.getAbilities().flying)return;
                 PointerSafety.verify();runtimeEvidence(mc);if(CANDIDATE){CHECKS.put("dunxuAlphaBuffer",DunxuAlphaBufferQa.verify(mc));CHECKS.put("cloudMaterial",JindouCloudMaterialQa.verify(mc));CHECKS.put("pathWindow",Class.forName("cn.blockforge.generated.generatedmod.client.qa.myriad.HuahongPathWindowQa").getMethod("verify").invoke(null));}if(CHECKS_ONLY){finish(null);return;}epoch=mc.player.tickCount;started=true;
             }
-            if(clock>=400)finish(null);
+            if(clock>=END_TICK)finish(null);
         }catch(Throwable error){finish(error);}
     }
     private static void prepare(ServerPlayer p){
@@ -83,7 +84,7 @@ public final class JindouReproCapture {
         var p=event.getServer().getPlayerList().getPlayer(playerId);if(p==null)return;var row=new LinkedHashMap<String,Object>();row.put("nanoTime",System.nanoTime());row.put("clock",clock);row.put("tick",p.tickCount);row.put("position",List.of(p.getX(),p.getY(),p.getZ()));row.put("velocity",List.of(p.getDeltaMovement().x,p.getDeltaMovement().y,p.getDeltaMovement().z));row.put("flying",p.getAbilities().flying);row.put("flyingSpeed",p.getAbilities().getFlyingSpeed());row.put("activeArt",GeneratedMod.data(p).wuxingxiantu$getActiveDivineArt());SERVER.add(row);
     }
     @SubscribeEvent(priority=EventPriority.LOWEST) public static void frame(TickEvent.RenderTickEvent event){
-        if(!ENABLED||done||!started||event.phase!=TickEvent.Phase.END||clock<20||clock>=400)return;var mc=Minecraft.getInstance();if(mc.player==null)return;
+        if(!ENABLED||done||!started||event.phase!=TickEvent.Phase.END||clock<20||clock>=END_TICK)return;var mc=Minecraft.getInstance();if(mc.player==null)return;
         try{
             long before=System.nanoTime();if(videoStart==0)videoStart=before;var im=Screenshot.takeScreenshot(mc.getMainRenderTarget());long after=System.nanoTime();int index=frameIndex++;
             var p=mc.player;var row=new LinkedHashMap<String,Object>();row.put("frame",index);row.put("nanoTime",before);row.put("seconds",(before-videoStart)/1e9);row.put("clock",clock);row.put("partial",event.renderTickTime);row.put("file",String.format(Locale.ROOT,"frames/%06d.png",index));row.put("readbackMs",(after-before)/1e6);row.put("position",List.of(p.getX(),p.getY(),p.getZ()));row.put("velocity",List.of(p.getDeltaMovement().x,p.getDeltaMovement().y,p.getDeltaMovement().z));row.put("speed",p.getDeltaMovement().length());row.put("yaw",p.getYRot());row.put("camera",mc.options.getCameraType().name());row.put("forward",forward());row.put("sprintInput",sprint());row.put("vanillaInputForwardImpulse",p.input.forwardImpulse);row.put("vanillaInputUp",p.input.up);row.put("vanillaSprinting",p.isSprinting());row.put("flying",p.getAbilities().flying);row.put("flyingSpeed",p.getAbilities().getFlyingSpeed());row.put("activeArt",GeneratedMod.data(p).wuxingxiantu$getActiveDivineArt());row.put("cloudMotion",JindouCloudRenderer.motionSnapshot);row.put("renderedVolumes",JindouCloudRenderer.renderedVolumes);row.put("renderTrace",JindouCloudRenderer.renderTrace);FRAMES.add(row);

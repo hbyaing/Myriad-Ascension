@@ -1,48 +1,26 @@
 package cn.blockforge.generated.generatedmod.client;
 
 import cn.blockforge.generated.generatedmod.GeneratedMod;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/** Standing limbs and clothing; local render root follows the camera/cloud interpolation. */
+/** Standing limbs and their clothing, with action poses retaining priority. No root transform. */
 @Mod.EventBusSubscriber(modid = GeneratedMod.MOD_ID, value = Dist.CLIENT)
 public final class JindouCloudPlayerPose {
     private static final Map<HumanoidModel<?>, Saved> SAVED = new IdentityHashMap<>();
-    private static final Map<UUID, PoseStack> ROOT_POSES = new java.util.HashMap<>();
 
     private JindouCloudPlayerPose() {}
-
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void before(RenderPlayerEvent.Pre event) {
-        var player=event.getEntity();
-        if(event.isCanceled() || player!=Minecraft.getInstance().player || !JindouCloudRenderState.isActive(player))return;
-        float partial=event.getPartialTick();
-        // LevelRenderer interpolates the model from xOld; Camera and the cloud
-        // use getPosition, which interpolates from xo. Only correct the matrix,
-        // leaving both vanilla histories and authoritative movement untouched.
-        var delta=player.getPosition(partial).subtract(Mth.lerp(partial,player.xOld,player.getX()),
-                Mth.lerp(partial,player.yOld,player.getY()),Mth.lerp(partial,player.zOld,player.getZ()));
-        if(delta.lengthSqr()<=1e-20)return;
-        var pose=event.getPoseStack();
-        pose.pushPose();
-        pose.translate(delta.x,delta.y,delta.z);
-        ROOT_POSES.put(player.getUUID(),pose);
-    }
 
     public static void remember(HumanoidModel<?> model, UUID owner) {
         restore(model);
@@ -97,8 +75,6 @@ public final class JindouCloudPlayerPose {
 
     @SubscribeEvent
     public static void after(RenderPlayerEvent.Post event) {
-        var root=ROOT_POSES.remove(event.getEntity().getUUID());
-        if(root==event.getPoseStack())root.popPose();
         var models = SAVED.entrySet().stream().filter(e -> e.getValue().owner().equals(event.getEntity().getUUID()))
                 .map(Map.Entry::getKey).toList();
         models.forEach(JindouCloudPlayerPose::restore);
@@ -108,8 +84,6 @@ public final class JindouCloudPlayerPose {
     public static void beforeFrame(TickEvent.RenderTickEvent event) {
         // Also restores after an interrupted render or world unload where Post was never delivered.
         if (event.phase == TickEvent.Phase.START) {
-            // An interrupted render discards its stack; do not touch it later.
-            ROOT_POSES.clear();
             new java.util.ArrayList<>(SAVED.keySet()).forEach(JindouCloudPlayerPose::restore);
         }
     }
