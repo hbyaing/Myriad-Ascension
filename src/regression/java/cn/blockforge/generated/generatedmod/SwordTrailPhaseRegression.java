@@ -74,7 +74,7 @@ public final class SwordTrailPhaseRegression {
     private static void longFlight(double speed,int ticks){
         var history=new SwordFlightTrailHistory();
         history.sample(new SwordFlightTrailHistory.Point(0,0,0),0,Math.max(8,speed*1.5+2));
-        double lastArc=0,lastOrigin=SwordTrailPhase.origin(0,37);int rebases=0,oldBoundaries=0;
+        double lastArc=0;int oldBoundaries=0;
         for(int tick=1;tick<=ticks;tick++){
             history.sample(new SwordFlightTrailHistory.Point(speed*tick,0,0),tick,Math.max(8,speed*1.5+2));
             var nodes=history.nodes();double head=nodes.get(nodes.size()-1).arc(),first=nodes.get(0).arc();
@@ -82,26 +82,25 @@ public final class SwordTrailPhaseRegression {
             near(head,speed*tick,1e-7,"Continuous sample history retains cumulative actual travel");
             require(head-lastArc>0&&head-first<=22+.000001,"The bounded long-flight wake keeps increasing without span inflation");
             if(Math.floor(head/1024)>Math.floor(lastArc/1024))oldBoundaries++;
-            double origin=SwordTrailPhase.origin(first,37);
-            if(origin!=lastOrigin){
-                rebases++;
-                for(var node:nodes){
-                    float oldU=SwordTrailPhase.coordinate(node.arc(),lastOrigin),newU=SwordTrailPhase.coordinate(node.arc(),origin);
-                    for(double across:new double[]{-.72,-.41,0,.35,.66})
-                        near(alpha(oldU,12.37,across),alpha(newU,12.37,across),.002,
-                                "Rebasing the same historical vertices cannot suddenly narrow or replace material density");
-                }
-            }
+            double origin=SwordTrailPhase.origin(head,37);
             float headU=SwordTrailPhase.coordinate(head,origin);
-            require(headU>=0&&headU<=256+22+63*.37,"Shader U stays bounded after arbitrarily long travel");
+            near(headU,37*.37,1e-4,"Flight speed cannot sweep spatial noise through the rendered head");
             float previousU=SwordTrailPhase.coordinate(first,origin);
             for(var node:nodes){
                 float u=SwordTrailPhase.coordinate(node.arc(),origin);
-                require(u>=previousU,"Whole-mesh rebasing never introduces per-quad interpolated UV wraps");previousU=u;
+                require(u>=previousU&&u<=headU+.0001&&u>=headU-22.0001,"Continuous head-relative U is bounded without per-quad wraps");previousU=u;
+                near(node.point().x(),node.arc(),1e-7,"Moving the material origin must not move historical world geometry");
             }
-            lastOrigin=origin;lastArc=head;
+            // The same following-camera point at any flight speed has the
+            // same material value; only explicit shader time advances it.
+            for(double behind:new double[]{0,.25,1,3,8,16}){
+                float u=SwordTrailPhase.coordinate(head-behind,origin);
+                near(alpha(u,12.37,0),alpha(37*.37-behind,12.37,0),.0001,
+                        "Material phase at a fixed distance behind the head is independent of travel distance");
+            }
+            lastArc=head;
         }
-        require(oldBoundaries>=2&&rebases>=8,"Real continuously sampled flight crosses repeated old and new origin boundaries");
+        require(oldBoundaries>=2,"Real continuously sampled flight crosses repeated former rebase boundaries");
         history.sample(new SwordFlightTrailHistory.Point(speed*ticks+200,0,0),ticks+1,Math.max(8,speed*1.5+2));
         require(history.nodes().size()==1&&history.nodes().get(0).arc()==0,"An impossible positional jump still cuts the old wake");
     }

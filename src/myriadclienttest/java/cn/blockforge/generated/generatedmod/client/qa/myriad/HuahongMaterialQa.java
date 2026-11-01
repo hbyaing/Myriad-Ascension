@@ -88,10 +88,13 @@ final class HuahongMaterialQa {
                 if(!Double.isFinite(variation)||low<=0||variation>.08)throw new AssertionError("Subpixel spine blinks: scale="+scale+" variation="+variation);
                 spineCoverage.add(Map.of("acrossScale",scale,"pixelPhases",32,"minEnergy",low,"maxEnergy",high,"relativeVariation",variation));
             }
+            Map<String,Object> temporalTransport=temporalTransport(program);
+            Map<String,Object> smokeField=smokeField();
             int gl=GL33.glGetError();if(gl!=0)throw new AssertionError("Material fixture GL error "+gl);
             var result=new LinkedHashMap<String,Object>();result.put("check","shipping-glsl-periodicity");result.put("comparisons",comparisons);result.put("maxChannelError",error);result.put("passed",true);
             result.put("noseBand",32);result.put("noseProbes",noseProbes);result.put("noseCenterAlpha",noseCenter[3]);result.put("noseMaxBoundaryAlpha",noseEdge);result.put("noseMaxTimeError",noseTimeError);result.put("noseProjection",noseProjection);
             result.put("subpixelSpineCoverage",spineCoverage);
+            result.put("temporalTransport",temporalTransport);result.put("smokeField",smokeField);
             result.put("smokeAtlasSha256",HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(smokeBytes)));result.put("smokeAtlasDimensions",List.of(smokeWidth,smokeHeight));result.put("materialBands",List.of(6,8,10,12,14,16,18,20,22,24,26,28,30,32,34));return result;
         }finally{
             GL33.glBindFramebuffer(GL33.GL_DRAW_FRAMEBUFFER,drawBefore);GL33.glBindFramebuffer(GL33.GL_READ_FRAMEBUFFER,readBefore);
@@ -110,6 +113,70 @@ final class HuahongMaterialQa {
         GL33.glUniform1i(GL33.glGetUniformLocation(program,"ProbeMode"),1);GL33.glUniform2f(GL33.glGetUniformLocation(program,"ProbeUV"),u,v);
         GL33.glUniform1f(GL33.glGetUniformLocation(program,"Band"),32);GL33.glUniform1f(GL33.glGetUniformLocation(program,"EffectTime"),time);
         GL33.glDrawArrays(GL33.GL_TRIANGLES,0,3);float[] pixels=new float[64*32*4];GL33.glReadPixels(0,0,64,32,GL33.GL_RGBA,GL33.GL_FLOAT,pixels);return pixels;
+    }
+    private static Map<String,Object> temporalTransport(int program){
+        final int frames=240;final double fps=120,speed=300;
+        var world=temporalSignal(program,frames,fps,speed);var local=temporalSignal(program,frames,fps,0);
+        // The new transport must retain visible animation, while moving most
+        // energy below 8Hz and reducing frame replacement by at least 3x.
+        // These are preselected flow-continuity criteria, not pixel acceptance.
+        if(world.stepRms()<1e-4||local.totalPower()<1e-7||local.stepRms()<1e-5)
+            throw new AssertionError("Temporal material probe is empty or frozen: "+world+" / "+local);
+        if(local.stepRms()>world.stepRms()/3||local.highFraction()>.25||local.highFraction()>world.highFraction()*.35)
+            throw new AssertionError("Head material still aliases at flight speed: "+world+" / "+local);
+        return Map.of("scope","Same shipping GLSL, same patch, explicit time advances in both; world arc sweeps at300m/s vs fixed distance behind head. GPU material test, not whole-world acceptance.",
+                "frames",frames,"fps",fps,"worldSpeed",speed,"highFrequencyCutHz",8,
+                "worldArc",world,"headRelative",local,"frameDeltaReduction",world.stepRms()/local.stepRms(),"passed",true);
+    }
+    private record TemporalStats(double stepRms,double meanSignal,double totalPower,double highFraction,List<Map<String,Double>> peakFrequencies){}
+    private static TemporalStats temporalSignal(int program,int frames,double fps,double speed){
+        int[] xs={2,10,18,26,34,42,50,58},ys={6,10,14,16,18,22,26};int count=xs.length*ys.length;
+        double[][] trace=new double[count][frames];double steps=0,signal=0;
+        for(int frame=0;frame<frames;frame++){
+            double seconds=frame/fps;float[] pixels=render(program,0,(float)(-16+speed*seconds),(float)(7.125+seconds));int probe=0;
+            for(int y:ys)for(int x:xs){int i=(y*64+x)*4;double value=(pixels[i]*.2126+pixels[i+1]*.7152+pixels[i+2]*.0722)*pixels[i+3];
+                if(!Double.isFinite(value))throw new AssertionError("Nonfinite temporal shader signal");
+                trace[probe][frame]=value;signal+=value;if(frame>0){double d=value-trace[probe][frame-1];steps+=d*d;}probe++;
+            }
+        }
+        double[] powers=new double[frames/2+1];
+        for(var point:trace){double mean=0;for(double v:point)mean+=v;mean/=frames;
+            for(int frequency=1;frequency<powers.length;frequency++){
+                double real=0,imaginary=0;
+                for(int i=0;i<frames;i++){
+                    double sample=(point[i]-mean)*(.5-.5*Math.cos(2*Math.PI*i/(frames-1)));
+                    double angle=2*Math.PI*frequency*i/frames;real+=sample*Math.cos(angle);imaginary-=sample*Math.sin(angle);
+                }
+                powers[frequency]+=(real*real+imaginary*imaginary)/(frames*(double)frames*count);
+            }
+        }
+        double total=0,high=0;var peaks=new ArrayList<Map<String,Double>>();
+        for(int k=1;k<powers.length;k++){double hz=k*fps/frames;total+=powers[k];if(hz>8)high+=powers[k];peaks.add(Map.of("hz",hz,"power",powers[k]));}
+        peaks.sort(Comparator.comparingDouble((Map<String,Double> p)->p.get("power")).reversed());
+        return new TemporalStats(Math.sqrt(steps/(count*(double)(frames-1))),signal/(count*(double)frames),total,total>0?high/total:0,List.copyOf(peaks.subList(0,8)));
+    }
+    private static Map<String,Object> smokeField(){
+        int checks=0;double seam=0,maxPositionStep=0,maxRadiusStep=0,maxCrimsonStep=0;
+        for(double behind=0;behind<=24;behind+=.25){
+            for(int tick=0;tick<2560;tick+=16){
+                var a=cn.blockforge.generated.generatedmod.client.HuahongFlowField.smoke(behind,tick+.25);
+                for(long epoch:new long[]{2560,16_775_680,999_997_440}){
+                    var b=cn.blockforge.generated.generatedmod.client.HuahongFlowField.smoke(behind,epoch+tick+.25);
+                    double d=Math.max(Math.max(Math.abs(a.side()-b.side()),Math.abs(a.up()-b.up())),Math.max(Math.abs(a.radius()-b.radius()),Math.abs(a.crimson()-b.crimson())));
+                    seam=Math.max(seam,d);checks++;
+                }
+                var b=cn.blockforge.generated.generatedmod.client.HuahongFlowField.smoke(behind,tick+.25+20.0/120);
+                maxPositionStep=Math.max(maxPositionStep,Math.hypot(a.side()-b.side(),a.up()-b.up()));
+                maxRadiusStep=Math.max(maxRadiusStep,Math.abs(a.radius()-b.radius()));maxCrimsonStep=Math.max(maxCrimsonStep,Math.abs(a.crimson()-b.crimson())*.075);
+            }
+            var a=cn.blockforge.generated.generatedmod.client.HuahongFlowField.smoke(behind,2560-.00001);
+            var b=cn.blockforge.generated.generatedmod.client.HuahongFlowField.smoke(behind,2560+.00001);
+            seam=Math.max(seam,Math.max(Math.abs(a.side()-b.side()),Math.max(Math.abs(a.up()-b.up()),Math.max(Math.abs(a.radius()-b.radius()),Math.abs(a.crimson()-b.crimson())))));
+        }
+        if(seam>2e-6||maxPositionStep>.002||maxRadiusStep>.001||maxCrimsonStep>.001)
+            throw new AssertionError("Smoke field discontinuity: "+seam+" / "+maxPositionStep+" / "+maxRadiusStep+" / "+maxCrimsonStep);
+        return Map.of("productionFieldChecks",checks,"maxPeriodOrBoundaryDifference",seam,"max120FpsPositionStep",maxPositionStep,"max120FpsRadiusStep",maxRadiusStep,
+                "max120FpsCrimsonAlphaStep",maxCrimsonStep,"periodSeconds",128,"angularTimeHarmonics",List.of(22,15,14,40),"crimsonAdvectionWorldUnitsPerSecond",Math.PI*2*40/128/1.4,"passed",true);
     }
     private static double difference(float[] a,float[] b){double max=0;for(int i=0;i<a.length;i++){if(!Float.isFinite(a[i])||!Float.isFinite(b[i]))throw new AssertionError("Nonfinite material output");max=Math.max(max,Math.abs(a[i]-b[i]));}return max;}
     private HuahongMaterialQa(){}

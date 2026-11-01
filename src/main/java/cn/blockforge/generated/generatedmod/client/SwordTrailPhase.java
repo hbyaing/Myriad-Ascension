@@ -1,6 +1,6 @@
 package cn.blockforge.generated.generatedmod.client;
 
-/** Exact shared spatial/time periods keep sword flow bounded without changing its phase at rebases. */
+/** Bounded material coordinates. Geometry retains world history; flow follows the rendered head. */
 public final class SwordTrailPhase {
     public static final double ARC_PERIOD=256;
     public static final int TIME_PERIOD_TICKS=2560;
@@ -24,11 +24,14 @@ public final class SwordTrailPhase {
         public boolean initialized(){return initialized;}
         public long tick(){return tick;}
     }
-    public static double origin(double firstArc,int seed){
-        if(!Double.isFinite(firstArc))return 0;
-        return Math.floor(firstArc/ARC_PERIOD)*ARC_PERIOD-(seed&63)*.37;
+    public static double origin(double headArc,int seed){
+        if(!Double.isFinite(headArc))return 0;
+        // World-fixed high-frequency U sweeps through a following camera at
+        // flight speed (hundreds of material cycles per second). Keep its head
+        // phase fixed and let EffectTime provide the deliberate material flow.
+        return headArc-(seed&63)*.37;
     }
-    /** Wrap the whole mesh once, never individual vertices across an interpolated quad. */
+    /** Subtract in double precision before submitting small, continuous float coordinates. */
     public static float coordinate(double arc,double origin){return (float)(arc-origin);}
     /** Reduce the integer tick before float conversion, including worlds older than 2^24 ticks. */
     public static float time(long tick,float partial){

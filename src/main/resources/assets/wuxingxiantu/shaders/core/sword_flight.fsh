@@ -1,7 +1,8 @@
 #version 150
 
-// U is cumulative arc reduced by a common 256-block mesh origin. Every
-// channel repeats at 256 blocks / 128 seconds, so rebases never change phase.
+// History vertices stay in world space. Their U measures distance behind the
+// rendered head, so flight speed cannot advect the surface through that head.
+// Explicit EffectTime owns material flow; channels repeat every 256 blocks / 128s.
 uniform float EffectTime;
 uniform sampler2D SmokeAtlas;
 in vec2 trailCoord;

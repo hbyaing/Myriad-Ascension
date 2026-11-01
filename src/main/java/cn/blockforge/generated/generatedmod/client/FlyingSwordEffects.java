@@ -172,10 +172,10 @@ public final class FlyingSwordEffects {
                 float alpha=ordinary*Math.min(.94F,(.72F+.11F*f.sprintFactor()+.10F*f.spiralFactor())*(float)Math.sqrt(strength));
                 int start=0;double headArc=nodes.get(nodes.size()-1).arc();
                 while(start<nodes.size()-2&&headArc-nodes.get(start).arc()>length)start++;
-                double origin=SwordTrailPhase.origin(nodes.get(start).arc(),sword.getUUID().hashCode());
+                double origin=SwordTrailPhase.origin(headArc,sword.getUUID().hashCode());
                 DIAGNOSTICS.add(new TrailDiagnostics(sword.getId(),nodes.size(),nodes.get(start).arc(),headArc,
                         origin,SwordTrailPhase.coordinate(headArc,origin),effectTime,strength,width,anchor,vec(nodes.get(nodes.size()-1).point())));
-                drawHistory(buffer,pose.last(),nodes,start,eye,headArc,length,now,width,alpha,origin);
+                drawHistory(buffer,pose.last(),nodes,start,eye,headArc,length,now,width,alpha,origin,f.forward(),f.local(1,0,0).subtract(f.position()));
                 spiralPass=true;
                 spiral(buffer,pose.last(),f,anchor,eye,jinghong,SwordTrailPhase.coordinate(headArc,origin),ordinary);
                 spiralPass=false;
@@ -207,22 +207,41 @@ public final class FlyingSwordEffects {
         if(pending==null&&pendingEmission==null)return;
         event.getGuiGraphics().flush();renderStage="RenderGuiEvent.Pre";submitPending();
     }
-    /** Shared cross sections keep strip edges continuous through turns and near-axis views. */
+    /** The local head uses crossed carrier-transported planes. A normalized
+     * camera cross at a near-axial view cannot define a continuous width. Fade
+     * the three real strips, rather than lerp oriented sides through a sign cut.
+     * Beyond the bridge the historical positions and original billboard remain.
+     */
     private static void drawHistory(VertexConsumer buffer,PoseStack.Pose pose,List<SwordFlightTrailHistory.Node> nodes,
-            int start,Vec3 eye,double headArc,double length,double now,double width,float alpha,double origin){
+            int start,Vec3 eye,double headArc,double length,double now,double width,float alpha,double origin,Vec3 forward,Vec3 modelSide){
+        Vec3 attachment=vec(nodes.get(nodes.size()-1).point());
+        var path=new HuahongFlightPath(nodes,attachment,forward,modelSide);
+        double bridge=Math.min(length*.5,Math.max(2.5,Math.min(6,path.headTransitionLength())));
+        for(int plane=0;plane<3;plane++)drawHistoryPlane(buffer,pose,nodes,start,eye,headArc,length,now,width,alpha,origin,path,bridge,plane);
+    }
+    private static void drawHistoryPlane(VertexConsumer buffer,PoseStack.Pose pose,List<SwordFlightTrailHistory.Node> nodes,
+            int start,Vec3 eye,double headArc,double length,double now,double width,float alpha,double origin,
+            HuahongFlightPath path,double bridge,int plane){
         Vec3 previous=null,previousSide=null;float previousU=0,previousA=0;
         for(int i=start;i<nodes.size();i++){
             var node=nodes.get(i);Vec3 center=vec(node.point());
             Vec3 tangent=vec(nodes.get(Math.min(nodes.size()-1,i+1)).point()).subtract(vec(nodes.get(Math.max(start,i-1)).point()));
             if(tangent.lengthSqr()<1e-12)continue;
-            tangent=tangent.normalize();Vec3 side=tangent.cross(eye.subtract(center));
-            if(side.lengthSqr()<1e-8&&previousSide!=null)side=previousSide.subtract(tangent.scale(previousSide.dot(tangent)));
-            if(side.lengthSqr()<1e-8)side=perpendicular(tangent);else side=side.normalize();
+            tangent=tangent.normalize();
+            double behind=headArc-node.arc(),q=Mth.clamp(behind/Math.max(.01,bridge),0,1),near=1-q*q*(3-2*q);
+            Vec3 side;
+            if(plane==0){
+                side=tangent.cross(eye.subtract(center));
+                if(side.lengthSqr()<1e-8&&previousSide!=null)side=previousSide.subtract(tangent.scale(previousSide.dot(tangent)));
+                if(side.lengthSqr()<1e-8)side=path.frame(center,tangent).side();else side=side.normalize();
+            }else{
+                var section=path.frame(center,tangent);side=plane==1?section.side():section.up();
+            }
             if(previousSide!=null&&side.dot(previousSide)<0)side=side.scale(-1);
-            double ageFade=fade(node,headArc,length,now);
-            side=side.scale(width*ageFade*swordJoin(headArc-node.arc()));
-            float u=SwordTrailPhase.coordinate(node.arc(),origin),a=alpha*(float)ageFade;
-            if(previous!=null&&previous.distanceToSqr(center)>1e-12){
+            double ageFade=fade(node,headArc,length,now),weight=plane==0?1-near:near*.7071067811865476;
+            side=side.scale(width*ageFade*swordJoin(behind));
+            float u=SwordTrailPhase.coordinate(node.arc(),origin),a=alpha*(float)(ageFade*weight);
+            if(previous!=null&&previous.distanceToSqr(center)>1e-12&&(a>0||previousA>0)){
                 vertex(buffer,pose,previous.add(previousSide),previousU,0,previousA);
                 vertex(buffer,pose,previous.subtract(previousSide),previousU,1,previousA);
                 vertex(buffer,pose,center.subtract(side),u,1,a);

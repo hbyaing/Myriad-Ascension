@@ -5,7 +5,7 @@ uniform mat4 InverseWorldToClip;
 uniform vec2 OutputSize;
 uniform vec3 BoundsMin;
 uniform vec3 BoundsMax;
-uniform vec3 NoiseOrigin;
+uniform mat3 WorldToMaterial;
 uniform vec4 PathPoints[32];
 uniform float PathAges[32];
 uniform int PathCount;
@@ -89,21 +89,25 @@ vec4 field(vec3 p,vec3 ray,float stepLength,vec3 pixelX,vec3 pixelY){
     }
     if(envelope<.0001&&headCore<.0001)return vec4(0);
     vec3 advection=vec3(0,EffectTime*.5,0);
-    vec3 world=(p+NoiseOrigin)*.5;
+    // A single rendered carrier frame transports material independently of
+    // flight speed/turning. The support above remains the real world history;
+    // no winning segment's discontinuous coordinates enter this field.
+    vec3 world=WorldToMaterial*(p-PathPoints[0].xyz)*.5;
+    mat3 materialToWorld=transpose(WorldToMaterial);
     vec4 warpX=noiseGradient(world+advection),warpY=noiseGradient(world.yzx+advection+17.0),warpZ=noiseGradient(world.zxy+advection+31.0);
     vec3 displacement=vec3(warpX.x,warpY.x,warpZ.x)-.5;
-    vec3 gradientX=warpX.yzw*.5,gradientY=warpY.yzw.zxy*.5,gradientZ=warpZ.yzw.yzx*.5;
+    vec3 gradientX=materialToWorld*(warpX.yzw*.5),gradientY=materialToWorld*(warpY.yzw.zxy*.5),gradientZ=materialToWorld*(warpZ.yzw.yzx*.5);
     float cloud=clouds(world+displacement*1.8-advection,footprint*.5);
     float density=envelope*pow(smoothstep(.39,.67,cloud),2.2)*(.18+.82*Strength);
-    // Both constraints live in absolute world space. Arc rebasing and nearest
-    // path-segment changes cannot reset or duplicate a vein at a row boundary.
+    // Both constraints share the continuous local material field. Transform
+    // their gradients back to world space for ray/pixel footprint filtering.
     vec3 veinDomain=world*.5+displacement*.18-advection;
     vec4 first=noiseGradient(veinDomain),second=noiseGradient(world.yzx*.5+displacement*.2+vec3(7,19,29));
     // Convolve narrow isosurfaces with the ray/pixel footprint. Preserve their
     // integrated energy while widening sub-step features instead of selecting
     // a single maximum hit, which creates bright rectangular sampling bands.
-    vec3 firstGradient=first.yzw*.25+.18*(first.y*gradientX+first.z*gradientY+first.w*gradientZ);
-    vec3 secondGradient=second.yzw.zxy*.25+.2*(second.y*gradientX+second.z*gradientY+second.w*gradientZ);
+    vec3 firstGradient=materialToWorld*(first.yzw*.25)+.18*(first.y*gradientX+first.z*gradientY+first.w*gradientZ);
+    vec3 secondGradient=materialToWorld*(second.yzw.zxy*.25)+.2*(second.y*gradientX+second.z*gradientY+second.w*gradientZ);
     // Convert scalar offsets to orthogonal world distances. Fixed noise-value
     // widths otherwise expand into luminous blobs near a noise stationary point.
     float firstSlope=max(length(firstGradient),.0001),secondSlope=max(length(secondGradient),.0001);

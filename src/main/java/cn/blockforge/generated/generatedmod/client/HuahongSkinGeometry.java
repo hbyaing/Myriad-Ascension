@@ -27,7 +27,10 @@ final class HuahongSkinGeometry {
             List<SwordFlightTrailHistory.Node> nodes,double now,float strength){
         this.out=out;this.pose=pose;this.eye=eye;this.center=center;this.forward=forward;this.nodes=nodes;this.now=now;this.strength=strength;
         path=new HuahongFlightPath(nodes,center,forward,headSide);
-        origin=nodes.isEmpty()?0:Math.floor(nodes.get(0).arc()/256)*256;
+        // Keep material transport independent of travel speed. Geometry still
+        // follows recorded world points, while the surface's phase is measured
+        // behind the rendered head and advected by explicit shader time.
+        origin=nodes.isEmpty()?0:nodes.get(nodes.size()-1).arc();
     }
     static int draw(HuahongSkin skin,VertexConsumer out,PoseStack.Pose pose,Vec3 eye,Vec3 center,Vec3 forward,Vec3 headSide,
             List<SwordFlightTrailHistory.Node> nodes,double now,float strength){
@@ -86,7 +89,7 @@ final class HuahongSkinGeometry {
             if(age<0)continue;
             if(visualSpeed>0)age=Math.max(age,(headArc()-n.arc())/visualSpeed);
             if(age<0||age>=life)continue;
-            Frame f=at(i);double phase=strand*2.399+Math.sin(n.arc()*.47+strand)*.28;
+            Frame f=at(i);double phase=strand*2.399+Math.sin((n.arc()-origin)*.47+strand)*.28;
             double open=(1-Math.exp(-age*5))*spread;
             Vec3 normal=f.side().scale(Math.cos(phase)).add(f.up().scale(Math.sin(phase)));
             rows.add(new Row(f.p().add(normal.scale(open)),n.arc()-origin,width*(.18+.82*fade(age,life)),(float)fade(age,life),color,oriented?normal:null));
@@ -180,13 +183,13 @@ final class HuahongSkinGeometry {
         }
         // Detached remnants are tied to canonical world births, not current pose.
         if(torn)for(var b:births(1.10,26,1.1)){
-            double age=(now-b.tick())/20,behind=headArc()-b.arc();if(age<.04)continue;
+            double age=(now-b.tick())/20,behind=headArc()-b.arc(),birth=smooth(0,.04,age);if(birth<=0)continue;
             Frame f=frame(b.p(),b.direction());double phase=b.cell()*2.399;
             Vec3 start=offset(f,Math.cos(phase)*(.10+age*.18),Math.sin(phase)*.22+age*.12);
             List<Row> remnant=new ArrayList<>();
             for(int i=0;i<=16;i++){
                 double q=i/16.0;Vec3 p=start.subtract(f.forward().scale(q*(.36+.8*fade(age,1.1)))).add(f.up().scale(Math.sin(q*5+phase)*q*.12));
-                remnant.add(new Row(p,q*2+(b.cell()%64)*3,.075*Math.sin(Math.PI*q),(float)(fade(age,1.1)*smooth(26,20,behind)*.32),0xff6a38,f.side()));
+                remnant.add(new Row(p,q*2+(b.cell()%64)*3,.075*Math.sin(Math.PI*q),(float)(birth*fade(age,1.1)*smooth(26,20,behind)*.32),0xff6a38,f.side()));
             }
             strip(remnant,24);
         }
@@ -253,11 +256,11 @@ final class HuahongSkinGeometry {
             for(int i=0;i<nodes.size();i++){
                 var n=nodes.get(i);double realAge=(now-n.tick())/20;if(realAge<0)continue;
                 double behind=headArc()-n.arc(),age=Math.max(realAge,behind/visualSpeed);if(age>=life)continue;
-                Frame f=at(i);double open=1-Math.exp(-age*2.208),left=fade(age,life);
-                double lateral=sign*(.014+1.6*(.26+rank*1.45)*open)*(1+.09*Math.sin(n.arc()*.46+phase-age*.8)*open);
-                double wave=(Math.sin(n.arc()*.38+phase-age*.90)*.22+Math.sin(n.arc()*.87+phase*1.7-age*1.25)*.07)*open;
-                double width=(.045+.36*(.50+.60*(1-rank)))*smooth(0,.21,age)*Math.pow(left,.45)*(1+.24*Math.sin(n.arc()*.55+phase));
-                double roll=.65+sign*.20+Math.sin(n.arc()*.29+phase-age*.62)*.24;
+                Frame f=at(i);double open=1-Math.exp(-age*2.208),left=fade(age,life),localArc=n.arc()-origin;
+                double lateral=sign*(.014+1.6*(.26+rank*1.45)*open)*(1+.09*Math.sin(localArc*.46+phase-age*.8)*open);
+                double wave=(Math.sin(localArc*.38+phase-age*.90)*.22+Math.sin(localArc*.87+phase*1.7-age*1.25)*.07)*open;
+                double width=(.045+.36*(.50+.60*(1-rank)))*smooth(0,.21,age)*Math.pow(left,.45)*(1+.24*Math.sin(localArc*.55+phase));
+                double roll=.65+sign*.20+Math.sin(localArc*.29+phase-age*.62)*.24;
                 Vec3 across=f.side().scale(Math.cos(roll)).add(f.up().scale(Math.sin(roll)));
                 Vec3 p=offset(f,lateral*.79+wave*.48,lateral*.61+wave-age*.06);
                 float a=(float)(Math.pow(Mth.clamp(1-age/life,0,1),1.8)*(1-.22*rank)*smooth(0,.28,behind));
@@ -271,16 +274,37 @@ final class HuahongSkinGeometry {
         // does not add the generic white nucleus used by the meteor families.
     }
     private void smoke(){
-        // Dense, short, irregular packets instead of one tiny card every two
-        // ticks (almost nine blocks apart at actual top speed).
+        // A coherent body is sampled at fixed distances along the real curved
+        // wake. The slots' identities do not change as the head crosses world
+        // birth cells, so travel speed cannot reroll the visible smoke texture.
         var clouds=new ArrayList<Cloud>();
         final double bodyLife=.18+3.2*.07,smokeLife=bodyLife*1.8;
+        double recorded=nodes.isEmpty()?0:Math.max(0,headArc()-nodes.get(0).arc());
+        if(strength>.001){
+            for(int k=0;k<=32;k++){
+                double behind=1.65+k*.70;
+                Frame f=back(behind);
+                double envelope=smooth(1.65,3.05,behind)*smooth(24,18,behind)
+                        *smooth(behind-.7,behind+.7,recorded);
+                double rear=smooth(12,24,behind);
+                var field=HuahongFlowField.smoke(behind,now);
+                Vec3 p=offset(f,field.side(),field.up());
+                double radius=field.radius();
+                float alpha=(float)(strength*envelope*(1-.35*rear)*.34);
+                clouds.add(new Cloud(p,k*5,radius,alpha,0x060101,30));
+                // Crimson density travels backwards through the body at a
+                // controlled 1.4025 world units/s, instead of swapping a random
+                // high-contrast cell several times per video frame.
+                clouds.add(new Cloud(p.add(.025,.02,-.015),k*5+19,radius*.48,
+                        (float)(strength*envelope*(1-.35*rear)*field.crimson()*.075),0xce252f,20));
+            }
+        }
+        // Old residue retains canonical world births and their original world
+        // positions. It contributes only absorbing rear density; the coherent
+        // body above owns the visible near-head shape and animated crimson.
         for(var b:births(.55,24,smokeLife)){
             double age=(now-b.tick())/20,behind=headArc()-b.arc(),seed=b.cell();
-            // Births used to enter at full opacity when a .55-block cell crossed
-            // the head. A C1 spatial ramp removes that discontinuity while the
-            // persistent local nozzle below fills the newly emitted interval.
-            double dissolve=smooth(0,1.65,behind)*smooth(24,18,behind)*Math.pow(Mth.clamp(1-age/smokeLife,0,1),2.1);
+            double dissolve=.35*smooth(12,24,behind)*smooth(24,18,behind)*Math.pow(Mth.clamp(1-age/smokeLife,0,1),2.1);
             double core=Math.exp(-Math.pow(age/bodyLife,2)*1.9);
             double scatter=.11+age*.30;double phi=seed*2.399;
             // An isotropic world offset does not make old smoke orbit the
@@ -288,9 +312,8 @@ final class HuahongSkinGeometry {
             Vec3 p=b.p().add(Math.cos(phi)*scatter,Math.sin(phi*1.31)*scatter+age*.16,Math.sin(phi)*scatter);
             double radius=(.47+.24*rnd(seed+7))*(1+age*.35);
             float a=(float)(dissolve*(.20+.12*core));
+            if(a<.0005F)continue;
             clouds.add(new Cloud(p,Math.floorMod(b.cell(),64),radius,a,mix(0x010001,0x0a0101,core*(.2+.5*rnd(seed+9))),30));
-            if(rnd(seed+23)>.64&&core>.15)
-                clouds.add(new Cloud(p.add(.025,.02,-.015),Math.floorMod(b.cell()+19,64),radius*.48,(float)(dissolve*core*.10*smooth(.15,.25,core)),0xce252f,20));
         }
         // The head is broad dark smoke with a small red fracture, never a white
         // nucleus. These layers disappear with the local transformation fade.

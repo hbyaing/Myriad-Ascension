@@ -17,6 +17,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.joml.Matrix4f;
+import org.joml.Matrix3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
@@ -48,9 +49,10 @@ public final class HuahongVolumeRenderer {
     public record Trace(int pathPoints,float pathLength,float strength,float exposure,int sceneDepth,
                         boolean shaderReady,boolean shaderPack,boolean submitted,List<List<Float>> path,
                         List<Float> pathAges,List<Float> worldToClip,List<Float> inverseWorldToClip,List<Float> clipBounds,
-                        List<Float> boundsMin,List<Float> boundsMax,List<Float> noiseOrigin,List<Float> shapeProfile,float effectTime,double worldTime,long frame) {}
+                        List<Float> boundsMin,List<Float> boundsMax,List<Float> materialOrigin,List<Float> shapeProfile,float effectTime,double worldTime,long frame,
+                        List<Float> worldToMaterial) {}
     private record Packet(float[] path,float[] ages,int count,float length,float strength,float exposure,
-                          float time,double now,Vec3 eye,Vec3 min,Vec3 max,Matrix4f projection,Matrix4f inverse,float[] clip,int depth,long frame) {}
+                          float time,double now,Vec3 min,Vec3 max,Matrix3f materialBasis,Matrix4f projection,Matrix4f inverse,float[] clip,int depth,long frame) {}
     private HuahongVolumeRenderer() {}
     public static boolean ready(){return shader!=null&&pathLocation>=0;}
     public static List<Trace> currentTrace(){return List.copyOf(TRACE);}
@@ -81,6 +83,18 @@ public final class HuahongVolumeRenderer {
     /** Call during the world draw. Positions and this matrix both use camera-relative world space. */
     public static Trace queue(List<SwordFlightTrailHistory.Node> nodes,Vec3 eye,double now,float strength,
                               Matrix4f worldToClip,float exposure) {
+        if(nodes.size()<2)return null;
+        var a=nodes.get(nodes.size()-2).point();var b=nodes.get(nodes.size()-1).point();
+        Vec3 forward=new Vec3(b.x()-a.x(),b.y()-a.y(),b.z()-a.z());
+        if(forward.lengthSqr()<1e-12)forward=new Vec3(0,0,1);else forward=forward.normalize();
+        Vec3 side=forward.cross(Math.abs(forward.y)>.95?new Vec3(0,0,1):new Vec3(0,1,0)).normalize();
+        return queue(nodes,eye,now,strength,worldToClip,exposure,forward,side);
+    }
+
+    /** The carrier basis controls only material transport. Recorded positions,
+     * spherical support and scene-depth clipping remain in world space. */
+    public static Trace queue(List<SwordFlightTrailHistory.Node> nodes,Vec3 eye,double now,float strength,
+                              Matrix4f worldToClip,float exposure,Vec3 forward,Vec3 side) {
         if(nodes.size()<2||TrailShaderBridge.shadowPass()||PENDING.size()>=MAX_PACKETS)return null;
         int depth=TrailShaderBridge.capturedDepthTexture();
         if(depth<0&&!TrailShaderBridge.captureDepth()){status="Awaiting volume world depth";return null;}
@@ -88,7 +102,6 @@ public final class HuahongVolumeRenderer {
         int last=nodes.size()-1;var newest=nodes.get(last);double headArc=newest.arc(),startArc=Math.max(nodes.get(0).arc(),headArc-PATH_LENGTH);
         double length=headArc-startArc;if(length<.01)return null;
         float[] path=new float[POINTS*4],ages=new float[POINTS];
-        double origin=Math.floor(startArc/256)*256;
         double minX=Double.POSITIVE_INFINITY,minY=minX,minZ=minX,maxX=Double.NEGATIVE_INFINITY,maxY=maxX,maxZ=maxX;
         int cursor=last;
         for(int i=0;i<POINTS;i++){
@@ -97,7 +110,7 @@ public final class HuahongVolumeRenderer {
             var b=nodes.get(cursor);var a=nodes.get(Math.max(0,cursor-1));
             double t=Mth.clamp((arc-a.arc())/Math.max(1e-10,b.arc()-a.arc()),0,1);
             var p=a.point().lerp(b.point(),t);double x=p.x()-eye.x,y=p.y()-eye.y,z=p.z()-eye.z;
-            path[i*4]=(float)x;path[i*4+1]=(float)y;path[i*4+2]=(float)z;path[i*4+3]=(float)(arc-origin);
+            path[i*4]=(float)x;path[i*4+1]=(float)y;path[i*4+2]=(float)z;path[i*4+3]=(float)(arc-headArc);
             ages[i]=(float)Math.max(0,(now-(a.tick()+(b.tick()-a.tick())*t))/20);
             minX=Math.min(minX,x-RADIUS);minY=Math.min(minY,y-RADIUS);minZ=Math.min(minZ,z-RADIUS);
             maxX=Math.max(maxX,x+RADIUS);maxY=Math.max(maxY,y+RADIUS);maxZ=Math.max(maxZ,z+RADIUS);
@@ -105,10 +118,22 @@ public final class HuahongVolumeRenderer {
         var min=new Vec3(minX,minY,minZ);var max=new Vec3(maxX,maxY,maxZ);
         float[] clip=clipBounds(worldToClip,min,max);if(clip==null)return null;
         Matrix4f inverse=new Matrix4f(worldToClip).invert();
+        Matrix3f materialBasis=materialBasis(forward,side);
         Packet packet=new Packet(path,ages,POINTS,(float)length,Mth.clamp(strength,0,1),Math.max(.01F,exposure)*exposureMultiplier,
-                (float)((now%2560+2560)%2560/20),now,eye,min,max,new Matrix4f(worldToClip),inverse,clip,depth,frameSequence);
+                (float)((now%2560+2560)%2560/20),now,min,max,materialBasis,new Matrix4f(worldToClip),inverse,clip,depth,frameSequence);
         PENDING.add(packet);queuedThisFrame++;
         Trace trace=trace(packet,false);TRACE.add(trace);return trace;
+    }
+
+    /** One smooth rendered carrier frame, never a nearest-segment winner. */
+    public static Matrix3f materialBasis(Vec3 forward,Vec3 side){
+        Vec3 f=forward.lengthSqr()>1e-12?forward.normalize():new Vec3(0,0,1);
+        Vec3 s=side.subtract(f.scale(side.dot(f)));
+        if(s.lengthSqr()<1e-12)s=f.cross(Math.abs(f.y)>.95?new Vec3(0,0,1):new Vec3(0,1,0));
+        s=s.normalize();Vec3 up=f.cross(s).normalize();
+        // JOML constructor arguments are column-major: rows are dot products.
+        return new Matrix3f((float)s.x,(float)up.x,(float)f.x,
+                (float)s.y,(float)up.y,(float)f.y,(float)s.z,(float)up.z,(float)f.z);
     }
 
     /** Convenience entry for callers whose positions are already in RenderSystem world space. */
@@ -132,8 +157,8 @@ public final class HuahongVolumeRenderer {
         for(int i=0;i<p.count();i++)points.add(List.of(p.path()[i*4],p.path()[i*4+1],p.path()[i*4+2],p.path()[i*4+3]));
         return new Trace(p.count(),p.length(),p.strength(),p.exposure(),p.depth(),ready(),TrailShaderBridge.shaderPackDetected(),submitted,
                 List.copyOf(points),floats(p.ages()),matrix(p.projection()),matrix(p.inverse()),List.of(p.clip()[0],p.clip()[1],p.clip()[2],p.clip()[3]),
-                vector(p.min()),vector(p.max()),List.of((float)mod(p.eye().x,256),(float)mod(p.eye().y,256),(float)mod(p.eye().z,256)),
-                List.of(DEFAULT_WIDTH,DEFAULT_LIFE,DEFAULT_SPREAD,DEFAULT_SHELL),p.time(),p.now(),p.frame());
+                vector(p.min()),vector(p.max()),List.of(p.path()[0],p.path()[1],p.path()[2]),
+                List.of(DEFAULT_WIDTH,DEFAULT_LIFE,DEFAULT_SPREAD,DEFAULT_SHELL),p.time(),p.now(),p.frame(),matrix(p.materialBasis()));
     }
 
     private static void flush() {
@@ -151,7 +176,7 @@ public final class HuahongVolumeRenderer {
                 shader.safeGetUniform("OutputSize").set((float)target.viewWidth,(float)target.viewHeight);
                 shader.safeGetUniform("BoundsMin").set((float)p.min().x,(float)p.min().y,(float)p.min().z);
                 shader.safeGetUniform("BoundsMax").set((float)p.max().x,(float)p.max().y,(float)p.max().z);
-                shader.safeGetUniform("NoiseOrigin").set((float)mod(p.eye().x,256),(float)mod(p.eye().y,256),(float)mod(p.eye().z,256));
+                shader.safeGetUniform("WorldToMaterial").set(p.materialBasis());
                 shader.safeGetUniform("PathAges").set(p.ages());shader.safeGetUniform("PathCount").set(p.count());
                 shader.safeGetUniform("PathLength").set(p.length());shader.safeGetUniform("Strength").set(p.strength());
                 shader.safeGetUniform("ShapeProfile").set(DEFAULT_WIDTH,DEFAULT_LIFE,DEFAULT_SPREAD,DEFAULT_SHELL);
@@ -167,10 +192,10 @@ public final class HuahongVolumeRenderer {
             status="Original 3D path density / 128 steps / scene-depth clipped / direct exposure";
         }
     }
-    private static double mod(double value,double period){return value-Math.floor(value/period)*period;}
     private static List<Float> floats(float[] values){var list=new ArrayList<Float>(values.length);for(float value:values)list.add(value);return List.copyOf(list);}
     private static List<Float> vector(Vec3 p){return List.of((float)p.x,(float)p.y,(float)p.z);}
     private static List<Float> matrix(Matrix4f matrix){float[] values=new float[16];matrix.get(values);return floats(values);}
+    private static List<Float> matrix(Matrix3f matrix){float[] values=new float[9];matrix.get(values);return floats(values);}
     private static void vertex(BufferBuilder b,float x,float y){b.vertex(x,y,0).uv(x*.5F+.5F,y*.5F+.5F).endVertex();}
 
     @Mod.EventBusSubscriber(modid=GeneratedMod.MOD_ID,value=Dist.CLIENT)

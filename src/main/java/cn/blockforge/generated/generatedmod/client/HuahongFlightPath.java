@@ -14,7 +14,8 @@ import org.joml.Vector3d;
 /** Local light follows the rendered path and the same smooth frame as its carrier. */
 public final class HuahongFlightPath {
     public record Frame(Vec3 p,Vec3 forward,Vec3 side,Vec3 up) {}
-    private static final double SMOOTH_RADIUS=.25,HEAD_JOIN=1.25;
+    private final double smoothRadius;
+    private final double headJoin;
     private static final double FRAME_STEP=.35,MIN_FRAME_STEP=.35/32,MAX_TURN_COS=Math.cos(Math.toRadians(18));
     private static final int MAX_BASE_STATIONS=1536,MAX_ADAPTIVE_STATIONS=4096;
     private record Pose(Vec3 p,Vec3 tangent) {}
@@ -29,6 +30,8 @@ public final class HuahongFlightPath {
     private final double[] stationDistances;
 
     public HuahongFlightPath(List<SwordFlightTrailHistory.Node> nodes,Vec3 center,Vec3 forward,Vec3 side) {
+        this.smoothRadius=Math.max(.25,Math.min(16,recentSpeed(nodes)*.5));
+        this.headJoin=Math.max(1.25,Math.min(12,smoothRadius));
         this.center=finite(center)?center:Vec3.ZERO;this.forward=unit(forward,new Vec3(0,0,1));
         Vec3 transverse=side.subtract(this.forward.scale(side.dot(this.forward)));
         this.side=unit(transverse,this.forward.cross(Math.abs(this.forward.y)>.95?new Vec3(0,0,1):new Vec3(0,1,0)).normalize());
@@ -53,7 +56,7 @@ public final class HuahongFlightPath {
         // the rotation-minimizing frame without an antipodal-angle branch.
         var frames=new ArrayList<Station>();
         frames.add(new Station(0,Vec3.ZERO,this.forward,this.side,rotation(this.forward,this.side)));
-        double end=Math.max(8,distances[distances.length-1]+SMOOTH_RADIUS);
+        double end=Math.max(8,distances[distances.length-1]+smoothRadius);
         // Keep the grid anchored to the head. Rescaling every interval when the
         // oldest node expires would move all near-head transport samples at once.
         double step=Math.max(FRAME_STEP,end/MAX_BASE_STATIONS);
@@ -63,6 +66,23 @@ public final class HuahongFlightPath {
         stations=frames.toArray(Station[]::new);stationDistances=new double[stations.length];
         for(int i=0;i<stations.length;i++)stationDistances[i]=stations[i].distance();
     }
+
+    /** Render-frame filtering must span a fixed-time interval, not .25 world
+     * blocks which the head crosses in <1ms during high-speed flight. The
+     * history point positions remain untouched; only local frames/body bend.
+     */
+    private static double recentSpeed(List<SwordFlightTrailHistory.Node> nodes){
+        if(nodes.size()<2)return 0;
+        var head=nodes.get(nodes.size()-1);double then=Math.max(nodes.get(0).tick(),head.tick()-2);
+        if(head.tick()-then<1e-6)return 0;
+        int i=0;while(i+1<nodes.size()-1&&nodes.get(i+1).tick()<then)i++;
+        var a=nodes.get(i);var b=nodes.get(i+1);
+        double t=Mth.clamp((then-a.tick())/Math.max(1e-9,b.tick()-a.tick()),0,1);
+        double arc=a.arc()+(b.arc()-a.arc())*t;
+        return Math.max(0,(head.arc()-arc)/(head.tick()-then));
+    }
+
+    public double headTransitionLength(){return headJoin;}
 
     public Frame frame(Vec3 p,Vec3 direction) {
         Vec3 position=finite(p)?p:center;
@@ -103,15 +123,15 @@ public final class HuahongFlightPath {
     }
 
     private Pose curve(double distance) {
-        double a=distance-SMOOTH_RADIUS,b=distance+SMOOTH_RADIUS;
+        double a=distance-smoothRadius,b=distance+smoothRadius;
         // A box integral of a continuous polyline is C1. Its exact derivative
         // stays continuous when the moving head crosses a recorded corner;
         // using the current segment's direction made offset sheets snap there.
-        Vec3 smooth=integral(b).subtract(integral(a)).scale(1/(2*SMOOTH_RADIUS));
-        Vec3 derivative=point(b).subtract(point(a)).scale(1/(2*SMOOTH_RADIUS));
+        Vec3 smooth=integral(b).subtract(integral(a)).scale(1/(2*smoothRadius));
+        Vec3 derivative=point(b).subtract(point(a)).scale(1/(2*smoothRadius));
         if(!finite(smooth))smooth=point(distance);
-        double q=Mth.clamp(distance/HEAD_JOIN,0,1),blend=q*q*(3-2*q);
-        double rate=q>=1?0:6*q*(1-q)/HEAD_JOIN;
+        double q=Mth.clamp(distance/headJoin,0,1),blend=q*q*(3-2*q);
+        double rate=q>=1?0:6*q*(1-q)/headJoin;
         Vec3 straight=forward.scale(-distance);
         Vec3 p=straight.lerp(smooth,blend);
         Vec3 tangent=forward.scale(1-blend).subtract(derivative.scale(blend)).subtract(smooth.subtract(straight).scale(rate));

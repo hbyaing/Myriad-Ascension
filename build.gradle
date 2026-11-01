@@ -41,8 +41,8 @@ if (project.hasProperty('myriadCapture')) {
     }
     minecraft.runs {
         client {
-            workingDirectory project.file(project.hasProperty('mindscapeCapture') ? 'build/mindscape-client' : 'build/myriad-client')
-            jvmArgs (project.hasProperty('huahongDynamics') ? '-Xmx6G' : '-Xmx2G'), '-XX:ActiveProcessorCount=4', '-XX:CICompilerCount=2'
+            workingDirectory project.file(project.hasProperty('huahongRepro') ? 'build/flight-repro-client' : project.hasProperty('mindscapeCapture') ? 'build/mindscape-client' : 'build/myriad-client')
+            jvmArgs (project.hasProperty('huahongDynamics') || project.hasProperty('huahongRepro') ? '-Xmx6G' : '-Xmx2G'), '-XX:ActiveProcessorCount=4', '-XX:CICompilerCount=2'
             args '--mixin', 'wuxingxiantu.myriad-qa-pointer.mixins.json'
             property 'wuxingxiantu.myriadCapture', (!project.hasProperty('myriadWorldgen') && !project.hasProperty('myriadUiOnly') && !project.hasProperty('creativeTabsCapture')).toString()
             if (project.hasProperty('creativeTabsCapture')) property 'wuxingxiantu.creativeTabsCapture', 'true'
@@ -77,6 +77,15 @@ if (project.hasProperty('myriadCapture')) {
             if (project.hasProperty('huahongFrameOnly')) property 'wuxingxiantu.huahongFrameOnly', 'true'
             if (project.hasProperty('huahongContinuity')) property 'wuxingxiantu.huahongContinuity', 'true'
             if (project.hasProperty('huahongNoShaders')) property 'wuxingxiantu.huahongNoShaders', 'true'
+            if (project.hasProperty('huahongRepro')) {
+                property 'wuxingxiantu.huahongRepro', 'true'
+                property 'wuxingxiantu.myriadCapture', 'false'
+                property 'wuxingxiantu.huahongReproOutput', project.file(project.findProperty('huahongReproOutput') ?: 'reports/flight-repro').absolutePath
+                if (project.hasProperty('huahongReproOrdinary')) property 'wuxingxiantu.huahongReproOrdinary', 'true'
+                if (project.hasProperty('huahongReproSolas')) property 'wuxingxiantu.huahongReproSolas', 'true'
+                if (project.hasProperty('huahongReproSkin')) property 'wuxingxiantu.huahongReproSkin', project.property('huahongReproSkin')
+                if (project.hasProperty('huahongReproEndTick')) property 'wuxingxiantu.huahongReproEndTick', project.property('huahongReproEndTick')
+            }
             if (project.hasProperty('huahongWallQa')) property 'wuxingxiantu.huahongWallQa', 'true'
             if (project.hasProperty('huahongDynamicsSkin')) property 'wuxingxiantu.huahongDynamicsSkin', project.property('huahongDynamicsSkin')
             if (project.hasProperty('huahongQaExposure')) property 'wuxingxiantu.huahongQaExposure', project.property('huahongQaExposure')

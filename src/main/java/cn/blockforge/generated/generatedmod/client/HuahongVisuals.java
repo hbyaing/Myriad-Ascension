@@ -24,6 +24,7 @@ public final class HuahongVisuals {
     private static final class Trail {
         final SwordFlightTrailHistory history=new SwordFlightTrailHistory(.25,LIFE,160,720);
         Vec3 last;long lastEmission;
+        Vec3 denseForward,denseSide;
         cn.blockforge.generated.generatedmod.yujian.HuahongSkin skin;
     }
     private static final Map<ControlledSwordEntity,Trail> TRAILS=new IdentityHashMap<>();
@@ -72,16 +73,20 @@ public final class HuahongVisuals {
             var nodes=active?trail.history.renderNodes(now,point(center)):trail.history.nodes();
             Vec3 modelSide=frame.local(1,0,0).subtract(frame.position());
             if(trail.skin==cn.blockforge.generated.generatedmod.yujian.HuahongSkin.DENSE){
+                // Residual history is no longer carried by the current sword.
+                // Freeze its last emitting material frame while time/life keep
+                // advancing, instead of spinning old veins with a returning rider.
+                if(active||trail.denseForward==null){trail.denseForward=forward;trail.denseSide=modelSide;}
                 var clip=new org.joml.Matrix4f(com.mojang.blaze3d.systems.RenderSystem.getProjectionMatrix())
                         .mul(com.mojang.blaze3d.systems.RenderSystem.getModelViewMatrix()).mul(pose.pose());
-                HuahongVolumeRenderer.queue(nodes,eye,now,active?frame.huahong():0,clip,1);
+                HuahongVolumeRenderer.queue(nodes,eye,now,active?frame.huahong():0,clip,1,trail.denseForward,trail.denseSide);
             }
             if(trail.skin!=cn.blockforge.generated.generatedmod.yujian.HuahongSkin.METEOR_PRISM){
                 vertices+=HuahongSkinGeometry.draw(trail.skin,buffer,pose,eye,center,forward,modelSide,nodes,now,active?frame.huahong():0);
                 continue;
             }
             var path=new HuahongFlightPath(nodes,center,forward,modelSide);
-            double origin=nodes.isEmpty()?0:Math.floor(nodes.get(0).arc()/256)*256;
+            double origin=nodes.isEmpty()?0:SwordTrailPhase.origin(nodes.get(nodes.size()-1).arc(),sword.getUUID().hashCode());
             ArrayList<Row> rows=new ArrayList<>(nodes.size());
             for(int i=0;i<nodes.size();i++){
                 var n=nodes.get(i);
@@ -104,7 +109,8 @@ public final class HuahongVisuals {
                     Vec3 f=vec(nodes.get(Math.min(nodes.size()-1,i+1)).point()).subtract(vec(nodes.get(Math.max(0,i-1)).point()));
                     if(f.lengthSqr()<1e-10)f=forward;else f=f.normalize();
                     var section=path.frame(vec(n.point()),f);Vec3 side=section.side(),up=section.up();
-                    double curl=Math.sin(n.arc()*.65+strand*1.7)*.24+Math.sin(n.arc()*1.73+strand)*.11;
+                    double localArc=n.arc()-nodes.get(nodes.size()-1).arc();
+                    double curl=Math.sin(localArc*.65+strand*1.7)*.24+Math.sin(localArc*1.73+strand)*.11;
                     double open=smooth((age-.025)/.375),spread=open*SPREAD*.035*(1+age*.24);
                     Vec3 p=vec(n.point()).add(side.scale(Math.cos(phase+curl)*spread)).add(up.scale(Math.sin(phase+curl)*spread));
                     rows.add(new Row(p,n.arc()-origin+strand*.93,.15+.85*Math.pow(left,1.2),

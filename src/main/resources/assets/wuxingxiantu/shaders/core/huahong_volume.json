@@ -9,7 +9,7 @@
     {"name": "OutputSize", "type": "float", "count": 2, "values": [1,1]},
     {"name": "BoundsMin", "type": "float", "count": 3, "values": [0,0,0]},
     {"name": "BoundsMax", "type": "float", "count": 3, "values": [1,1,1]},
-    {"name": "NoiseOrigin", "type": "float", "count": 3, "values": [0,0,0]},
+    {"name": "WorldToMaterial", "type": "matrix3x3", "count": 9, "values": [1,0,0,0,1,0,0,0,1]},
     {"name": "PathAges", "type": "float", "count": 32, "values": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
     {"name": "PathCount", "type": "int", "count": 1, "values": [0]},
     {"name": "PathLength", "type": "float", "count": 1, "values": [1]},
