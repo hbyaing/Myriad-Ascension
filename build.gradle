@@ -105,6 +105,8 @@ if (project.hasProperty('myriadCapture')) {
                 if (project.hasProperty('flightColdSolas')) property 'wuxingxiantu.flightColdSolas', 'true'
                 if (project.hasProperty('flightColdCandidate')) property 'wuxingxiantu.flightColdCandidate', 'true'
                 if (project.hasProperty('flightColdSimulation')) property 'wuxingxiantu.flightColdSimulation', project.property('flightColdSimulation').toString()
+                if (project.hasProperty('flightProjectionCheck')) property 'wuxingxiantu.flightProjectionCheck', 'true'
+                if (project.hasProperty('flightRouteReplay')) property 'wuxingxiantu.flightRouteReplay', 'true'
             }
             if (project.hasProperty('jindouRepro')) {
                 property 'wuxingxiantu.jindouRepro', 'true'

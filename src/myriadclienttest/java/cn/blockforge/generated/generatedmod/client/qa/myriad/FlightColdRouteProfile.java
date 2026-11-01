@@ -20,7 +20,7 @@ import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
 
-/** Independent normal-terrain cold route. No screenshot/readback/mesh capture or future-route warming. */
+/** Independent normal-terrain cold route. No readback during measurement or future-route warming; one scene image after recording stops. */
 @Mod.EventBusSubscriber(modid=GeneratedMod.MOD_ID,value=Dist.CLIENT)
 public final class FlightColdRouteProfile {
     private static final boolean ENABLED=Boolean.getBoolean("wuxingxiantu.flightColdProfile");
@@ -30,6 +30,7 @@ public final class FlightColdRouteProfile {
     private static final String WORLD=System.getProperty("wuxingxiantu.flightColdWorld","cold-spawn-f214");
     private static final long STARTED=System.nanoTime();
     private static final List<Map<String,Object>> WARMUP=new ArrayList<>(),SERVER=Collections.synchronizedList(new ArrayList<>()),CLIENT=new ArrayList<>();
+    private static final List<Map<String,Object>> TERRAIN=new ArrayList<>();
     private static final List<String> ERRORS=new ArrayList<>();
     private static final ArrayDeque<Map<String,Object>> WINDOW=new ArrayDeque<>();
     private static final Map<String,Object> SUMMARY=new ConcurrentHashMap<>();
@@ -83,7 +84,7 @@ public final class FlightColdRouteProfile {
                 var stability=FlightColdWarmupProbe.stability(WINDOW.getFirst(),probe,lastServerWallMs);SUMMARY.put("latestStability",stability);SUMMARY.put("warmupElapsedSeconds",(now-warmupBegan)/1e9);
                 if((now-warmupBegan)>120_000_000_000L&&!lateWarmupReported){lateWarmupReported=true;System.out.println("[Cold32] Initial resident loading still busy after120s; continuing stationary, not a flight result.");}
                 progress("warmup",probe);
-                if(Boolean.TRUE.equals(stability.get("stable"))&&mc.player.getVehicle() instanceof ControlledSwordEntity){
+                if(Boolean.TRUE.equals(stability.get("stable"))&&RegionProjectionQa.complete()&&mc.player.getVehicle() instanceof ControlledSwordEntity){
                     SUMMARY.put("stableWarmup",true);SUMMARY.put("stableWarmupAtNanoTime",now);SUMMARY.put("warmupDecision",stability);
                     if(PREPARE){ready=false;snapshotCleanup=mc.getSingleplayerServer().submitAsync(()->cleanSnapshot(mc.getSingleplayerServer().getPlayerList().getPlayer(playerId)));return;}
                     PointerSafety.verify();flight=true;flightBegan=now;System.out.println("[Cold32] Stable resident start reached; starting real input into ungenerated route.");
@@ -97,6 +98,7 @@ public final class FlightColdRouteProfile {
         }catch(Throwable error){finish(error);}
     }
     private static void preparePlayer(ServerPlayer p){
+        try{RegionProjectionQa.start(p.serverLevel());}catch(Exception e){throw new RuntimeException(e);}
         var l=p.serverLevel();l.setDayTime(18000);l.setWeatherParameters(12000,0,false,false);
         p.setNoGravity(true);p.removeAllEffects();p.getInventory().setItem(0,new net.minecraft.world.item.ItemStack(WuXingItems.PURE_YANG_SWORD.get()));p.getInventory().selected=0;
         var d=GeneratedMod.data(p);d.wuxingxiantu$setRealm(99);d.wuxingxiantu$learnArt(YujianController.FLIGHT);d.wuxingxiantu$setArtMastery(YujianController.FLIGHT,100);d.wuxingxiantu$setMaxMana(1000000);d.wuxingxiantu$setAura(1000000);
@@ -123,7 +125,7 @@ public final class FlightColdRouteProfile {
         if(!ready)return;var p=event.getServer().getPlayerList().getPlayer(playerId);if(p==null)return;
         var row=new LinkedHashMap<String,Object>();row.put("nanoTime",System.nanoTime());row.put("wallClockMillis",System.currentTimeMillis());row.put("phase",flight?"flight":"warmup");row.put("clock",clock);row.put("serverTickWallMs",lastServerWallMs);row.put("position",List.of(p.getX(),p.getY(),p.getZ()));
         if(p.getVehicle() instanceof ControlledSwordEntity s){row.put("speed",s.flightSpeed());row.put("targetSpeed",s.targetSpeed());row.put("huahongStage",s.huahongStage());row.put("huahongStrength",s.huahongStrength());row.put("aheadLoaded",s.aheadLoaded());row.put("entityTick",s.tickCount);}
-        int roots=0;for(var entity:p.serverLevel().getAllEntities())if(entity instanceof ControlledSwordEntity s&&s.flightRoot()&&p.getUUID().equals(s.ownerId))roots++;row.put("ownedRootCount",roots);
+        int roots=0;for(var entity:p.serverLevel().getAllEntities())if(entity instanceof ControlledSwordEntity s&&s.flightRoot()&&p.getUUID().equals(s.ownerId))roots++;row.put("ownedRootCount",roots);row.put("playerTrackingSection",p.getLastSectionPos().toString());row.put("playerCurrentSection",net.minecraft.core.SectionPos.of(p).toString());
         row.put("streamRider",FlightChunkStreaming.diagnostics(p));row.put("streamLevel",FlightChunkStreaming.diagnostics(p.serverLevel()));SERVER.add(row);
     }
     @SubscribeEvent public static void frame(TickEvent.RenderTickEvent event){
@@ -133,28 +135,30 @@ public final class FlightColdRouteProfile {
         CLIENT.add(row);
     }
     private static void startJfr()throws Exception{
-        recording=new Recording(Configuration.getConfiguration("profile"));recording.enable("jdk.NativeMethodSample").withPeriod(Duration.ofMillis(10));recording.enable("jdk.JavaMonitorEnter").withThreshold(Duration.ofMillis(10));recording.enable("jdk.ThreadPark").withThreshold(Duration.ofMillis(10));recording.setName("Cold32-"+(PREPARE?"prepare":"flight"));recording.setMaxSize(512L*1024*1024);recording.setMaxAge(Duration.ofMinutes(25));recording.start();
+        recording=new Recording(Configuration.getConfiguration("profile"));recording.enable("jdk.ClassLoad").withThreshold(Duration.ofMillis(2)).withStackTrace();recording.enable("jdk.NativeMethodSample").withPeriod(Duration.ofMillis(10));recording.enable("jdk.JavaMonitorEnter").withThreshold(Duration.ofMillis(10));recording.enable("jdk.ThreadPark").withThreshold(Duration.ofMillis(10));recording.setName("Cold32-"+(PREPARE?"prepare":"flight"));recording.setMaxSize(512L*1024*1024);recording.setMaxAge(Duration.ofMinutes(25));recording.start();
     }
     private static void runtimeEvidence(Minecraft mc)throws Exception{
         var classes=new LinkedHashMap<String,Object>();
-        for(String name:List.of("yujian.ControlledSwordEntity","yujian.YujianController","yujian.FlightChunkStreaming","yujian.FlightTerrainGovernor","yujian.FlightRootTicking","client.FlyingSwordEffects","client.HuahongSkinGeometry","client.HuahongVolumeRenderer","client.JindouCloudRenderer")){
+        for(String name:List.of("yujian.ControlledSwordEntity","yujian.YujianController","yujian.FlightChunkStreaming","yujian.FlightTerrainGovernor","yujian.FlightRootTicking","client.FlyingSwordEffects","client.DunxuTransparency","client.HuahongSkinGeometry","client.HuahongVolumeRenderer","client.JindouCloudRenderer","client.SwordFlightTrailRenderer","plants.SpiritPlantRegions","plants.ConnectedBiomeRegion")){
             var c=Class.forName("cn.blockforge.generated.generatedmod."+name);try(var in=c.getResourceAsStream("/"+c.getName().replace('.','/')+".class")){classes.put(c.getName(),Map.of("sha256",sha(in.readAllBytes()),"codeSource",c.getProtectionDomain().getCodeSource().getLocation().toString()));}
         }
         var iris=Class.forName("net.irisshaders.iris.Iris");String pack=String.valueOf(iris.getMethod("getCurrentPackName").invoke(null));boolean inUse=(Boolean)iris.getMethod("isPackInUseQuick").invoke(null);
         if(SOLAS?(!inUse||!pack.equals("Solas Shader V3.7b.zip")):inUse)throw new AssertionError("Unexpected shader state "+pack+" / "+inUse);
-        var report=new LinkedHashMap<String,Object>();report.put("classes",classes);report.put("shaderInUse",inUse);report.put("shaderPack",pack);report.put("renderDistance",mc.options.renderDistance().get());report.put("simulationDistance",mc.options.simulationDistance().get());report.put("maxFps",mc.options.framerateLimit().get());report.put("vsyncSetting",mc.options.enableVsync().get());report.put("renderTarget",List.of(mc.getMainRenderTarget().viewWidth,mc.getMainRenderTarget().viewHeight));report.put("availableProcessors",Runtime.getRuntime().availableProcessors());report.put("maxHeapBytes",Runtime.getRuntime().maxMemory());report.put("world",WORLD);report.put("prepareOnly",PREPARE);report.put("screenshotsOrGpuReadback",false);report.put("futureRoutePreGeneration",false);report.put("pointer",PointerSafety.snapshot());report.put("runtimeClassScope","Runtime-resolved class resources, not post-Mixin JVM instrumentation.");
+        var report=new LinkedHashMap<String,Object>();report.put("classes",classes);report.put("shaderInUse",inUse);report.put("shaderPack",pack);report.put("renderDistance",mc.options.renderDistance().get());report.put("simulationDistance",mc.options.simulationDistance().get());report.put("maxFps",mc.options.framerateLimit().get());report.put("vsyncSetting",mc.options.enableVsync().get());report.put("renderTarget",List.of(mc.getMainRenderTarget().viewWidth,mc.getMainRenderTarget().viewHeight));report.put("availableProcessors",Runtime.getRuntime().availableProcessors());report.put("maxHeapBytes",Runtime.getRuntime().maxMemory());report.put("world",WORLD);report.put("prepareOnly",PREPARE);report.put("screenshotsOrGpuReadbackDuringMeasurement",false);report.put("postMeasurementSceneScreenshot",true);report.put("futureRoutePreGeneration",false);report.put("pointer",PointerSafety.snapshot());report.put("runtimeClassScope","Runtime-resolved class resources, not post-Mixin JVM instrumentation.");
         Path cfg=mc.gameDirectory.toPath().resolve("config/embeddium-options.json");if(Files.isRegularFile(cfg)){report.put("embeddiumConfig",Files.readString(cfg));report.put("embeddiumConfigSha256",sha(Files.readAllBytes(cfg)));}
         Files.writeString(OUT.resolve("runtime.json"),new GsonBuilder().setPrettyPrinting().create().toJson(report));
     }
     private static String sha(byte[] data)throws Exception{return HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(data));}
     private static void progress(String phase,Map<String,Object> probe)throws Exception{
-        var p=new LinkedHashMap<String,Object>();p.put("phase",phase);p.put("clock",clock);p.put("elapsedSeconds",(System.nanoTime()-STARTED)/1e9);p.put("warmupElapsedSeconds",(System.nanoTime()-warmupBegan)/1e9);p.put("latestStability",SUMMARY.getOrDefault("latestStability",Map.of()));p.put("probe",probe);p.put("lastServerTickWallMs",lastServerWallMs);Files.writeString(OUT.resolve("progress.json"),new GsonBuilder().setPrettyPrinting().create().toJson(p));
+        var p=new LinkedHashMap<String,Object>();p.put("phase",phase);p.put("clock",clock);p.put("elapsedSeconds",(System.nanoTime()-STARTED)/1e9);p.put("warmupElapsedSeconds",(System.nanoTime()-warmupBegan)/1e9);p.put("latestStability",SUMMARY.getOrDefault("latestStability",Map.of()));p.put("probe",probe);if(phase.equals("flight"))TERRAIN.add(Map.of("clock",clock,"probe",probe));p.put("lastServerTickWallMs",lastServerWallMs);Files.writeString(OUT.resolve("progress.json"),new GsonBuilder().setPrettyPrinting().create().toJson(p));
     }
     private static void finish(Throwable error){
         if(done)return;done=true;if(error!=null){error.printStackTrace();ERRORS.add(error.toString());}
         try{
             if(recording!=null){recording.stop();recording.dump(OUT.resolve("profile.jfr"));recording.close();}
-            FlightChunkWorkTimings.write(OUT);FlightVfxWorkTimings.write(OUT);HuahongFrameTimings.write(OUT);SUMMARY.put("termination",termination);SUMMARY.put("errors",ERRORS);SUMMARY.put("pointer",PointerSafety.snapshot());SUMMARY.put("world",WORLD);SUMMARY.put("prepareOnly",PREPARE);SUMMARY.put("warmup",WARMUP);synchronized(SERVER){SUMMARY.put("server",List.copyOf(SERVER));}SUMMARY.put("client",CLIENT);SUMMARY.put("flightTicksCompleted",clock);SUMMARY.put("wallSeconds",(System.nanoTime()-STARTED)/1e9);SUMMARY.put("scene","Normal terrain seed7215 with structures; render32 with recorded simulation distance, VSync setting on, maxFps260, unmodified sword speed and production SMOKE; stationary warmup then straight cold route. No future route getChunk calls, no screenshot or mesh readback.");
+            var mc=Minecraft.getInstance(); var camera=mc.gameRenderer.getMainCamera(); SUMMARY.put("endScene",Map.of("cameraPosition",camera.getPosition().toString(),"cameraPitch",camera.getXRot(),"cameraYaw",camera.getYRot(),"renderer",mc.levelRenderer.getChunkStatistics()));
+            try(var image=Screenshot.takeScreenshot(mc.getMainRenderTarget())){image.writeToFile(OUT.resolve("after-measurement.png"));}
+            FlightChunkWorkTimings.write(OUT);FlightVfxWorkTimings.write(OUT);FlightEcologyTimings.write(OUT);FlightWorldTimings.write(OUT);FlightDrawTimings.write(OUT);HuahongFrameTimings.write(OUT);SUMMARY.put("projectionCheck",RegionProjectionQa.result());SUMMARY.put("routeKind",Boolean.getBoolean("wuxingxiantu.flightRouteReplay")?"previously-traversed":"fresh-clone/unvisited");SUMMARY.put("termination",termination);SUMMARY.put("errors",ERRORS);SUMMARY.put("pointer",PointerSafety.snapshot());SUMMARY.put("world",WORLD);SUMMARY.put("prepareOnly",PREPARE);SUMMARY.put("warmup",WARMUP);synchronized(SERVER){SUMMARY.put("server",List.copyOf(SERVER));}SUMMARY.put("client",CLIENT);SUMMARY.put("terrainDuringFlight",TERRAIN);SUMMARY.put("flightTicksCompleted",clock);SUMMARY.put("wallSeconds",(System.nanoTime()-STARTED)/1e9);SUMMARY.put("scene","Normal terrain seed7215 with structures; render32 with recorded simulation distance, VSync setting on, maxFps260, unmodified sword speed and production SMOKE; stationary warmup then straight route (generation state in routeKind). No future route getChunk calls, no screenshot or mesh readback during measurement; one screenshot after recording stops.");
             Files.writeString(OUT.resolve("profile-summary.json"),new GsonBuilder().setPrettyPrinting().create().toJson(SUMMARY));
             Files.writeString(OUT.resolve(ERRORS.isEmpty()?"complete.txt":"failure.txt"),ERRORS.isEmpty()?"RECORDED — performance analysis required":String.join("\n",ERRORS));
         }catch(Throwable write){write.printStackTrace();}Minecraft.getInstance().stop();

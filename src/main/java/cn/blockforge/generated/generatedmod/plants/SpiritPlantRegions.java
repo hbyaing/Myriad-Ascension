@@ -15,6 +15,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.*;
+import java.util.concurrent.*;
 
 /** Persistent quotas over tile-bounded connected surface-biome projections, shared with caves.
  * No terrain chunks are requested by the boundary search. Incomplete regions cannot place plants.
@@ -38,7 +39,12 @@ public final class SpiritPlantRegions extends SavedData {
     private final Map<Long, Integer> wild = new HashMap<>();
     private final Set<Long> cultivated = new HashSet<>();
     private int nextRegion;
-    private net.minecraft.world.level.biome.BiomeManager surfaceBiomes;
+    private static final ThreadPoolExecutor HEIGHT_SAMPLES=new ThreadPoolExecutor(1,1,30,TimeUnit.SECONDS,
+            new ArrayBlockingQueue<>(8),r->{var t=new Thread(r,"xiantu-biome-height");t.setDaemon(true);return t;},
+            new ThreadPoolExecutor.AbortPolicy());
+    private final DeferredBiomeSampler heightSamples=new DeferredBiomeSampler(HEIGHT_SAMPLES,256);
+    private SurfaceProjection surfaceProjection;
+    private boolean synchronousSamples;
 
     private static final class Candidate {
         final BlockPos pos;
@@ -94,8 +100,10 @@ public final class SpiritPlantRegions extends SavedData {
             long cell = cell(first.pos);
             active = cells.get(cell);
             if (active == null) {
+                String biome=surfaceBiome(level,cell);
+                if(biome==null)return;
                 active = new Region(); active.id = nextRegion++;
-                active.biome = surfaceBiome(level, cell);
+                active.biome = biome;
                 active.tile = ConnectedBiomeRegion.tile(cell);
                 active.seed = mix(level.getSeed() ^ cell ^ active.biome.hashCode());
                 active.frontier.add(cell); active.examined.add(cell);
@@ -107,7 +115,7 @@ public final class SpiritPlantRegions extends SavedData {
             int visited = ConnectedBiomeRegion.step(active.biome,active.members,active.examined,active.frontier,
                     at -> {
                         String biome=surfaceBiome(level,at);
-                        if(biome.equals(scanning.biome)){
+                        if(biome!=null&&biome.equals(scanning.biome)){
                             cells.put(at,scanning);scanning.canonical=Math.min(scanning.canonical,at);
                         }
                         return biome;
@@ -232,15 +240,49 @@ public final class SpiritPlantRegions extends SavedData {
     }
 
     private String surfaceBiome(ServerLevel level, long cell) {
-        var chunkSource = level.getChunkSource();
-        var generator = chunkSource.getGenerator();
-        int height = generator.getBaseHeight(x(cell), z(cell), Heightmap.Types.WORLD_SURFACE_WG,
-                level, chunkSource.randomState());
-        if(surfaceBiomes==null)surfaceBiomes = new net.minecraft.world.level.biome.BiomeManager(
-                (qx,qy,qz) -> generator.getBiomeSource().getNoiseBiome(qx,qy,qz,chunkSource.randomState().sampler()),
-                net.minecraft.world.level.biome.BiomeManager.obfuscateSeed(level.getSeed()));
-        var biome = surfaceBiomes.getBiome(new BlockPos(x(cell),height,z(cell)));
-        return biome.unwrapKey().orElseThrow().location().toString();
+        if(surfaceProjection==null){
+            var source=level.getChunkSource();var generator=source.getGenerator();var random=source.randomState();
+            var shape=net.minecraft.world.level.LevelHeightAccessor.create(level.getMinBuildHeight(),level.getHeight());
+            var biomes=new net.minecraft.world.level.biome.BiomeManager(
+                    (qx,qy,qz)->generator.getBiomeSource().getNoiseBiome(qx,qy,qz,random.sampler()),
+                    net.minecraft.world.level.biome.BiomeManager.obfuscateSeed(level.getSeed()));
+            surfaceProjection=new SurfaceProjection(generator,random,shape,biomes);
+            // Other generators may rely on thread-affine state. Keep their old path.
+            Class<?> biomeSource=generator.getBiomeSource().getClass();
+            boolean vanillaSource=biomeSource==net.minecraft.world.level.biome.MultiNoiseBiomeSource.class
+                    ||biomeSource==net.minecraft.world.level.biome.TheEndBiomeSource.class
+                    ||biomeSource==net.minecraft.world.level.biome.FixedBiomeSource.class
+                    ||biomeSource==net.minecraft.world.level.biome.CheckerboardColumnBiomeSource.class;
+            synchronousSamples=generator.getClass()!=net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator.class||!vanillaSource;
+        }
+        if(synchronousSamples)return surfaceProjection.sample(cell,level);
+        try{return heightSamples.poll(cell,()->sampleBatch(cell),surfaceProjection::sample);}
+        catch(CompletionException failed){
+            synchronousSamples=true;
+            com.mojang.logging.LogUtils.getLogger().warn("Surface biome background sampling failed; retaining synchronous compatibility",failed.getCause());
+            return surfaceProjection.sample(cell,level);
+        }
+    }
+    private List<Long> sampleBatch(long cell){
+        var batch=new LinkedHashSet<Long>();batch.add(cell);
+        if(activeSearch!=null)for(long at:activeSearch.frontier){if(batch.size()>=8)break;batch.add(at);}
+        for(long at:List.copyOf(batch)){
+            int x=x(at),z=z(at);
+            for(long next:new long[]{pack(x-1,z),pack(x+1,z),pack(x,z-1),pack(x,z+1)}){
+                if(batch.size()>=16)break;batch.add(next);
+            }
+        }
+        return List.copyOf(batch);
+    }
+    /** No ServerLevel, ChunkSource, live heightmap or mutable world random is retained. */
+    private record SurfaceProjection(net.minecraft.world.level.chunk.ChunkGenerator generator,
+            net.minecraft.world.level.levelgen.RandomState random,net.minecraft.world.level.LevelHeightAccessor shape,
+            net.minecraft.world.level.biome.BiomeManager biomes){
+        String sample(long cell){return sample(cell,shape);}
+        String sample(long cell,net.minecraft.world.level.LevelHeightAccessor heightAccess){
+            int height=generator.getBaseHeight(x(cell),z(cell),Heightmap.Types.WORLD_SURFACE_WG,heightAccess,random);
+            return biomes.getBiome(new BlockPos(x(cell),height,z(cell))).unwrapKey().orElseThrow().location().toString();
+        }
     }
     private static long cell(BlockPos pos) { return pack(pos.getX(),pos.getZ()); }
     private static long pack(int x,int z) { return ((long)x << 32) | (z & 0xffffffffL); }

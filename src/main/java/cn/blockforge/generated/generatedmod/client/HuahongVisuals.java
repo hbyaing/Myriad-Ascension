@@ -30,7 +30,16 @@ public final class HuahongVisuals {
     private static final Map<ControlledSwordEntity,Trail> TRAILS=new IdentityHashMap<>();
     private static Object level;
     private static double corePixelScale;
+    private static boolean headLinked;
     public static int vertices;
+    @SubscribeEvent public static void linkHead(net.minecraftforge.event.TickEvent.ClientTickEvent event){
+        if(event.phase==net.minecraftforge.event.TickEvent.Phase.END&&!headLinked){
+            // JFR identified class definition on the first visible flight frame.
+            // Link the pure head helper during client initialization; no dummy
+            // effect, history, model, geometry or GPU work is performed here.
+            HuahongHeadBridge.attachmentWeight(0);HuahongSkinGeometry.linkCarriers();headLinked=true;
+        }
+    }
     public static boolean hasTrails(){return !TRAILS.isEmpty();}
     public static void clear(){TRAILS.clear();vertices=0;}
     public static void sample(long tick){

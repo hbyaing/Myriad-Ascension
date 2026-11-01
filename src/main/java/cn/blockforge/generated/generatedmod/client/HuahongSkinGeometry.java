@@ -15,6 +15,14 @@ final class HuahongSkinGeometry {
     private record Row(Vec3 p,double u,double width,float alpha,int color,Vec3 side){}
     private record Birth(Vec3 p,double tick,double arc,Vec3 direction,long cell){}
     private record Cloud(Vec3 p,double seed,double radius,float alpha,int color,int mode){}
+    static void linkCarriers(){
+        // Define these data carriers before cold world generation is competing
+        // with first-use class loading. This performs no geometry or GPU work.
+        for(Class<?> type:new Class<?>[]{Row.class,Birth.class,Cloud.class,HuahongFlowField.Smoke.class}){
+            try{Class.forName(type.getName(),true,type.getClassLoader());}
+            catch(ClassNotFoundException impossible){throw new IllegalStateException(impossible);}
+        }
+    }
     private final HuahongFlightPath path;
     private final VertexConsumer out;
     private final PoseStack.Pose pose;

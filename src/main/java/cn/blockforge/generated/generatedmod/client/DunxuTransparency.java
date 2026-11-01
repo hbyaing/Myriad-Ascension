@@ -51,7 +51,18 @@ public final class DunxuTransparency {
         if(!dunxu&&rainbow<=0)return source;
         float base=dunxu?(sword.dunxuStage()==1?.72F:sword.dunxuStage()==3?.7F:OPACITY):1;
         float opacity=base*(1-rainbow);
-        return type->new Alpha(source.getBuffer(translucent(type)),opacity,type.format()==DefaultVertexFormat.NEW_ENTITY);
+        return new AlphaSource(source,opacity);
+    }
+
+    /** A named carrier avoids linking a new LambdaMetafactory call site on the
+     * first transparent flight frame, while retaining the caller's buffer scope. */
+    private static final class AlphaSource implements MultiBufferSource {
+        private final MultiBufferSource source;
+        private final float opacity;
+        AlphaSource(MultiBufferSource source,float opacity){this.source=source;this.opacity=opacity;}
+        @Override public VertexConsumer getBuffer(RenderType type){
+            return new Alpha(source.getBuffer(translucent(type)),opacity,type.format()==DefaultVertexFormat.NEW_ENTITY);
+        }
     }
 
     @SubscribeEvent public static void unload(LevelEvent.Unload event){
@@ -62,6 +73,7 @@ public final class DunxuTransparency {
             // Resolve optional APIs after all mods have loaded, before the first
             // flight frame needs a transparent sword or player buffer.
             PackedBulk.prepare();prepared=true;
+            new AlphaSource(null,1);
         }
     }
 
@@ -69,16 +81,20 @@ public final class DunxuTransparency {
         // Keep the low-alpha emissive shader and the crystal's non-occluding material pass.
         if(type==HeartSwordMaterialRenderTypes.CRYSTAL||type==HeartSwordMaterialRenderTypes.EMISSIVE)return type;
         if(type.format()!=DefaultVertexFormat.NEW_ENTITY)return type;
-        return TYPES.computeIfAbsent(type,key->{
-            // Find by type/signature: field names differ between Mojmap and the shipped SRG runtime.
-            Field state=field(key.getClass(),RenderType.CompositeState.class);
-            if(state==null)return key;
+        RenderType cached=TYPES.get(type);
+        if(cached!=null)return cached;
+        // Find by type/signature: field names differ between Mojmap and the shipped SRG runtime.
+        Field state=field(type.getClass(),RenderType.CompositeState.class);
+        RenderType converted=type;
+        if(state!=null){
             try{
                 @SuppressWarnings("unchecked")
-                Optional<ResourceLocation> texture=(Optional<ResourceLocation>)TEXTURE_LOCATION.invoke(TEXTURE.get(state.get(key)));
-                return texture.map(RenderType::entityTranslucent).orElse(key);
+                Optional<ResourceLocation> texture=(Optional<ResourceLocation>)TEXTURE_LOCATION.invoke(TEXTURE.get(state.get(type)));
+                if(texture.isPresent())converted=RenderType.entityTranslucent(texture.get());
             }catch(ReflectiveOperationException e){throw new IllegalStateException("Cannot read void-flight render texture",e);}
-        });
+        }
+        TYPES.put(type,converted);
+        return converted;
     }
     private static Field field(Class<?> owner,Class<?> type){
         for(Class<?> c=owner;c!=null;c=c.getSuperclass())for(Field f:c.getDeclaredFields())
@@ -186,6 +202,12 @@ public final class DunxuTransparency {
         private static void prepare(){
             Scratch scratch=SCRATCH.get();
             if(API!=null){
+                // The first non-intrinsic model consumer initializes this
+                // backend diagnostic registry. JFR measured its collection
+                // class loading in the flight render thread. It owns no GL
+                // resources; resolve it with the other optional startup APIs.
+                try{Class.forName("me.jellysquid.mods.sodium.client.render.vertex.VertexConsumerTracker",true,DunxuTransparency.class.getClassLoader());}
+                catch(ClassNotFoundException absent){/* Other Sodium API providers need not have this diagnostic. */}
                 // Resolve the per-consumer carrier before rendering too. No
                 // backend is advertised and no vertices are submitted here.
                 new Writer(API,null).api();

@@ -17,8 +17,11 @@ public final class ConnectedBiomeRegion {
                            LongFunction<String> sample, int limit, long deadline, Long tile) {
         int visited=0;
         while(visited<limit&&!frontier.isEmpty()&&System.nanoTime()<deadline) {
-            long at=frontier.removeFirst();visited++;
-            if(!sample.apply(at).equals(biome))continue;
+            long at=frontier.peekFirst();
+            String found=sample.apply(at);
+            if(found==null)break; // Deferred sample: retain the complete frontier.
+            frontier.removeFirst();visited++;
+            if(!found.equals(biome))continue;
             members.add(at);int x=x(at),z=z(at);
             for(long adjacent:new long[]{pack(x-1,z),pack(x+1,z),pack(x,z-1),pack(x,z+1)}) {
                 if(tile!=null && tile(adjacent)!=tile.longValue())continue;

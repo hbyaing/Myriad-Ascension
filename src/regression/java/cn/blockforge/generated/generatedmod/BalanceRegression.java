@@ -13,6 +13,7 @@ public final class BalanceRegression {
         require(Math.abs(expected-actual)<.001,message+": expected "+expected+", got "+actual);
     }
     public static void main(String[] args) {
+        DeferredBiomeSamplerRegression.run();
         AlchemySimulationRegression.run();
         ScreenFitRegression.run();
         var flow=new cn.blockforge.generated.generatedmod.client.FlightFlowMotion();

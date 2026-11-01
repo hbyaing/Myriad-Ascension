@@ -110,6 +110,16 @@ public final class FlightRootSchedulingGameTests {
                 var root=mount(h,player);var start=root.chunkPosition();
                 for(int x=start.x;x<start.x+256;x++)if(cache.getChunkNow(x,start.z)!=null&&cache.getChunkNow(x+1,start.z)==null
                         &&fullTicketLevel(cache,new ChunkPos(x+1,start.z))>33){queued=new ChunkPos(x+1,start.z);break;}
+                // Other tests in a full batch can already admit every eastern
+                // boundary. Make one isolated ready chunk instead of relying on
+                // unrelated players' current FULL-ticket footprint.
+                if(queued==null){
+                    var isolated=new ChunkPos(60000+start.x,60000+start.z);
+                    level.getChunk(isolated.x,isolated.z);
+                    start=isolated;
+                    for(int x=start.x;x<start.x+8;x++)if(cache.getChunkNow(x,start.z)!=null&&cache.getChunkNow(x+1,start.z)==null
+                            &&fullTicketLevel(cache,new ChunkPos(x+1,start.z))>33){queued=new ChunkPos(x+1,start.z);break;}
+                }
                 h.assertTrue(queued!=null,"No ready/unrequested-FULL boundary for scheduling fixture");
                 root.setPos(queued.getMinBlockX()-3.25,level.getMaxBuildHeight()+16,start.getMiddleBlockZ());root.setYRot(-90);root.positionRider(player);
                 int priorTicketLevel=fullTicketLevel(cache,queued);long sameTick=level.getGameTime();
