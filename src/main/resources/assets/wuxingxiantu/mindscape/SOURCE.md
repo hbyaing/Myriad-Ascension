@@ -9,6 +9,16 @@ warp, finite-difference normal, lighting and inverse-square contrast chain.
 The finite ellipsoid mapping, shared internal-energy material, instance/session
 rendering, state transition and integration code adapt that source to this mod.
 
+The 2026-11-01 approved workbench revision keeps that three-surface carrier and
+all nine animated cosine feedback steps. Its active evaluator replaces only
+the two length-based radial phase disturbances with sequential transverse
+shears (`funcWithoutRadialWave`), reducing center-directed breathing without
+moving the camera or transporting a frozen texture. The original `func` and
+the separate user reference remain intact. Animation starts at phase 12 for
+each session and advances at the approved default rate of 0.48; purification
+and resource reloads retain the same session clock. Both palettes below remain
+byte-identical to the workbench defaults.
+
 Both palette files are exact copies of the owner's approved
 `mindscape-palette/1` exports. Their zero spiritual-energy colors are intentional
 configuration values and must not be replaced by the workbench's older blue

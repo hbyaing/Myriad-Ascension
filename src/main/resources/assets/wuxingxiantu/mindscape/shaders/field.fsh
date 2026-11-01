@@ -89,6 +89,18 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 vec4 ellipsoidHit(vec3 ro,vec3 rd,vec3 center,vec3 axes){vec3 q=(ro-center)/axes,v=rd/axes;float a=dot(v,v),b=dot(q,v),c=dot(q,q)-1.,d=b*b-a*c;if(d<0.)return vec4(0.,0.,1.,1e5);float root=sqrt(max(d,0.)),nearT=(-b-root)/max(a,.000001),farT=(-b+root)/max(a,.000001);float t=nearT>.001?nearT:farT;if(t<=.001)return vec4(0.,0.,1.,1e5);vec3 p=ro+rd*t;vec3 normal=normalize((p-center)/(axes*axes));return vec4(normal,t);}
 // Extended material exposes the SAME complete user's chain, plus its original
 // ron and normal. Original mode above still calls the untouched mainImage.
+float funcWithoutRadialWave(vec2 q, out vec4 ron) {
+    q.x += 0.03 * sin(0.27 * iTime + 4.1 * q.y);
+    q.y += 0.03 * sin(0.23 * iTime + 4.3 * q.x);
+    vec2 o = fbm4_2(0.9 * q);
+    o.x += 0.04 * sin(0.12 * iTime + o.y);
+    o.y += 0.04 * sin(0.14 * iTime + o.x);
+    vec2 n = fbm6_2(3.0 * o);
+    ron = vec4(o, n);
+    float f = 0.5 + 0.5 * fbm4(1.8 * q + 6.0 * n);
+    return mix(f, f*f*f*3.5, f * abs(n.x));
+}
+
 struct UserMaterialState{float gray;vec4 ron;vec3 normal;float lin;float rawField;};
 UserMaterialState completeUserMaterialState(vec2 domain){
  vec2 uv=domain;
@@ -96,10 +108,10 @@ UserMaterialState completeUserMaterialState(vec2 domain){
   uv.x+=0.6/i*cos(i*2.5*uv.y+iTime*0.5);
   uv.y+=0.6/i*cos(i*1.5*uv.x+iTime*0.5);
  }
- vec4 on=vec4(0.0);float f=func(uv,on);
+ vec4 on=vec4(0.0);float f=funcWithoutRadialWave(uv,on);
  float col=f;col=clamp(col*3.0,0.0,1.0);
  float e=2.0/iResolution.y;vec4 kk;
- vec3 nor=normalize(vec3(func(uv+vec2(e,0.0),kk)-f,2.0*e,func(uv+vec2(0.0,e),kk)-f));
+ vec3 nor=normalize(vec3(funcWithoutRadialWave(uv+vec2(e,0.0),kk)-f,2.0*e,funcWithoutRadialWave(uv+vec2(0.0,e),kk)-f));
  vec3 lig=normalize(vec3(0.9,0.2,-0.4));
  float dif=clamp(0.3+0.7*dot(nor,lig),0.0,1.0);
  float lin=(nor.y*0.5+0.5)+0.3*dif;col*=lin;

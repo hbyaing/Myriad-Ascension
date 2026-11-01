@@ -572,6 +572,12 @@ public final class MindscapeCapture {
             row.put("shaderPack",pipeline.get("loadedPackName"));row.put("width",mc.getMainRenderTarget().width);row.put("height",mc.getMainRenderTarget().height);
             verifyPipeline(pipeline,capture.expected!=null,capture.name);
             if(capture.expected!=null){var diagnostics=rendererDiagnostics();check(((Number)diagnostics.getOrDefault("draws",0)).longValue()>0,"Production mindscape renderer did not draw");check(diagnostics.get("failure")==null||String.valueOf(diagnostics.get("failure")).isBlank(),"Production renderer recorded failure: "+diagnostics.get("failure"));row.put("renderer",diagnostics);
+                check(Math.abs(((Number)diagnostics.getOrDefault("flowSpeed",0)).doubleValue()-.48)<.000001,"Renderer did not use approved 0.48 flow speed");
+                check(((Number)diagnostics.getOrDefault("lastTime",0)).doubleValue()>=12,"Renderer lost workbench initial animation phase");
+                float[] depthMin=(float[])diagnostics.get("shellMin"),depthMax=(float[])diagnostics.get("shellMax");
+                float floorEdge=MindscapeArenas.HALF_SIZE+.5f;
+                check(depthMin[0]<-floorEdge&&depthMin[2]<-floorEdge&&depthMax[0]>floorEdge&&depthMax[2]>floorEdge,"Background depth shell clips the real outer floor blocks");
+                row.put("floorDepthBoundary",Map.of("floorHalfSize",floorEdge,"backgroundMin",List.of(depthMin[0],depthMin[2]),"backgroundMax",List.of(depthMax[0],depthMax[2]),"passed",true));
                 if(capture.name.endsWith("-far-camera")){
                     Object actualEye=diagnostics.get("eyeLocal");
                     check(actualEye instanceof double[]&&((double[])actualEye).length==3,"Renderer omitted actual far-camera eyeLocal");

@@ -3,6 +3,7 @@ package cn.blockforge.generated.generatedmod.client.mindscape;
 import cn.blockforge.generated.generatedmod.GeneratedMod;
 import cn.blockforge.generated.generatedmod.client.MindscapeClient;
 import cn.blockforge.generated.generatedmod.client.TrailShaderBridge;
+import cn.blockforge.generated.generatedmod.mindscape.MindscapeArenas;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -43,6 +44,8 @@ import java.util.UUID;
 @Mod.EventBusSubscriber(modid = GeneratedMod.MOD_ID, value = Dist.CLIENT)
 public final class MindscapeBackgroundRenderer {
     public static final int RENDER_SCALE = 2;
+    public static final float FLOW_SPEED = .48f;
+    private static final float SHELL_HALF_SIZE = MindscapeArenas.HALF_SIZE + .5f + .1f;
     public static int generation, draws, backgroundDraws;
     public static float lastPurification, lastTime;
     public static String failure = "";
@@ -52,6 +55,7 @@ public final class MindscapeBackgroundRenderer {
     private static int vao, framebuffer, texture, width, height;
     private static boolean reloadRequested;
     private static UUID session;
+    private static long sessionStartTick;
     private static int lastDrawFramebuffer, lastStageFramebuffer, lastOutputWidth, lastOutputHeight;
     private static boolean independentDimensionPipeline;
     private static String dimensionPipeline = "not-rendered";
@@ -116,14 +120,19 @@ public final class MindscapeBackgroundRenderer {
             // A third-person camera can cross the transparent barrier. Keep the
             // same virtual field and only extend the finite depth carrier enough
             // to include that camera; the near wall must not hide its own player.
-            shellMin.set(Math.min(-27.9f, eye.x - .05f), Math.min(-.1f, eye.y - .05f), Math.min(-27.9f, eye.z - .05f));
-            shellMax.set(Math.max(27.9f, eye.x + .05f), Math.max(26.9f, eye.y + .05f), Math.max(27.9f, eye.z + .05f));
+            // Include the outer faces of all 57 floor blocks, plus a margin.
+            // An inset depth wall would hide the perimeter before terrain draws.
+            shellMin.set(Math.min(-SHELL_HALF_SIZE, eye.x - .05f), Math.min(-.1f, eye.y - .05f), Math.min(-SHELL_HALF_SIZE, eye.z - .05f));
+            shellMax.set(Math.max(SHELL_HALF_SIZE, eye.x + .05f), Math.max(26.9f, eye.y + .05f), Math.max(SHELL_HALF_SIZE, eye.z + .05f));
 
+            if (!activeSession.equals(session)) sessionStartTick = mc.level.getGameTime();
             session = activeSession;
             lastAnchor = anchor;
             lastEye = new Vec3(eye.x, eye.y, eye.z);
             lastPurification = MindscapeClient.purification(event.getPartialTick());
-            lastTime = (mc.level.getGameTime() + event.getPartialTick()) / 20f;
+            // Match the reviewed workbench's initial phase and default rate.
+            // Keep one clock across the red-to-purified transition and reloads.
+            lastTime = 12f + (mc.level.getGameTime() - sessionStartTick + event.getPartialTick()) / 20f * FLOW_SPEED;
             packDetected = TrailShaderBridge.shaderPackDetected();
             dimensionPipeline = MindscapeShaderPipelineCompat.pipelineName();
             independentDimensionPipeline = dimensionPipeline.endsWith(".VanillaRenderingPipeline");
@@ -321,6 +330,7 @@ public final class MindscapeBackgroundRenderer {
         var result = new LinkedHashMap<String, Object>();
         result.put("generation", generation); result.put("draws", draws); result.put("backgroundDraws", backgroundDraws);
         result.put("failure", failure); result.put("lastPurification", lastPurification); result.put("lastTime", lastTime);
+        result.put("flowSpeed", FLOW_SPEED); result.put("sessionStartTick", sessionStartTick);
         result.put("width", lastOutputWidth); result.put("height", lastOutputHeight);
         result.put("renderWidth", width); result.put("renderHeight", height); result.put("renderScale", RENDER_SCALE);
         result.put("packDetected", packDetected); result.put("packName", MindscapeShaderPipelineCompat.packName());
