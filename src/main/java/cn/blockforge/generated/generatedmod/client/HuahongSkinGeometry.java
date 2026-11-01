@@ -20,16 +20,20 @@ final class HuahongSkinGeometry {
     private final PoseStack.Pose pose;
     private final Vec3 eye,center,forward;
     private final List<SwordFlightTrailHistory.Node> nodes;
+    private final List<SwordFlightTrailHistory.Node> headNodes;
+    private final Frame[] historyFrames;
     private final double now,origin;
     private final float strength;
     private int vertices;
     private HuahongSkinGeometry(HuahongSkin skin,VertexConsumer out,PoseStack.Pose pose,Vec3 eye,Vec3 center,Vec3 forward,Vec3 headSide,
             List<SwordFlightTrailHistory.Node> nodes,double now,float strength){
         this.out=out;this.pose=pose;this.eye=eye;this.center=center;this.forward=forward;this.nodes=nodes;this.now=now;this.strength=strength;
+        headNodes=skin==HuahongSkin.DENSE?nodes:HuahongHeadBridge.presentationNodes(nodes,center,forward,strength);
+        historyFrames=skin==HuahongSkin.DENSE?null:new Frame[nodes.size()];
         // DENSE's source sprite never queries a transported path. SMOKE uses
         // at most24.05m, including its zero-alpha last station, with32m reserve.
         path=skin==HuahongSkin.DENSE?null:new HuahongFlightPath(nodes,center,forward,headSide,
-                skin==HuahongSkin.SMOKE?32:Double.POSITIVE_INFINITY);
+                skin==HuahongSkin.SMOKE?32:Double.POSITIVE_INFINITY,true,strength);
         // Keep material transport independent of travel speed. Geometry still
         // follows recorded world points, while the surface's phase is measured
         // behind the rendered head and advected by explicit shader time.
@@ -55,7 +59,13 @@ final class HuahongSkinGeometry {
     private static Vec3 vec(SwordFlightTrailHistory.Point p){return new Vec3(p.x(),p.y(),p.z());}
     private static Vec3 side(Vec3 f){return f.cross(Math.abs(f.y)>.95?new Vec3(0,0,1):new Vec3(0,1,0)).normalize();}
     private Frame frame(Vec3 p,Vec3 f){return path.frame(p,f);}
-    private HuahongFlightPath.Frame at(int i){return path.frame(vec(nodes.get(i).point()),vec(nodes.get(Math.min(nodes.size()-1,i+1)).point()).subtract(vec(nodes.get(Math.max(0,i-1)).point())));}
+    private HuahongFlightPath.Frame at(int i){
+        if(historyFrames[i]!=null)return historyFrames[i];
+        var node=nodes.get(i);
+        Frame frame=path.frame(vec(node.point()),vec(nodes.get(Math.min(nodes.size()-1,i+1)).point()).subtract(vec(nodes.get(Math.max(0,i-1)).point())));
+        if(headNodes.get(i)!=node)frame=new Frame(vec(headNodes.get(i).point()),frame.forward(),frame.side(),frame.up());
+        return historyFrames[i]=frame;
+    }
     /** Walk the recorded path backwards; turn local flames with the trail, not a rigid spine. */
     private HuahongFlightPath.Frame back(double distance){return path.behind(distance);}
     private Frame axial(double x){

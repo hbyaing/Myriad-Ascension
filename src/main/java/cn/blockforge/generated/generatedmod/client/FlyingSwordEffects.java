@@ -265,10 +265,13 @@ public final class FlyingSwordEffects {
     }
     private static void spiral(VertexConsumer buffer,PoseStack.Pose pose,InterpolatedFlyingSwordTransform f,Vec3 anchor,Vec3 eye,float jinghong,float arc,float opacity){
         float factor=Math.max(f.spiralFactor(),jinghong);if(factor<.15F||f.speed()<.03)return;
+        float birth=Mth.clamp((factor-.15F)/.15F,0,1);birth=birth*birth*(3-2*birth);
         Vec3 forward=f.forward(),side=f.local(1,0,0).subtract(f.position()).normalize(),up=side.cross(forward).normalize();
         double intensity=Math.max(f.brace(),jinghong)*(.18+.82*factor)*opacity,length=1.2+6.5*factor,radius=.06+.40*intensity;
         int strands=factor>.52?2:1;
         for(int strand=0;strand<strands;strand++){
+            float strandBirth=Mth.clamp((factor-.52F)/.16F,0,1);
+            strandBirth=strand==0?1:strandBirth*strandBirth*(3-2*strandBirth);
             Vec3 previous=null;
             for(int i=0;i<=72;i++){
                 double t=i/72.0,phase=-t*(4.0+factor*7.0)+strand*Math.PI;
@@ -277,21 +280,24 @@ public final class FlyingSwordEffects {
                 if(previous!=null){
                     double previousT=(i-1)/72.0,w=.022+.035*intensity;
                     double aw=w*(1-previousT*.7)*rootOpening(previousT*length),cw=w*(1-t*.7)*rootOpening(t*length);
-                    float alpha=(float)((.42+.35*factor)*intensity*(1-t));
+                    float alpha=(float)((.42+.35*factor)*intensity*(1-t))*birth*strandBirth;
                     ribbon(buffer,pose,previous,p,eye,aw,cw,alpha,alpha,arc-(float)((i-1)*length/72),arc-(float)(t*length),2);
                 }
                 previous=p;
             }
         }
-        if(factor>.72F)windRing(buffer,pose,f,anchor,eye,(float)intensity,arc);
+        if(factor>.72F){
+            float birthRing=Mth.clamp((factor-.72F)/.18F,0,1);birthRing=birthRing*birthRing*(3-2*birthRing);
+            windRing(buffer,pose,f,anchor,eye,(float)intensity,arc,birthRing);
+        }
     }
-    private static void windRing(VertexConsumer buffer,PoseStack.Pose pose,InterpolatedFlyingSwordTransform f,Vec3 anchor,Vec3 eye,float intensity,float arc){
+    private static void windRing(VertexConsumer buffer,PoseStack.Pose pose,InterpolatedFlyingSwordTransform f,Vec3 anchor,Vec3 eye,float intensity,float arc,float birth){
         Vec3 forward=f.forward(),side=perpendicular(forward),up=side.cross(forward).normalize();
         Vec3 previous=null;double radius=.12+.52*intensity;
         anchor=anchor.subtract(forward.scale(.35+radius));
         for(int i=0;i<=36;i++){
             double a=i*Math.PI*2/36;Vec3 p=anchor.add(side.scale(Math.cos(a)*radius)).add(up.scale(Math.sin(a)*radius));
-            if(previous!=null)ribbon(buffer,pose,previous,p,eye,.025,.025,.24F*intensity,.24F*intensity,arc+(float)((i-1)*radius*Math.PI*2/36),arc+(float)(i*radius*Math.PI*2/36),2);
+            if(previous!=null)ribbon(buffer,pose,previous,p,eye,.025,.025,.24F*intensity*birth,.24F*intensity*birth,arc+(float)((i-1)*radius*Math.PI*2/36),arc+(float)(i*radius*Math.PI*2/36),2);
             previous=p;
         }
     }

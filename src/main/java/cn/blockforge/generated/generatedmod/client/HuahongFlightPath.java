@@ -16,6 +16,9 @@ public final class HuahongFlightPath {
     public record Frame(Vec3 p,Vec3 forward,Vec3 side,Vec3 up) {}
     private final double smoothRadius;
     private final double headJoin;
+    private final boolean attachedHead;
+    private final double attachedJoin;
+    private final double attachmentWeight;
     private static final double FRAME_STEP=.35,MIN_FRAME_STEP=.35/32,MAX_TURN_COS=Math.cos(Math.toRadians(18));
     private static final int MAX_BASE_STATIONS=1536,MAX_ADAPTIVE_STATIONS=4096;
     private record Pose(Vec3 p,Vec3 tangent) {}
@@ -30,14 +33,25 @@ public final class HuahongFlightPath {
     private final double[] stationDistances;
 
     public HuahongFlightPath(List<SwordFlightTrailHistory.Node> nodes,Vec3 center,Vec3 forward,Vec3 side) {
-        this(nodes,center,forward,side,Double.POSITIVE_INFINITY);
+        this(nodes,center,forward,side,Double.POSITIVE_INFINITY,false);
     }
 
     /** Build only the requested transport window, retaining its entire filter
      * support. Visible frames use the identical head-anchored station grid. */
     public HuahongFlightPath(List<SwordFlightTrailHistory.Node> nodes,Vec3 center,Vec3 forward,Vec3 side,double maxFrameDistance) {
+        this(nodes,center,forward,side,maxFrameDistance,false);
+    }
+
+    public HuahongFlightPath(List<SwordFlightTrailHistory.Node> nodes,Vec3 center,Vec3 forward,Vec3 side,double maxFrameDistance,boolean attachedHead) {
+        this(nodes,center,forward,side,maxFrameDistance,attachedHead,attachedHead?1:0);
+    }
+
+    public HuahongFlightPath(List<SwordFlightTrailHistory.Node> nodes,Vec3 center,Vec3 forward,Vec3 side,double maxFrameDistance,boolean attachedHead,double attachmentWeight) {
         this.smoothRadius=Math.max(.25,Math.min(16,recentSpeed(nodes)*.5));
         this.headJoin=Math.max(1.25,Math.min(12,smoothRadius));
+        this.attachmentWeight=attachedHead&&Double.isFinite(attachmentWeight)?Mth.clamp(attachmentWeight,0,1):0;
+        this.attachedHead=this.attachmentWeight>0;
+        this.attachedJoin=Math.max(HuahongHeadBridge.WORLD_HISTORY_DISTANCE,headJoin);
         double horizon=Double.isFinite(maxFrameDistance)?Math.max(8,maxFrameDistance):Double.POSITIVE_INFINITY;
         this.center=finite(center)?center:Vec3.ZERO;this.forward=unit(forward,new Vec3(0,0,1));
         Vec3 transverse=side.subtract(this.forward.scale(side.dot(this.forward)));
@@ -90,7 +104,7 @@ public final class HuahongFlightPath {
         return Math.max(0,(head.arc()-arc)/(head.tick()-then));
     }
 
-    public double headTransitionLength(){return headJoin;}
+    public double headTransitionLength(){return attachedHead?attachedJoin:headJoin;}
 
     public Frame frame(Vec3 p,Vec3 direction) {
         Vec3 position=finite(p)?p:center;
@@ -131,6 +145,8 @@ public final class HuahongFlightPath {
     }
 
     private Pose curve(double distance) {
+        if(attachedHead&&attachmentWeight==1&&distance<=HuahongHeadBridge.FIXED_HEAD_LENGTH)
+            return new Pose(forward.scale(-distance),forward);
         double a=distance-smoothRadius,b=distance+smoothRadius;
         // A box integral of a continuous polyline is C1. Its exact derivative
         // stays continuous when the moving head crosses a recorded corner;
@@ -140,6 +156,13 @@ public final class HuahongFlightPath {
         if(!finite(smooth))smooth=point(distance);
         double q=Mth.clamp(distance/headJoin,0,1),blend=q*q*(3-2*q);
         double rate=q>=1?0:6*q*(1-q)/headJoin;
+        if(attachedHead&&distance<attachedJoin){
+            double u=Mth.clamp((distance-HuahongHeadBridge.FIXED_HEAD_LENGTH)/(attachedJoin-HuahongHeadBridge.FIXED_HEAD_LENGTH),0,1);
+            double w=attachmentWeight*(1-u*u*(3-2*u));
+            double attachmentDerivative=u<=0?0:-attachmentWeight*6*u*(1-u)/(attachedJoin-HuahongHeadBridge.FIXED_HEAD_LENGTH);
+            rate=rate*(1-w)-blend*attachmentDerivative;
+            blend*=1-w;
+        }
         Vec3 straight=forward.scale(-distance);
         Vec3 p=straight.lerp(smooth,blend);
         Vec3 tangent=forward.scale(1-blend).subtract(derivative.scale(blend)).subtract(smooth.subtract(straight).scale(rate));
@@ -171,6 +194,8 @@ public final class HuahongFlightPath {
     }
 
     private Frame orientation(double distance,Vec3 tangent) {
+        if(attachedHead&&attachmentWeight==1&&distance<=HuahongHeadBridge.FIXED_HEAD_LENGTH)
+            return new Frame(Vec3.ZERO,forward,side,side.cross(forward).normalize());
         int i=Arrays.binarySearch(stationDistances,distance);
         if(i<0)i=Math.max(0,-i-2);
         Station a=stations[i];

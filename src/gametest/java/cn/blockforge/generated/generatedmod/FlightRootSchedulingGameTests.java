@@ -7,6 +7,9 @@ import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.*;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerChunkCache;
+import net.minecraft.server.level.ChunkMap;
+import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.TicketType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
@@ -38,6 +41,12 @@ public final class FlightRootSchedulingGameTests {
     private static Visibility effective(ControlledSwordEntity root,Visibility section)throws ReflectiveOperationException{
         var method=PersistentEntitySectionManager.class.getDeclaredMethod("getEffectiveStatus",EntityAccess.class,Visibility.class);
         method.setAccessible(true);return (Visibility)method.invoke(null,root,section);
+    }
+    private static int fullTicketLevel(ServerChunkCache cache,ChunkPos pos)throws ReflectiveOperationException{
+        var visible=ServerChunkCache.class.getDeclaredMethod("getVisibleChunkIfPresent",long.class);visible.setAccessible(true);
+        var updating=ChunkMap.class.getDeclaredMethod("getUpdatingChunkIfPresent",long.class);updating.setAccessible(true);
+        var a=(ChunkHolder)visible.invoke(cache,pos.toLong());var b=(ChunkHolder)updating.invoke(cache.chunkMap,pos.toLong());
+        return Math.min(a==null?Integer.MAX_VALUE:a.getTicketLevel(),b==null?Integer.MAX_VALUE:b.getTicketLevel());
     }
 
     @GameTest(template="empty",timeoutTicks=100)
@@ -99,17 +108,23 @@ public final class FlightRootSchedulingGameTests {
         try(var player=new GameTestPlayer(level)){
             try{
                 var root=mount(h,player);var start=root.chunkPosition();
-                for(int x=start.x;x<start.x+256;x++)if(cache.getChunkNow(x,start.z)!=null&&cache.getChunkNow(x+1,start.z)==null){queued=new ChunkPos(x+1,start.z);break;}
-                h.assertTrue(queued!=null,"No ready/unready boundary for scheduling fixture");
+                for(int x=start.x;x<start.x+256;x++)if(cache.getChunkNow(x,start.z)!=null&&cache.getChunkNow(x+1,start.z)==null
+                        &&fullTicketLevel(cache,new ChunkPos(x+1,start.z))>33){queued=new ChunkPos(x+1,start.z);break;}
+                h.assertTrue(queued!=null,"No ready/unrequested-FULL boundary for scheduling fixture");
                 root.setPos(queued.getMinBlockX()-3.25,level.getMaxBuildHeight()+16,start.getMiddleBlockZ());root.setYRot(-90);root.positionRider(player);
+                int priorTicketLevel=fullTicketLevel(cache,queued);long sameTick=level.getGameTime();
+                h.assertTrue(priorTicketLevel>33&&cache.getChunkNow(queued.x,queued.z)==null,"Queued fixture already had an admitted FULL request");
                 cache.addRegionTicket(QUEUED,queued,0,ticket);
-                var update=cache.getClass().getDeclaredMethod("runDistanceManagerUpdates");update.setAccessible(true);update.invoke(cache);
-                h.assertTrue(cache.getChunkNow(queued.x,queued.z)==null,"Fixture did not retain queued terrain");
+                // Test the real QUEUED, not-yet-processed DistanceManager phase.
+                // Draining it here could legitimately publish an already warm proto
+                // chunk immediately, racing this fixture's missing-terrain premise.
+                h.assertTrue(fullTicketLevel(cache,queued)>33&&cache.getChunkNow(queued.x,queued.z)==null,"FULL request was processed before supplemental simulation");
                 ticking(level).remove(root);int before=root.tickCount,impacts=root.impact();
                 root.setDeltaMovement(new Vec3(8,0,0));
                 YujianController.handleInput(player,false,false,true,false,false,false,false,false,true,false,1,0,-90,0);
                 FlightRootTicking.tickMissing(level);
                 h.assertTrue(root.tickCount==before+1&&player.getVehicle()==root,"Queued border skipped actual supplemental simulation");
+                h.assertTrue(level.getGameTime()==sameTick,"Queued fixture crossed a world-tick boundary");
                 h.assertTrue(cache.getChunkNow(queued.x,queued.z)==null,"Supplement synchronously completed queued terrain");
                 h.assertTrue(root.getBoundingBox().maxX+1<queued.getMinBlockX()+.01&&root.impact()==impacts,"Supplement bypassed loaded sweep or treated unready terrain as a wall");
             }finally{YujianController.stop(player);if(queued!=null)cache.removeRegionTicket(QUEUED,queued,0,ticket);}

@@ -12,6 +12,13 @@ group = 'cn.blockforge.generated.generatedmod'
 base { archivesName = 'myriad-ascension' }
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
+// QA launches read verified frozen outputs without replacing current source/build files.
+if (project.hasProperty('huahongFrozenMain')) {
+    def frozenRoot = project.file(project.property('huahongFrozenMain'))
+    sourceSets.main.output.classesDirs.setFrom(project.files(new File(frozenRoot, 'classes')))
+    sourceSets.main.output.resourcesDir = new File(frozenRoot, 'resources')
+}
+
 // Opt-in integration captures; pointer protection and fixtures stay out of release artifacts.
 if (project.hasProperty('myriadCapture')) {
     if (project.hasProperty('talismanUserStack')) {
@@ -34,6 +41,7 @@ if (project.hasProperty('myriadCapture')) {
         myriadClientTest {
             java.setSrcDirs(['src/myriadclienttest/java'])
             if ((project.hasProperty('jindouRepro') && !project.hasProperty('jindouReproCandidate')) || (project.hasProperty('flightColdProfile') && !project.hasProperty('flightColdCandidate'))) java.exclude '**/HuahongPathWindowQa.java'
+            if (project.hasProperty('huahongHeadFollowup') && !project.hasProperty('huahongHeadFollowupCandidate')) java.exclude '**/HuahongPathWindowQa.java', '**/HuahongHeadBridgeQa.java'
             if (!project.hasProperty('jeiLayoutCapture')) java.exclude('**/JeiLayoutCapture.java')
             resources.setSrcDirs(['src/myriadclienttest/resources'])
             compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
@@ -46,6 +54,7 @@ if (project.hasProperty('myriadCapture')) {
             if (project.hasProperty('flightColdProfile')) jvmArgs '-Xmx8G'
             else jvmArgs (project.hasProperty('huahongDynamics') || project.hasProperty('huahongRepro') || project.hasProperty('jindouRepro') ? '-Xmx6G' : '-Xmx2G'), '-XX:ActiveProcessorCount=4', '-XX:CICompilerCount=2'
             args '--mixin', 'wuxingxiantu.myriad-qa-pointer.mixins.json'
+            if (project.hasProperty('huahongHeadFollowupCandidate')) args '--mixin', 'wuxingxiantu.head-candidate-qa.mixins.json'
             property 'wuxingxiantu.myriadCapture', (!project.hasProperty('myriadWorldgen') && !project.hasProperty('myriadUiOnly') && !project.hasProperty('creativeTabsCapture')).toString()
             if (project.hasProperty('creativeTabsCapture')) property 'wuxingxiantu.creativeTabsCapture', 'true'
             if (project.hasProperty('inscriptionCapture')) { property 'wuxingxiantu.inscriptionCapture', 'true'; property 'wuxingxiantu.myriadCapture', 'false' }
@@ -106,6 +115,11 @@ if (project.hasProperty('myriadCapture')) {
                 property 'wuxingxiantu.huahongRepro', 'true'
                 property 'wuxingxiantu.myriadCapture', 'false'
                 property 'wuxingxiantu.huahongReproOutput', project.file(project.findProperty('huahongReproOutput') ?: 'reports/flight-repro').absolutePath
+                if (project.hasProperty('huahongReproWorld')) property 'wuxingxiantu.huahongReproWorld', project.property('huahongReproWorld').toString()
+                if (project.hasProperty('huahongHeadFollowup')) property 'wuxingxiantu.huahongHeadFollowup', 'true'
+                if (project.hasProperty('huahongFollowupSingleSkin')) property 'wuxingxiantu.huahongFollowupSingleSkin', project.property('huahongFollowupSingleSkin').toString()
+                if (project.hasProperty('huahongFollowupCycleStart')) property 'wuxingxiantu.huahongFollowupCycleStart', project.property('huahongFollowupCycleStart').toString()
+                if (project.hasProperty('huahongHeadFollowupCandidate')) property 'wuxingxiantu.huahongHeadFollowupCandidate', 'true'
                 if (project.hasProperty('huahongReproOrdinary')) property 'wuxingxiantu.huahongReproOrdinary', 'true'
                 if (project.hasProperty('huahongReproSolas')) property 'wuxingxiantu.huahongReproSolas', 'true'
                 if (project.hasProperty('huahongReproSkin')) property 'wuxingxiantu.huahongReproSkin', project.property('huahongReproSkin')

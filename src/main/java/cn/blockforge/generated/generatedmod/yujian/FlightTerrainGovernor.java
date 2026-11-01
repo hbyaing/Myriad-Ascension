@@ -27,7 +27,11 @@ public final class FlightTerrainGovernor {
             // One newly completed 16m chunk must not immediately restore the
             // ordinary .55 rainbow acceleration. Accumulate a modest reserve,
             // then recover at a bounded slope while that reserve stays ready.
-            double reserve=Math.max(16,ceiling*4);
+            // At a stopped frontier one new 16m chunk must be enough to
+            // resume. A fixed extra chunk demanded >19m even at zero speed,
+            // leaving an already-usable prefix idle until a second promotion.
+            // Scale the reserve with motion; >=4m/t retains the old reserve.
+            double reserve=Math.max(2,ceiling*4);
             boolean room=complete||ready>=brakingDistance(ceiling+step)+reserve;
             recoveryTicks=room?Math.min(RECOVERY_TICKS,recoveryTicks+1):0;
             if(recoveryTicks>=RECOVERY_TICKS)ceiling=Math.min(planned,Math.min(safe,ceiling+step));

@@ -71,6 +71,12 @@ public final class HuahongVisuals {
             if(center.distanceToSqr(eye)>4096)continue;
             boolean active=!sword.isRemoved()&&frame.huahong()>.001F;
             var nodes=active?trail.history.renderNodes(now,point(center)):trail.history.nodes();
+            float attachment=active?frame.huahong():0;
+            // Only the attached head is stabilized. Canonical samples still
+            // own detached births, time/arc and the distant world-space trail.
+            var headNodes=trail.skin==cn.blockforge.generated.generatedmod.yujian.HuahongSkin.DENSE
+                    ||trail.skin==cn.blockforge.generated.generatedmod.yujian.HuahongSkin.METEOR_PRISM
+                    ?HuahongHeadBridge.presentationNodes(nodes,center,forward,attachment):nodes;
             Vec3 modelSide=frame.local(1,0,0).subtract(frame.position());
             if(trail.skin==cn.blockforge.generated.generatedmod.yujian.HuahongSkin.DENSE){
                 // Residual history is no longer carried by the current sword.
@@ -79,13 +85,13 @@ public final class HuahongVisuals {
                 if(active||trail.denseForward==null){trail.denseForward=forward;trail.denseSide=modelSide;}
                 var clip=new org.joml.Matrix4f(com.mojang.blaze3d.systems.RenderSystem.getProjectionMatrix())
                         .mul(com.mojang.blaze3d.systems.RenderSystem.getModelViewMatrix()).mul(pose.pose());
-                HuahongVolumeRenderer.queue(nodes,eye,now,active?frame.huahong():0,clip,1,trail.denseForward,trail.denseSide);
+                HuahongVolumeRenderer.queue(headNodes,eye,now,attachment,clip,1,trail.denseForward,trail.denseSide);
             }
             if(trail.skin!=cn.blockforge.generated.generatedmod.yujian.HuahongSkin.METEOR_PRISM){
                 vertices+=HuahongSkinGeometry.draw(trail.skin,buffer,pose,eye,center,forward,modelSide,nodes,now,active?frame.huahong():0);
                 continue;
             }
-            var path=new HuahongFlightPath(nodes,center,forward,modelSide);
+            var path=new HuahongFlightPath(nodes,center,forward,modelSide,Double.POSITIVE_INFINITY,true,attachment);
             double origin=nodes.isEmpty()?0:SwordTrailPhase.origin(nodes.get(nodes.size()-1).arc(),sword.getUUID().hashCode());
             ArrayList<Row> rows=new ArrayList<>(nodes.size());
             for(int i=0;i<nodes.size();i++){
@@ -94,7 +100,7 @@ public final class HuahongVisuals {
                 double age=Math.max(0,(now-n.tick())/20),left=clamp(1-age/3.8);
                 Vec3 tangent=vec(nodes.get(Math.min(nodes.size()-1,i+1)).point()).subtract(vec(nodes.get(Math.max(0,i-1)).point()));
                 Vec3 side=path.frame(vec(n.point()),tangent).side();
-                rows.add(new Row(vec(n.point()),n.arc()-origin,Math.pow(left,1.3)*(.22+.78*Math.exp(-age*.35)),
+                rows.add(new Row(vec(headNodes.get(i).point()),n.arc()-origin,Math.pow(left,1.3)*(.22+.78*Math.exp(-age*.35)),
                         (float)Math.pow(left,1.7),mix(0x8274ff,0xe8faff,Math.exp(-age*2)),side));
             }
             strip(buffer,pose,eye,rows,WIDTH*1.4,.045F,10,path);
@@ -112,7 +118,7 @@ public final class HuahongVisuals {
                     double localArc=n.arc()-nodes.get(nodes.size()-1).arc();
                     double curl=Math.sin(localArc*.65+strand*1.7)*.24+Math.sin(localArc*1.73+strand)*.11;
                     double open=smooth((age-.025)/.375),spread=open*SPREAD*.035*(1+age*.24);
-                    Vec3 p=vec(n.point()).add(side.scale(Math.cos(phase+curl)*spread)).add(up.scale(Math.sin(phase+curl)*spread));
+                    Vec3 p=vec(headNodes.get(i).point()).add(side.scale(Math.cos(phase+curl)*spread)).add(up.scale(Math.sin(phase+curl)*spread));
                     rows.add(new Row(p,n.arc()-origin+strand*.93,.15+.85*Math.pow(left,1.2),
                             (float)Math.pow(left,1.5),mix(0x8274ff,0xe8faff,Math.exp(-age*2)*.5),side));
                 }

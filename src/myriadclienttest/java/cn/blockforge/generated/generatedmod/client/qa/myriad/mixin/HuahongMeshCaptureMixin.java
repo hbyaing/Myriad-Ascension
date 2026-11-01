@@ -3,6 +3,7 @@ package cn.blockforge.generated.generatedmod.client.qa.myriad.mixin;
 import cn.blockforge.generated.generatedmod.client.FlyingSwordEffects;
 import cn.blockforge.generated.generatedmod.client.HuahongVisuals;
 import cn.blockforge.generated.generatedmod.client.qa.myriad.HuahongMotionQa;
+import cn.blockforge.generated.generatedmod.client.qa.myriad.FlightHeadProbe;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.world.phys.Vec3;
@@ -15,6 +16,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public abstract class HuahongMeshCaptureMixin {
     @Redirect(method="render",at=@At(value="INVOKE",target="Lcn/blockforge/generated/generatedmod/client/HuahongVisuals;draw(Lcom/mojang/blaze3d/vertex/VertexConsumer;Lcom/mojang/blaze3d/vertex/PoseStack$Pose;Lnet/minecraft/world/phys/Vec3;DF)V"),remap=false)
     private static void captureSubmittedMesh(VertexConsumer buffer,PoseStack.Pose pose,Vec3 eye,double now,float partial){
-        HuahongVisuals.draw(HuahongMotionQa.captureBuffer(buffer,pose,eye,now,partial),pose,eye,now,partial);
+        HuahongVisuals.draw(HuahongMotionQa.captureBuffer(FlightHeadProbe.capture(buffer,pose,eye,now,partial),pose,eye,now,partial),pose,eye,now,partial);
     }
 }

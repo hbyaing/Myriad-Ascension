@@ -113,8 +113,28 @@ public final class FlightTerrainGovernorChecks {
         var invalid=new FlightTerrainGovernor();
         check(Double.isFinite(invalid.limit(Double.NaN,Double.POSITIVE_INFINITY,-3,Double.NaN,false)),"Invalid diagnostic inputs escaped as NaN");
     }
+    private static void oneChunkRestartsStoppedFlight(){
+        for(double top:new double[]{7,15}){
+        var governor=new FlightTerrainGovernor();double speed=top,position=0,frontier=160;
+        for(int tick=0;tick<240;tick++){
+            speed=drive(governor,speed,top,.55,frontier-position,false);position+=speed;
+        }
+        check(speed<.00001,"Single-chunk restart fixture did not first stop");
+        double before=position;frontier+=16;
+        for(int tick=0;tick<8;tick++){
+            speed=drive(governor,speed,top,.55,frontier-position,false);position+=speed;
+            check(position<=frontier+1e-7,"Single-chunk restart crossed unknown terrain");
+        }
+        check(position-before>1,"A newly ready 16m chunk left flight locked at zero awaiting a second chunk");
+        for(int tick=0;tick<240;tick++){
+            speed=drive(governor,speed,top,.55,frontier-position,false);position+=speed;
+            check(position<=frontier+1e-7,"Restart exhausted a ready prefix by entering unknown terrain");
+        }
+        check(speed<.00001&&frontier-position>=1.99,"Restart did not stop safely if loading stopped again");
+        }
+    }
     public static String verify(){
-        checks=0;Stats nativeStats=nativeFrontier();periodicFrontiers();stallsTurnsAndControls();
+        checks=0;Stats nativeStats=nativeFrontier();periodicFrontiers();stallsTurnsAndControls();oneChunkRestartsStoppedFlight();
         return "Flight terrain governor checks passed: "+checks+"; native frontier="+nativeStats
                 +"; periodic 16m chunks/2..32 ticks, 3.3..120 blocks/tick, hot/turn recovery, stopped loader, normal flight unchanged";
     }
