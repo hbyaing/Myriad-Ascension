@@ -52,6 +52,15 @@ vec4 swordMaterial(){
         float flow=arc+EffectTime*6.0;
         float n=periodicNoise(vec2(flow*2.0,across*3.5),512.0);
         n+=.5*periodicNoise(vec2(flow*4.0+5.0,across*8.0),1024.0);
+        if(band==36.0){
+            // Bounded ordinary-tail soft light. Its finite history strip owns
+            // support; no screen blur may spread it in front of the pommel.
+            float window=1.0-smoothstep(.72,1.0,abs(across));
+            float glow=exp(-across*across*4.2)*window;
+            float pulse=.94+.06*cos(flowAngle(arc,12.0,-12.0));
+            vec3 blueWhite=mix(vertexColor.rgb,vec3(.62,.88,1.0),.18);
+            return vec4(blueWhite,glow*pulse*clamp(vertexColor.a,0.0,1.0));
+        }
         if(band==34.0){
             // Concentrated long rainbow V5: directional body and weak inner fibers.
             float axis=arc-EffectTime*2.0;
@@ -228,7 +237,7 @@ void main(){
     fragColor=vec4(material.rgb*material.a,luminous?0.0:material.a);
     if(EmissionPass>0.5){
         float band=floor((trailCoord.y+.001)*.5)*2.0;
-        float gain=(band==14.0||band==30.0)?0.0:band==12.0?.14:band==24.0?.12:band==26.0?.22:band==28.0?.18:band==34.0?.30:band==32.0?.60:band==18.0?.08:band==22.0?.22:band==16.0?.40:band==8.0?.52:band==6.0?.62:1.0;
+        float gain=(band==14.0||band==30.0||band==36.0)?0.0:band==12.0?.14:band==24.0?.12:band==26.0?.22:band==28.0?.18:band==34.0?.30:band==32.0?.60:band==18.0?.08:band==22.0?.22:band==16.0?.40:band==8.0?.52:band==6.0?.62:1.0;
         fragColor=vec4(material.rgb*material.a*gain,max(-viewPosition.z/128.0,0.0));
     }
 }

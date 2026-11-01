@@ -35,6 +35,12 @@ public final class FlyingSwordEffects {
     private static long capturedTrailTick;
     private static float effectTime;
     private static boolean postPath,spiralPass;
+    private static final SwordTailClipper TAIL_CLIPPER=new SwordTailClipper();
+    private static boolean clippingTail;
+    private static VertexConsumer clippedOutput;
+    private static PoseStack.Pose clippedPose;
+    private static final java.util.function.Consumer<SwordTailClipper.Vertex> CLIPPED_VERTEX=p->
+            vertex(clippedOutput,clippedPose,new Vec3(p.x(),p.y(),p.z()),p.u(),p.v(),p.alpha());
     public record TrailDiagnostics(int swordId,int historyNodes,double firstArc,double headArc,double origin,
             float headCoord,float time,float strength,double width,Vec3 attachment,Vec3 renderedHead){}
     private static final java.util.List<TrailDiagnostics> DIAGNOSTICS=new java.util.ArrayList<>();
@@ -148,7 +154,8 @@ public final class FlyingSwordEffects {
         if(postPath){POST_BUFFER.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.POSITION_TEX_COLOR);buffer=POST_BUFFER;}
         else buffer=BUFFERS.getBuffer(type);
         EMISSION_BUFFER.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.POSITION_TEX_COLOR);
-        buffer=VertexMultiConsumer.create(buffer,EMISSION_BUFFER);
+        // Ordinary plume light stays inside its own rear-facing geometry.
+        // Full-screen blur spreads a perfectly measured root over the blade.
         try{
             int count=0;
             for(var entry:TRAILS.entrySet()){
@@ -175,12 +182,16 @@ public final class FlyingSwordEffects {
                 double origin=SwordTrailPhase.origin(headArc,sword.getUUID().hashCode());
                 DIAGNOSTICS.add(new TrailDiagnostics(sword.getId(),nodes.size(),nodes.get(start).arc(),headArc,
                         origin,SwordTrailPhase.coordinate(headArc,origin),effectTime,strength,width,anchor,vec(nodes.get(nodes.size()-1).point())));
-                drawHistory(buffer,pose.last(),nodes,start,eye,headArc,length,now,width,alpha,origin,f.forward(),f.local(1,0,0).subtract(f.position()));
+                clippedOutput=buffer;clippedPose=pose.last();clippingTail=true;
+                Vec3 forward=f.forward();
+                TAIL_CLIPPER.begin(anchor.x,anchor.y,anchor.z,forward.x,forward.y,forward.z,.01,.22);
+                drawHistory(buffer,pose.last(),nodes,start,eye,headArc,length,now,width,alpha,origin,forward,f.local(1,0,0).subtract(f.position()));
                 spiralPass=true;
                 spiral(buffer,pose.last(),f,anchor,eye,jinghong,SwordTrailPhase.coordinate(headArc,origin),ordinary);
                 spiralPass=false;
+                TAIL_CLIPPER.end();clippingTail=false;
             }
-            HuahongVisuals.draw(buffer,pose.last(),eye,now,partial);
+            HuahongVisuals.draw(VertexMultiConsumer.create(buffer,EMISSION_BUFFER),pose.last(),eye,now,partial);
             normalTrailVertexCount+=HuahongVisuals.vertices;
             if(postPath){
                 pending=POST_BUFFER.endOrDiscardIfEmpty();
@@ -195,7 +206,7 @@ public final class FlyingSwordEffects {
                 if(pending!=null){pending.release();pending=null;}
                 if(pendingEmission!=null){pendingEmission.release();pendingEmission=null;}
             }
-        }finally{spiralPass=false;pose.popPose();}
+        }finally{spiralPass=clippingTail=false;clippedOutput=null;clippedPose=null;pose.popPose();}
     }
     private static double fade(SwordFlightTrailHistory.Node node,double headArc,double length,double now){
         double tail=Mth.clamp(1-(headArc-node.arc())/Math.max(.1,length),0,1);
@@ -218,6 +229,7 @@ public final class FlyingSwordEffects {
         var path=new HuahongFlightPath(nodes,attachment,forward,modelSide);
         double bridge=Math.min(length*.5,Math.max(2.5,Math.min(6,path.headTransitionLength())));
         for(int plane=0;plane<3;plane++)drawHistoryPlane(buffer,pose,nodes,start,eye,headArc,length,now,width,alpha,origin,path,bridge,plane);
+        for(int plane=3;plane<5;plane++)drawHistoryPlane(buffer,pose,nodes,start,eye,headArc,length,now,width*1.6,alpha*.13F,origin,path,bridge,plane);
     }
     private static void drawHistoryPlane(VertexConsumer buffer,PoseStack.Pose pose,List<SwordFlightTrailHistory.Node> nodes,
             int start,Vec3 eye,double headArc,double length,double now,double width,float alpha,double origin,
@@ -235,17 +247,18 @@ public final class FlyingSwordEffects {
                 if(side.lengthSqr()<1e-8&&previousSide!=null)side=previousSide.subtract(tangent.scale(previousSide.dot(tangent)));
                 if(side.lengthSqr()<1e-8)side=path.frame(center,tangent).side();else side=side.normalize();
             }else{
-                var section=path.frame(center,tangent);side=plane==1?section.side():section.up();
+                var section=path.frame(center,tangent);side=plane==1||plane==3?section.side():section.up();
             }
             if(previousSide!=null&&side.dot(previousSide)<0)side=side.scale(-1);
-            double ageFade=fade(node,headArc,length,now),weight=plane==0?1-near:near*.7071067811865476;
+            double ageFade=fade(node,headArc,length,now),weight=plane==0?1-near:plane>=3?.7071067811865476:near*.7071067811865476;
             side=side.scale(width*ageFade*swordJoin(behind));
             float u=SwordTrailPhase.coordinate(node.arc(),origin),a=alpha*(float)(ageFade*weight);
+            float mode=plane>=3?36:0;
             if(previous!=null&&previous.distanceToSqr(center)>1e-12&&(a>0||previousA>0)){
-                vertex(buffer,pose,previous.add(previousSide),previousU,0,previousA);
-                vertex(buffer,pose,previous.subtract(previousSide),previousU,1,previousA);
-                vertex(buffer,pose,center.subtract(side),u,1,a);
-                vertex(buffer,pose,center.add(side),u,0,a);renderedSegments++;
+                tailVertex(buffer,pose,previous.add(previousSide),previousU,mode,previousA);
+                tailVertex(buffer,pose,previous.subtract(previousSide),previousU,mode+1,previousA);
+                tailVertex(buffer,pose,center.subtract(side),u,mode+1,a);
+                tailVertex(buffer,pose,center.add(side),u,mode,a);renderedSegments++;
             }
             previous=center;previousSide=side;previousU=u;previousA=a;
         }
@@ -262,8 +275,10 @@ public final class FlyingSwordEffects {
                 double join=t*t*(3-2*t);
                 Vec3 p=anchor.subtract(forward.scale(t*length)).add(side.scale(Math.cos(phase)*radius*join)).add(up.scale(Math.sin(phase)*radius*join));
                 if(previous!=null){
-                    double w=(.022+.035*intensity)*(1-t*.7);float alpha=(float)((.42+.35*factor)*intensity*(1-t));
-                    ribbon(buffer,pose,previous,p,eye,w,w,alpha,alpha,arc-(float)((i-1)*length/72),arc-(float)(t*length),2);
+                    double previousT=(i-1)/72.0,w=.022+.035*intensity;
+                    double aw=w*(1-previousT*.7)*rootOpening(previousT*length),cw=w*(1-t*.7)*rootOpening(t*length);
+                    float alpha=(float)((.42+.35*factor)*intensity*(1-t));
+                    ribbon(buffer,pose,previous,p,eye,aw,cw,alpha,alpha,arc-(float)((i-1)*length/72),arc-(float)(t*length),2);
                 }
                 previous=p;
             }
@@ -273,6 +288,7 @@ public final class FlyingSwordEffects {
     private static void windRing(VertexConsumer buffer,PoseStack.Pose pose,InterpolatedFlyingSwordTransform f,Vec3 anchor,Vec3 eye,float intensity,float arc){
         Vec3 forward=f.forward(),side=perpendicular(forward),up=side.cross(forward).normalize();
         Vec3 previous=null;double radius=.12+.52*intensity;
+        anchor=anchor.subtract(forward.scale(.35+radius));
         for(int i=0;i<=36;i++){
             double a=i*Math.PI*2/36;Vec3 p=anchor.add(side.scale(Math.cos(a)*radius)).add(up.scale(Math.sin(a)*radius));
             if(previous!=null)ribbon(buffer,pose,previous,p,eye,.025,.025,.24F*intensity,.24F*intensity,arc+(float)((i-1)*radius*Math.PI*2/36),arc+(float)(i*radius*Math.PI*2/36),2);
@@ -286,8 +302,9 @@ public final class FlyingSwordEffects {
     /** Spread the opening over several blocks so the thin root does not flare abruptly. */
     private static double swordJoin(double behind){
         double t=Mth.clamp(behind/4.5,0,1);
-        return .08+.92*t*t*(3-2*t);
+        return rootOpening(behind)*(.08+.92*t*t*(3-2*t));
     }
+    private static double rootOpening(double behind){double t=Mth.clamp(behind/.35,0,1);return t*t*(3-2*t);}
     private static void ribbon(VertexConsumer buffer,PoseStack.Pose pose,Vec3 a,Vec3 c,Vec3 eye,double aw,double cw,float aa,float ca,float au,float cu,float mode){
         Vec3 tangent=c.subtract(a);double distance=tangent.lengthSqr();
         if(!finite(a)||!finite(c)||distance<1e-10||distance>64||Math.max(aa,ca)<.002)return;
@@ -295,10 +312,14 @@ public final class FlyingSwordEffects {
         // A view along the path retains a finite narrow cross-section, instead
         // of exploding a normalized zero vector or dropping an entire strip.
         Vec3 side=cross.lengthSqr()<1e-10?perpendicular(tangent.normalize()):cross.normalize();
-        vertex(buffer,pose,a.add(side.scale(aw)),au,mode,aa);vertex(buffer,pose,a.subtract(side.scale(aw)),au,mode+1,aa);
-        vertex(buffer,pose,c.subtract(side.scale(cw)),cu,mode+1,ca);vertex(buffer,pose,c.add(side.scale(cw)),cu,mode,ca);renderedSegments++;
+        tailVertex(buffer,pose,a.add(side.scale(aw)),au,mode,aa);tailVertex(buffer,pose,a.subtract(side.scale(aw)),au,mode+1,aa);
+        tailVertex(buffer,pose,c.subtract(side.scale(cw)),cu,mode+1,ca);tailVertex(buffer,pose,c.add(side.scale(cw)),cu,mode,ca);renderedSegments++;
     }
     private static boolean finite(Vec3 p){return Double.isFinite(p.x)&&Double.isFinite(p.y)&&Double.isFinite(p.z);}
+    private static void tailVertex(VertexConsumer buffer,PoseStack.Pose pose,Vec3 p,float u,float v,float alpha){
+        if(clippingTail)TAIL_CLIPPER.vertex(p.x,p.y,p.z,u,v,alpha,CLIPPED_VERTEX);
+        else vertex(buffer,pose,p,u,v,alpha);
+    }
     private static void vertex(VertexConsumer buffer,PoseStack.Pose pose,Vec3 p,float u,float v,float alpha){
         Vec3 relative=p.subtract(cameraPosition);
         buffer.vertex(pose.pose(),(float)relative.x,(float)relative.y,(float)relative.z).uv(u,v).color(.28F,.82F,1F,alpha).endVertex();
