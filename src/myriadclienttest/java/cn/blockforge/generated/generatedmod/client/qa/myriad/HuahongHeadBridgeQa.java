@@ -22,7 +22,10 @@ public final class HuahongHeadBridgeQa {
         check(before.forward().distanceTo(after.forward())<.001,"Attached join has a tangent discontinuity at "+d);
     }
     public static Map<String,Object> verify(){
-        checks=0;double oldHeadPulse=0,newHeadPulse=0,windowError=0,defaultError=0;
+        checks=0;
+        for(float strength:new float[]{.015F,.02F,.05F,.1F,.25F,.5F,1F})check(HuahongHeadBridge.attachmentWeight(strength)==1,"Visible entry did not retain rigid attachment");
+        check(HuahongHeadBridge.attachmentWeight(0)==0,"Invisible endpoint changed");
+        double oldHeadPulse=0,newHeadPulse=0,windowError=0,defaultError=0;
         for(double speed:new double[]{.2,7,15,30})for(double degrees:new double[]{0,10,35})for(double bank:new double[]{0,20}){
             double turn=Math.toRadians(degrees);var history=new SwordFlightTrailHistory(.25,116,160,720);
             for(int n=0;n<=24;n++)history.sample(point(position(n,speed,turn)),n,1000);

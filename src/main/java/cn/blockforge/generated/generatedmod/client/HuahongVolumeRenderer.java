@@ -33,8 +33,8 @@ import java.util.Map;
 @Mod.EventBusSubscriber(modid=GeneratedMod.MOD_ID,value=Dist.CLIENT,bus=Mod.EventBusSubscriber.Bus.MOD)
 public final class HuahongVolumeRenderer {
     private static final int POINTS=32,MAX_PACKETS=32;
-    public static final float DEFAULT_WIDTH=.52F,DEFAULT_LIFE=2.2F,DEFAULT_SPREAD=1.25F,DEFAULT_SHELL=3.5F;
-    private static final double PATH_LENGTH=40,RADIUS=4.8;
+    public static final float DEFAULT_WIDTH=.936F,DEFAULT_LIFE=2.2F,DEFAULT_SPREAD=1.25F,DEFAULT_SHELL=3.5F;
+    private static final double PATH_LENGTH=40,RADIUS=8.64;
     private static final ArrayList<Packet> PENDING=new ArrayList<>();
     private static final ArrayList<Trace> TRACE=new ArrayList<>();
     private static List<Trace> previousTrace=List.of();

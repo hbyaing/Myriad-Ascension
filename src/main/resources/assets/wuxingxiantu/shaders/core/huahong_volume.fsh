@@ -82,7 +82,7 @@ vec4 field(vec3 p,vec3 ray,float stepLength,vec3 pixelX,vec3 pixelY){
         // folded history. Never carry a winning segment's arc into the noise.
         float support=exp(-squared/(candidateRadius*candidateRadius)*3.2)*candidateTail*candidateLife;
         envelope=max(envelope,support);
-        float coreRadius=.085+.018*min(candidateBehind,3.0);
+        float coreRadius=(.085+.018*min(candidateBehind,3.0))*1.8;
         float core=exp(-squared/(coreRadius*coreRadius))
             *exp(-candidateBehind*.65)*(1.0-smoothstep(3.0,6.0,candidateBehind));
         headCore=max(headCore,core*candidateLife*candidateTail);
@@ -118,7 +118,7 @@ vec4 field(vec3 p,vec3 ray,float stepLength,vec3 pixelX,vec3 pixelY){
     vec2 rayChange=vec2(dot(normalX,ray),dot(normalY,ray))*stepLength;
     vec2 xChange=vec2(dot(normalX,pixelX),dot(normalY,pixelX));
     vec2 yChange=vec2(dot(normalX,pixelY),dot(normalY,pixelY));
-    const float veinRadius=.035;
+    const float veinRadius=.063;
     // Keep the cross covariance: the ray footprint is a line, not a square.
     // det compensation preserves energy in both transverse dimensions.
     vec2 variance=vec2(veinRadius*veinRadius)+(rayChange*rayChange+xChange*xChange+yChange*yChange)/12.0;

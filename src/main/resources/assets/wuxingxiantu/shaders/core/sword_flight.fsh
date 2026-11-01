@@ -193,39 +193,13 @@ vec4 swordMaterial(){
     }
     bool spiral=trailCoord.y>1.5;
     float across=(trailCoord.y-(spiral?2.0:0.0))*2.0-1.0;
-    float arc=trailCoord.x;
-    // Slow closed domain advection keeps the same spatial grain without
-    // scanning several noise cells each second or jumping at the 128s wrap.
-    float driftPhase=flowAngle(0.0,0.0,8.0);
-    vec2 coarseDrift=vec2(1.25*sin(driftPhase),.80*(1.0-cos(driftPhase)));
-    float coarse=periodicNoise(vec2(arc*(346.0/256.0),across*2.7)+coarseDrift,346.0);
+    // Constant emission: neither time, world arc nor noise modulates brightness.
     float edge=pow(max(0.0,1.0-abs(across)),1.4);
-    // The physical white spine remains present; deliberate low-frequency
-    // motion belongs to its slight bend and the blue peripheral curl/veil.
-    float spine=across-.016*sin(flowAngle(arc,72.0,48.0))-.010*sin(flowAngle(arc,148.0,96.0)+1.7);
-    // Integrate the narrow spine over its pixel footprint. Capping the
-    // filter at .28 left subpixel roots switching on/off as the camera rolled.
-    // Renormalization preserves energy instead of thickening the whole plume.
-    float core=filteredSpine(spine,spiral?.13:.12);
-    float curlCenter=.31*sin(flowAngle(arc,34.0,40.0))+.12*sin(flowAngle(arc,72.0,64.0)+1.8);
-    float curlDistance=across-curlCenter;
-    float curl=exp(-curlDistance*curlDistance*42.0)
-              *(.75+.25*pow(.5+.5*sin(flowAngle(arc,110.0,64.0)+across*2.1),2.0));
-    float rolling=sin(flowAngle(arc,57.0,48.0)+across*6.5+coarse*1.8);
-    float veil=exp(-across*across*4.6)*(.18+.29*coarse)
-              *(.78+.22*pow(.5+.5*rolling,2.0));
-    float ragged=smoothstep(.14,.63,coarse+(1.0-abs(across))*.43);
-    float breakPhase=flowAngle(0.0,0.0,12.0);
-    vec2 breakDrift=vec2(.80*sin(breakPhase),.50*(1.0-cos(breakPhase)));
-    float breaks=.74+.26*periodicNoise(vec2(arc*(614.0/256.0),across*4.0)+breakDrift,614.0);
-    float peripheral=smoothstep(.10,.30,abs(across));
-    // Keep roughly the old core's mean energy, but never gate it with noise
-    // or a passing curl. The fringe still rolls and erodes around that spine.
-    float density=core*.98+(curl*.64+veil*.85)*peripheral*ragged*breaks;
-    float alpha=clamp(density*edge*vertexColor.a,0.0,.96);
+    float core=filteredSpine(across,spiral?.13:.12);
+    float veil=exp(-across*across*4.6);
+    float alpha=clamp((core*.98+veil*.22)*edge*vertexColor.a,0.0,.96);
     vec3 blue=mix(vertexColor.rgb,vec3(.20,.60,.98),.30);
-    vec3 icy=mix(blue,vec3(.70,.95,1.0),clamp((curl*.65+veil)*peripheral,0.0,1.0));
-    vec3 color=mix(icy,vec3(.94,1.0,1.0),clamp(core*.92,0.0,1.0));
+    vec3 color=mix(blue,vec3(.94,1.0,1.0),clamp(core*.92,0.0,1.0));
     return vec4(color,alpha);
 }
 

@@ -62,11 +62,12 @@ final class OrdinaryTrailFlickerQa {
             }
             var edges=new ArrayList<Map<String,Object>>();for(int band:new int[]{0,2}){
                 Stats before=temporal(old,band,11.47F,.8F,false),after=temporal(now,band,11.47F,.8F,false);
-                if(after.totalPower<1e-8||after.mean<.002)throw new AssertionError("Ordinary peripheral flow removed/frozen: "+after);
+                if(after.totalPower>1e-12||after.stepRms>1e-10||after.mean<.002)throw new AssertionError("Ordinary constant edge varies or disappeared: "+after);
                 edges.add(Map.of("band",band,"baseline",before,"candidate",after));
             }
             double period=0,wrap=0;for(int band:new int[]{0,2})for(float arc:new float[]{-71.5F,0,23.31F,255.75F}){
                 float[] a=render(now,band,arc,1.7F,.8F,7.125F);
+                if(difference(a,render(now,band,arc+13.317F,1.7F,.8F,91.37F))>1e-6)throw new AssertionError("Constant ordinary emission depends on arc/time");
                 period=Math.max(period,difference(a,render(now,band,arc+256,1.7F,.8F,7.125F)));
                 period=Math.max(period,difference(a,render(now,band,arc,1.7F,.8F,135.125F)));
                 wrap=Math.max(wrap,difference(render(now,band,arc,1.7F,.8F,127.999F),render(now,band,arc,1.7F,.8F,.001F)));

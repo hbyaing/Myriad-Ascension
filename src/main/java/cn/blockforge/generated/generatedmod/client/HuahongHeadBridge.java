@@ -9,6 +9,13 @@ public final class HuahongHeadBridge {
     public static final double FIXED_HEAD_LENGTH=2.5;
     public static final double WORLD_HISTORY_DISTANCE=8;
     private HuahongHeadBridge(){}
+    /** Attachment settles below visible opacity; brightness keeps its own lifecycle. */
+    public static float attachmentWeight(float strength){
+        if(!Float.isFinite(strength)||strength<=0)return 0;
+        float t=Math.min(1,strength/.015F);return t*t*(3-2*t);
+    }
+    public static final double BODY_SCALE=1.8;
+
 
     /** Preserve source order, time and material arc. Distant nodes retain their
      * exact instances; neither source history nor its recorded positions change. */

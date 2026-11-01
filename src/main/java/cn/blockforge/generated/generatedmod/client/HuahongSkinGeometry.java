@@ -28,12 +28,12 @@ final class HuahongSkinGeometry {
     private HuahongSkinGeometry(HuahongSkin skin,VertexConsumer out,PoseStack.Pose pose,Vec3 eye,Vec3 center,Vec3 forward,Vec3 headSide,
             List<SwordFlightTrailHistory.Node> nodes,double now,float strength){
         this.out=out;this.pose=pose;this.eye=eye;this.center=center;this.forward=forward;this.nodes=nodes;this.now=now;this.strength=strength;
-        headNodes=skin==HuahongSkin.DENSE?nodes:HuahongHeadBridge.presentationNodes(nodes,center,forward,strength);
+        headNodes=skin==HuahongSkin.DENSE?nodes:HuahongHeadBridge.presentationNodes(nodes,center,forward,HuahongHeadBridge.attachmentWeight(strength));
         historyFrames=skin==HuahongSkin.DENSE?null:new Frame[nodes.size()];
         // DENSE's source sprite never queries a transported path. SMOKE uses
         // at most24.05m, including its zero-alpha last station, with32m reserve.
         path=skin==HuahongSkin.DENSE?null:new HuahongFlightPath(nodes,center,forward,headSide,
-                skin==HuahongSkin.SMOKE?32:Double.POSITIVE_INFINITY,true,strength);
+                skin==HuahongSkin.SMOKE?32:Double.POSITIVE_INFINITY,true,HuahongHeadBridge.attachmentWeight(strength));
         // Keep material transport independent of travel speed. Geometry still
         // follows recorded world points, while the surface's phase is measured
         // behind the rendered head and advected by explicit shader time.
@@ -72,7 +72,7 @@ final class HuahongSkinGeometry {
         if(x<=0)return back(-x);
         Frame head=back(0);return new Frame(head.p().add(head.forward().scale(x)),head.forward(),head.side(),head.up());
     }
-    private Vec3 offset(HuahongFlightPath.Frame f,double x,double y){return f.p().add(f.side().scale(x)).add(f.up().scale(y));}
+    private Vec3 offset(HuahongFlightPath.Frame f,double x,double y){return f.p().add(f.side().scale(x*HuahongHeadBridge.BODY_SCALE)).add(f.up().scale(y*HuahongHeadBridge.BODY_SCALE));}
     private static double smooth(double a,double b,double x){double q=Mth.clamp((x-a)/(b-a),0,1);return q*q*(3-2*q);}
     private static double curve(double a,double b,double c,double q){return a*(1-q)*(1-q)+2*b*q*(1-q)+c*q*q;}
     private double headArc(){return nodes.isEmpty()?0:nodes.get(nodes.size()-1).arc();}
@@ -105,7 +105,7 @@ final class HuahongSkinGeometry {
             Frame f=at(i);double phase=strand*2.399+Math.sin((n.arc()-origin)*.47+strand)*.28;
             double open=(1-Math.exp(-age*5))*spread;
             Vec3 normal=f.side().scale(Math.cos(phase)).add(f.up().scale(Math.sin(phase)));
-            rows.add(new Row(f.p().add(normal.scale(open)),n.arc()-origin,width*(.18+.82*fade(age,life)),(float)fade(age,life),color,oriented?normal:null));
+            rows.add(new Row(f.p().add(normal.scale(open*HuahongHeadBridge.BODY_SCALE)),n.arc()-origin,width*(.18+.82*fade(age,life)),(float)fade(age,life),color,oriented?normal:null));
         }
         return rows;
     }
@@ -357,7 +357,7 @@ final class HuahongSkinGeometry {
         if(strength>.001F)billboard(new Row(center,0,.12+3.5*.045+.52*.10,strength*.74F,0xe6fbff,null),32);
     }
     private void billboard(Row r,int mode){
-        Vec3 normal=eye.subtract(r.p()).normalize(),right=side(normal).scale(r.width()),up=normal.cross(right).normalize().scale(r.width());
+        Vec3 normal=eye.subtract(r.p()).normalize(),right=side(normal).scale(r.width()*HuahongHeadBridge.BODY_SCALE),up=normal.cross(right).normalize().scale(r.width()*HuahongHeadBridge.BODY_SCALE);
         vertex(r.p().subtract(right).subtract(up),Math.floor(r.u())*4,mode,r.alpha(),r.color());
         vertex(r.p().add(right).subtract(up),Math.floor(r.u())*4+1,mode,r.alpha(),r.color());
         vertex(r.p().add(right).add(up),Math.floor(r.u())*4+1,mode+1,r.alpha(),r.color());
@@ -393,7 +393,7 @@ final class HuahongSkinGeometry {
             Vec3 normal=f.cross(s).normalize();
             double endFade=rows.size()==2?1:smooth(0,cap,lengths[i])*smooth(0,cap,total-lengths[i]);
             float alpha=row.alpha()*(float)endFade*(localHead?.70710677F:1);
-            double width=row.width();
+            double width=row.width()*HuahongHeadBridge.BODY_SCALE;
             if(mode==22&&width>0){
                 double covered=HuahongVisuals.coreHalfWidth(row.p(),s,eye,width);
                 if(covered>width){alpha*=width/covered;width=covered;}

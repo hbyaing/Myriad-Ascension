@@ -71,7 +71,7 @@ public final class HuahongVisuals {
             if(center.distanceToSqr(eye)>4096)continue;
             boolean active=!sword.isRemoved()&&frame.huahong()>.001F;
             var nodes=active?trail.history.renderNodes(now,point(center)):trail.history.nodes();
-            float attachment=active?frame.huahong():0;
+            float attachment=active?HuahongHeadBridge.attachmentWeight(frame.huahong()):0;
             // Only the attached head is stabilized. Canonical samples still
             // own detached births, time/arc and the distant world-space trail.
             var headNodes=trail.skin==cn.blockforge.generated.generatedmod.yujian.HuahongSkin.DENSE
@@ -85,7 +85,7 @@ public final class HuahongVisuals {
                 if(active||trail.denseForward==null){trail.denseForward=forward;trail.denseSide=modelSide;}
                 var clip=new org.joml.Matrix4f(com.mojang.blaze3d.systems.RenderSystem.getProjectionMatrix())
                         .mul(com.mojang.blaze3d.systems.RenderSystem.getModelViewMatrix()).mul(pose.pose());
-                HuahongVolumeRenderer.queue(headNodes,eye,now,attachment,clip,1,trail.denseForward,trail.denseSide);
+                HuahongVolumeRenderer.queue(headNodes,eye,now,active?frame.huahong():0,clip,1,trail.denseForward,trail.denseSide);
             }
             if(trail.skin!=cn.blockforge.generated.generatedmod.yujian.HuahongSkin.METEOR_PRISM){
                 vertices+=HuahongSkinGeometry.draw(trail.skin,buffer,pose,eye,center,forward,modelSide,nodes,now,active?frame.huahong():0);
@@ -158,7 +158,7 @@ public final class HuahongVisuals {
         var r=new org.joml.Vector3f(1,0,0).rotate(rotation);
         var u=new org.joml.Vector3f(0,1,0).rotate(rotation);
         Vec3 right=new Vec3(r.x,r.y,r.z),up=new Vec3(u.x,u.y,u.z);
-        double major=.46+WIDTH*.85,minor=.075+WIDTH*.30;
+        double major=.46+WIDTH*.85,minor=(.075+WIDTH*.30)*HuahongHeadBridge.BODY_SCALE;
         double fx=forward.dot(right),fy=forward.dot(up),stretch=major*major-minor*minor;
         double xx=minor*minor+stretch*fx*fx,xy=stretch*fx*fy,yy=minor*minor+stretch*fy*fy;
         double detRoot=Math.sqrt(Math.max(0,xx*yy-xy*xy));
@@ -188,7 +188,7 @@ public final class HuahongVisuals {
             if(side.lengthSqr()<1e-10&&previousSide!=null)side=previousSide.subtract(f.scale(previousSide.dot(f)));
             if(side.lengthSqr()<1e-10)side=perpendicular(f);else side=side.normalize();
             if(previousSide!=null&&side.dot(previousSide)<0)side=side.scale(-1);
-            double physical=width*row.width(),covered=mode==8?coreHalfWidth(row.point(),side,eye,physical):physical;
+            double physical=width*row.width()*HuahongHeadBridge.BODY_SCALE,covered=mode==8?coreHalfWidth(row.point(),side,eye,physical):physical;
             float alpha=row.alpha()*opacity*(float)(covered>0?physical/covered:1);
             side=side.scale(covered);
             if(previous!=null){
