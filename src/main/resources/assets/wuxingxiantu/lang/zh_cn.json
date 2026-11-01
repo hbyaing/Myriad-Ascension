@@ -1740,7 +1740,7 @@
   "tooltip.wuxingxiantu.intro.alchemy_guarding.action.0": "研读后解锁：清心丹、净神丹、玄水丹。",
   "tooltip.wuxingxiantu.intro.alchemy_introduction.category": "丹道典籍",
   "tooltip.wuxingxiantu.intro.alchemy_introduction.lore": "丹师入门所读的基础典籍，记载炉火、药性与成丹常识。",
-  "tooltip.wuxingxiantu.intro.alchemy_introduction.action.0": "研读后解锁凡阶炼丹炉的基础丹方。",
+  "tooltip.wuxingxiantu.intro.alchemy_introduction.action.0": "研读后仅开启丹道，不附赠丹方；官方丹方后续独立获取。",
   "tooltip.wuxingxiantu.intro.alchemy_nourishing.category": "丹道典籍",
   "tooltip.wuxingxiantu.intro.alchemy_nourishing.lore": "以养气、聚灵、辟谷为主的实用丹书。",
   "tooltip.wuxingxiantu.intro.alchemy_nourishing.action.0": "研读后解锁：回灵丹、修为丹、聚灵丹、辟谷丹、疾风丹。",
@@ -2478,5 +2478,10 @@
   "tooltip.wuxingxiantu.huahong": "化虹：疾行达到巡航速度65%并稳定0.3秒后人剑合一，速度再增一倍；入虹消耗最大灵力0.25%，维持每秒0.5%。聚虹与飞行默认穿普通实心墙，禁遁方块与容器仍阻挡；转弯减速或短暂松开疾行键不退虹。停止前进、刹车、缺灵或撞禁遁障碍时退虹并安全离墙",
   "yujian.wuxingxiantu.huahong.stage.1": "聚虹",
   "yujian.wuxingxiantu.huahong.stage.2": "化虹",
-  "yujian.wuxingxiantu.huahong.stage.3": "退虹"
+  "yujian.wuxingxiantu.huahong.stage.3": "退虹",
+  "message.wuxingxiantu.compendium_already_learned": "本典籍内容已掌握，未消耗物品。反推还需在丹道研析台的「丹方」页研习配伍与火候，并完成实际炼制。",
+  "message.wuxingxiantu.compendium_research_next": "下一步：到丹道研析台「丹方」页研习传承。反推需要理解配伍、火候并积累实际炼制；重复读书不增加实践。",
+  "message.wuxingxiantu.compendium_admin_only": "这本完整典籍仅限创造模式或管理员使用。",
+  "tooltip.wuxingxiantu.compendium_use": "手持对空气右键研读；已掌握时不消耗。反推前置需另行研习。",
+  "message.wuxingxiantu.alchemy_introduction_unlocked": "已开启丹道。丹道入门不附赠丹方，官方丹方后续独立获取。"
 }
