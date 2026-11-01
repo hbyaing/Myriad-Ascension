@@ -1,5 +1,6 @@
 package cn.blockforge.generated.generatedmod.mixin;
 
+import cn.blockforge.generated.generatedmod.client.JindouCloudRenderState;
 import cn.blockforge.generated.generatedmod.yujian.ControlledSwordEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -8,12 +9,19 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/** A local mounted model does not depend on the terrain mesh below it compiling. */
+/** A local flight model does not depend on the terrain mesh below it compiling. */
 @Mixin(value=LevelRenderer.class,remap=false)
 public abstract class FlightChunkVisibilityMixin {
     @Inject(method={"isChunkCompiled","m_202430_"},at=@At("HEAD"),cancellable=true,remap=false)
     private void wuxing$localFlightModels(BlockPos position,CallbackInfoReturnable<Boolean> callback){
         var player=Minecraft.getInstance().player;
+        // LevelRenderer applies this terrain gate after the interpolated
+        // frustum test. A fast local cloud rider can outrun section compilation;
+        // its independently rendered model still has a valid visible pose.
+        if(player!=null&&position.equals(player.blockPosition())&&JindouCloudRenderState.isActive(player)){
+            callback.setReturnValue(true);
+            return;
+        }
         if(player!=null&&player.getVehicle() instanceof ControlledSwordEntity sword&&sword.flightRoot()
                 &&(position.equals(player.blockPosition())||position.equals(sword.blockPosition())))callback.setReturnValue(true);
     }

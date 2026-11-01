@@ -67,10 +67,14 @@ public final class RefiningForgeStructure {
 
     /** 判断变更点邻域内是否存在炼器台组件，用于过滤无关的邻居更新事件。 */
     public static boolean hasComponentNear(Level level, BlockPos pos) {
+        if(!(level instanceof net.minecraft.server.level.ServerLevel server))return false;
+        var candidate=new BlockPos.MutableBlockPos();
         for (int dy = -2; dy <= 1; dy++) {
             for (int dx = -2; dx <= 2; dx++) {
                 for (int dz = -2; dz <= 2; dz++) {
-                    if (isComponent(level.getBlockState(pos.offset(dx, dy, dz)))) return true;
+                    candidate.set(pos.getX()+dx,pos.getY()+dy,pos.getZ()+dz);
+                    var chunk=server.getChunkSource().getChunkNow(candidate.getX()>>4,candidate.getZ()>>4);
+                    if(chunk!=null&&isComponent(chunk.getBlockState(candidate)))return true;
                 }
             }
         }

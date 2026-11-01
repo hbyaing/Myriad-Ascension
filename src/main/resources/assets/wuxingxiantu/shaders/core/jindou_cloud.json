@@ -15,8 +15,6 @@
     {"name": "NoiseOffset", "type": "float", "count": 3, "values": [0,0,0]},
     {"name": "DetailOffset", "type": "float", "count": 3, "values": [0,0,0]},
     {"name": "FlowPhase", "type": "float", "count": 3, "values": [0,0,0]},
-    {"name": "HistoryNoiseOrigin", "type": "float", "count": 3, "values": [0,0,0]},
-    {"name": "HistoryDetailOffset", "type": "float", "count": 3, "values": [0,0,0]},
     {"name": "LightDirection", "type": "float", "count": 3, "values": [0,1,0]},
     {"name": "SkyLight", "type": "float", "count": 1, "values": [1]},
     {"name": "DayLight", "type": "float", "count": 1, "values": [1]},

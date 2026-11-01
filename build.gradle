@@ -33,6 +33,7 @@ if (project.hasProperty('myriadCapture')) {
     sourceSets {
         myriadClientTest {
             java.setSrcDirs(['src/myriadclienttest/java'])
+            if ((project.hasProperty('jindouRepro') && !project.hasProperty('jindouReproCandidate')) || (project.hasProperty('flightColdProfile') && !project.hasProperty('flightColdCandidate'))) java.exclude '**/HuahongPathWindowQa.java'
             if (!project.hasProperty('jeiLayoutCapture')) java.exclude('**/JeiLayoutCapture.java')
             resources.setSrcDirs(['src/myriadclienttest/resources'])
             compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
@@ -41,8 +42,9 @@ if (project.hasProperty('myriadCapture')) {
     }
     minecraft.runs {
         client {
-            workingDirectory project.file(project.hasProperty('huahongRepro') ? 'build/flight-repro-client' : project.hasProperty('mindscapeCapture') ? 'build/mindscape-client' : 'build/myriad-client')
-            jvmArgs (project.hasProperty('huahongDynamics') || project.hasProperty('huahongRepro') ? '-Xmx6G' : '-Xmx2G'), '-XX:ActiveProcessorCount=4', '-XX:CICompilerCount=2'
+            workingDirectory project.file(project.hasProperty('jindouRepro') ? 'build/jindou-repro-client' : project.hasProperty('flightColdProfile') ? 'build/flight-cold-profile-client' : project.hasProperty('huahongRepro') ? 'build/flight-repro-client' : project.hasProperty('mindscapeCapture') ? 'build/mindscape-client' : 'build/myriad-client')
+            if (project.hasProperty('flightColdProfile')) jvmArgs '-Xmx8G'
+            else jvmArgs (project.hasProperty('huahongDynamics') || project.hasProperty('huahongRepro') || project.hasProperty('jindouRepro') ? '-Xmx6G' : '-Xmx2G'), '-XX:ActiveProcessorCount=4', '-XX:CICompilerCount=2'
             args '--mixin', 'wuxingxiantu.myriad-qa-pointer.mixins.json'
             property 'wuxingxiantu.myriadCapture', (!project.hasProperty('myriadWorldgen') && !project.hasProperty('myriadUiOnly') && !project.hasProperty('creativeTabsCapture')).toString()
             if (project.hasProperty('creativeTabsCapture')) property 'wuxingxiantu.creativeTabsCapture', 'true'
@@ -76,6 +78,26 @@ if (project.hasProperty('myriadCapture')) {
             if (project.hasProperty('huahongColdStreaming')) property 'wuxingxiantu.huahongColdStreaming', 'true'
             if (project.hasProperty('huahongFrameOnly')) property 'wuxingxiantu.huahongFrameOnly', 'true'
             if (project.hasProperty('flightChunkWorkTiming')) property 'wuxingxiantu.flightChunkWorkTiming', 'true'
+            if (project.hasProperty('flightColdProfile')) {
+                property 'wuxingxiantu.flightColdProfile', 'true'
+                property 'wuxingxiantu.flightChunkWorkTiming', 'true'
+                property 'wuxingxiantu.myriadCapture', 'false'
+                property 'wuxingxiantu.flightColdOutput', project.file(project.findProperty('flightColdOutput') ?: 'reports/cold-flight-profile').absolutePath
+                property 'wuxingxiantu.flightColdWorld', project.findProperty('flightColdWorld') ?: 'cold-spawn-f214'
+                if (project.hasProperty('flightColdPrepare')) property 'wuxingxiantu.flightColdPrepare', 'true'
+                if (project.hasProperty('flightColdSolas')) property 'wuxingxiantu.flightColdSolas', 'true'
+                if (project.hasProperty('flightColdCandidate')) property 'wuxingxiantu.flightColdCandidate', 'true'
+            }
+            if (project.hasProperty('jindouRepro')) {
+                property 'wuxingxiantu.jindouRepro', 'true'
+                property 'wuxingxiantu.cloudOnlyCapture', 'true'
+                property 'wuxingxiantu.myriadCapture', 'false'
+                property 'wuxingxiantu.jindouReproOutput', project.file(project.findProperty('jindouReproOutput') ?: 'reports/jindou-repro').absolutePath
+                if (project.hasProperty('jindouReproWorld')) property 'wuxingxiantu.jindouReproWorld', project.property('jindouReproWorld').toString()
+                if (project.hasProperty('jindouReproChecksOnly')) property 'wuxingxiantu.jindouReproChecksOnly', 'true'
+                if (project.hasProperty('jindouReproCandidate')) property 'wuxingxiantu.jindouReproCandidate', 'true'
+                if (project.hasProperty('jindouReproSolas')) property 'wuxingxiantu.jindouReproSolas', 'true'
+            }
             if (project.hasProperty('huahongContinuity')) property 'wuxingxiantu.huahongContinuity', 'true'
             if (project.hasProperty('huahongNoShaders')) property 'wuxingxiantu.huahongNoShaders', 'true'
             if (project.hasProperty('huahongRepro')) {

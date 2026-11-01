@@ -72,10 +72,12 @@ public final class AlchemyFurnaceStructure {
         return missing;
     }
     public static void markDirtyAround(Level level,BlockPos changed) {
-        if(level.isClientSide||refreshing||mutating)return;
+        if(!(level instanceof net.minecraft.server.level.ServerLevel server)||refreshing||mutating)return;
+        var core=new BlockPos.MutableBlockPos();
         for(int x=-2;x<=2;x++)for(int z=-2;z<=2;z++)for(int y=-3;y<=0;y++) {
-            var core=changed.offset(x,y,z);
-            if(level.hasChunkAt(core)&&level.getBlockEntity(core) instanceof AlchemyFurnaceBlockEntity furnace)
+            core.set(changed.getX()+x,changed.getY()+y,changed.getZ()+z);
+            var chunk=server.getChunkSource().getChunkNow(core.getX()>>4,core.getZ()>>4);
+            if(chunk!=null&&chunk.getBlockEntity(core) instanceof AlchemyFurnaceBlockEntity furnace)
                 furnace.markStructureDirty();
         }
     }

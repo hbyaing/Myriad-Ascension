@@ -31,7 +31,7 @@ public final class JindouCloudRenderState {
     public static void update(UUID player, boolean visible) {
         checkWorld();
         if (world == null) return;
-        if (visible) VISIBLE_UNTIL.put(player, world.getGameTime() + 12);
+        if (visible) VISIBLE_UNTIL.put(player, JindouCloudClock.tick() + 12);
         else {
             VISIBLE_UNTIL.remove(player);
             JindouCloudTrailCache.remove(player);
@@ -45,13 +45,13 @@ public final class JindouCloudRenderState {
             var data = GeneratedMod.data(player);
             return data != null && "jin_dou_yun".equals(data.wuxingxiantu$getActiveDivineArt());
         }
-        return VISIBLE_UNTIL.getOrDefault(player.getUUID(), Long.MIN_VALUE) >= world.getGameTime();
+        return VISIBLE_UNTIL.getOrDefault(player.getUUID(), Long.MIN_VALUE) >= JindouCloudClock.tick();
     }
 
     @SubscribeEvent
     public static void tick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
         checkWorld();
-        if (world != null) VISIBLE_UNTIL.values().removeIf(until -> until < world.getGameTime());
+        if (world != null) VISIBLE_UNTIL.values().removeIf(until -> until < JindouCloudClock.tick());
     }
 }

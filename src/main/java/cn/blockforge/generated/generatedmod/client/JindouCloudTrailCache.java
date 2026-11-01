@@ -28,13 +28,18 @@ public final class JindouCloudTrailCache {
 
     private JindouCloudTrailCache() {}
 
-    static void remove(UUID player) { TRACKS.remove(player); }
+    private static void checkWorld(){
+        ClientLevel current=Minecraft.getInstance().level;
+        if(world==current)return;
+        TRACKS.clear();world=current;
+    }
+    static void remove(UUID player) { checkWorld();TRACKS.remove(player); }
 
     @SubscribeEvent
     public static void tick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
         Minecraft client = Minecraft.getInstance();
-        if (world != client.level) { TRACKS.clear(); world = client.level; }
+        checkWorld();
         if (world == null || client.isPaused()) return;
         var active = new HashSet<UUID>();
         for (Player player : world.players()) {
@@ -42,18 +47,20 @@ public final class JindouCloudTrailCache {
             if (client.player != null && player.distanceToSqr(client.player) > 112 * 112) continue;
             active.add(player.getUUID());
             Track track = TRACKS.computeIfAbsent(player.getUUID(), id -> new Track());
-            track.sample(player.position(), world.getGameTime(),player.getDeltaMovement(),player.getPosition(0));
+            track.sample(player.position(), JindouCloudClock.tick(),player.getDeltaMovement(),player.getPosition(0));
         }
         TRACKS.keySet().retainAll(active);
     }
 
     static Vec3 velocity(Player player, float partial) {
+        checkWorld();
         Track track = TRACKS.get(player.getUUID());
         if (track == null) return Vec3.ZERO;
         return track.previousVelocity.lerp(track.velocity, partial);
     }
 
     static Vec3 heading(Player player, float partial) {
+        checkWorld();
         Track track = TRACKS.get(player.getUUID());
         float yaw = track == null ? 0 : Mth.rotLerp(partial, track.previousHeadingYaw, track.headingYaw);
         double radians = Math.toRadians(yaw);
@@ -61,24 +68,28 @@ public final class JindouCloudTrailCache {
     }
 
     static float motion(Player player, float partial) {
+        checkWorld();
         Track track = TRACKS.get(player.getUUID());
         return track == null ? 0 : Mth.lerp(partial, track.previousMotion, track.motion);
     }
 
     static double flow(Player player, float partial) {
+        checkWorld();
         Track track = TRACKS.get(player.getUUID());
         return track == null ? 0 : track.previousFlow + (track.flow - track.previousFlow) * partial;
     }
 
     static boolean discontinuity(Player player) {
+        checkWorld();
         Track track = TRACKS.get(player.getUUID());
-        return track != null && track.discontinuityTick == player.level().getGameTime();
+        return track != null && track.discontinuityTick == JindouCloudClock.tick();
     }
 
     static List<Point> points(Player player, Vec3 renderedFeet, float partial) {
+        checkWorld();
         Track track = TRACKS.get(player.getUUID());
         if (track == null || track.points.isEmpty()) return List.of();
-        double now = player.level().getGameTime() - 1 + (double) partial;
+        double now = JindouCloudClock.time(partial);
         List<Point> visible = new ArrayList<>();
         for (Point point : track.points) {
             if (point.time() <= now && now - point.time() < JindouCloudConfig.TRAIL_LIFETIME.get()) visible.add(point);
@@ -92,15 +103,21 @@ public final class JindouCloudTrailCache {
     }
 
     static Map<String,Object> diagnostics(Player player,Vec3 feet,float partial){
+        checkWorld();
         Track track=TRACKS.get(player.getUUID());
         var result=new java.util.LinkedHashMap<String,Object>();
-        double now=player.level().getGameTime()-1+(double)partial;
+        double now=JindouCloudClock.time(partial);
         List<Point> visible=points(player,feet,partial);
         result.put("renderTime",now);result.put("storedPoints",track==null?0:track.points.size());
+        result.put("samplerTick",JindouCloudClock.tick());
         result.put("visiblePoints",visible.size());result.put("sampledSpeed",track==null?0:track.velocity.length());
         result.put("discontinuity",discontinuity(player));
         result.put("latestVisibleTime",visible.stream().mapToDouble(Point::time).max().orElse(now));
         result.put("oldestStoredTime",track==null||track.points.isEmpty()?now:track.points.getFirst().time());
+        if(track!=null){
+            result.put("headingYaw",track.headingYaw);result.put("previousHeadingYaw",track.previousHeadingYaw);
+            result.put("materialFlow",flow(player,partial));result.put("motion",motion(player,partial));
+        }
         return result;
     }
 
@@ -150,9 +167,13 @@ public final class JindouCloudTrailCache {
                 previousMotion = motion;
                 motion += ((float) (length / (length + 0.7)) - motion) * 0.3F;
                 previousFlow = flow;
-                flow += length * 0.035;
-                if (delta.horizontalDistanceSqr() > 0.0004) targetHeadingYaw = (float) Math.toDegrees(Math.atan2(delta.x, delta.z));
-                headingYaw = Mth.wrapDegrees(headingYaw + Mth.clamp(Mth.wrapDegrees(targetHeadingYaw - headingYaw) * 0.30F, -18, 18));
+                flow += JindouCloudTime.flowStep(motion);
+                // A stopped emitter must not rotate the old density field while
+                // its recorded geometry is already stationary.
+                if(delta.horizontalDistanceSqr()>0.0004){
+                    targetHeadingYaw=(float)Math.toDegrees(Math.atan2(delta.x,delta.z));
+                    headingYaw=Mth.wrapDegrees(headingYaw+Mth.clamp(Mth.wrapDegrees(targetHeadingYaw-headingYaw)*0.30F,-18,18));
+                }
                 if (length > 0.01) {
                     if (points.isEmpty()) points.add(new Point(last, lastTick, delta));
                     // Cover the configured lifetime at high speed instead of chopping a dense far end.

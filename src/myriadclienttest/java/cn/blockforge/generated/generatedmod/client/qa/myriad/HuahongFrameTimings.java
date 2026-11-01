@@ -6,7 +6,7 @@ import java.util.*;
 
 /** QA-only whole-loop and GLFW swap timing; contains no rendering changes. */
 public final class HuahongFrameTimings {
-    private static final boolean ENABLED=Boolean.getBoolean("wuxingxiantu.huahongDynamics");
+    private static final boolean ENABLED=Boolean.getBoolean("wuxingxiantu.huahongDynamics")||Boolean.getBoolean("wuxingxiantu.flightColdProfile");
     private static final List<Map<String,Object>> ROWS=new ArrayList<>();
     public static volatile long sceneClock=-1;
     private static long began,swapBegan,serial;

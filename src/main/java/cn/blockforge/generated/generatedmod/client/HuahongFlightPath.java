@@ -30,8 +30,15 @@ public final class HuahongFlightPath {
     private final double[] stationDistances;
 
     public HuahongFlightPath(List<SwordFlightTrailHistory.Node> nodes,Vec3 center,Vec3 forward,Vec3 side) {
+        this(nodes,center,forward,side,Double.POSITIVE_INFINITY);
+    }
+
+    /** Build only the requested transport window, retaining its entire filter
+     * support. Visible frames use the identical head-anchored station grid. */
+    public HuahongFlightPath(List<SwordFlightTrailHistory.Node> nodes,Vec3 center,Vec3 forward,Vec3 side,double maxFrameDistance) {
         this.smoothRadius=Math.max(.25,Math.min(16,recentSpeed(nodes)*.5));
         this.headJoin=Math.max(1.25,Math.min(12,smoothRadius));
+        double horizon=Double.isFinite(maxFrameDistance)?Math.max(8,maxFrameDistance):Double.POSITIVE_INFINITY;
         this.center=finite(center)?center:Vec3.ZERO;this.forward=unit(forward,new Vec3(0,0,1));
         Vec3 transverse=side.subtract(this.forward.scale(side.dot(this.forward)));
         this.side=unit(transverse,this.forward.cross(Math.abs(this.forward.y)>.95?new Vec3(0,0,1):new Vec3(0,1,0)).normalize());
@@ -44,6 +51,7 @@ public final class HuahongFlightPath {
             double length=next.distanceTo(path.get(path.size()-1));
             if(finite(next)&&Double.isFinite(length)&&length>1e-8){path.add(next);arc+=length;}
             if(finite(world))nodeDistances.putIfAbsent(world,arc);
+            if(arc>=horizon+smoothRadius+FRAME_STEP)break;
         }
         points=path.toArray(Vec3[]::new);distances=new double[points.length];integrals=new Vec3[points.length];integrals[0]=Vec3.ZERO;
         for(int i=1;i<points.length;i++){
@@ -56,7 +64,7 @@ public final class HuahongFlightPath {
         // the rotation-minimizing frame without an antipodal-angle branch.
         var frames=new ArrayList<Station>();
         frames.add(new Station(0,Vec3.ZERO,this.forward,this.side,rotation(this.forward,this.side)));
-        double end=Math.max(8,distances[distances.length-1]+smoothRadius);
+        double end=Math.max(8,Math.min(horizon,distances[distances.length-1]+smoothRadius));
         // Keep the grid anchored to the head. Rescaling every interval when the
         // oldest node expires would move all near-head transport samples at once.
         double step=Math.max(FRAME_STEP,end/MAX_BASE_STATIONS);

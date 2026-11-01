@@ -23,10 +23,13 @@ final class HuahongSkinGeometry {
     private final double now,origin;
     private final float strength;
     private int vertices;
-    private HuahongSkinGeometry(VertexConsumer out,PoseStack.Pose pose,Vec3 eye,Vec3 center,Vec3 forward,Vec3 headSide,
+    private HuahongSkinGeometry(HuahongSkin skin,VertexConsumer out,PoseStack.Pose pose,Vec3 eye,Vec3 center,Vec3 forward,Vec3 headSide,
             List<SwordFlightTrailHistory.Node> nodes,double now,float strength){
         this.out=out;this.pose=pose;this.eye=eye;this.center=center;this.forward=forward;this.nodes=nodes;this.now=now;this.strength=strength;
-        path=new HuahongFlightPath(nodes,center,forward,headSide);
+        // DENSE's source sprite never queries a transported path. SMOKE uses
+        // at most24.05m, including its zero-alpha last station, with32m reserve.
+        path=skin==HuahongSkin.DENSE?null:new HuahongFlightPath(nodes,center,forward,headSide,
+                skin==HuahongSkin.SMOKE?32:Double.POSITIVE_INFINITY);
         // Keep material transport independent of travel speed. Geometry still
         // follows recorded world points, while the surface's phase is measured
         // behind the rendered head and advected by explicit shader time.
@@ -34,7 +37,7 @@ final class HuahongSkinGeometry {
     }
     static int draw(HuahongSkin skin,VertexConsumer out,PoseStack.Pose pose,Vec3 eye,Vec3 center,Vec3 forward,Vec3 headSide,
             List<SwordFlightTrailHistory.Node> nodes,double now,float strength){
-        var g=new HuahongSkinGeometry(out,pose,eye,center,forward,headSide,nodes,now,strength);
+        var g=new HuahongSkinGeometry(skin,out,pose,eye,center,forward,headSide,nodes,now,strength);
         switch(skin){
             case NEEDLE -> g.needle();
             case METEOR_FLAME -> g.fire(false);

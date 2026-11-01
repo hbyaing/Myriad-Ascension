@@ -3,6 +3,6 @@
   "minVersion": "0.8",
   "package": "cn.blockforge.generated.generatedmod.client.qa.myriad.mixin",
   "compatibilityLevel": "JAVA_17",
-  "client": ["NoPointerGrabMixin", "HuahongInputMixin", "HuahongMeshCaptureMixin", "HuahongGeometryCaptureMixin", "HuahongPrismCaptureMixin", "HuahongMinecraftTimingMixin", "HuahongWindowTimingMixin", "OrdinaryHiltCaptureMixin", "OrdinaryHiltModelMixin", "OrdinaryHiltDirectLayerMixin", "OrdinaryHiltBloomLayerMixin", "FlightChunkWorkMinecraftMixin", "FlightChunkWorkPacketMixin", "FlightChunkWorkInstallMixin", "FlightChunkWorkLightMixin", "FlightChunkWorkEmbeddiumManagerMixin", "FlightChunkWorkEmbeddiumAwaitMixin", "FlightChunkWorkEmbeddiumMeshMixin", "FlightChunkWorkVanillaRendererMixin", "FlightChunkWorkVanillaUploadMixin", "FlightChunkWorkVanillaSyncMixin"],
+  "client": ["NoPointerGrabMixin", "HuahongInputMixin", "HuahongMeshCaptureMixin", "HuahongGeometryCaptureMixin", "HuahongPrismCaptureMixin", "HuahongMinecraftTimingMixin", "HuahongWindowTimingMixin", "OrdinaryHiltCaptureMixin", "OrdinaryHiltModelMixin", "OrdinaryHiltDirectLayerMixin", "OrdinaryHiltBloomLayerMixin", "JindouVisibilityProbeMixin", "JindouChunkGateProbeMixin", "FlightChunkWorkMinecraftMixin", "FlightChunkWorkPacketMixin", "FlightChunkWorkInstallMixin", "FlightChunkWorkLightMixin", "FlightChunkWorkEmbeddiumManagerMixin", "FlightChunkWorkEmbeddiumAwaitMixin", "FlightChunkWorkEmbeddiumMeshMixin", "FlightChunkWorkVanillaRendererMixin", "FlightChunkWorkVanillaUploadMixin", "FlightChunkWorkVanillaSyncMixin"],
   "injectors": {"defaultRequire": 1}
 }
