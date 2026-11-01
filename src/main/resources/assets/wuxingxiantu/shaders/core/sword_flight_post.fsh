@@ -12,6 +12,11 @@ in vec4 vertexColor;
 in vec3 viewPosition;
 out vec4 fragColor;
 
+float filteredSpine(float spine,float physicalCore){
+    float footprint=fwidth(spine);
+    float width=sqrt(physicalCore*physicalCore+footprint*footprint*.4225);
+    return exp(-spine*spine/(width*width))*(physicalCore/width);
+}
 float hash21(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float periodicHash(vec2 p,float period){return hash21(vec2(mod(p.x,period),p.y));}
 float periodicNoise(vec2 p,float period){
@@ -188,8 +193,10 @@ vec4 swordMaterial(){
     // The white spine wanders very slightly; wider curl veins peel away and
     // reunite inside the same plume instead of becoming parallel laser lines.
     float spine=across-.024*sin(flowAngle(arc,72.0,153.0))-.015*sin(flowAngle(arc,148.0,312.0)+1.7);
-    float coreWidth=max(spiral?.13:.12,min(.28,fwidth(across)*.65));
-    float core=exp(-spine*spine/(coreWidth*coreWidth));
+    // Integrate the narrow spine over its pixel footprint. Capping the
+    // filter at .28 left subpixel roots switching on/off as the camera rolled.
+    // Renormalization preserves energy instead of thickening the whole plume.
+    float core=filteredSpine(spine,spiral?.13:.12);
     float curlCenter=.31*sin(flowAngle(arc,34.0,72.0))+.12*sin(flowAngle(arc,72.0,153.0)+1.8);
     float curlDistance=across-curlCenter;
     float curl=exp(-curlDistance*curlDistance*42.0)

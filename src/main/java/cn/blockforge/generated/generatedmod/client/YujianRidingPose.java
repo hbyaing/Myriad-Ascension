@@ -43,7 +43,7 @@ public final class YujianRidingPose {
     public static void animate(PlayerModel<?> model,ControlledSwordEntity sword,float partial){
         var frame=InterpolatedFlyingSwordTransform.get(sword,partial);
         float sprint=frame.sprintFactor();
-        if(sword.advancedPhase().burst())sprint=Math.min(1.5F,sprint+0.4F);
+        if(sword.renderPhase().burst())sprint=Math.min(1.5F,sprint+0.4F);
         float brace=frame.brace();
         model.riding=false;model.crouching=false;
         model.body.setPos(0,0,0);model.body.xRot=0.20F*sprint+0.10F*brace;model.body.yRot=0;model.body.zRot=0;

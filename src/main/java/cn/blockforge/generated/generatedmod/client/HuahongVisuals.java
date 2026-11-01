@@ -38,20 +38,21 @@ public final class HuahongVisuals {
         if(mc.level==null)return;
         for(var entity:mc.level.entitiesForRendering()){
             if(!(entity instanceof ControlledSwordEntity sword)||!sword.flightRoot()||mc.player!=null&&sword.distanceToSqr(mc.player)>4096)continue;
-            if(sword.huahongStage()==0&&!TRAILS.containsKey(sword))continue;
+            if(sword.renderHuahong(1)<=.001F&&!TRAILS.containsKey(sword))continue;
             var trail=TRAILS.get(sword);
             if(trail==null||trail.skin!=sword.huahongSkin()){
                 trail=new Trail();trail.skin=sword.huahongSkin();TRAILS.put(sword,trail);
             }
-            if(sword.huahongStrength()>.001F){
+            if(sword.renderHuahong(1)>.001F){
                 Vec3 center=sword.position().add(0,.85,0);trail.last=center;trail.lastEmission=tick;
             }
         }
         TRAILS.entrySet().removeIf(e->{
             if(mc.player!=null&&e.getKey().distanceToSqr(mc.player)>4096)return true;
             var t=e.getValue();
-            if((e.getKey().isRemoved()||e.getKey().huahongStage()==0)&&tick-t.lastEmission>LIFE)return true;
-            if(t.last!=null)t.history.sample(point(t.last),tick,Math.max(8,e.getKey().flightSpeed()*1.7+3));
+            if((e.getKey().isRemoved()||e.getKey().renderHuahongStage()==0)&&tick-t.lastEmission>LIFE)return true;
+            if(t.last!=null)t.history.sample(point(t.last),tick,
+                    Math.max(8,Math.max(e.getKey().flightSpeed(),e.getKey().renderSpeed(1))*1.7+3));
             return false;
         });
     }
@@ -63,19 +64,20 @@ public final class HuahongVisuals {
         for(var entry:TRAILS.entrySet()){
             var sword=entry.getKey();var trail=entry.getValue();
             if(mc.player!=null&&mc.options.getCameraType().isFirstPerson()&&sword==mc.player.getVehicle())continue;
-            if(trail.last==null||trail.last.distanceToSqr(eye)>4096)continue;
+            if(trail.last==null)continue;
             var frame=InterpolatedFlyingSwordTransform.get(sword,partial);
             Vec3 center=frame.position().add(0,.85,0),forward=frame.forward();
-            boolean active=!sword.isRemoved()&&sword.huahongStrength()>.001F;
+            if(center.distanceToSqr(eye)>4096)continue;
+            boolean active=!sword.isRemoved()&&frame.huahong()>.001F;
             var nodes=active?trail.history.renderNodes(now,point(center)):trail.history.nodes();
             Vec3 modelSide=frame.local(1,0,0).subtract(frame.position());
             if(trail.skin==cn.blockforge.generated.generatedmod.yujian.HuahongSkin.DENSE){
                 var clip=new org.joml.Matrix4f(com.mojang.blaze3d.systems.RenderSystem.getProjectionMatrix())
                         .mul(com.mojang.blaze3d.systems.RenderSystem.getModelViewMatrix()).mul(pose.pose());
-                HuahongVolumeRenderer.queue(nodes,eye,now,active?sword.renderHuahong(partial):0,clip,1);
+                HuahongVolumeRenderer.queue(nodes,eye,now,active?frame.huahong():0,clip,1);
             }
             if(trail.skin!=cn.blockforge.generated.generatedmod.yujian.HuahongSkin.METEOR_PRISM){
-                vertices+=HuahongSkinGeometry.draw(trail.skin,buffer,pose,eye,center,forward,modelSide,nodes,now,active?sword.renderHuahong(partial):0);
+                vertices+=HuahongSkinGeometry.draw(trail.skin,buffer,pose,eye,center,forward,modelSide,nodes,now,active?frame.huahong():0);
                 continue;
             }
             var path=new HuahongFlightPath(nodes,center,forward,modelSide);
@@ -111,7 +113,7 @@ public final class HuahongVisuals {
                 strip(buffer,pose,eye,rows,WIDTH*.16,.24F,6,path);
             }
             if(active){
-                float strength=(float)Math.pow(sword.renderHuahong(partial),1.4);rows.clear();
+                float strength=(float)Math.pow(frame.huahong(),1.4);rows.clear();
                 for(int i=0;i<=68;i++){
                     double q=i/68.0,w=Math.max(.012,Math.pow(Math.max(0,Math.sin(Math.PI*q)),.65)*Math.exp(-q*2.7));
                     var section=path.behind(q*HEAD_LENGTH);
@@ -210,12 +212,12 @@ public final class HuahongVisuals {
     @SubscribeEvent(priority=net.minecraftforge.eventbus.api.EventPriority.HIGHEST)
     public static void hide(net.minecraftforge.client.event.RenderPlayerEvent.Pre event){
         if(cn.blockforge.generated.generatedmod.yujian.FlyingSwordConfig.TRAILS.get()
-                &&event.getEntity().getVehicle() instanceof ControlledSwordEntity sword&&sword.huahongStrength()>=.995F)event.setCanceled(true);
+                &&event.getEntity().getVehicle() instanceof ControlledSwordEntity sword&&InterpolatedFlyingSwordTransform.get(sword,event.getPartialTick()).huahong()>=.995F)event.setCanceled(true);
     }
     @SubscribeEvent public static void hand(net.minecraftforge.client.event.RenderHandEvent event){
         var p=Minecraft.getInstance().player;
         if(cn.blockforge.generated.generatedmod.yujian.FlyingSwordConfig.TRAILS.get()
-                &&p!=null&&p.getVehicle() instanceof ControlledSwordEntity sword&&sword.huahongStrength()>.5F)event.setCanceled(true);
+                &&p!=null&&p.getVehicle() instanceof ControlledSwordEntity sword&&InterpolatedFlyingSwordTransform.get(sword,event.getPartialTick()).huahong()>.5F)event.setCanceled(true);
     }
     @SubscribeEvent public static void edge(net.minecraftforge.client.event.RenderGuiEvent.Post event){
         var mc=Minecraft.getInstance();if(!cn.blockforge.generated.generatedmod.yujian.FlyingSwordConfig.TRAILS.get()||mc.player==null||!mc.options.getCameraType().isFirstPerson()

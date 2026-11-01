@@ -144,7 +144,8 @@ public final class FlightInterpolation {
                 Mth.rotLerp(t,from.yaw(),to.yaw()),Mth.lerp(t,from.pitch(),to.pitch()),
                 Mth.lerp(t,from.roll(),to.roll()),Mth.lerp(t,from.bank(),to.bank()),
                 Mth.lerp(t,from.speed(),to.speed()),Mth.lerp(t,from.angular(),to.angular()),
-                Mth.lerp(t,from.jinghong(),to.jinghong()));
+                Mth.lerp(t,from.jinghong(),to.jinghong()),t>=1?to.phase():from.phase(),
+                t>=1?to.huahongStage():from.huahongStage(),Mth.lerp(t,from.huahong(),to.huahong()));
     }
     public boolean active(){return !samples.isEmpty();}
     public double clockRate(){return clockRate;}

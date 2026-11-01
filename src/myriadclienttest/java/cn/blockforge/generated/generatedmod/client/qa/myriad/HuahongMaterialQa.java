@@ -14,7 +14,8 @@ final class HuahongMaterialQa {
     private static String material(Minecraft mc,String file)throws Exception{
         try(var stream=mc.getResourceManager().getResource(new ResourceLocation("wuxingxiantu","shaders/core/"+file+".fsh")).orElseThrow().open()){
             String source=new String(stream.readAllBytes(),StandardCharsets.UTF_8);
-            return source.substring(source.indexOf("float hash21"),source.indexOf("void main"));
+            int start=source.indexOf("float filteredSpine");
+            return source.substring(start>=0?start:source.indexOf("float hash21"),source.indexOf("void main"));
         }
     }
     private static int shader(int type,String source){
@@ -35,7 +36,7 @@ final class HuahongMaterialQa {
         int vertex=0,fragment=0,program=0,vao=0,texture=0,fbo=0,smokeTexture=0,smokeWidth=0,smokeHeight=0;
         try{
             vertex=shader(GL33.GL_VERTEX_SHADER,"#version 150\nout vec2 uv;void main(){vec2 p=vec2((gl_VertexID<<1)&2,gl_VertexID&2);uv=p;gl_Position=vec4(p*2.0-1.0,0.0,1.0);}");
-            fragment=shader(GL33.GL_FRAGMENT_SHADER,"#version 150\nuniform sampler2D SmokeAtlas;uniform float EffectTime,ArcOffset,Band;uniform vec2 ProbeUV;uniform int ProbeMode;in vec2 uv;out vec4 fragColor;vec2 trailCoord;vec4 vertexColor;\n"+source+"\nvoid main(){trailCoord=ProbeMode==1?vec2(ProbeUV.x,Band+ProbeUV.y):vec2(ArcOffset+uv.x*15.25,Band+.02+uv.y*.96);vertexColor=vec4(.35,.65,.95,.8);fragColor=swordMaterial();}");
+            fragment=shader(GL33.GL_FRAGMENT_SHADER,"#version 150\nuniform sampler2D SmokeAtlas;uniform float EffectTime,ArcOffset,Band;uniform vec2 ProbeUV;uniform int ProbeMode;in vec2 uv;out vec4 fragColor;vec2 trailCoord;vec4 vertexColor;\n"+source+"\nvoid main(){if(ProbeMode==2){float spine=(uv.y-.5)*ProbeUV.x+ProbeUV.y;fragColor=vec4(filteredSpine(spine,.12));return;}trailCoord=ProbeMode==1?vec2(ProbeUV.x,Band+ProbeUV.y):vec2(ArcOffset+uv.x*15.25,Band+.02+uv.y*.96);vertexColor=vec4(.35,.65,.95,.8);fragColor=swordMaterial();}");
             program=GL33.glCreateProgram();GL33.glAttachShader(program,vertex);GL33.glAttachShader(program,fragment);GL33.glLinkProgram(program);
             if(GL33.glGetProgrami(program,GL33.GL_LINK_STATUS)==0)throw new AssertionError(GL33.glGetProgramInfoLog(program));
             texture=GL33.glGenTextures();GL33.glBindTexture(GL33.GL_TEXTURE_2D,texture);
@@ -73,9 +74,24 @@ final class HuahongMaterialQa {
             }
             if(noseEdge>1e-6||noseTimeError>1e-6)throw new AssertionError("Band32 local UV envelope boundary/time error "+noseEdge+" / "+noseTimeError);
             Map<String,Object> noseProjection=HuahongMotionQa.verifyNoseProjection(mc);
+            var spineCoverage=new ArrayList<Map<String,Object>>();
+            for(float scale:new float[]{8,16,32}){
+                double low=Double.POSITIVE_INFINITY,high=0;
+                for(int phase=0;phase<32;phase++){
+                    GL33.glUniform1i(GL33.glGetUniformLocation(program,"ProbeMode"),2);
+                    GL33.glUniform2f(GL33.glGetUniformLocation(program,"ProbeUV"),scale,phase/32F*scale/32);
+                    GL33.glDrawArrays(GL33.GL_TRIANGLES,0,3);float[] pixels=new float[64*32*4];GL33.glReadPixels(0,0,64,32,GL33.GL_RGBA,GL33.GL_FLOAT,pixels);
+                    double energy=0;for(int i=3;i<pixels.length;i+=4)energy+=pixels[i];
+                    low=Math.min(low,energy);high=Math.max(high,energy);
+                }
+                double variation=(high-low)/high;
+                if(!Double.isFinite(variation)||low<=0||variation>.08)throw new AssertionError("Subpixel spine blinks: scale="+scale+" variation="+variation);
+                spineCoverage.add(Map.of("acrossScale",scale,"pixelPhases",32,"minEnergy",low,"maxEnergy",high,"relativeVariation",variation));
+            }
             int gl=GL33.glGetError();if(gl!=0)throw new AssertionError("Material fixture GL error "+gl);
             var result=new LinkedHashMap<String,Object>();result.put("check","shipping-glsl-periodicity");result.put("comparisons",comparisons);result.put("maxChannelError",error);result.put("passed",true);
             result.put("noseBand",32);result.put("noseProbes",noseProbes);result.put("noseCenterAlpha",noseCenter[3]);result.put("noseMaxBoundaryAlpha",noseEdge);result.put("noseMaxTimeError",noseTimeError);result.put("noseProjection",noseProjection);
+            result.put("subpixelSpineCoverage",spineCoverage);
             result.put("smokeAtlasSha256",HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(smokeBytes)));result.put("smokeAtlasDimensions",List.of(smokeWidth,smokeHeight));result.put("materialBands",List.of(6,8,10,12,14,16,18,20,22,24,26,28,30,32,34));return result;
         }finally{
             GL33.glBindFramebuffer(GL33.GL_DRAW_FRAMEBUFFER,drawBefore);GL33.glBindFramebuffer(GL33.GL_READ_FRAMEBUFFER,readBefore);

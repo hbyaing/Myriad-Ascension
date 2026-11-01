@@ -277,7 +277,10 @@ final class HuahongSkinGeometry {
         final double bodyLife=.18+3.2*.07,smokeLife=bodyLife*1.8;
         for(var b:births(.55,24,smokeLife)){
             double age=(now-b.tick())/20,behind=headArc()-b.arc(),seed=b.cell();
-            double dissolve=smooth(24,18,behind)*Math.pow(Mth.clamp(1-age/smokeLife,0,1),2.1);
+            // Births used to enter at full opacity when a .55-block cell crossed
+            // the head. A C1 spatial ramp removes that discontinuity while the
+            // persistent local nozzle below fills the newly emitted interval.
+            double dissolve=smooth(0,1.65,behind)*smooth(24,18,behind)*Math.pow(Mth.clamp(1-age/smokeLife,0,1),2.1);
             double core=Math.exp(-Math.pow(age/bodyLife,2)*1.9);
             double scatter=.11+age*.30;double phi=seed*2.399;
             // An isotropic world offset does not make old smoke orbit the
@@ -287,7 +290,7 @@ final class HuahongSkinGeometry {
             float a=(float)(dissolve*(.20+.12*core));
             clouds.add(new Cloud(p,Math.floorMod(b.cell(),64),radius,a,mix(0x010001,0x0a0101,core*(.2+.5*rnd(seed+9))),30));
             if(rnd(seed+23)>.64&&core>.15)
-                clouds.add(new Cloud(p.add(.025,.02,-.015),Math.floorMod(b.cell()+19,64),radius*.48,(float)(dissolve*core*.10),0xce252f,20));
+                clouds.add(new Cloud(p.add(.025,.02,-.015),Math.floorMod(b.cell()+19,64),radius*.48,(float)(dissolve*core*.10*smooth(.15,.25,core)),0xce252f,20));
         }
         // The head is broad dark smoke with a small red fracture, never a white
         // nucleus. These layers disappear with the local transformation fade.

@@ -16,6 +16,8 @@
   },
   "client": [
     "CreativeSurvivalInventoryMixin",
-    "JeiInventoryEffectsMixin"
+    "JeiInventoryEffectsMixin",
+    "FlightRiderVisibilityMixin",
+    "FlightChunkVisibilityMixin"
   ]
 }

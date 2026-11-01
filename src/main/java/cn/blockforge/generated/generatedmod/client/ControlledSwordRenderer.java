@@ -12,8 +12,14 @@ import net.minecraft.world.item.ItemDisplayContext;
 public final class ControlledSwordRenderer extends EntityRenderer<ControlledSwordEntity>{
     private final net.minecraft.client.renderer.entity.ItemRenderer items;
     public ControlledSwordRenderer(EntityRendererProvider.Context context){super(context);items=context.getItemRenderer();}
+    @Override public boolean shouldRender(ControlledSwordEntity sword,net.minecraft.client.renderer.culling.Frustum frustum,double x,double y,double z){
+        if(!sword.flightRoot())return super.shouldRender(sword,frustum,x,y,z);
+        var f=InterpolatedFlyingSwordTransform.get(sword,net.minecraft.client.Minecraft.getInstance().getFrameTime());
+        return sword.shouldRender(x+sword.getX()-f.position().x,y+sword.getY()-f.position().y,z+sword.getZ()-f.position().z)
+                &&(sword.noCulling||frustum.isVisible(sword.getBoundingBox().move(f.position().subtract(sword.position()))));
+    }
     @Override public void render(ControlledSwordEntity sword,float yaw,float partial,PoseStack pose,MultiBufferSource buffers,int light){
-        if(cn.blockforge.generated.generatedmod.yujian.FlyingSwordConfig.TRAILS.get()&&sword.flightRoot()&&sword.huahongStrength()>=.995F)return;
+        if(cn.blockforge.generated.generatedmod.yujian.FlyingSwordConfig.TRAILS.get()&&sword.flightRoot()&&InterpolatedFlyingSwordTransform.get(sword,partial).huahong()>=.995F)return;
         buffers=DunxuTransparency.wrap(sword,buffers);
         pose.pushPose();
         var definition=cn.blockforge.generated.generatedmod.yujian.FlyingSwordRegistry.visual(sword.display());

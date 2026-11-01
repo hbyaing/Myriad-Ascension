@@ -34,6 +34,7 @@ public final class HuahongCapture {
     private static final List<Object> ROWS=new ArrayList<>();
     private static final List<String> FAILURES=new ArrayList<>();
     private static final java.lang.reflect.Method CAMERA=ObfuscationReflectionHelper.findMethod(Camera.class,"m_90581_",Vec3.class);
+    private static final java.lang.reflect.Method CAMERA_ROTATION=ObfuscationReflectionHelper.findMethod(Camera.class,"m_90572_",float.class,float.class);
     private static boolean opened,ready,done,materialChecked,pathChecked;private static int tick,motionFrame;private static String pending;
     private static CompletableFuture<?> work;
     private static net.minecraft.core.BlockPos occluder;
@@ -50,10 +51,10 @@ public final class HuahongCapture {
             if(!opened&&mc.player!=null)throw new AssertionError("Refusing an existing world");
             if(!opened&&mc.getOverlay()==null&&(mc.screen instanceof net.minecraft.client.gui.screens.TitleScreen||mc.screen instanceof net.minecraft.client.gui.screens.AccessibilityOnboardingScreen)){
                 opened=true;if(DYNAMICS){mc.options.enableVsync().set(false);mc.getWindow().updateVsync(false);}mc.getWindow().setWindowed(1600,900);mc.resizeDisplay();mc.options.renderDistance().set(4);mc.options.simulationDistance().set(5);
-                mc.options.cloudStatus().set(CloudStatus.OFF);mc.options.framerateLimit().set(40);mc.options.fov().set(65);mc.options.hideGui=true;mc.options.bobView().set(false);mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+                mc.options.cloudStatus().set(HuahongContinuityQa.ENABLED?CloudStatus.FANCY:CloudStatus.OFF);mc.options.framerateLimit().set(40);mc.options.fov().set(65);mc.options.hideGui=true;mc.options.bobView().set(false);mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
                 mc.getTutorial().setStep(net.minecraft.client.tutorial.TutorialSteps.NONE);
                 var rules=new GameRules();rules.getRule(GameRules.RULE_DOMOBSPAWNING).set(false,null);
-                mc.createWorldOpenFlows().createFreshLevel("huahong-qa-"+System.currentTimeMillis(),new LevelSettings("Huahong isolated",GameType.SURVIVAL,false,net.minecraft.world.Difficulty.PEACEFUL,true,rules,WorldDataConfiguration.DEFAULT),new WorldOptions(7215,false,false),net.minecraft.world.level.levelgen.presets.WorldPresets::createNormalWorldDimensions);return;
+                mc.createWorldOpenFlows().createFreshLevel("huahong-qa-"+System.currentTimeMillis(),new LevelSettings("Huahong isolated",GameType.SURVIVAL,false,net.minecraft.world.Difficulty.PEACEFUL,true,rules,WorldDataConfiguration.DEFAULT),new WorldOptions(7215,false,false),access->HuahongContinuityQa.ENABLED?access.registryOrThrow(net.minecraft.core.registries.Registries.WORLD_PRESET).getHolderOrThrow(net.minecraft.world.level.levelgen.presets.WorldPresets.FLAT).value().createWorldDimensions():net.minecraft.world.level.levelgen.presets.WorldPresets.createNormalWorldDimensions(access));return;
             }
             if(mc.player==null||mc.level==null||mc.getSingleplayerServer()==null||mc.getOverlay()!=null||mc.screen instanceof net.minecraft.client.gui.screens.ReceivingLevelScreen){
                 if(ready&&(tick>0||DYNAMICS))input();return;
@@ -202,7 +203,8 @@ public final class HuahongCapture {
                     .add(up.scale(2*(1-nearAxisMix)+.002*Math.cos(time*1.3)*nearAxisMix));
         }
         var delta=target.subtract(eye);CAMERA.invoke(e.getCamera(),eye);
-        e.setYaw((float)Math.toDegrees(Math.atan2(-delta.x,delta.z)));e.setPitch((float)-Math.toDegrees(Math.atan2(delta.y,delta.horizontalDistance())));e.setRoll(0);
+        e.setYaw((float)Math.toDegrees(Math.atan2(-delta.x,delta.z)));e.setPitch((float)-Math.toDegrees(Math.atan2(delta.y,delta.horizontalDistance())));if(!HuahongContinuityQa.ENABLED)e.setRoll(0);
+        if(HuahongContinuityQa.ENABLED)CAMERA_ROTATION.invoke(e.getCamera(),e.getYaw(),e.getPitch());
     }
     @SubscribeEvent(priority=EventPriority.LOWEST) public static void frame(TickEvent.RenderTickEvent e){
         if(!ENABLED||done||e.phase!=TickEvent.Phase.END)return;
@@ -212,6 +214,7 @@ public final class HuahongCapture {
             HuahongVolumeRenderer.flushPending();
             HuahongWallQa.frame(Minecraft.getInstance(),HuahongDynamicsQa.control().phase());
             HuahongDynamicsQa.frame(Minecraft.getInstance(),e.renderTickTime);
+            HuahongContinuityQa.frame(Minecraft.getInstance(),e.renderTickTime,OUT);
         }catch(Throwable error){finish(error);}finally{HuahongDynamicsQa.profileFrameDone();}return;}
         if(!UI_ONLY&&!pathChecked&&tick>=50)try{pathChecked=true;ROWS.add(HuahongPathQa.verify());}catch(Throwable error){finish(error);return;}
         if(!UI_ONLY&&SKINS&&!materialChecked&&tick>=50)try{materialChecked=true;ROWS.add(HuahongMaterialQa.verify(Minecraft.getInstance()));}catch(Throwable error){finish(error);return;}
@@ -240,6 +243,7 @@ public final class HuahongCapture {
     private static void finish(Throwable error){
         if(done)return;done=true;if(error!=null){error.printStackTrace();FAILURES.add(error.toString());}
         if(DYNAMICS)try{HuahongDynamicsQa.finish(OUT);}catch(Throwable verification){verification.printStackTrace();FAILURES.add(verification.toString());error=verification;}
+        if(HuahongContinuityQa.ENABLED)try{HuahongContinuityQa.verify(OUT);}catch(Throwable verification){verification.printStackTrace();FAILURES.add(verification.toString());error=verification;}
         else if(FULL_SPEED)try{HuahongMotionQa.write(OUT);if(error==null)HuahongMotionQa.verify();}catch(Throwable verification){verification.printStackTrace();FAILURES.add(verification.toString());error=verification;}
         try{
             Files.writeString(OUT.resolve("verification.json"),new GsonBuilder().setPrettyPrinting().create().toJson(Map.of("failures",FAILURES,"pointer",PointerSafety.snapshot(),"maxRatio",maxRatio,"maxVertices",maxVertices,"fullSpeed",FULL_SPEED,"uiOnly",UI_ONLY,"dynamics",DYNAMICS,"rows",ROWS)));

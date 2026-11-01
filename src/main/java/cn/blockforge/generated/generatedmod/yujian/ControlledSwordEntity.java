@@ -53,6 +53,10 @@ public final class ControlledSwordEntity extends Entity {
     private float visualRoll, previousRoll, sprintBlend, previousSprintBlend;
     private float visualBank, previousBank, visualSpeed, previousSpeed, visualAngular, previousAngular;
     private boolean visualInitialized;
+    private YujianPhase visualPhase=YujianPhase.BASIC;
+    private int visualHuahongStage;
+    public YujianPhase renderPhase(){return level().isClientSide&&visualInitialized?visualPhase:advancedPhase();}
+    public int renderHuahongStage(){return level().isClientSide&&visualInitialized?visualHuahongStage:huahongStage();}
     private float jinghongStrength,visualJinghong,previousJinghong;
     public void jinghongStrength(float value){jinghongStrength=value;}
     public float jinghongStrength(){return jinghongStrength;}
@@ -179,6 +183,8 @@ public final class ControlledSwordEntity extends Entity {
                 visualInitialized=true;visualRoll=roll();visualBank=entityData.get(BANK);
                 visualSpeed=flightSpeed();visualAngular=angularSpeed();
             }
+            visualPhase=advancedPhase();
+            visualHuahongStage=huahongStage();
             previousRoll=visualRoll;
             previousJinghong=visualJinghong;
             previousBank=visualBank;previousSpeed=visualSpeed;previousAngular=visualAngular;
@@ -187,6 +193,11 @@ public final class ControlledSwordEntity extends Entity {
                 setPos(sample.position());setYRot(sample.yaw());setXRot(sample.pitch());
                 visualRoll=sample.roll();visualBank=sample.bank();visualSpeed=sample.speed();visualAngular=sample.angular();
                 visualJinghong=sample.jinghong();
+                // State and pose share the validated playback clock. Entity
+                // metadata may already describe a much newer server tick.
+                visualHuahong=sample.huahong();
+                visualHuahongStage=sample.huahongStage();
+                visualPhase=YujianPhase.values()[net.minecraft.util.Mth.clamp(sample.phase(),0,YujianPhase.values().length-1)];
                 previousSprintBlend=sprintBlend;sprintBlend+=((sprinting()?1:0)-sprintBlend)*.22F;
                 lerpSteps=0;return;
             }

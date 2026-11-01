@@ -135,13 +135,14 @@ public final class FlyingSwordEffects {
         projection=new org.joml.Matrix4f(event.getProjectionMatrix()).mul(view);
         inverseProjection=new org.joml.Matrix4f(event.getProjectionMatrix()).invert();
         Vec3 eye=event.getCamera().getPosition();
-        TRAILS.keySet().removeIf(s->s.isRemoved()||s.level()!=client.level||!s.flightRoot()||s.distanceToSqr(eye)>4096);
+        TRAILS.keySet().removeIf(s->s.isRemoved()||s.level()!=client.level||!s.flightRoot());
         cameraPosition=eye;
         var pose=event.getPoseStack();pose.pushPose();
         // Entity interpolation runs between the previous and current tick pose.
         capturedTrailTick=TRAIL_CLOCK.tick();
-        double now=capturedTrailTick-1+event.getPartialTick();
-        effectTime=SwordTrailPhase.time(capturedTrailTick,event.getPartialTick());
+        float partial=InterpolatedFlyingSwordTransform.partial(event.getPartialTick());
+        double now=capturedTrailTick-1+partial;
+        effectTime=SwordTrailPhase.time(capturedTrailTick,partial);
         RenderType type=SwordFlightTrailRenderer.renderType(effectTime);
         VertexConsumer buffer;
         if(postPath){POST_BUFFER.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.POSITION_TEX_COLOR);buffer=POST_BUFFER;}
@@ -153,18 +154,22 @@ public final class FlyingSwordEffects {
             for(var entry:TRAILS.entrySet()){
                 var sword=entry.getKey();
                 if(client.options.getCameraType().isFirstPerson()&&sword==client.player.getVehicle())continue;
-                if(!sword.flightRoot()||sword.distanceToSqr(eye)>4096)continue;
+                if(!sword.flightRoot())continue;
                 if(++count>32)break;
                 var f=InterpolatedFlyingSwordTransform.get(sword,event.getPartialTick());
+                // Culling the newer tick pose against an interpolated camera
+                // hides a local rider for part of every tick at high speed.
+                if(f.position().distanceToSqr(eye)>4096)continue;
                 var history=entry.getValue();
                 Vec3 anchor=SwordFlightAttachment.tail(sword,f.position(),f.yaw(),f.pitch(),f.roll());
                 var nodes=history.renderNodes(now,point(anchor));if(nodes.size()<2)continue;
                 float jinghong=sword.renderJinghong(event.getPartialTick());
-                if(sword.huahongStrength()>.5F)continue;
-                float strength=sword.advancedPhase().trailIntensity*(1+1.5F*jinghong);
+                float ordinary=1-f.huahong();ordinary=ordinary*ordinary*(3-2*ordinary);
+                if(ordinary<=.001F)continue;
+                float strength=sword.renderPhase().trailIntensity*(1+1.5F*jinghong);
                 double length=Math.min(22,(4+5*f.sprintFactor()+7*f.spiralFactor())*strength);
                 double width=Math.min(.85,(.36+.18*f.sprintFactor()+.09*f.spiralFactor())*Math.sqrt(strength));
-                float alpha=Math.min(.94F,(.72F+.11F*f.sprintFactor()+.10F*f.spiralFactor())*(float)Math.sqrt(strength));
+                float alpha=ordinary*Math.min(.94F,(.72F+.11F*f.sprintFactor()+.10F*f.spiralFactor())*(float)Math.sqrt(strength));
                 int start=0;double headArc=nodes.get(nodes.size()-1).arc();
                 while(start<nodes.size()-2&&headArc-nodes.get(start).arc()>length)start++;
                 double origin=SwordTrailPhase.origin(nodes.get(start).arc(),sword.getUUID().hashCode());
@@ -172,10 +177,10 @@ public final class FlyingSwordEffects {
                         origin,SwordTrailPhase.coordinate(headArc,origin),effectTime,strength,width,anchor,vec(nodes.get(nodes.size()-1).point())));
                 drawHistory(buffer,pose.last(),nodes,start,eye,headArc,length,now,width,alpha,origin);
                 spiralPass=true;
-                spiral(buffer,pose.last(),f,anchor,eye,jinghong,SwordTrailPhase.coordinate(headArc,origin));
+                spiral(buffer,pose.last(),f,anchor,eye,jinghong,SwordTrailPhase.coordinate(headArc,origin),ordinary);
                 spiralPass=false;
             }
-            HuahongVisuals.draw(buffer,pose.last(),eye,now,event.getPartialTick());
+            HuahongVisuals.draw(buffer,pose.last(),eye,now,partial);
             normalTrailVertexCount+=HuahongVisuals.vertices;
             if(postPath){
                 pending=POST_BUFFER.endOrDiscardIfEmpty();
@@ -226,10 +231,10 @@ public final class FlyingSwordEffects {
             previous=center;previousSide=side;previousU=u;previousA=a;
         }
     }
-    private static void spiral(VertexConsumer buffer,PoseStack.Pose pose,InterpolatedFlyingSwordTransform f,Vec3 anchor,Vec3 eye,float jinghong,float arc){
+    private static void spiral(VertexConsumer buffer,PoseStack.Pose pose,InterpolatedFlyingSwordTransform f,Vec3 anchor,Vec3 eye,float jinghong,float arc,float opacity){
         float factor=Math.max(f.spiralFactor(),jinghong);if(factor<.15F||f.speed()<.03)return;
         Vec3 forward=f.forward(),side=f.local(1,0,0).subtract(f.position()).normalize(),up=side.cross(forward).normalize();
-        double intensity=Math.max(f.brace(),jinghong)*(.18+.82*factor),length=1.2+6.5*factor,radius=.06+.40*intensity;
+        double intensity=Math.max(f.brace(),jinghong)*(.18+.82*factor)*opacity,length=1.2+6.5*factor,radius=.06+.40*intensity;
         int strands=factor>.52?2:1;
         for(int strand=0;strand<strands;strand++){
             Vec3 previous=null;

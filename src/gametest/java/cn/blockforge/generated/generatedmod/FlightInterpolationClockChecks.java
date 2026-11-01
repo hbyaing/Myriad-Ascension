@@ -32,6 +32,7 @@ public final class FlightInterpolationClockChecks {
 
     public static String verify(){
         checks=0;
+        visualStatePlayback();
         for(int interval:new int[]{1,2,3,4}){
             var buffer=new FlightInterpolation();double previous=0;int holds=0;
             for(int client=0;client<=480;client++){
@@ -221,4 +222,29 @@ public final class FlightInterpolationClockChecks {
         com.mojang.logging.LogUtils.getLogger().info(verify());helper.succeed();
     }
     private FlightInterpolationClockChecks(){}
+    private static float envelope(double tick){
+        if(tick<20)return 0;if(tick<26)return (float)((tick-20)/6);
+        if(tick<55)return 1;if(tick<63)return (float)((63-tick)/8);return 0;
+    }
+    private static FlightSnapshot visualPoint(long tick){
+        return new FlightSnapshot(1,tick,new Vec3(tick*SPEED,200,0),0,0,0,0,15,0,0,
+                tick<15||tick>=58?0:2,tick<20||tick>=63?0:tick<26?1:tick<55?2:3,envelope(tick));
+    }
+    private static void visualStatePlayback(){
+        var wire=new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.buffer());
+        try{var source=visualPoint(37);FlightSnapshot.encode(source,wire);
+            check(source.equals(FlightSnapshot.decode(wire))&&wire.readableBytes()==0,"Flight snapshot lost timestamped visual state on the wire");
+        }finally{wire.release();}
+        for(int batch:new int[]{1,4,12,40,96}){
+            var path=new FlightInterpolation();int received=-1;
+            for(int client=0;client<160;client++){
+                if(client%batch==0)for(int tick=received+1;tick<=Math.min(100,client);tick++){path.accept(visualPoint(tick),client);received=tick;}
+                if(!path.active())continue;
+                var shown=path.sample(client);double time=shown.position().x/SPEED;
+                check(Math.abs(shown.huahong()-envelope(time))<2e-5,"Metadata ran ahead of the validated pose in a "+batch+"-packet batch at "+time);
+                int expected=time<15||time>=58?0:2;
+                if(Math.abs(time-Math.rint(time))>1e-4)check(shown.phase()==expected,"Flight phase used the latest packet instead of the playback clock");
+            }
+        }
+    }
 }

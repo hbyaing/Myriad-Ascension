@@ -83,6 +83,7 @@ final class HuahongDynamicsQa {
         boolean brake=scenarioClock>=SKINS.length*CYCLE||phase>=brakeAt;
         boolean coast=phase>=stop&&phase<recover;
         boolean releaseSprint=phase>=sprintOff&&phase<sprintOn;
+        if(HuahongContinuityQa.ENABLED&&phase<60)releaseSprint=true;
         boolean forward=!brake&&!coast&&(scenarioClock>=20);
         String segment=phase<80?"accelerate":phase<left?"straight":phase<right?"left-90":phase<turn?"right-90":phase<sprintOff?"uturn-180":phase<sprintOn?"release-sprint":phase<stop?"recover-sprint":phase<recover?"release-forward":phase<brakeAt?"recover-forward":"brake-exit";
         if(HuahongWallQa.ENABLED){yaw=base;brake=phase>=160&&phase<200||phase>=250||scenarioClock>=SKINS.length*CYCLE;forward=!brake&&scenarioClock>=20;releaseSprint=false;segment=phase<100?"wall-approach":phase<130?"wall-pass":phase<145?"wall-clear":phase<160?"wall-enter":phase<200?"wall-inside-brake":phase<250?"wall-recover":"brake-exit";}
@@ -95,7 +96,7 @@ final class HuahongDynamicsQa {
     static boolean tick(Minecraft mc,Path out)throws Exception{
         if(!started){
             output=out;playerId=mc.player.getUUID();runtimeEvidence(out);started=true;
-            mc.options.framerateLimit().set(30);HuahongSkinPreferences.select(SKINS[0]);chosen=0;
+            mc.options.framerateLimit().set(HuahongContinuityQa.ENABLED?120:30);HuahongSkinPreferences.select(SKINS[0]);chosen=0;
             FlyingSwordConfig.TRAIL_PATH.set(Boolean.getBoolean("wuxingxiantu.myriadExternalShaders")?FlyingSwordConfig.TrailPath.AUTO:FlyingSwordConfig.TrailPath.NORMAL_TRAIL_RENDER_PATH);
         }
         input();var c=control();HuahongWallQa.clientTick(mc,c.phase());
@@ -112,7 +113,7 @@ final class HuahongDynamicsQa {
         if(player==null||player.serverLevel()!=level)return;
         long nextWorldTick=level.getGameTime()+1;if(epoch<0)epoch=nextWorldTick;
         long nextClock=nextWorldTick-epoch;var c=control(nextClock);
-        YujianController.handleInput(player,nextClock<20,!summoned.getAndSet(true),c.forward(),c.brake(),false,false,false,false,c.sprint(),false,1,0,c.yaw(),c.pitch());
+        YujianController.handleInput(player,nextClock<20,!summoned.getAndSet(true),c.forward(),c.brake(),false,false,false,HuahongContinuityQa.ENABLED&&c.phase()>=100&&c.phase()<150,c.sprint(),false,1,0,c.yaw(),c.pitch());
         SEND_COUNT.incrementAndGet();
         if(!COLD&&player.getVehicle() instanceof ControlledSwordEntity sword)refreshNearCorridor(player,sword,c);
         if(!COLD&&nextClock-lastWarm>=10&&player.getVehicle() instanceof ControlledSwordEntity sword){
@@ -277,6 +278,7 @@ final class HuahongDynamicsQa {
         if(!WRITER.isTerminated()||!IMAGE_WRITER.isTerminated())FAILURES.add("Artifact writers did not finish in 55 seconds");
         var gson=new GsonBuilder().setPrettyPrinting().create();
         HuahongFrameTimings.write(out);
+        HuahongContinuityQa.write(out);
         Files.writeString(out.resolve("dynamics-frames.json"),gson.toJson(FRAMES));
         Files.writeString(out.resolve("dynamics-server.json"),gson.toJson(serverSnapshot));
         Files.writeString(out.resolve("all-render-frames.json"),gson.toJson(ALL_FRAMES));
@@ -289,7 +291,7 @@ final class HuahongDynamicsQa {
         if(!HuahongWallQa.ENABLED)for(var skin:SKINS){
             var rows=serverSnapshot.stream().filter(r->r.get("skin").equals(skin.name())).toList();
             var coverage=clientCoverage(movementFrames.stream().filter(r->r.get("skin").equals(skin.name())).toList());perSkinCoverage.put(skin.name(),coverage);verifyCoverage(skin.name(),coverage,80,acceptance);
-            if(Boolean.getBoolean("wuxingxiantu.myriadExternalShaders")&&movementFrames.stream().noneMatch(r->r.get("skin").equals(skin.name())&&Boolean.TRUE.equals(r.get("shaderPack"))&&"POST_SHADER_TRAIL_RENDER_PATH".equals(r.get("renderPath"))&&((Number)r.get("speed")).doubleValue()>=8))acceptance.add("No actual enabled shader-pack POST moving frame: "+skin);
+            if(Boolean.getBoolean("wuxingxiantu.myriadExternalShaders")&&!Boolean.getBoolean("wuxingxiantu.huahongNoShaders")&&movementFrames.stream().noneMatch(r->r.get("skin").equals(skin.name())&&Boolean.TRUE.equals(r.get("shaderPack"))&&"POST_SHADER_TRAIL_RENDER_PATH".equals(r.get("renderPath"))&&((Number)r.get("speed")).doubleValue()>=8))acceptance.add("No actual enabled shader-pack POST moving frame: "+skin);
             if(rows.size()<80)acceptance.add("Missing server maneuver samples for "+skin);
             for(String segment:List.of("straight","left-90","right-90","uturn-180","release-sprint","recover-sprint","release-forward","recover-forward","brake-exit"))
                 if(rows.stream().noneMatch(r->segment.equals(r.get("segment"))))acceptance.add("Missing "+skin+" / "+segment);
@@ -301,11 +303,11 @@ final class HuahongDynamicsQa {
             // 20-tick cooldown intentionally exceeds this short recovery sample.
             if(rows.stream().noneMatch(r->((Number)r.get("phase")).intValue()>=(COLD?630:270)&&((Number)r.get("stage")).intValue()==0))acceptance.add("Brake did not exit rainbow: "+skin);
             if(rows.stream().noneMatch(r->((Number)r.get("phase")).intValue()>=(COLD?552:202)&&((Number)r.get("phase")).intValue()<(COLD?560:210)&&Math.abs(Mth.wrapDegrees(((Number)r.get("yaw")).floatValue()-((Number)r.get("desiredYaw")).floatValue()))<20))acceptance.add("No completed 180-degree turn: "+skin);
-            if(!COLD)for(String required:List.of("straight|three-quarter-side","uturn-180|near-chase")){
+            if(!COLD&&!HuahongContinuityQa.ENABLED)for(String required:List.of("straight|three-quarter-side","uturn-180|near-chase")){
                 boolean captured=FRAMES.stream().anyMatch(r->r.get("skin").equals(skin.name())&&required.equals(r.get("segment")+"|"+r.get("view"))&&r.containsKey("image")&&((Number)r.get("exposureAlphaMultiplier")).doubleValue()==1&&Boolean.TRUE.equals(r.get("cameraSettled"))&&Boolean.TRUE.equals(r.get("movingPhotoEligible"))&&((Number)r.get("stage")).intValue()==2&&((Number)r.get("strength")).doubleValue()>=.995);
                 if(!captured)acceptance.add("Missing real moving normal-exposure photograph: "+skin+" / "+required);
             }
-            if(skin==HuahongSkin.DENSE){
+            if(skin==HuahongSkin.DENSE&&!HuahongContinuityQa.ENABLED){
                 boolean submitted=false;
                 for(var frame:FRAMES)if(frame.get("skin").equals("DENSE")&&frame.get("volume") instanceof Map<?,?> volume){
                     boolean ready=Boolean.TRUE.equals(volume.get("ready"));String hash=String.valueOf(volume.get("shaderHash"));
@@ -414,8 +416,9 @@ final class HuahongDynamicsQa {
             boolean present=((Optional<?>)iris.getMethod("getCurrentPack").invoke(null)).isPresent();
             String colorSpace=String.valueOf(Class.forName("net.irisshaders.iris.gui.option.IrisVideoSettings").getField("colorSpace").get(null));
             shaderRuntime.put("currentPackName",name);shaderRuntime.put("packPresent",present);shaderRuntime.put("inUse",inUse);shaderRuntime.put("colorSpace",colorSpace);
-            if(!inUse||!present||!name.equals("Solas Shader V3.7b.zip")||!colorSpace.equals("DISPLAY_P3"))throw new AssertionError("Actual Solas runtime differs from the required pack/display space: "+shaderRuntime);
-            Path pack=Minecraft.getInstance().gameDirectory.toPath().resolve("shaderpacks").resolve(name);shaderRuntime.put("packZipSha256",HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(pack))));
+            boolean disabled=Boolean.getBoolean("wuxingxiantu.huahongNoShaders");
+            if(disabled?inUse:!inUse||!present||!name.equals("Solas Shader V3.7b.zip")||!colorSpace.equals("DISPLAY_P3"))throw new AssertionError("Actual shader runtime differs from the required enabled/disabled state: "+shaderRuntime);
+            Path pack=Minecraft.getInstance().gameDirectory.toPath().resolve("shaderpacks").resolve(name);if(Files.isRegularFile(pack))shaderRuntime.put("packZipSha256",HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(pack))));
         }
         Map<String,String> shaderHashes=new LinkedHashMap<>();
         for(String path:List.of("shaders/core/sword_flight.fsh","shaders/core/sword_flight_post.fsh","shaders/core/huahong_volume.fsh","shaders/core/huahong_volume.vsh","shaders/core/huahong_volume.json","shaders/core/sword_flight.json","shaders/core/sword_flight_post.json","textures/effect/huahong/smoke-atlas.png"))
