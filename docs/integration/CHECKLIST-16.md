@@ -16,7 +16,7 @@
 | 8 | 完善修炼与保命机制 | meditationqte/MeditationQte.java、soulpreservation/SoulPreservation.java；meditationqte/QteGameTests.java、SoulPreservationGameTests.java | D28–D29开发核对及13项专项通过；真实蒲团界面隔离截图通过；完整特殊死亡/重连实机仍待第15项，见CULTIVATION_SURVIVAL_AUDIT.md |
 | 9 | 完善术法融合 | arts/SustainedSwordArts.java、ArtCatalog.java；SustainedSwordArtsGameTests.java | 补齐每5tick五把追踪剑并保留范围伤害，新增2项回归；学习/槽/敌我/供灵共用主框架，见SWORD_ARTS_AUDIT.md；客户端光影留第14项 |
 | 10 | 完善诛仙剑阵 | formation/SwordArrayServer.java、SwordArrayUpkeep.java、formation/client/SwordArrayClient.java；formation/SwordArrayGameTests.java | 固定阵位/半径15/四剑到剑幕时序/旋转/等值付费/清理已核对，6项专项通过；实际防御与伤害仍独立设计，见FORMATION_AUDIT.md |
-| 11 | 完善储物袋与内容物品 | storage/StorageBagItem.java、BagMagnetRules.java、importedcontent/SpiritBathBlockEntity.java、LaoyangDollBlock.java；StorageBagGameTests.java、ImportedCreaturesGameTests.java、ImportedContentGameTests.java | 袋/磁铁/妖兽/药浴/玩偶及16项专项已核对；实际袋/筛选/内容模型截图通过，真实重启多人仍待第15项，见STORAGE_CONTENT_AUDIT.md |
+| 11 | 完善储物袋与内容物品 | storage/StorageBagItem.java、BagMagnetRules.java、importedcontent/SpiritBathBlockEntity.java；StorageBagGameTests.java、ImportedCreaturesGameTests.java、ImportedContentGameTests.java | 袋/磁铁/妖兽/药浴已核对；旧阶段专项数量为历史证据，退役内容不列为现有功能；实际袋/筛选/内容模型截图通过，真实重启多人仍待第15项，见STORAGE_CONTENT_AUDIT.md |
 | 12 | 统一老UI与说明 | knowledge/KnowledgeItems.java、client/HerbProcessingTableScreen.java、client/EquipmentWorkstationScreen.java；EntryUiGameTests.java、KnowledgeIntegrationGameTests.java | 老UI布局保留；补齐JEI五丹阶×四品质，隔离客户端10张截图通过；JEI双缩放专项结果见UI_INTEGRATION_AUDIT.md与本轮验证报告；非全部客户端状态验收 |
 | 13 | 完整服务端回归 | verifyFull、tools/verify_gametest_log.py | 最终339/339必需测试通过，28任务全部重跑；119/119警告、6项日志门禁测试及154非生产类型排除检查通过；见VALIDATION-STEPS-8-13-20261021.md |
 | 14 | 客户端与光影验收 | ACCEPTANCE.md | 尚未执行本轮无/有光影模型、护罩、遮挡与渲染状态恢复验收 |

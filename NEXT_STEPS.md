@@ -1,3 +1,5 @@
+> 2026-11-02内容更正：当前系统见 docs/snapshots/万界仙途_开发快照_2026-11-02.txt。已退役的装饰及特殊丹不属于现行功能；下方阶段文字为历史交接，不据此恢复旧内容。
+
 > 2026-10-29最新接续：仓库为 https://github.com/hbyaing/Myriad-Ascension ，目标main。炼丹V5第04–12项已接入，第13项首轮验收完成，整体仍为进行中；下一步独立专服双客户端与更多热重载/故障注入。先读[制作清单](docs/integration/ALCHEMY_V5_CHECKLIST.md)、[第13项验收记录](docs/testing/ALCHEMY_V5_ACCEPTANCE_20261029.md)及根AGENTS.md。以下“下一项04”等为历史记录，不能用作最新进度。
 
 > 2026-10-27接续历史：当时第03项纯核心完成，下一项04；对应[换电脑接续说明](docs/integration/ALCHEMY_V5_HANDOFF_20261027.md)和[V5.0-R1修订TXT](docs/specifications/alchemy-v5/DESIGN_V5_0_R1.txt)保留供追溯。
@@ -13,7 +15,7 @@
 - 基于五行仙途框架，吸收 hbyaing/xiantu r115 内容，modId 保持 wuxingxiantu 以兼容存档。
 - 交付路线：`codex/myriad-ascension-delivery-old-ui` 保留老UI；新UI独立暂存在 `codex/myriad-ascension-new-ui`，不得直接合入其未验收草药界面草稿。
 - D01–D30 用户已确认取舍，详见 docs/integration/accepted-decisions.json 与 SOURCE_CONTENT_COVERAGE.md。
-- 已接入储物袋、剑阵、黑野猪、药浴与人偶、四级交易、法宝与辅材、护器玉符、神识探矿、灵脉罗盘等；D28 蒲团小游戏、D29 元婴自动保命、D30 副药组合已保存源码。
+- 已接入储物袋、剑阵、黑野猪、药浴、四级交易、法宝与辅材、护器玉符、神识探矿、灵脉罗盘等；D28 蒲团小游戏、D29 元婴自动保命、D30 副药组合已保存源码。
 - D30 普通炉使用闲置材料槽的最多三类副药，每类一株；天地为炉通过旧界面明确选择，不扫描消费背包额外草药。原丹药的使用和境界门槛继续有效。
 - 网络协议已升至95，客户端与服务端须使用同版本。
 

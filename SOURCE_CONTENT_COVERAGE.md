@@ -1,3 +1,5 @@
+> 2026-11-02：当前覆盖清单已移除退役的装饰/特殊丹条目；旧档退役映射与历史验收证据保留，详见 docs/integration/REMOVED_DOLLS_20261027.md。
+
 > 2026-10-21：本轮状态以 docs/integration/acceptance-baseline.json 和 ACCEPTANCE.md 为准。下方保留此前阶段账本；“本轮/未提交/正在实装”等为2026-10-20历史语境，不是当前源码缺失证明。新一轮完整验收正在执行，不引用旧255项结果作为当前通过证据。
 
 # 仙途 r115 内容融合覆盖账本（持续维护，非完成证明）
@@ -13,7 +15,6 @@
 | SwordArrayServer、SwordChartItem、四剑、client/formation | formation/完整模块 | 本轮已接线；源仅有阵景与收费，无伤害/实际防御；模型/光影待客户端验收 |
 | BlackBoarEntity/BeastRegistration、BeastBlood/Hide | importedcreatures | 本轮已接；掉落实际辅材用途接普通丹炉/天地为炉/炼器；待总验证 |
 | SpiritBathBlock/BE | importedcontent | 目标已默认炼气，无来源凡人层；保留四草药浴补修为并服从目标修为门槛，禁止直升筑基 |
-| LaoyangDoll/LaoyangPill、ModTabs承然玩偶 | importedcontent | 两玩偶朝向模型与来源创造取得保留；老杨2秒产丹/50%正负效果，承然不产丹；待总验证 |
 | ForgingManager/BlankType.activeTypes、ArtifactGrowthEvents | artifacts | 六类法宝已注册，铜/铁（兼容玄铁）/紫水晶/下界合金四类基材，六配方进入原炼器任务，1..3模型档从五行精炼/成色推导；温养/本命/唯一主人沿用目标；待统一验证 |
 | AuxMaterial/ArtifactAffix | artifacts | 15辅材原生存配方；D23/D24统一锋锐/坚固候选，经原强化入口采用；独有雷击/汲血/护盾及单次护甲韧性保留，不另叠攻击/最大耐久树；待验证 |
 | RefinementRules.consumeCosts(policy2)、refine_seal配方 | EquipmentCrafting action22 | D26确认：玉符可替代额外一晶，优先兼容旧晶支付，不改变五行精炼树；待验证 |
