@@ -23,6 +23,23 @@ public final class HuahongHeadBridgeQa {
     }
     public static Map<String,Object> verify(){
         checks=0;
+        // A hard turn leaves old samples off axis. Only the welded root may move.
+        for(Vec3 direction:List.of(new Vec3(0,0,1),new Vec3(1,1,-1).normalize(),new Vec3(0,-1,0))){
+            Vec3 center=new Vec3(12,11000,21);var source=new ArrayList<SwordFlightTrailHistory.Node>();
+            for(int i=40;i>=0;i--){double d=i*.05;source.add(new SwordFlightTrailHistory.Node(point(center.add(d*.4,d*.2,-d)),10200336-d,100-d));}
+            var saved=List.copyOf(source);var root=HuahongHeadBridge.swordRootNodes(source,center,direction);
+            check(source.equals(saved),"Sword root mutated world history");
+            for(int i=0;i<source.size();i++){
+                var raw=source.get(i);var shown=root.get(i);double d=100-raw.arc();
+                check(raw.arc()==shown.arc()&&raw.tick()==shown.tick(),"Sword root altered material age/arc");
+                if(d<=.5)check(vec(shown.point()).distanceTo(center.subtract(direction.scale(d)))<1e-10,"Sword root bends off carrier axis");
+                if(d>=1.5)check(raw==shown,"Sword root displaced distant turn history");
+            }
+        }
+        for(double age:new double[]{0,.5,1.8,3.7}){
+            check(HuahongHeadBridge.luminousSupportAge(age,2)==0,"Live luminous neck inherits stationary history age");
+            check(HuahongHeadBridge.luminousSupportAge(age,12)==age,"Luminous support refreshed distant history");
+        }
         for(double speed:new double[]{.2,3.85,7,15}){
             var h=new SwordFlightTrailHistory(.09,1000,160,2048);
             for(int tick=0;tick<=128;tick++)h.sample(new SwordFlightTrailHistory.Point(0,0,tick*speed),tick,1000);

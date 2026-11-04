@@ -82,7 +82,7 @@ vec4 field(vec3 p,vec3 ray,float stepLength,vec3 pixelX,vec3 pixelY){
         // folded history. Never carry a winning segment's arc into the noise.
         float support=exp(-squared/(candidateRadius*candidateRadius)*3.2)*candidateTail*candidateLife;
         envelope=max(envelope,support);
-        float coreRadius=(.085+.018*min(candidateBehind,3.0))*1.8;
+        float coreRadius=(.085+.018*min(candidateBehind,3.0))*(ShapeProfile.x/.52);
         float core=exp(-squared/(coreRadius*coreRadius))
             *exp(-candidateBehind*.65)*(1.0-smoothstep(3.0,6.0,candidateBehind));
         headCore=max(headCore,core*candidateLife*candidateTail);

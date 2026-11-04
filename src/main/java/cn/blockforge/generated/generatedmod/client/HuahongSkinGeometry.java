@@ -114,12 +114,13 @@ final class HuahongSkinGeometry {
         for(int i=0;i<nodes.size();i++){
             var n=nodes.get(i);double age=(now-n.tick())/20;
             if(age<0)continue;
+            double behind=headArc()-n.arc();
+            if(skin==HuahongSkin.NEEDLE)age=HuahongHeadBridge.luminousSupportAge(age,behind);
             if(visualSpeed>0)age=Math.max(age,(headArc()-n.arc())/visualSpeed);
             if(age<0||age>=life)continue;
             Frame f=at(i);double phase=strand*2.399+Math.sin((n.arc()-origin)*.47+strand)*.28;
             double open=(1-Math.exp(-age*5))*spread;
             Vec3 normal=f.side().scale(Math.cos(phase)).add(f.up().scale(Math.sin(phase)));
-            double behind=headArc()-n.arc();
             double join=skin==HuahongSkin.NEEDLE?HuahongHeadBridge.luminousCoreJoin(behind):smooth(1.5,3.5,behind);
             rows.add(new Row(f.p().add(normal.scale(open*HuahongHeadBridge.BODY_SCALE)),n.arc()-origin,width*(.18+.82*fade(age,life)),(float)(fade(age,life)*join),color,oriented?normal:null));
         }
@@ -361,7 +362,7 @@ final class HuahongSkinGeometry {
             Vec3 view=eye.subtract(c.p());view=view.lengthSqr()<1e-10?forward:view.normalize();
             for(int layer=0;layer<6;layer++){
                 double z=(layer-2.5)*.28,radius=c.radius()*Math.sqrt(1-z*z);
-                slices.add(new Cloud(c.p().add(view.scale(z*c.radius()*.72)),c.seed(),radius,c.alpha()*.34F,c.color(),c.mode()));
+                slices.add(new Cloud(c.p().add(view.scale(z*c.radius()*.72*HuahongHeadBridge.WIDTH_MULTIPLIER)),c.seed(),radius,c.alpha()*.34F,c.color(),c.mode()));
             }
         }
         slices.sort(Comparator.comparingDouble((Cloud c)->c.p().distanceToSqr(eye)).reversed());

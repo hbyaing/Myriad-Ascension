@@ -14,12 +14,20 @@ public final class HuahongHeadBridge {
         if(!Float.isFinite(strength)||strength<=0)return 0;
         float t=Math.min(1,strength/.015F);return t*t*(3-2*t);
     }
-    public static final double BODY_SCALE=1.8;
+    /** Shared transverse enlargement; head length and historical path stay fixed. */
+    public static final double WIDTH_MULTIPLIER=2;
+    public static final double BODY_SCALE=1.8*WIDTH_MULTIPLIER;
     /** The shortest luminous head ends 1.965m behind its attachment. Its
      * history must already have full support there, rather than fading in
      * through 3.5m and leaving a thin unsupported neck between the two. */
     public static float luminousCoreJoin(double behind){
         double q=Math.max(0,Math.min(1,behind-.5));return (float)(q*q*(3-2*q));
+    }
+    /** Rigid head support belongs to the active carrier, not an old stationary
+     * history birth. Blend back to real age only as the head joins world history. */
+    public static double luminousSupportAge(double age,double behind){
+        double q=Math.max(0,Math.min(1,(behind-FIXED_HEAD_LENGTH)/(WORLD_HISTORY_DISTANCE-FIXED_HEAD_LENGTH)));
+        return Math.max(0,age)*q*q*(3-2*q);
     }
 
 
@@ -32,6 +40,15 @@ public final class HuahongHeadBridge {
     /** Weight follows the rendered lifecycle; zero retains the exact source. */
     public static List<SwordFlightTrailHistory.Node> presentationNodes(
             List<SwordFlightTrailHistory.Node> source,Vec3 center,Vec3 forward,float weight){
+        return attach(source,center,forward,weight,FIXED_HEAD_LENGTH,WORLD_HISTORY_DISTANCE);
+    }
+    /** Weld only the last half metre to the pommel; keep the older turning trail. */
+    public static List<SwordFlightTrailHistory.Node> swordRootNodes(
+            List<SwordFlightTrailHistory.Node> source,Vec3 center,Vec3 forward){
+        return attach(source,center,forward,1,.5,1.5);
+    }
+    private static List<SwordFlightTrailHistory.Node> attach(
+            List<SwordFlightTrailHistory.Node> source,Vec3 center,Vec3 forward,float weight,double fixed,double distance){
         if(!Float.isFinite(weight)||weight<=0)return source;
         weight=Math.min(1,weight);
         if(source.isEmpty()||!finite(center)||!finite(forward)||forward.lengthSqr()<1e-10)return source;
@@ -39,9 +56,9 @@ public final class HuahongHeadBridge {
         var result=new ArrayList<SwordFlightTrailHistory.Node>(source.size());
         for(var node:source){
             double behind=Math.max(0,headArc-node.arc());
-            if(behind>=WORLD_HISTORY_DISTANCE){result.add(node);continue;}
+            if(behind>=distance){result.add(node);continue;}
             Vec3 straight=center.subtract(direction.scale(behind));
-            double q=Math.max(0,Math.min(1,(behind-FIXED_HEAD_LENGTH)/(WORLD_HISTORY_DISTANCE-FIXED_HEAD_LENGTH)));
+            double q=Math.max(0,Math.min(1,(behind-fixed)/(distance-fixed)));
             double blend=q*q*(3-2*q);
             var p=node.point();Vec3 world=new Vec3(p.x(),p.y(),p.z()),position=straight.lerp(world,blend);
             if(weight<1)position=world.lerp(position,weight);

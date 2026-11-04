@@ -25,6 +25,16 @@ public final class OrdinaryHiltQa {
     private static int bloomCalls,bloomVertices;
     private static final ArrayList<Sample> VERTICES=new ArrayList<>();
     private static ModelFrame model;
+    private static int rootSamples;
+    private static double rootAxisError;
+    public static void history(List<SwordFlightTrailHistory.Node> nodes,Vec3 forward,double arc){
+        if(!ENABLED||nodes.isEmpty()||TrailShaderBridge.shadowPass())return;
+        rootSamples=0;rootAxisError=0;
+        var p=nodes.get(nodes.size()-1).point();Vec3 center=new Vec3(p.x(),p.y(),p.z());
+        for(var n:nodes){double d=arc-n.arc();if(d<0||d>.5)continue;
+            var v=n.point();rootSamples++;rootAxisError=Math.max(rootAxisError,new Vec3(v.x(),v.y(),v.z()).distanceTo(center.subtract(forward.scale(d))));
+        }
+    }
     private record Sample(Vec3 world,Matrix4f pose,float u,float v,float alpha,boolean spiral){}
     private record ModelFrame(Vec3 hilt,Vec3 attachment,Vec3 center,Vec3 forward,Vec3 eye,Vec3 actualHiltView,Matrix4f actualEntityPose,List<Vec3> rearView,String item,int modelVertices){}
     @SubscribeEvent public static void reset(TickEvent.RenderTickEvent event){if(ENABLED&&event.phase==TickEvent.Phase.START){renderFrame++;VERTICES.clear();model=null;bloomCalls=bloomVertices=0;}}
@@ -74,7 +84,8 @@ public final class OrdinaryHiltQa {
             out.put("actualModelRearPixels",model.rearView.stream().map(p->projectView(p,projection)).toList());out.put("hiltPixel",projectView(model.actualHiltView,projection));out.put("canonicalHiltPixel",project(model.hilt,trailPose,projection,model.eye));out.put("attachmentPixel",project(model.attachment,trailPose,projection,model.eye));
             out.put("viewAngleFromForwardDegrees",Math.toDegrees(Math.acos(Math.max(-1,Math.min(1,model.eye.subtract(model.hilt).normalize().dot(model.forward))))));
             out.put("ordinary",vertices(ordinary,projection));out.put("spiral",vertices(spirals,projection));out.put("ordinaryNearHilt2_5m",vertices(ordinary.stream().filter(v->v.world.distanceToSqr(model.hilt)<=6.25).toList(),projection));out.put("spiralNearHilt2_5m",vertices(spirals.stream().filter(v->v.world.distanceToSqr(model.hilt)<=6.25).toList(),projection));out.put("allOrdinaryBounds",bounds(VERTICES.stream().filter(v->!v.spiral).toList()));out.put("allSpiralBounds",bounds(VERTICES.stream().filter(v->v.spiral).toList()));out.put("bloomSubmissionAttemptCalls",bloomCalls);out.put("bloomSubmissionAttemptVertices",bloomVertices);out.put("productionTrailDiagnostics",FlyingSwordEffects.trailDiagnostics());
-            out.put("scope","Observation only: actual ControlledSwordRenderer input pose plus same baked-model transform/display context; true ordinary vertex input with actual pose/projection. No render forcing, camera hook, exposure change or acceptance threshold.");return out;
+            out.put("rootSamples",rootSamples);out.put("rootAxisError",rootAxisError);
+            out.put("scope","Observation only: actual ControlledSwordRenderer input pose plus same baked-model transform/display context; true ordinary vertex input with actual pose/projection and actual drawHistory root samples. No render forcing, camera hook, exposure change or acceptance threshold.");return out;
         }catch(Exception e){throw new AssertionError("Ordinary hilt observation failed",e);}
     }
     private static Map<String,Object> vertices(List<Sample> samples,Matrix4f projection){

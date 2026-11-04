@@ -19,7 +19,7 @@ public abstract class HuahongGeometryCaptureMixin {
     @Inject(method="opacity",at=@At("RETURN"),remap=false)
     private static void derivedRows(List<?> rows,float opacity,CallbackInfoReturnable<List<?>> callback){HuahongMotionQa.tagDerivedRows(rows,callback.getReturnValue());}
     @Inject(method="strip(Ljava/util/List;IZZ)V",at=@At("HEAD"),remap=false)
-    private void beginStrip(List<?> rows,int mode,boolean localHead,boolean crossPlane,CallbackInfo callback){HuahongMotionQa.beginGeometryStrip(rows);}
+    private void beginStrip(List<?> rows,int mode,boolean localHead,boolean crossPlane,CallbackInfo callback){HuahongMotionQa.beginGeometryStrip(rows);cn.blockforge.generated.generatedmod.client.qa.myriad.HuahongJoinProbe.observe(rows,1,localHead?.70710677F:1F,mode);}
     @Inject(method="strip(Ljava/util/List;IZZ)V",at=@At("RETURN"),remap=false)
     private void endStrip(List<?> rows,int mode,boolean localHead,boolean crossPlane,CallbackInfo callback){HuahongMotionQa.endStrip();}
 }

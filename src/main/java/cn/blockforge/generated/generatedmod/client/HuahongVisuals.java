@@ -128,9 +128,9 @@ public final class HuahongVisuals {
             for(int i=0;i<nodes.size();i++){
                 var n=nodes.get(i);
                 if(n.tick()>now)continue;
-                double age=Math.max(0,(now-n.tick())/20),left=clamp(1-age/3.8);
-                Vec3 tangent=vec(nodes.get(Math.min(nodes.size()-1,i+1)).point()).subtract(vec(nodes.get(Math.max(0,i-1)).point()));
                 double behind=nodes.get(nodes.size()-1).arc()-n.arc();
+                double age=HuahongHeadBridge.luminousSupportAge((now-n.tick())/20,behind),left=clamp(1-age/3.8);
+                Vec3 tangent=vec(nodes.get(Math.min(nodes.size()-1,i+1)).point()).subtract(vec(nodes.get(Math.max(0,i-1)).point()));
                 Vec3 side=(active&&behind<HuahongHeadBridge.WORLD_HISTORY_DISTANCE?path.behind(behind):path.frame(vec(n.point()),tangent)).side();
                 rows.add(new Row(vec(headNodes.get(i).point()),n.arc()-origin,Math.pow(left,1.3)*(.22+.78*Math.exp(-age*.35)),
                         (float)(Math.pow(left,1.7)*HuahongHeadBridge.luminousCoreJoin(behind)),mix(0x8274ff,0xe8faff,Math.exp(-age*2)),side));
@@ -150,7 +150,7 @@ public final class HuahongVisuals {
                     var section=active&&behind<HuahongHeadBridge.WORLD_HISTORY_DISTANCE?path.behind(behind):path.frame(vec(n.point()),f);Vec3 side=section.side(),up=section.up();
                     double localArc=n.arc()-nodes.get(nodes.size()-1).arc();
                     double curl=Math.sin(localArc*.65+strand*1.7)*.24+Math.sin(localArc*1.73+strand)*.11;
-                    double open=smooth((age-.025)/.375),spread=open*SPREAD*.035*(1+age*.24);
+                    double open=smooth((age-.025)/.375),spread=open*SPREAD*.035*(1+age*.24)*HuahongHeadBridge.WIDTH_MULTIPLIER;
                     Vec3 p=vec(headNodes.get(i).point()).add(side.scale(Math.cos(phase+curl)*spread)).add(up.scale(Math.sin(phase+curl)*spread));
                     rows.add(new Row(p,n.arc()-origin+strand*.93,.15+.85*Math.pow(left,1.2),
                             (float)(Math.pow(left,1.5)*historyJoin(behind)),mix(0x8274ff,0xe8faff,Math.exp(-age*2)*.5),side));
@@ -170,7 +170,7 @@ public final class HuahongVisuals {
                 for(int strand=0;strand<4;strand++){
                     rows.clear();double phase=strand*2.399;
                     for(int i=0;i<=60;i++){
-                        double q=i/60.0,reach=Math.sin(Math.PI*q)*SPREAD*.075;
+                        double q=i/60.0,reach=Math.sin(Math.PI*q)*SPREAD*.075*HuahongHeadBridge.WIDTH_MULTIPLIER;
                         double angle=phase+q*.5+Math.sin(q*7-now/20*1.3+strand)*q*.22;
                         var section=path.behind(q*HEAD_LENGTH*(.55+random(strand+7)*.45));
                         Vec3 p=section.p().add(forward.scale(.17))
