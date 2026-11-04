@@ -53,7 +53,8 @@ public final class HuahongSmokeCompositor {
             accumulation.safeGetUniform("DepthSoftness").set(.08F);
             accumulation.safeGetUniform("OutputSize").set((float)main.viewWidth,(float)main.viewHeight);
             accumulation.safeGetUniform("EffectTime").set(time);accumulation.safeGetUniform("EmissionPass").set(0F);accumulation.safeGetUniform("OpticalPass").set(1F);
-            accumulation.setSampler("SmokeAtlas",mc.getTextureManager().getTexture(new ResourceLocation(GeneratedMod.MOD_ID,"textures/effect/huahong/smoke-atlas.png")).getId());
+            var atlas=mc.getTextureManager().getTexture(new ResourceLocation(GeneratedMod.MOD_ID,"textures/effect/huahong/smoke-atlas.png"));
+            atlas.setFilter(true,false);accumulation.setSampler("SmokeAtlas",atlas.getId());
             RenderSystem.setShaderTexture(0,depth);RenderSystem.setShader(()->accumulation);
             try{BufferUploader.drawWithShader(mesh);}finally{accumulation.clear();}
             main.bindWrite(true);RenderSystem.colorMask(true,true,true,false);GL11.glColorMask(true,true,true,false);

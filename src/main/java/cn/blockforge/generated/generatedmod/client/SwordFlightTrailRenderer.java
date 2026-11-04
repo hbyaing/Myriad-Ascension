@@ -23,7 +23,7 @@ import java.io.IOException;
 public final class SwordFlightTrailRenderer {
     private static ShaderInstance normal,post;
     private static final ResourceLocation SMOKE_ATLAS=new ResourceLocation(GeneratedMod.MOD_ID,"textures/effect/huahong/smoke-atlas.png");
-    private static void smokeAtlas(ShaderInstance shader){shader.setSampler("SmokeAtlas",Minecraft.getInstance().getTextureManager().getTexture(SMOKE_ATLAS).getId());}
+    private static void smokeAtlas(ShaderInstance shader){var atlas=Minecraft.getInstance().getTextureManager().getTexture(SMOKE_ATLAS);atlas.setFilter(true,false);shader.setSampler("SmokeAtlas",atlas.getId());}
     public static String status="Awaiting sword shaders";
     public static int generation,normalDraws,postDraws;
 

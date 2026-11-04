@@ -89,8 +89,9 @@ vec4 swordMaterial(){
             // Transparent density lobes preserve holes between the short plumes.
             float seed=mod(floor(arc/4.0),64.0);
             vec2 p=vec2(fract(arc),v)*2.0-1.0;
-            float phase=flowAngle(0.0,0.0,8.0);
-            vec2 curl=vec2(sin(seed*2.17+phase),cos(seed*1.31-phase))*.13;
+            float phase=flowAngle(0.0,0.0,32.0);
+            float roll=flowAngle(0.0,0.0,48.0);
+            vec2 curl=vec2(sin(seed*2.17+phase),cos(seed*1.31-roll))*.18;
             vec2 q=p+curl*(1.0-dot(p,p)*.18);
             float smoke=periodicNoise(vec2(q.x*3.2+seed*4.0+EffectTime*.5,q.y*3.2+.35*sin(phase+seed)),64.0)*.58;
             smoke+=periodicNoise(vec2(q.x*7.1+seed*8.0-EffectTime,q.y*7.1+.25*cos(phase*.5+seed)),128.0)*.29;

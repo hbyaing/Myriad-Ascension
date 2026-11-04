@@ -14,8 +14,6 @@ uniform vec3 CloudRadii;
 uniform vec3 NoiseOffset;
 uniform vec3 DetailOffset;
 uniform vec3 FlowPhase;
-uniform vec3 HistoryNoiseOrigin;
-uniform vec3 HistoryDetailOffset;
 uniform vec3 LightDirection;
 uniform float SkyLight;
 uniform float DayLight;
@@ -186,12 +184,14 @@ float densityAt(vec3 p) {
         float historyBoundary = cloudShape(material);
         if (historyBoundary <= 0.0) continue;
         if (!historyNoiseReady) {
-            vec3 historyDomain = transpose(WorldToCloud) * p * 0.38 + HistoryNoiseOrigin;
-            vec2 historyCurl = worley(historyDomain * 1.7 + HistoryDetailOffset);
+            // Keep true world-history geometry, but advect texture independently
+            // of travel speed instead of scanning world cells through the rider.
+            vec3 historyDomain = p * 0.38;
+            vec2 historyCurl = worley(historyDomain * 1.7 + DetailOffset);
             vec3 historyFlow = historyDomain + 0.080 * vec3(historyCurl.y - 0.5, historyCurl.x - 0.5, 0.5 - historyCurl.y);
             historyNoise = worley(historyDomain + NoiseOffset);
-            historyDetail = vec3(historyCurl.x, worley(historyFlow * 1.8 + HistoryDetailOffset).r,
-                    worley(historyFlow * 3.2 - HistoryDetailOffset * 2.0).r);
+            historyDetail = vec3(historyCurl.x, worley(historyFlow * 1.8 + DetailOffset).r,
+                    worley(historyFlow * 3.2 - DetailOffset * 2.0).r);
             historyNoiseReady = true;
         }
         float historyDensity = erodedDensity(historyBoundary,

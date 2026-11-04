@@ -42,6 +42,7 @@ public final class JindouCloudRenderer {
     private static int trailTexture = -1;
     private static final int MAX_SEGMENTS = 32;
     private static final float[] TRAIL_UPLOAD = new float[MAX_SEGMENTS * 20];
+    private static final float[] MATERIAL_FLOW=new float[6];
     private static final BufferBuilder POST_VERTICES = new BufferBuilder(256);
     private static com.mojang.blaze3d.vertex.VertexBuffer postBuffer;
     private static boolean warned;
@@ -135,7 +136,7 @@ public final class JindouCloudRenderer {
                     JindouCloudConfig.RADIUS_Z.get());
             List<Segment> segments = new ArrayList<>();
             List<JindouCloudTrailCache.Point> history = JindouCloudTrailCache.points(player, feet, partial);
-            double now = world.getGameTime() - 1 + (double) partial;
+            double now = JindouCloudClock.time(partial);
             int first = Math.max(0, history.size() - MAX_SEGMENTS);
             // Midpoint joins give adjacent quadratic curves identical tangents. GLSL evaluates them.
             // Only the live end changes; older triples retain their original world-space controls.
@@ -193,6 +194,11 @@ public final class JindouCloudRenderer {
         var previousShader = RenderSystem.getShader();
         try (var saved=new cn.blockforge.generated.generatedmod.client.realmflight.MeteorBloomRenderer.State()) {
             var shader = JindouCloudShader.shader;
+            RenderSystem.activeTexture(GL13.GL_TEXTURE0);
+            var atlas=client.getTextureManager().getTexture(new net.minecraft.resources.ResourceLocation(GeneratedMod.MOD_ID,"textures/effect/jindou_worley.png"));
+            atlas.setFilter(true,false);atlas.bind();shader.setSampler("Sampler0",atlas.getId());
+            int atlasMin=DIAGNOSTIC?GL11.glGetTexParameteri(GL11.GL_TEXTURE_2D,GL11.GL_TEXTURE_MIN_FILTER):0;
+            int atlasMag=DIAGNOSTIC?GL11.glGetTexParameteri(GL11.GL_TEXTURE_2D,GL11.GL_TEXTURE_MAG_FILTER):0;
             shader.setSampler("SceneDepth", post?sceneDepth:depthTexture);
             shader.safeGetUniform("ClipToRelativeWorld").set(new Matrix4f(worldToClip).invert());
             shader.safeGetUniform("RelativeWorldToClip").set(worldToClip);
@@ -205,7 +211,7 @@ public final class JindouCloudRenderer {
             float sunAngle = world.getSunAngle(partial), daylight = Math.max(0, Mth.cos(sunAngle));
             shader.safeGetUniform("LightDirection").set(-Mth.sin(sunAngle), Math.max(0.25F, daylight), 0.15F);
             shader.safeGetUniform("DayLight").set(daylight * (1 - world.getRainLevel(partial) * 0.55F));
-            double time = (world.getGameTime() - 1 + (double) partial) / 20.0;
+            double materialTime=JindouCloudClock.time(partial);
             for (Volume volume : volumes) {
                 float[] rect = projectBounds(worldToClip, volume, camera);
                 if (rect == null) continue;
@@ -225,16 +231,10 @@ public final class JindouCloudRenderer {
                 double seed = (volume.player().getUUID().getLeastSignificantBits() & 65535) / 65536.0;
                 double flow = JindouCloudTrailCache.flow(volume.player(), partial);
                 shader.safeGetUniform("NoiseOffset").set((float) seed, fract(seed * 0.37), fract(seed * 0.73));
-                shader.safeGetUniform("FlowPhase").set((float) (fract(time / 11.0 + seed) * Math.PI * 2),
-                        (float) (fract(time / 17.0 + seed * 0.37) * Math.PI * 2),
-                        (float) (fract(time / 23.0 + seed * 0.73) * Math.PI * 2));
-                shader.safeGetUniform("DetailOffset").set(fract(time * 0.025 + seed),
-                        fract(time * 0.016 + seed * 0.37), fract(-time * 0.020 - flow + seed * 0.73));
-                // All noise frequencies have an integer number of periods over this 10-unit domain.
-                shader.safeGetUniform("HistoryNoiseOrigin").set(period10(volume.center().x * 0.38),
-                        period10(volume.center().y * 0.38), period10(volume.center().z * 0.38));
-                shader.safeGetUniform("HistoryDetailOffset").set(fract(time * 0.013 + seed),
-                        fract(time * 0.007 + seed * 0.37), fract(-time * 0.010 + seed * 0.73));
+                JindouCloudTime.material(MATERIAL_FLOW,materialTime,flow,seed);
+                shader.safeGetUniform("FlowPhase").set(MATERIAL_FLOW[0],MATERIAL_FLOW[1],MATERIAL_FLOW[2]);
+                shader.safeGetUniform("DetailOffset").set(MATERIAL_FLOW[3],MATERIAL_FLOW[4],MATERIAL_FLOW[5]);
+                if(DIAGNOSTIC&&volume.player()==client.player){motionSnapshot.put("atlasMinFilter",atlasMin);motionSnapshot.put("atlasMagFilter",atlasMag);motionSnapshot.put("materialFlow",flow);}
                 shader.safeGetUniform("SkyLight").set(world.getBrightness(LightLayer.SKY, volume.player().blockPosition()) / 15.0F);
                 var raw=post?POST_VERTICES:null;
                 if(post)raw.begin(com.mojang.blaze3d.vertex.VertexFormat.Mode.QUADS,com.mojang.blaze3d.vertex.DefaultVertexFormat.POSITION);
@@ -244,7 +244,6 @@ public final class JindouCloudRenderer {
                 vertices.vertex(rect[2], rect[3], 0).endVertex();
                 vertices.vertex(rect[0], rect[3], 0).endVertex();
                 if(post){
-                    shader.setSampler("Sampler0",client.getTextureManager().getTexture(new net.minecraft.resources.ResourceLocation(GeneratedMod.MOD_ID,"textures/effect/jindou_worley.png")).getId());
                     RenderSystem.enableBlend();RenderSystem.defaultBlendFunc();RenderSystem.disableDepthTest();RenderSystem.depthMask(false);RenderSystem.disableCull();
                     if(postBuffer==null)postBuffer=new com.mojang.blaze3d.vertex.VertexBuffer(com.mojang.blaze3d.vertex.VertexBuffer.Usage.DYNAMIC);
                     try{postBuffer.bind();postBuffer.upload(raw.end());shader.apply();postBuffer.draw();shader.clear();}

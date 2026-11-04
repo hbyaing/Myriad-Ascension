@@ -343,9 +343,9 @@ final class HuahongSkinGeometry {
         // nucleus. These layers disappear with the local transformation fade.
         if(strength>.001){
             for(int k=0;k<8;k++){
-                Frame f=back(.15+k*.34);Vec3 p=offset(f,Math.sin(k*2.3)*.13,Math.cos(k*2.3)*.12);
-                clouds.add(new Cloud(p,k*5,.48+.11*Math.sin(k*1.7),strength*.23F,0x080001,30));
-                if(k==1||k==4)clouds.add(new Cloud(p,k*5+3,.22,strength*.13F,0xb92235,20));
+                Frame f=back(.15+k*.34);var field=HuahongFlowField.smokeHead(k,now);Vec3 p=offset(f,field.side(),field.up());
+                clouds.add(new Cloud(p,k*5,field.radius(),strength*.23F,0x080001,30));
+                if(k==1||k==4)clouds.add(new Cloud(p,k*5+3,.22,strength*(float)(.06+.10*field.crimson()),0xb92235,20));
             }
         }
         // Several depth slices give packets actual spatial thickness and
