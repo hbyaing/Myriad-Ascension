@@ -199,7 +199,9 @@ vec4 swordMaterial(){
     float across=(trailCoord.y-(spiral?2.0:0.0))*2.0-1.0;
     // Constant emission: neither time, world arc nor noise modulates brightness.
     float edge=pow(max(0.0,1.0-abs(across)),1.4);
-    float core=filteredSpine(across,spiral?.13:.12);
+    // Keep the ordinary nucleus at least a pixel wide when the tapered
+    // root projects below a pixel; otherwise its peak fades as coverage changes.
+    float core=filteredSpine(across,max(spiral?.13:.12,fwidth(across)*.65));
     float veil=exp(-across*across*4.6);
     float alpha=clamp((core*.98+veil*.22)*edge*vertexColor.a,0.0,.96);
     vec3 blue=mix(vertexColor.rgb,vec3(.20,.60,.98),.30);
@@ -214,9 +216,9 @@ void main(){
     vec4 material=swordMaterial();
     if(material.a<.003)discard;
     // Premultiplied light adds radiance; absorbing smoke keeps destination
-    // attenuation. Ordinary sword bands retain their original alpha appearance.
+    // attenuation. Ordinary light bands must not absorb other crossed light sheets.
     float materialBand=floor((trailCoord.y+.001)*.5)*2.0;
-    bool luminous=materialBand>=6.0&&materialBand!=14.0&&materialBand!=30.0;
+    bool luminous=materialBand!=14.0&&materialBand!=30.0;
     fragColor=vec4(material.rgb*material.a,luminous?0.0:material.a);
     if(EmissionPass>0.5){
         float band=floor((trailCoord.y+.001)*.5)*2.0;

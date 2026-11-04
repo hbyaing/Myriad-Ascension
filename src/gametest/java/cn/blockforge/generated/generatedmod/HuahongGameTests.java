@@ -119,6 +119,34 @@ public final class HuahongGameTests {
         h.succeed();
     }
 
+    @GameTest(template="furnace_empty",timeoutTicks=200)
+    public static void rainbowIgnoresStaleVanillaCollisionFlags(GameTestHelper h){
+        try(var f=new WallFlight(h)){
+            f.warm(2);f.place(f.start);int impacts=f.root.impact();
+            f.root.horizontalCollision=true;f.root.verticalCollision=true;
+            f.drive(true,false,true);
+            h.assertTrue(f.root.huahongStage()==2&&f.root.impact()==impacts,"Old vanilla collision flags cancelled a clear phasing sweep");
+            f.assertOriginalSword();
+        }
+        h.succeed();
+    }
+
+    @GameTest(template="furnace_empty",timeoutTicks=200)
+    public static void embeddedRainbowStopsWithoutRevokingPhasing(GameTestHelper h){
+        try(var f=new WallFlight(h)){
+            f.warm(2);f.place(f.start);f.wall(-3,12,Blocks.STONE.defaultBlockState());
+            f.wall(4,4,Blocks.OBSIDIAN.defaultBlockState());
+            h.assertTrue(!FlightCollision.clear(f.player,f.volume(),false),"Fixture must start embedded in ordinary terrain");
+            Vec3 before=f.root.position();int impacts=f.root.impact();
+            for(int i=0;i<12;i++)f.drive(true,false,true);
+            h.assertTrue(f.root.impact()>impacts,"Protected collision did not execute");
+            h.assertTrue(f.root.huahongStage()==2&&f.player.getVehicle()==f.root,"Embedded collision revoked rainbow permission");
+            h.assertTrue(f.root.getY()<=before.y+.01&&f.root.getZ()<f.start.z+4,"Embedded collision relocated upward or crossed the protected obstacle");
+            f.assertOriginalSword();
+        }
+        h.succeed();
+    }
+
     private static final class WallFlight implements AutoCloseable {
         final GameTestHelper helper;final GameTestPlayer player;final ControlledSwordEntity root;final Vec3 start;
         final ItemStack original;final String marker=java.util.UUID.randomUUID().toString();

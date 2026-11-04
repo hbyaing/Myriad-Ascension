@@ -123,6 +123,8 @@ public final class FlyingSwordEffects {
         };
     }
     @SubscribeEvent public static void render(RenderLevelStageEvent event){
+        // Shadow passes must not replace the main-view depth snapshot or queued plume.
+        if(TrailShaderBridge.shadowPass())return;
         if(event.getStage()==RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS){
             // Save terrain/entity/glass depth before cloud rendering writes its
             // depth pass. Cloud depth is not an opaque obstacle for the plume.
@@ -228,8 +230,9 @@ public final class FlyingSwordEffects {
         Vec3 attachment=vec(nodes.get(nodes.size()-1).point());
         var path=new HuahongFlightPath(nodes,attachment,forward,modelSide);
         double bridge=Math.min(length*.5,Math.max(2.5,Math.min(6,path.headTransitionLength())));
-        for(int plane=0;plane<3;plane++)drawHistoryPlane(buffer,pose,nodes,start,eye,headArc,length,now,width,alpha,origin,path,bridge,plane);
-        for(int plane=3;plane<5;plane++)drawHistoryPlane(buffer,pose,nodes,start,eye,headArc,length,now,width*1.6,alpha*.13F,origin,path,bridge,plane);
+        // A single camera-facing light ribbon has stable projected width;
+        // crossed model planes varied their coverage as the sword rolled.
+        drawHistoryPlane(buffer,pose,nodes,start,eye,headArc,length,now,width,alpha,origin,path,bridge,0);
     }
     private static void drawHistoryPlane(VertexConsumer buffer,PoseStack.Pose pose,List<SwordFlightTrailHistory.Node> nodes,
             int start,Vec3 eye,double headArc,double length,double now,double width,float alpha,double origin,
@@ -250,7 +253,7 @@ public final class FlyingSwordEffects {
                 var section=path.frame(center,tangent);side=plane==1||plane==3?section.side():section.up();
             }
             if(previousSide!=null&&side.dot(previousSide)<0)side=side.scale(-1);
-            double ageFade=fade(node,headArc,length,now),weight=plane==0?1-near:plane>=3?.7071067811865476:near*.7071067811865476;
+            double ageFade=fade(node,headArc,length,now),weight=plane==0?1:plane>=3?.7071067811865476:near*.7071067811865476;
             side=side.scale(width*ageFade*swordJoin(behind));
             float u=SwordTrailPhase.coordinate(node.arc(),origin),a=alpha*(float)(ageFade*weight);
             float mode=plane>=3?36:0;

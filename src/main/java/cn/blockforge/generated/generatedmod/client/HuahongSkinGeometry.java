@@ -370,7 +370,11 @@ final class HuahongSkinGeometry {
         if(strength>.001F)billboard(new Row(center,0,.12+3.5*.045+.52*.10,strength*.74F,0xe6fbff,null),32);
     }
     private void billboard(Row r,int mode){
-        Vec3 normal=eye.subtract(r.p()).normalize(),right=side(normal).scale(r.width()*HuahongHeadBridge.BODY_SCALE),up=normal.cross(right).normalize().scale(r.width()*HuahongHeadBridge.BODY_SCALE);
+        // One camera basis for every sprite: the old world-axis fallback
+        // snapped 90 degrees when a sprite-to-eye direction crossed |y|=.95.
+        var camera=net.minecraft.client.Minecraft.getInstance().gameRenderer.getMainCamera();
+        double scale=r.width()*HuahongHeadBridge.BODY_SCALE;
+        Vec3 right=new Vec3(camera.getLeftVector()).scale(scale),up=new Vec3(camera.getUpVector()).scale(scale);
         vertex(r.p().subtract(right).subtract(up),Math.floor(r.u())*4,mode,r.alpha(),r.color());
         vertex(r.p().add(right).subtract(up),Math.floor(r.u())*4+1,mode,r.alpha(),r.color());
         vertex(r.p().add(right).add(up),Math.floor(r.u())*4+1,mode+1,r.alpha(),r.color());

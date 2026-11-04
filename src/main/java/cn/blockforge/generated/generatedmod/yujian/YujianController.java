@@ -520,7 +520,8 @@ public final class YujianController {
         try{sword.move(MoverType.SELF,velocity);}finally{sword.noPhysics=false;}
         double moved=sword.position().distanceTo(before);
         sword.flightSpeed((float)moved); player.fallDistance=0;
-        if(FlightCollision.clear(player,volume.move(sword.position().subtract(before)),false))rememberSafe(ride,sword.position());
+        boolean ordinarySpace=FlightCollision.clear(player,volume.move(sword.position().subtract(before)),false);
+        if(ordinarySpace)rememberSafe(ride,sword.position());
         if(player.tickCount%YujianTuning.DIAGNOSTIC_INTERVAL==0)
             sword.diagnostics(targetSpeed,acceleration,sweep.loaded(),blocked,player.getPersistentData().getBoolean("YujianDebug"));
         if(ride.phase==YujianPhase.DUNXU && moved>=FlyingSwordConfig.EXTREME_SPEED.get()){
@@ -542,10 +543,15 @@ public final class YujianController {
         }
         // Waiting for terrain is not a wall impact: retain the cruise target
         // and phase, while still moving only through the validated loaded path.
-        boolean impact=(blocked&&sweep.loaded())||sword.horizontalCollision||sword.verticalCollision;
-        if(impact){ride.huahong.exit();sword.huahong(ride.huahong.stage(),ride.huahong.strength());}
+        // noPhysics movement leaves vanilla collision flags from older moves.
+        // The validated sweep is authoritative while phasing.
+        boolean impact=(blocked&&sweep.loaded())||!phasing&&(sword.horizontalCollision||sword.verticalCollision);
+        // A protected obstacle inside ordinary terrain must stop motion, not
+        // revoke phasing and relocate the rider to a distant sky-safe point.
+        boolean holdRainbow=ride.huahong.phasing()&&!ordinarySpace;
+        if(impact&&!holdRainbow){ride.huahong.exit();sword.huahong(ride.huahong.stage(),ride.huahong.strength());}
         if (impact) {
-            changePhase(sword,player,ride,YujianPhase.BASIC);
+            if(!holdRainbow)changePhase(sword,player,ride,YujianPhase.BASIC);
             if(phasing&&!collisionPhasing(ride)&&!restoreSafePosition(sword,player,ride)){stop(player);return;}
             ride.cruiseTarget=Math.min(ride.cruiseTarget,definition.baseSpeed());
             if(ride.collisionTicks==0){sword.impactNow();FlightFeedbackEvent.emit(sword,FlightFeedbackEvent.Kind.BLOCK_IMPACT);}
@@ -570,7 +576,9 @@ public final class YujianController {
         double normal=definition.advanced().maxSpeed(ride.phase,definition)*FlyingSwordConfig.CRUISE_FRACTION.get();
         boolean eligible=HuahongFlight.supported(SwordProfile.of(source).tier())
                 && ProgressionGate.canYujianPhase(player,source,YujianPhase.DUNXU)
-                && ride.forward&&!ride.brake&&ride.collisionTicks==0;
+                && ride.forward&&!ride.brake&&(ride.collisionTicks==0||ride.huahong.phasing()
+                    &&!FlightCollision.clear(player,FlightFrame.riderBounds(sword.position(),sword.getYRot(),sword.getXRot(),sword.roll(),sword.riderOffset())
+                            .minmax(player.getBoundingBox()).minmax(sword.getBoundingBox()),false));
         // Initial gathering still requires a clear, reasonably aligned route.
         // Once active, steering and a distant/unready prediction cannot cancel
         // the form: the actual per-tick sweep below remains authoritative.
