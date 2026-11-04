@@ -118,7 +118,7 @@ final class HuahongSkinGeometry {
             Frame f=at(i);double phase=strand*2.399+Math.sin((n.arc()-origin)*.47+strand)*.28;
             double open=(1-Math.exp(-age*5))*spread;
             Vec3 normal=f.side().scale(Math.cos(phase)).add(f.up().scale(Math.sin(phase)));
-            rows.add(new Row(f.p().add(normal.scale(open*HuahongHeadBridge.BODY_SCALE)),n.arc()-origin,width*(.18+.82*fade(age,life)),(float)fade(age,life),color,oriented?normal:null));
+            rows.add(new Row(f.p().add(normal.scale(open*HuahongHeadBridge.BODY_SCALE)),n.arc()-origin,width*(.18+.82*fade(age,life)),(float)(fade(age,life)*smooth(1.5,3.5,headArc()-n.arc())),color,oriented?normal:null));
         }
         return rows;
     }

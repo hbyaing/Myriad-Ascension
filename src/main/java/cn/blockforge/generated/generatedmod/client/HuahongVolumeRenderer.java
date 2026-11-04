@@ -167,6 +167,7 @@ public final class HuahongVolumeRenderer {
         if(Minecraft.getInstance().level==null||!ready()){status="Volume shader or level unavailable";return;}
         packets.sort(Comparator.comparingDouble((Packet p)->p.min().add(p.max()).scale(.5).lengthSqr()).reversed());
         try(var saved=new MeteorBloomRenderer.State()){
+            SwordFlightTrailRenderer.clearPolygonOffset();
             var target=Minecraft.getInstance().getMainRenderTarget();target.bindWrite(true);
             RenderSystem.disableDepthTest();RenderSystem.depthMask(false);RenderSystem.disableCull();RenderSystem.disableScissor();
             RenderSystem.enableBlend();RenderSystem.blendFuncSeparate(GL11.GL_ONE,GL11.GL_ONE_MINUS_SRC_ALPHA,GL11.GL_ONE,GL11.GL_ONE_MINUS_SRC_ALPHA);

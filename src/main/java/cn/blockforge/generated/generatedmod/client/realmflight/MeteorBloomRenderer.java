@@ -70,6 +70,7 @@ public final class MeteorBloomRenderer {
         if(blur==null||composite==null||sceneDepth<0){if(mesh!=null)mesh.release();status="Waiting for shaders or world depth";return;}
         boolean uploaded=false;
         try(State saved=new State()){
+            if(sword)SwordFlightTrailRenderer.clearPolygonOffset();
             var main=Minecraft.getInstance().getMainRenderTarget();int w=Math.max(1,main.viewWidth/2),h=Math.max(1,main.viewHeight/2);
             if(emission==null||emission.width!=w||emission.height!=h){
                 release();emission=target(w,h);ping=target(w,h);pong=target(w,h);
@@ -131,6 +132,7 @@ public final class MeteorBloomRenderer {
         final boolean[] mask=cn.blockforge.generated.generatedmod.client.NativeGlState.colorMask();
         final float[] color=RenderSystem.getShaderColor().clone();
         final float[] clearColor=new float[4];
+        final boolean polygonOffset=GL11.glIsEnabled(GL11.GL_POLYGON_OFFSET_FILL);
         final boolean stencil=GL11.glIsEnabled(GL11.GL_STENCIL_TEST);
         final boolean depth=GL11.glIsEnabled(GL11.GL_DEPTH_TEST),write=GL11.glGetBoolean(GL11.GL_DEPTH_WRITEMASK),blend=GL11.glIsEnabled(GL11.GL_BLEND),cull=GL11.glIsEnabled(GL11.GL_CULL_FACE),scissor=GL11.glIsEnabled(GL11.GL_SCISSOR_TEST);
         final int srcRGB=GL11.glGetInteger(GL14.GL_BLEND_SRC_RGB),dstRGB=GL11.glGetInteger(GL14.GL_BLEND_DST_RGB),srcAlpha=GL11.glGetInteger(GL14.GL_BLEND_SRC_ALPHA),dstAlpha=GL11.glGetInteger(GL14.GL_BLEND_DST_ALPHA);
@@ -155,6 +157,7 @@ public final class MeteorBloomRenderer {
             RenderSystem.viewport(viewport[0],viewport[1],viewport[2],viewport[3]);
             for(int i=0;i<3;i++){RenderSystem.setShaderTexture(i,shaderTextures[i]);GlStateManager._activeTexture(GL13.GL_TEXTURE0+i);GlStateManager._bindTexture(bound[i]);}
             GlStateManager._activeTexture(active);RenderSystem.setShader(()->previous);RenderSystem.setShaderColor(color[0],color[1],color[2],color[3]);
+            if(polygonOffset){RenderSystem.enablePolygonOffset();GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL);}else{RenderSystem.disablePolygonOffset();GL11.glDisable(GL11.GL_POLYGON_OFFSET_FILL);}
             if(stencil)GL11.glEnable(GL11.GL_STENCIL_TEST);else GL11.glDisable(GL11.GL_STENCIL_TEST);
             RenderSystem.depthMask(write);if(depth)RenderSystem.enableDepthTest();else RenderSystem.disableDepthTest();
             if(cull)RenderSystem.enableCull();else RenderSystem.disableCull();

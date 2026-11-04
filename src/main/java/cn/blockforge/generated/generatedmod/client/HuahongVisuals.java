@@ -21,8 +21,19 @@ public final class HuahongVisuals {
     private record Row(Vec3 point,double arc,double width,float alpha,int color,Vec3 side){
         Row(Vec3 point,double arc,double width,float alpha,int color){this(point,arc,width,alpha,color,null);}
     }
+    private record MorphAlpha(VertexConsumer target,float opacity) implements VertexConsumer {
+        public VertexConsumer vertex(double x,double y,double z){target.vertex(x,y,z);return this;}
+        public VertexConsumer color(int r,int g,int b,int a){target.color(r,g,b,Math.round(a*opacity));return this;}
+        public VertexConsumer uv(float u,float v){target.uv(u,v);return this;}
+        public VertexConsumer overlayCoords(int u,int v){target.overlayCoords(u,v);return this;}
+        public VertexConsumer uv2(int u,int v){target.uv2(u,v);return this;}
+        public VertexConsumer normal(float x,float y,float z){target.normal(x,y,z);return this;}
+        public void endVertex(){target.endVertex();}
+        public void defaultColor(int r,int g,int b,int a){target.defaultColor(r,g,b,Math.round(a*opacity));}
+        public void unsetDefaultColor(){target.unsetDefaultColor();}
+    }
     private static final class Trail {
-        final SwordFlightTrailHistory history=new SwordFlightTrailHistory(.25,LIFE,160,720);
+        SwordFlightTrailHistory history;
         Vec3 last;long lastEmission;
         Vec3 denseForward,denseSide;
         cn.blockforge.generated.generatedmod.yujian.HuahongSkin skin;
@@ -37,7 +48,7 @@ public final class HuahongVisuals {
             // JFR identified class definition on the first visible flight frame.
             // Link the pure head helper during client initialization; no dummy
             // effect, history, model, geometry or GPU work is performed here.
-            HuahongHeadBridge.attachmentWeight(0);HuahongSkinGeometry.linkCarriers();headLinked=true;
+            HuahongHeadBridge.attachmentWeight(0);HuahongSkinGeometry.linkCarriers();new MorphAlpha(null,0);headLinked=true;
         }
     }
     public static boolean hasTrails(){return !TRAILS.isEmpty();}
@@ -53,16 +64,17 @@ public final class HuahongVisuals {
             if(trail==null||trail.skin!=sword.huahongSkin()){
                 trail=new Trail();trail.skin=sword.huahongSkin();TRAILS.put(sword,trail);
             }
-            if(sword.renderHuahong(1)>.001F){
-                Vec3 center=sword.position().add(0,.85,0);trail.last=center;trail.lastEmission=tick;
+            trail.history=FlyingSwordEffects.sharedHistory(sword);
+            if(trail.history!=null&&(sword.renderHuahong(1)>.001F||InterpolatedFlyingSwordTransform.morphProgress(sword)>.001F)){
+                trail.last=FlyingSwordEffects.morphAnchor(sword,sword.position(),sword.getYRot(),sword.getXRot(),sword.renderRoll(1),InterpolatedFlyingSwordTransform.morphProgress(sword));trail.lastEmission=tick;
             }
         }
         TRAILS.entrySet().removeIf(e->{
             if(mc.player!=null&&e.getKey().distanceToSqr(mc.player)>4096)return true;
             var t=e.getValue();
-            if((e.getKey().isRemoved()||e.getKey().renderHuahongStage()==0)&&tick-t.lastEmission>LIFE)return true;
-            if(t.last!=null)t.history.sample(point(t.last),tick,
-                    Math.max(8,Math.max(e.getKey().flightSpeed(),e.getKey().renderSpeed(1))*1.7+3));
+            if(e.getKey().isRemoved()||!e.getKey().flightRoot()
+                    ||InterpolatedFlyingSwordTransform.morphProgress(e.getKey())<=.001F&&tick-t.lastEmission>1)return true;
+
             return false;
         });
     }
@@ -74,11 +86,13 @@ public final class HuahongVisuals {
         for(var entry:TRAILS.entrySet()){
             var sword=entry.getKey();var trail=entry.getValue();
             if(mc.player!=null&&mc.options.getCameraType().isFirstPerson()&&sword==mc.player.getVehicle())continue;
-            if(trail.last==null)continue;
+            if(trail.last==null||trail.history==null)continue;
             var frame=InterpolatedFlyingSwordTransform.get(sword,partial);
-            Vec3 center=frame.position().add(0,.85,0),forward=frame.forward();
+            Vec3 center=FlyingSwordEffects.morphAnchor(sword,frame.position(),frame.yaw(),frame.pitch(),frame.roll(),frame.huahong()),forward=frame.forward();
             if(center.distanceToSqr(eye)>4096)continue;
             boolean active=!sword.isRemoved()&&frame.huahong()>.001F;
+            if(!active)continue;
+            VertexConsumer entryBuffer=new MorphAlpha(buffer,FlyingSwordEffects.morphWeight(frame.huahong()));
             var canonical=active?trail.history.renderNodes(now,point(center)):trail.history.nodes();
             var nodes=active?SwordFlightTrailHistory.uniformHead(canonical,.125,HuahongHeadBridge.WORLD_HISTORY_DISTANCE):canonical;
             float attachment=active?HuahongHeadBridge.attachmentWeight(frame.huahong()):0;
@@ -95,10 +109,10 @@ public final class HuahongVisuals {
                 if(active||trail.denseForward==null){trail.denseForward=forward;trail.denseSide=modelSide;}
                 var clip=new org.joml.Matrix4f(com.mojang.blaze3d.systems.RenderSystem.getProjectionMatrix())
                         .mul(com.mojang.blaze3d.systems.RenderSystem.getModelViewMatrix()).mul(pose.pose());
-                HuahongVolumeRenderer.queue(headNodes,eye,now,active?frame.huahong():0,clip,1,trail.denseForward,trail.denseSide);
+                HuahongVolumeRenderer.queue(headNodes,eye,now,FlyingSwordEffects.morphWeight(frame.huahong()),clip,1,trail.denseForward,trail.denseSide);
             }
             if(trail.skin!=cn.blockforge.generated.generatedmod.yujian.HuahongSkin.METEOR_PRISM){
-                vertices+=HuahongSkinGeometry.draw(trail.skin,buffer,pose,eye,center,forward,modelSide,nodes,canonical,now,active?frame.huahong():0);
+                vertices+=HuahongSkinGeometry.draw(trail.skin,entryBuffer,pose,eye,center,forward,modelSide,nodes,canonical,now,1);
                 continue;
             }
             var path=new HuahongFlightPath(canonical,center,forward,modelSide,Double.POSITIVE_INFINITY,true,attachment);
@@ -112,11 +126,11 @@ public final class HuahongVisuals {
                 double behind=nodes.get(nodes.size()-1).arc()-n.arc();
                 Vec3 side=(active&&behind<HuahongHeadBridge.WORLD_HISTORY_DISTANCE?path.behind(behind):path.frame(vec(n.point()),tangent)).side();
                 rows.add(new Row(vec(headNodes.get(i).point()),n.arc()-origin,Math.pow(left,1.3)*(.22+.78*Math.exp(-age*.35)),
-                        (float)Math.pow(left,1.7),mix(0x8274ff,0xe8faff,Math.exp(-age*2)),side));
+                        (float)(Math.pow(left,1.7)*historyJoin(behind)),mix(0x8274ff,0xe8faff,Math.exp(-age*2)),side));
             }
-            strip(buffer,pose,eye,rows,WIDTH*1.4,.045F,10,path);
-            strip(buffer,pose,eye,rows,WIDTH*.42,.35F,6,path);
-            strip(buffer,pose,eye,rows,.008+WIDTH*.045,.48F,8,path);
+            strip(entryBuffer,pose,eye,rows,WIDTH*1.4,.045F,10,path);
+            strip(entryBuffer,pose,eye,rows,WIDTH*.42,.35F,6,path);
+            strip(entryBuffer,pose,eye,rows,.008+WIDTH*.045,.48F,8,path);
             // Offset each filament from its own world-path tangent, not the current head axis.
             for(int strand=0;strand<4;strand++){
                 rows.clear();double phase=strand*2.399;
@@ -132,20 +146,20 @@ public final class HuahongVisuals {
                     double open=smooth((age-.025)/.375),spread=open*SPREAD*.035*(1+age*.24);
                     Vec3 p=vec(headNodes.get(i).point()).add(side.scale(Math.cos(phase+curl)*spread)).add(up.scale(Math.sin(phase+curl)*spread));
                     rows.add(new Row(p,n.arc()-origin+strand*.93,.15+.85*Math.pow(left,1.2),
-                            (float)Math.pow(left,1.5),mix(0x8274ff,0xe8faff,Math.exp(-age*2)*.5),side));
+                            (float)(Math.pow(left,1.5)*historyJoin(behind)),mix(0x8274ff,0xe8faff,Math.exp(-age*2)*.5),side));
                 }
-                strip(buffer,pose,eye,rows,WIDTH*.16,.24F,6,path);
+                strip(entryBuffer,pose,eye,rows,WIDTH*.16,.24F,6,path);
             }
             if(active){
-                float strength=(float)Math.pow(frame.huahong(),1.4);rows.clear();
+                float strength=1;rows.clear();
                 for(int i=0;i<=68;i++){
                     double q=i/68.0,w=Math.max(.012,Math.pow(Math.max(0,Math.sin(Math.PI*q)),.65)*Math.exp(-q*2.7));
                     var section=path.behind(q*HEAD_LENGTH);
                     rows.add(new Row(section.p().add(forward.scale(.26)),-q*HEAD_LENGTH,w,strength*(float)(1-q),0xe8faff,section.side()));
                 }
-                strip(buffer,pose,eye,rows,WIDTH*2.1,.054F,10,path);
-                strip(buffer,pose,eye,rows,WIDTH*.19,.68F,8,path);
-                noseGlow(buffer,pose,eye,center,forward,strength);
+                strip(entryBuffer,pose,eye,rows,WIDTH*2.1,.054F,10,path);
+                strip(entryBuffer,pose,eye,rows,WIDTH*.19,.68F,8,path);
+                noseGlow(entryBuffer,pose,eye,center,forward,strength);
                 for(int strand=0;strand<4;strand++){
                     rows.clear();double phase=strand*2.399;
                     for(int i=0;i<=60;i++){
@@ -157,7 +171,7 @@ public final class HuahongVisuals {
                         rows.add(new Row(p,-q*HEAD_LENGTH+strand*.83,Math.pow(Math.max(0,Math.sin(Math.PI*q)),.65)*(1-q*.65),
                                 strength*(float)(1-q),mix(0x8274ff,0xe8faff,Math.pow(1-q,4)*.8),section.side()));
                     }
-                    strip(buffer,pose,eye,rows,WIDTH*.3,.22F,6,path);
+                    strip(entryBuffer,pose,eye,rows,WIDTH*.3,.22F,6,path);
                 }
             }
         }
@@ -226,6 +240,7 @@ public final class HuahongVisuals {
         Vec3 r=p.subtract(eye);b.vertex(pose.pose(),(float)r.x,(float)r.y,(float)r.z).uv(u,v)
                 .color((color>>16)&255,(color>>8)&255,color&255,Mth.clamp(Math.round(alpha*255),0,255)).endVertex();vertices++;
     }
+    private static double historyJoin(double behind){return smooth((behind-1.5)/2);}
     private static double clamp(double x){return Math.max(0,Math.min(1,x));}
     private static double smooth(double x){x=clamp(x);return x*x*(3-2*x);}
     private static double random(long x){double a=Math.sin(x*71.371+19.713)*15317.317;return a-Math.floor(a);}

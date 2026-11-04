@@ -64,7 +64,6 @@ public final class FlyingSwordEffects {
         if(client.isPaused()||!TRAIL_CLOCK.initialized())return;
         TRAILS.keySet().removeIf(s->s.isRemoved()||s.level()!=client.level||!s.flightRoot()||s.distanceToSqr(client.player)>4096);
         if(client.options.getCameraType().isFirstPerson()&&client.player.getVehicle() instanceof ControlledSwordEntity own)TRAILS.remove(own);
-        HuahongVisuals.sample(TRAIL_CLOCK.tick());
         int count=0;
         for(var entity:client.level.entitiesForRendering()){
             if(!(entity instanceof ControlledSwordEntity sword)||!sword.flightRoot()||sword.distanceToSqr(client.player)>4096)continue;
@@ -72,13 +71,20 @@ public final class FlyingSwordEffects {
             if(++count>32)break;
             // Read the tick pose directly; the shared render-frame transform may
             // still contain an older partial tick and must not seed history.
-            Vec3 anchor=SwordFlightAttachment.tail(sword,sword.position(),sword.getYRot(),sword.getXRot(),sword.renderRoll(1));
+            Vec3 anchor=morphAnchor(sword,sword.position(),sword.getYRot(),sword.getXRot(),sword.renderRoll(1),InterpolatedFlyingSwordTransform.morphProgress(sword));
             // Synced speed already describes server-validated displacement. Fast Dunxu
             // can exceed eight blocks/tick; that is not a teleport. Anchor rotation and
             // interpolation receive a small bounded allowance without accepting jumps.
-            double allowedStep=Math.max(8,Math.max(sword.flightSpeed(),sword.renderSpeed(1))*1.5+2);
-            TRAILS.computeIfAbsent(sword,s->new SwordFlightTrailHistory()).sample(point(anchor),TRAIL_CLOCK.tick(),allowedStep);
+            double allowedStep=Math.max(8,Math.max(sword.flightSpeed(),sword.renderSpeed(1))*1.7+3);
+            TRAILS.computeIfAbsent(sword,s->new SwordFlightTrailHistory(.25,116,160,720)).sample(point(anchor),TRAIL_CLOCK.tick(),allowedStep);
         }
+        HuahongVisuals.sample(TRAIL_CLOCK.tick());
+    }
+    static SwordFlightTrailHistory sharedHistory(ControlledSwordEntity sword){return TRAILS.get(sword);}
+    static float morphWeight(float strength){float t=Mth.clamp(strength,0,1);return t*t*(3-2*t);}
+    static Vec3 morphAnchor(ControlledSwordEntity sword,Vec3 position,float yaw,float pitch,float roll,float strength){
+        float t=morphWeight(strength);
+        return SwordFlightAttachment.tail(sword,position,yaw,pitch,roll).lerp(position.add(0,.85,0),t);
     }
     private static SwordFlightTrailHistory.Point point(Vec3 p){return new SwordFlightTrailHistory.Point(p.x,p.y,p.z);}
     private static Vec3 vec(SwordFlightTrailHistory.Point p){return new Vec3(p.x(),p.y(),p.z());}
@@ -170,10 +176,13 @@ public final class FlyingSwordEffects {
                 // hides a local rider for part of every tick at high speed.
                 if(f.position().distanceToSqr(eye)>4096)continue;
                 var history=entry.getValue();
-                Vec3 anchor=SwordFlightAttachment.tail(sword,f.position(),f.yaw(),f.pitch(),f.roll());
+                Vec3 anchor=morphAnchor(sword,f.position(),f.yaw(),f.pitch(),f.roll(),f.huahong());
                 var nodes=history.renderNodes(now,point(anchor));if(nodes.size()<2)continue;
+                if(f.huahong()>.001F)nodes=HuahongHeadBridge.presentationNodes(
+                        SwordFlightTrailHistory.uniformHead(nodes,.125,HuahongHeadBridge.WORLD_HISTORY_DISTANCE),
+                        anchor,f.forward(),HuahongHeadBridge.attachmentWeight(f.huahong()));
                 float jinghong=sword.renderJinghong(event.getPartialTick());
-                float ordinary=1-f.huahong();ordinary=ordinary*ordinary*(3-2*ordinary);
+                float ordinary=1-morphWeight(f.huahong());
                 if(ordinary<=.001F)continue;
                 float strength=sword.renderPhase().trailIntensity*(1+1.5F*jinghong);
                 double length=Math.min(22,(4+5*f.sprintFactor()+7*f.spiralFactor())*strength);

@@ -32,7 +32,18 @@ public final class SwordFlightTrailRenderer {
         event.registerShader(new ShaderInstance(event.getResourceProvider(),ResourceLocation.fromNamespaceAndPath(GeneratedMod.MOD_ID,"sword_flight_post"),DefaultVertexFormat.POSITION_TEX_COLOR),s->post=s);
         generation++;
     }
+    private static boolean warnedPolygonOffset;
+    public static void clearPolygonOffset(){
+        if(!warnedPolygonOffset&&org.lwjgl.opengl.GL11.glIsEnabled(org.lwjgl.opengl.GL11.GL_POLYGON_OFFSET_FILL)){
+            warnedPolygonOffset=true;
+            com.mojang.logging.LogUtils.getLogger().warn("Flight VFX isolated inherited polygon depth offset (factor={}, units={})",
+                    org.lwjgl.opengl.GL11.glGetFloat(org.lwjgl.opengl.GL11.GL_POLYGON_OFFSET_FACTOR),
+                    org.lwjgl.opengl.GL11.glGetFloat(org.lwjgl.opengl.GL11.GL_POLYGON_OFFSET_UNITS));
+        }
+        RenderSystem.disablePolygonOffset();org.lwjgl.opengl.GL11.glDisable(org.lwjgl.opengl.GL11.GL_POLYGON_OFFSET_FILL);
+    }
     private static void lightBlend(){
+        clearPolygonOffset();
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(org.lwjgl.opengl.GL11.GL_ONE,org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA,
                 org.lwjgl.opengl.GL11.GL_ONE,org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA);

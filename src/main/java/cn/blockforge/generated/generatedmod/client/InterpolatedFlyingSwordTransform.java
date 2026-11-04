@@ -16,11 +16,26 @@ import net.minecraftforge.fml.common.Mod;
 public record InterpolatedFlyingSwordTransform(Vec3 position,float yaw,float pitch,float roll,
         float manualRoll,float angular,float speed,float speedFactor,float sprintFactor,float spiralFactor,float brace,float huahong) {
     private static final java.util.Map<ControlledSwordEntity,InterpolatedFlyingSwordTransform> FRAMES=new java.util.IdentityHashMap<>();
+    private static final java.util.Map<ControlledSwordEntity,Morph> MORPHS=new java.util.IdentityHashMap<>();
+    private static final class Morph {float value;long frame=-1;}
+    private static long frameSequence,lastFrameNanos;
+    private static float frameSeconds;
+    public static float morphProgress(ControlledSwordEntity sword){var m=MORPHS.get(sword);return m==null?0:m.value;}
+    private static float advanceMorph(ControlledSwordEntity sword,float target){
+        target=Float.isFinite(target)?Mth.clamp(target,0,1):0;
+        var m=MORPHS.computeIfAbsent(sword,key->new Morph());
+        if(m.frame!=frameSequence){m.frame=frameSequence;float step=frameSeconds/.4F;m.value+=Mth.clamp(target-m.value,-step,step);}
+        return m.value;
+    }
     private static float framePartial;
     private static boolean rendering;
     @SubscribeEvent public static void frame(TickEvent.RenderTickEvent event){
         rendering=event.phase==TickEvent.Phase.START;
-        if(rendering){FRAMES.clear();framePartial=Mth.clamp(event.renderTickTime,0,1);}
+        if(rendering){
+            long now=System.nanoTime();frameSeconds=lastFrameNanos==0||net.minecraft.client.Minecraft.getInstance().isPaused()?0:(float)Math.min(.05,Math.max(0,(now-lastFrameNanos)/1e9));lastFrameNanos=now;frameSequence++;
+            MORPHS.keySet().removeIf(s->s.isRemoved()||s.level()!=net.minecraft.client.Minecraft.getInstance().level||!s.flightRoot());
+            FRAMES.clear();framePartial=Mth.clamp(event.renderTickTime,0,1);
+        }
     }
     public static float partial(float fallback){return rendering?framePartial:Mth.clamp(fallback,0,1);}
     public static InterpolatedFlyingSwordTransform get(ControlledSwordEntity sword,float partial){
@@ -40,7 +55,7 @@ public record InterpolatedFlyingSwordTransform(Vec3 position,float yaw,float pit
                     (float)(Math.abs(angular)*20*Mth.RAD_TO_DEG/FlyingSwordConfig.ROLL_VISUAL_FULL.get()),0,1);
             return new InterpolatedFlyingSwordTransform(new Vec3(Mth.lerp(t,s.xOld,s.getX()),Mth.lerp(t,s.yOld,s.getY()),Mth.lerp(t,s.zOld,s.getZ())),
                     Mth.rotLerp(t,s.yRotO,s.getYRot()),Mth.lerp(t,s.xRotO,s.getXRot()),s.renderRoll(t),s.renderRoll(t)-s.renderBank(t),
-                    angular,speed,factor,sprint,spiral,Mth.clamp((Math.abs(angular)*20* Mth.RAD_TO_DEG-45)/240,0,1),s.renderHuahong(t));
+                    angular,speed,factor,sprint,spiral,Mth.clamp((Math.abs(angular)*20* Mth.RAD_TO_DEG-45)/240,0,1),advanceMorph(s,s.renderHuahong(t)));
         });
     }
     public Quaternionf rotation(){return FlightFrame.rotation(yaw,pitch,roll);}

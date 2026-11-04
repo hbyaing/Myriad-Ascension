@@ -114,6 +114,14 @@ public final class HuahongReproCapture {
             long before=System.nanoTime();if(videoStart==0)videoStart=before;
             var image=Screenshot.takeScreenshot(mc.getMainRenderTarget());long after=System.nanoTime();int index=frames++;
             var f=InterpolatedFlyingSwordTransform.get(s,partial);var row=new LinkedHashMap<String,Object>();
+            if(f.huahong()>.001F){
+                var ordinary=FlyingSwordEffects.class.getDeclaredField("TRAILS");ordinary.setAccessible(true);
+                var rainbow=HuahongVisuals.class.getDeclaredField("TRAILS");rainbow.setAccessible(true);
+                Object trail=((Map<?,?>)rainbow.get(null)).get(s);boolean shared=false;
+                if(trail!=null){var history=trail.getClass().getDeclaredField("history");history.setAccessible(true);shared=history.get(trail)==((Map<?,?>)ordinary.get(null)).get(s);}
+                row.put("sharedMorphHistory",shared);if(!shared)throw new AssertionError("Rainbow emitted from a second history");
+                if(f.huahong()>=.99999F&&FlyingSwordEffects.normalTrailVertexCount-HuahongVisuals.vertices!=0)throw new AssertionError("Ordinary trail remains after complete transformation");
+            }
             row.put("frame",index);row.put("nanoTime",before);row.put("seconds",(before-videoStart)/1e9);row.put("clock",clock);row.put("partial",partial);row.put("speed",s.renderSpeed(1));row.put("strength",f.huahong());row.put("stage",s.renderHuahongStage());row.put("position",List.of(f.position().x,f.position().y,f.position().z));row.put("roll",f.roll());row.put("camera",mc.options.getCameraType().name());row.put("readbackMs",(after-before)/1e6);row.put("shaderPack",TrailShaderBridge.shaderPackDetected());row.put("path",FlyingSwordEffects.activeTrailRenderPath);row.put("normalVertices",FlyingSwordEffects.normalTrailVertexCount-HuahongVisuals.vertices);row.put("rainbowVertices",HuahongVisuals.vertices);row.put("file",String.format(Locale.ROOT,"frames/%06d.png",index));row.put("captureTiming","Window.updateDisplay HEAD: after all RenderTick.END submits and blitToScreen, before swap");row.put("presentation",Map.of("renderStage",FlyingSwordEffects.renderStage,"normalSubmitted",FlyingSwordEffects.normalTrailSubmitted,"postDraws",SwordFlightTrailRenderer.postDraws,"postStatus",SwordFlightTrailRenderer.status,"volumeSubmitted",HuahongVolumeRenderer.submittedThisFrame,"guiHidden",mc.options.hideGui));FRAMES.add(row);
             if(SKIN==HuahongSkin.DENSE)row.put("volume",HuahongVolumeRenderer.diagnostics());
             if(OrdinaryHiltQa.ENABLED)row.put("hilt",OrdinaryHiltQa.snapshot());
