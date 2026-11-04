@@ -47,7 +47,7 @@ public final class HuahongHeadBridge {
         var curve=new FlightTrailCurve(source,center,forward);double arc=source.get(source.size()-1).arc();
         var result=new ArrayList<SwordFlightTrailHistory.Node>(source.size());
         for(var n:source){var p=n.point();Vec3 raw=new Vec3(p.x(),p.y(),p.z());
-            Vec3 shown=raw.lerp(curve.at(arc-n.arc()).point(),Math.min(1,weight));
+            Vec3 shown=raw.lerp(curve.positionAt(arc-n.arc()),Math.min(1,weight));
             result.add(new SwordFlightTrailHistory.Node(new SwordFlightTrailHistory.Point(shown.x,shown.y,shown.z),n.tick(),n.arc()));
         }
         return result;

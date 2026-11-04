@@ -27,9 +27,11 @@ final class HuahongSkinGeometry {
     private final VertexConsumer out;
     private final PoseStack.Pose pose;
     private final Vec3 eye,center,forward;
+    private final Vec3 cameraRight,cameraUp;
     private final List<SwordFlightTrailHistory.Node> nodes;
     private final List<SwordFlightTrailHistory.Node> canonical;
     private final Frame[] historyFrames;
+    private final Map<Birth,Frame> fanFrames;
     private final double now,origin;
     private final float strength;
     private final HuahongSkin skin;
@@ -37,10 +39,15 @@ final class HuahongSkinGeometry {
     private HuahongSkinGeometry(HuahongSkin skin,VertexConsumer out,PoseStack.Pose pose,Vec3 eye,Vec3 center,Vec3 forward,Vec3 headSide,
             List<SwordFlightTrailHistory.Node> nodes,List<SwordFlightTrailHistory.Node> canonical,double now,float strength){
         this.skin=skin;this.out=out;this.pose=pose;this.eye=eye;this.center=center;this.forward=forward;this.nodes=nodes;this.canonical=canonical;this.now=now;this.strength=strength;
-        historyFrames=skin==HuahongSkin.DENSE?null:new Frame[nodes.size()];
-        // DENSE's source sprite never queries a transported path. SMOKE uses
+        if(skin==HuahongSkin.SMOKE||skin==HuahongSkin.DENSE){
+            var camera=net.minecraft.client.Minecraft.getInstance().gameRenderer.getMainCamera();
+            cameraRight=new Vec3(camera.getLeftVector());cameraUp=new Vec3(camera.getUpVector());
+        }else{cameraRight=cameraUp=null;}
+        historyFrames=skin==HuahongSkin.DENSE||skin==HuahongSkin.FAN?null:new Frame[nodes.size()];
+        fanFrames=skin==HuahongSkin.FAN?new IdentityHashMap<>():null;
+        // DENSE's sprite and FAN's world-birth films never query transport. SMOKE uses
         // at most24.05m, including its zero-alpha last station, with32m reserve.
-        path=skin==HuahongSkin.DENSE?null:new HuahongFlightPath(canonical,center,forward,headSide,
+        path=skin==HuahongSkin.DENSE||skin==HuahongSkin.FAN?null:new HuahongFlightPath(canonical,center,forward,headSide,
                 skin==HuahongSkin.SMOKE?32:Double.POSITIVE_INFINITY,true,HuahongHeadBridge.attachmentWeight(strength));
         // Keep material transport independent of travel speed. Geometry still
         // follows recorded world points, while the surface's phase is measured
@@ -267,35 +274,68 @@ final class HuahongSkinGeometry {
         }
         strip(haze,10,true);strip(hot,22,true);
     }
+    private record FanPoint(Vec3 p,Vec3 normal,double half,double alpha,double phase,double life){}
+    private FanPoint fanPoint(Birth h,int j,int sign,double age,double u){
+        double rank=(j+.55)/3.15,phase=j*1.79+(sign<0?.94:0);
+        double life=2.4*(.43+.43*(1-rank))*(sign>0?1:.92),v=Mth.clamp(1-age/life,0,1);
+        double open=1-Math.exp(-age*2.208),arc=h.arc();
+        // Birth basis comes only from its immutable canonical world segment.
+        // Banking the current sword must never rotate already emitted gauze.
+        Frame basis=fanFrames.computeIfAbsent(h,b->{Vec3 f=b.direction(),s=side(f);return new Frame(b.p(),f,s,s.cross(f).normalize());});
+        Vec3 f=basis.forward(),s=basis.side(),up=basis.up();
+        double lateral=sign*(.014+1.6*(.26+rank*1.45)*open)*(1+.09*Math.sin(arc*.46+phase-age*.8)*open);
+        double wave=(Math.sin(arc*.38+phase-age*.90)*(.16+1.6*.12)+Math.sin(arc*.87+phase*1.7-age*1.25)*.07)*open;
+        double half=(.045+.36*(.50+.60*(1-rank)))*smooth(0,.21,age)*Math.pow(v,.72)*(1+.29*Math.sin(arc*.55+phase));
+        double roll=.65+sign*.20+Math.sin(arc*.29+phase-age*.62)*.24;
+        Vec3 across=s.scale(Math.cos(roll)).add(up.scale(Math.sin(roll))),normal=f.cross(across).normalize();
+        double curl=half*(u*u-.27)*(.45+.30*Math.sin(arc*.61+phase-age));
+        double wrinkle=(.022*Math.sin(arc*2.2+u*2.5+phase-age*1.4)+.018*Math.sin(arc*1.3-u*3.2+phase*.6))*open;
+        Vec3 p=h.p().add(f.scale(.12*Math.exp(-age*7))).add(s.scale((lateral*.79+wave*.48)*HuahongHeadBridge.BODY_SCALE))
+                .add(up.scale((lateral*.61+wave-age*.06)*HuahongHeadBridge.BODY_SCALE))
+                .add(across.scale(half*u*HuahongHeadBridge.BODY_SCALE)).add(normal.scale((curl+wrinkle)*HuahongHeadBridge.BODY_SCALE));
+        return new FanPoint(p,normal,half,Math.pow(v,1.8)*(1-.22*rank),phase,life);
+    }
+    private double fanAge(Birth h){return Math.max((now-h.tick())/20,(headArc()-h.arc())/7.8);}
     private void fan(){
-        // Gauze follows stored world rows and opens with birth age. Broad soft
-        // streams and sparse long wisps replace the old evenly spaced comb.
-        // Preserve V7's spatial silhouette at the game's much higher flight
-        // speed: its source consumer travels 7.8 units/s. This limits only the
-        // artistic wake; actual movement and collision are unaffected.
-        final double visualSpeed=7.8;
-        for(int sign:new int[]{-1,1})for(int k=0;k<3;k++){
-            var rows=new ArrayList<Row>();var ridge=new ArrayList<Row>();double rank=(k+.55)/3.15,phase=k*1.79+(sign<0?.94:0);
-            double life=2.4*(.43+.43*(1-rank))*(sign>0?1:.92);
-            for(int i=0;i<nodes.size();i++){
-                var n=nodes.get(i);double realAge=(now-n.tick())/20;if(realAge<0)continue;
-                double behind=headArc()-n.arc(),age=Math.max(realAge,behind/visualSpeed);if(age>=life)continue;
-                Frame f=at(i);double open=1-Math.exp(-age*2.208),left=fade(age,life),localArc=n.arc()-origin;
-                double lateral=sign*(.014+1.6*(.26+rank*1.45)*open)*(1+.09*Math.sin(localArc*.46+phase-age*.8)*open);
-                double wave=(Math.sin(localArc*.38+phase-age*.90)*.22+Math.sin(localArc*.87+phase*1.7-age*1.25)*.07)*open;
-                double width=(.045+.36*(.50+.60*(1-rank)))*smooth(0,.21,age)*Math.pow(left,.45)*(1+.24*Math.sin(localArc*.55+phase));
-                double roll=.65+sign*.20+Math.sin(localArc*.29+phase-age*.62)*.24;
-                Vec3 across=f.side().scale(Math.cos(roll)).add(f.up().scale(Math.sin(roll)));
-                Vec3 p=offset(f,lateral*.79+wave*.48,lateral*.61+wave-age*.06);
-                float a=(float)(Math.pow(Mth.clamp(1-age/life,0,1),1.8)*(1-.22*rank)*smooth(0,.28,behind));
-                rows.add(new Row(p,n.arc()-origin+phase*2.2,width,a*.72F,mix(0xefb75e,0xfff5d9,.16+.20*left),across));
-                ridge.add(new Row(p.add(across.scale(width*.30)),n.arc()-origin+phase*2.2,.0045+.003*left,a*.18F,0xedd6a1,across));
+        // V7 fan-lookdev.js: nine columns per open curled film, asymmetric
+        // life, full-arc end caps, two embedded ridges and four diffuse wisps.
+        // 7.8m/s spatial adaptation preserves the reference opening at game speed.
+        var births=births(.125,7.8*2.4,2.4);double materialOrigin=Math.floor(headArc()/256)*256;
+        for(int sign:new int[]{-1,1})for(int j=0;j<3;j++){
+            var valid=new ArrayList<Birth>();
+            double life=2.4*(.43+.43*(1-(j+.55)/3.15))*(sign>0?1:.92);
+            for(var b:births)if(fanAge(b)<life)valid.add(b);
+            if(valid.size()<4)continue;
+            double[] arc=new double[valid.size()];for(int i=1;i<arc.length;i++)arc[i]=arc[i-1]+valid.get(i).p().distanceTo(valid.get(i-1).p());
+            double total=arc[arc.length-1],cap=Math.min(.85,total*.22);
+            Vec3[] previous=null;float oldAlpha=0;int oldColor=0;double oldU=0;
+            for(int i=0;i<valid.size();i++){
+                Birth b=valid.get(i);double age=fanAge(b),fade=smooth(0,cap,arc[i])*smooth(0,cap,total-arc[i]);
+                Vec3[] row=new Vec3[9];FanPoint q=null;
+                for(int k=0;k<=8;k++){q=fanPoint(b,j,sign,age,(k/4.0-1)*Math.pow(fade,.6));row[k]=q.p();}
+                float alpha=(float)(strength*q.alpha()*fade*.72);int color=mix(0xefb75e,0xfff5d9,.16+.20*(1-age/life));
+                double u=b.arc()-materialOrigin+q.phase()*2.2;
+                if(previous!=null)for(int k=0;k<8;k++){
+                    vertex(previous[k],oldU,28+k/8.0,oldAlpha,oldColor);vertex(previous[k+1],oldU,28+(k+1)/8.0,oldAlpha,oldColor);
+                    vertex(row[k+1],u,28+(k+1)/8.0,alpha,color);vertex(row[k],u,28+k/8.0,alpha,color);
+                }
+                previous=row;oldAlpha=alpha;oldColor=color;oldU=u;
             }
-            strip(rows,28);strip(ridge,22);
+            for(double ridge:new double[]{-.32,.41}){
+                var rows=new ArrayList<Row>();
+                for(var b:valid){double age=fanAge(b);var q=fanPoint(b,j,sign,age,ridge+.09*Math.sin(b.arc()*.42+j));
+                    rows.add(new Row(q.p(),b.arc()-materialOrigin+q.phase(),(.005+.36*.017)*(.2+.8*Mth.clamp(1-age/life,0,1)),
+                        (float)(strength*q.alpha()*(.5+.5*smooth(-.5,1,Math.sin(b.arc()*.35+j)))*(j==0?.23:.15)),0xffe6b4,null));}
+                strip(rows,38);
+            }
         }
-        for(int k=0;k<4;k++)strip(history(3.1,.0075,0xc7ad7e,k,.29,true,visualSpeed),28);
-        // V7's concentrated root belongs to the gauze streams themselves; it
-        // does not add the generic white nucleus used by the meteor families.
+        for(int sign:new int[]{-1,1})for(int j=0;j<2;j++){
+            var rows=new ArrayList<Row>();for(var b:births){double age=fanAge(b),v=Mth.clamp(1-age/2.4,0,1);var q=fanPoint(b,j,sign,age,.25);
+                Vec3 up=side(b.direction()).cross(b.direction()).normalize();
+                rows.add(new Row(q.p().add(up.scale(smooth(.65,2.2,age)*(j==0?.24:-.22)*HuahongHeadBridge.BODY_SCALE)),b.arc()-materialOrigin+j*1.4,
+                    (.009+.36*.026)*(.2+.8*v),(float)(strength*Math.pow(v,2.4)*smooth(0,.10,age)*.13),0xc7ad7e,null));}
+            strip(rows,38);
+        }
     }
     private void smoke(){
         // Time-born parcels advect, roll and grow along the coherent curved wake.
@@ -360,13 +400,13 @@ final class HuahongSkinGeometry {
     private void billboard(Row r,int mode){
         // One camera basis for every sprite: the old world-axis fallback
         // snapped 90 degrees when a sprite-to-eye direction crossed |y|=.95.
-        var camera=net.minecraft.client.Minecraft.getInstance().gameRenderer.getMainCamera();
         double scale=r.width()*HuahongHeadBridge.BODY_SCALE;
-        Vec3 right=new Vec3(camera.getLeftVector()).scale(scale),up=new Vec3(camera.getUpVector()).scale(scale);
-        vertex(r.p().subtract(right).subtract(up),Math.floor(r.u())*4,mode,r.alpha(),r.color());
-        vertex(r.p().add(right).subtract(up),Math.floor(r.u())*4+1,mode,r.alpha(),r.color());
-        vertex(r.p().add(right).add(up),Math.floor(r.u())*4+1,mode+1,r.alpha(),r.color());
-        vertex(r.p().subtract(right).add(up),Math.floor(r.u())*4,mode+1,r.alpha(),r.color());
+        double rx=cameraRight.x*scale,ry=cameraRight.y*scale,rz=cameraRight.z*scale;
+        double ux=cameraUp.x*scale,uy=cameraUp.y*scale,uz=cameraUp.z*scale;Vec3 p=r.p();
+        vertexRelative((p.x-rx)-ux-eye.x,(p.y-ry)-uy-eye.y,(p.z-rz)-uz-eye.z,Math.floor(r.u())*4,mode,r.alpha(),r.color());
+        vertexRelative((p.x+rx)-ux-eye.x,(p.y+ry)-uy-eye.y,(p.z+rz)-uz-eye.z,Math.floor(r.u())*4+1,mode,r.alpha(),r.color());
+        vertexRelative((p.x+rx)+ux-eye.x,(p.y+ry)+uy-eye.y,(p.z+rz)+uz-eye.z,Math.floor(r.u())*4+1,mode+1,r.alpha(),r.color());
+        vertexRelative((p.x-rx)+ux-eye.x,(p.y-ry)+uy-eye.y,(p.z-rz)+uz-eye.z,Math.floor(r.u())*4,mode+1,r.alpha(),r.color());
     }
     private void strip(List<Row> rows,int mode){
         strip(rows,mode,false);
@@ -407,7 +447,8 @@ final class HuahongSkinGeometry {
             for(int j=0;j<=columns;j++){
                 double across=j*2.0/columns-1;
                 double camber=columns==1||mode==34?0:width*(1-across*across)*(.24+.08*Math.sin(row.u()*(Math.PI*2*33/256)+now*.013));
-                section[j]=row.p().add(s.scale(width*across)).add(normal.scale(camber));
+                double transverse=width*across;Vec3 p=row.p();
+                section[j]=new Vec3((p.x+s.x*transverse)+normal.x*camber,(p.y+s.y*transverse)+normal.y*camber,(p.z+s.z*transverse)+normal.z*camber);
             }
             if(previous!=null){
                 for(int j=0;j<columns;j++){
@@ -422,7 +463,10 @@ final class HuahongSkinGeometry {
         }
     }
     private void vertex(Vec3 p,double u,double v,float alpha,int color){
-        Vec3 r=p.subtract(eye);out.vertex(pose.pose(),(float)r.x,(float)r.y,(float)r.z).uv((float)u,(float)v)
+        vertexRelative(p.x-eye.x,p.y-eye.y,p.z-eye.z,u,v,alpha,color);
+    }
+    private void vertexRelative(double x,double y,double z,double u,double v,float alpha,int color){
+        out.vertex(pose.pose(),(float)x,(float)y,(float)z).uv((float)u,(float)v)
                 .color((color>>16)&255,(color>>8)&255,color&255,Mth.clamp(Math.round(alpha*255),0,255)).endVertex();vertices++;
     }
 }

@@ -31,8 +31,11 @@ public final class JindouCloudTime {
         out[0]=(float)(fraction(time/5+seed)*Math.PI*2);
         out[1]=(float)(fraction(time/7+seed*.37)*Math.PI*2);
         out[2]=(float)(fraction(time/11+seed*.73)*Math.PI*2);
-        out[3]=fraction(time*.025+seed);out[4]=fraction(time*.016+seed*.37);
-        out[5]=fraction(-time*.020-flow+seed*.73);
+        // Closed orbits roll in place. Only measured movement advances the
+        // longitudinal phase; idle time must not pump a rearward conveyor.
+        out[3]=fraction(seed+.045*Math.sin(time*Math.PI*2/7));
+        out[4]=fraction(seed*.37+.035*Math.cos(time*Math.PI*2/11));
+        out[5]=fraction(seed*.73-flow+.025*Math.sin(time*Math.PI*2/5));
     }
     private static float fraction(double value){return (float)(value-Math.floor(value));}
 }

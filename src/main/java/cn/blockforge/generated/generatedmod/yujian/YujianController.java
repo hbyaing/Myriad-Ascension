@@ -548,10 +548,13 @@ public final class YujianController {
         boolean impact=(blocked&&sweep.loaded())||!phasing&&(sword.horizontalCollision||sword.verticalCollision);
         // A protected obstacle inside ordinary terrain must stop motion, not
         // revoke phasing and relocate the rider to a distant sky-safe point.
-        boolean holdRainbow=ride.huahong.phasing()&&!ordinarySpace;
-        if(impact&&!holdRainbow){ride.huahong.exit();sword.huahong(ride.huahong.stage(),ride.huahong.strength());}
+        // Both forms may reach protected bedrock while embedded in ordinary
+        // terrain. Retain their permission and stop at the validated prefix;
+        // revoking Dunxu here invoked sky-column safe-exit recovery.
+        boolean holdPhasing=phasing&&!ordinarySpace;
+        if(impact&&!holdPhasing){ride.huahong.exit();sword.huahong(ride.huahong.stage(),ride.huahong.strength());}
         if (impact) {
-            if(!holdRainbow)changePhase(sword,player,ride,YujianPhase.BASIC);
+            if(!holdPhasing)changePhase(sword,player,ride,YujianPhase.BASIC);
             if(phasing&&!collisionPhasing(ride)&&!restoreSafePosition(sword,player,ride)){stop(player);return;}
             ride.cruiseTarget=Math.min(ride.cruiseTarget,definition.baseSpeed());
             if(ride.collisionTicks==0){sword.impactNow();FlightFeedbackEvent.emit(sword,FlightFeedbackEvent.Kind.BLOCK_IMPACT);}

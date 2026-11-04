@@ -151,7 +151,9 @@ public final class JindouCloudTrailCache {
                 previousMotion = motion;
                 motion += ((float) (length / (length + 0.7)) - motion) * 0.3F;
                 previousFlow = flow;
-                flow += JindouCloudTime.flowStep(motion);
+                // Emission/advection follows displacement, not the decaying
+                // silhouette envelope. A stopped cloud keeps rolling locally.
+                flow += length>.01?JindouCloudTime.flowStep((float)(length/(length+.7))):0;
                 if(delta.horizontalDistanceSqr()>0.0004){
                     targetHeadingYaw=(float)Math.toDegrees(Math.atan2(delta.x,delta.z));
                     headingYaw=Mth.wrapDegrees(headingYaw+Mth.clamp(Mth.wrapDegrees(targetHeadingYaw-headingYaw)*.30F,-18,18));

@@ -147,6 +147,37 @@ public final class HuahongGameTests {
         h.succeed();
     }
 
+    @GameTest(template="furnace_empty",timeoutTicks=200)
+    public static void undergroundDunxuDiveStopsAtBedrockWithoutSkyRecovery(GameTestHelper h) throws Exception {
+        try(var f=new WallFlight(h)){
+            // Isolate Dunxu from rainbow entry; normal input still enters and
+            // maintains Dunxu. Only the unrelated cosmetic boost is inhibited.
+            var rides=YujianController.class.getDeclaredField("RIDES");rides.setAccessible(true);
+            Object ride=((Map<?,?>)rides.get(null)).get(f.player.getUUID());
+            var rainbow=ride.getClass().getDeclaredField("huahong");rainbow.setAccessible(true);
+            var flight=(HuahongFlight)rainbow.get(ride);
+            var cooldown=HuahongFlight.class.getDeclaredField("cooldown");cooldown.setAccessible(true);cooldown.setInt(flight,10000);
+            f.player.getPersistentData().remove("YujianCooldown_DUNXU");
+            for(int i=0;i<90;i++){f.place(f.start);f.drive(true,false,true);}
+            h.assertTrue(f.root.advancedPhase()==YujianPhase.DUNXU&&f.root.dunxuStage()==2&&f.root.huahongStage()==0,"Fixture must use real Dunxu without rainbow");
+            Vec3 underground=new Vec3(f.start.x,40,f.start.z);
+            int x=(int)Math.floor(underground.x),z=(int)Math.floor(underground.z);
+            for(int dx=-4;dx<=4;dx++)for(int dz=-4;dz<=4;dz++)for(int y=35;y<=44;y++){
+                var at=new BlockPos(x+dx,y,z+dz);f.previous.putIfAbsent(at,h.getLevel().getBlockState(at));
+                h.getLevel().setBlockAndUpdate(at,(y<=36?Blocks.BEDROCK:Blocks.STONE).defaultBlockState());
+            }
+            f.place(underground);f.root.setXRot(90);f.root.setDeltaMovement(new Vec3(0,-8,0));int impacts=f.root.impact();
+            for(int i=0;i<14;i++){
+                f.player.tickCount++;YujianController.handleInput(f.player,false,false,true,false,false,false,false,false,true,false,1,0,0,90);
+                YujianController.tickFlightEntity(f.root,f.player);f.root.positionRider(f.player);
+                h.assertTrue(f.root.getY()<=40.01&&f.player.getVehicle()==f.root,"Dunxu dive relocated upward or lost its rider");
+                h.assertTrue(f.root.advancedPhase()==YujianPhase.DUNXU&&f.root.huahongStage()==0,"Protected impact revoked Dunxu permission");
+            }
+            h.assertTrue(f.root.impact()>impacts&&f.root.getY()>36,"Dive must really hit, and must not pass protected bedrock");
+        }
+        h.succeed();
+    }
+
     private static final class WallFlight implements AutoCloseable {
         final GameTestHelper helper;final GameTestPlayer player;final ControlledSwordEntity root;final Vec3 start;
         final ItemStack original;final String marker=java.util.UUID.randomUUID().toString();

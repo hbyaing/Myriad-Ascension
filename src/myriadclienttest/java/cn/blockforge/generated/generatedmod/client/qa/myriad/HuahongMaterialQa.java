@@ -23,7 +23,9 @@ final class HuahongMaterialQa {
         if(GL33.glGetShaderi(shader,GL33.GL_COMPILE_STATUS)==0)throw new AssertionError(GL33.glGetShaderInfoLog(shader));
         return shader;
     }
-    static Map<String,Object> verify(Minecraft mc)throws Exception{
+    static Map<String,Object> verify(Minecraft mc)throws Exception{return verify(mc,false);}
+    static Map<String,Object> verifyLoops(Minecraft mc)throws Exception{return verify(mc,true);}
+    private static Map<String,Object> verify(Minecraft mc,boolean loopsOnly)throws Exception{
         String source=material(mc,"sword_flight");
         if(!source.equals(material(mc,"sword_flight_post")))throw new AssertionError("Native/post material differs");
         byte[] smokeBytes;try(var stream=mc.getResourceManager().getResource(new ResourceLocation("wuxingxiantu","textures/effect/huahong/smoke-atlas.png")).orElseThrow().open()){smokeBytes=stream.readAllBytes();}
@@ -57,7 +59,7 @@ final class HuahongMaterialQa {
             GL33.glTexParameteri(GL33.GL_TEXTURE_2D,GL33.GL_TEXTURE_WRAP_S,GL33.GL_CLAMP_TO_EDGE);GL33.glTexParameteri(GL33.GL_TEXTURE_2D,GL33.GL_TEXTURE_WRAP_T,GL33.GL_CLAMP_TO_EDGE);
             GL33.glUniform1i(GL33.glGetUniformLocation(program,"SmokeAtlas"),0);
             double error=0;int comparisons=0;
-            for(int band:new int[]{6,8,10,12,14,16,18,20,22,24,26,28,30,34,36}){
+            for(int band:new int[]{6,8,10,12,14,16,18,20,22,24,26,28,30,34,36,38}){
                 float[] reference=render(program,band,47.25F,7.125F);
                 float low=Float.POSITIVE_INFINITY,high=0;for(float v:reference){low=Math.min(low,v);high=Math.max(high,v);}
                 if(high<.1||high-low<.01)throw new AssertionError("Material fixture produced no varying signal: "+band);
@@ -66,6 +68,13 @@ final class HuahongMaterialQa {
                 if(band!=14&&band!=20){error=Math.max(error,difference(reference,render(program,band,303.25F,7.125F)));comparisons++;}
             }
             if(error>.025)throw new AssertionError("Material periodic seam error: "+error);
+            if(loopsOnly){
+                float[] old=render(program,38,47.25F,7.125F),first=old;double motion=0,maxStep=0;
+                for(int i=1;i<=240;i++){float[] next=render(program,38,47.25F,7.125F+i/120F);maxStep=Math.max(maxStep,difference(old,next));motion=Math.max(motion,difference(first,next));old=next;}
+                double wrap=difference(render(program,38,47.25F,127.9999F),render(program,38,47.25F,.0001F));
+                if(motion<.001||maxStep>.04||wrap>.001)throw new AssertionError("Fan ridge loop frozen/discontinuous: "+motion+" / "+maxStep+" / "+wrap);
+                return Map.of("passed",true,"check","shipping-material-periodicity-and-new-fan-ridge-animation","comparisons",comparisons,"maxChannelPeriodError",error,"fanRidge120FpsMaxStep",maxStep,"fanRidgeTwoSecondMotion",motion,"fanRidge128SecondWrapDifference",wrap,"scope","Native/post shared shipping functions, all existing bands plus38; tests periodicity and new fan ridge motion only. Legacy smoke-field probes are separate.");
+            }
             float[] noseCenter=probe(program,.5F,.5F,7.125F);difference(noseCenter,noseCenter);
             if(noseCenter[3]<.1F)throw new AssertionError("Band32 nucleus has no center coverage");
             double noseEdge=0,noseTimeError=difference(noseCenter,probe(program,.5F,.5F,135.125F));int noseProbes=2;
@@ -98,7 +107,7 @@ final class HuahongMaterialQa {
             result.put("subpixelSpineCoverage",spineCoverage);
             result.put("temporalTransport",temporalTransport);result.put("smokeField",smokeField);
             result.put("boundedOrdinaryHalo",boundedHalo);result.put("boundedOrdinaryHaloPost",boundedHaloPost);
-            result.put("smokeAtlasSha256",HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(smokeBytes)));result.put("smokeAtlasDimensions",List.of(smokeWidth,smokeHeight));result.put("materialBands",List.of(6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36));return result;
+            result.put("smokeAtlasSha256",HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(smokeBytes)));result.put("smokeAtlasDimensions",List.of(smokeWidth,smokeHeight));result.put("materialBands",List.of(6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38));return result;
         }finally{
             GL33.glBindFramebuffer(GL33.GL_DRAW_FRAMEBUFFER,drawBefore);GL33.glBindFramebuffer(GL33.GL_READ_FRAMEBUFFER,readBefore);
             GL33.glActiveTexture(GL33.GL_TEXTURE0);GL33.glBindTexture(GL33.GL_TEXTURE_2D,textureBefore);GL33.glActiveTexture(activeTextureBefore);GL33.glBindVertexArray(vaoBefore);GL33.glUseProgram(programBefore);GL33.glViewport(viewport[0],viewport[1],viewport[2],viewport[3]);
@@ -140,7 +149,7 @@ final class HuahongMaterialQa {
         double mean=energy/(64*32),variation=(high-low)/high;
         // Finite transverse support and low-amplitude, low-frequency time flow.
         // Longitudinal root support belongs to the real geometry/vertex alpha.
-        if(boundary>1e-7||period>1e-5||wrap>.0002||low<.70||high>.80001||variation<.04||variation>.15||step>.0003||mean<.01||maxAlpha>.80001)
+        if(boundary>1e-7||period>1e-5||wrap>.0002||low<.799||high>.80001||variation>1e-6||step>1e-6||mean<.01||maxAlpha>.80001)
             throw new AssertionError("Bounded halo energy/boundary/time failure "+boundary+" / "+period+" / "+wrap+" / "+low+".."+high+" / "+step+" / "+mean);
         return Map.of("passed",true,"band",36,"meanPremultipliedRadiance",mean,"maxAlpha",maxAlpha,"maxTransverseBoundaryAlpha",boundary,
                 "maxArc256Time128Error",period,"time128WrapDifference",wrap,"centerTimeVariation",variation,"max120FpsAlphaStep",step,
@@ -173,16 +182,13 @@ final class HuahongMaterialQa {
     private static Map<String,Object> temporalTransport(int program){
         final int frames=240;final double fps=120,speed=300;
         var world=temporalSignal(program,frames,fps,speed);var local=temporalSignal(program,frames,fps,0);
-        // The new transport must retain visible animation, while moving most
-        // energy below 8Hz and reducing frame replacement by at least 3x.
-        // These are preselected flow-continuity criteria, not pixel acceptance.
-        if(world.stepRms()<1e-4||local.totalPower()<1e-7||local.stepRms()<1e-5)
-            throw new AssertionError("Temporal material probe is empty or frozen: "+world+" / "+local);
-        if(local.stepRms()>world.stepRms()/3||local.highFraction()>.25||local.highFraction()>world.highFraction()*.35)
-            throw new AssertionError("Head material still aliases at flight speed: "+world+" / "+local);
-        return Map.of("scope","Same shipping GLSL, same patch, explicit time advances in both; world arc sweeps at300m/s vs fixed distance behind head. GPU material test, not whole-world acceptance.",
-                "frames",frames,"fps",fps,"worldSpeed",speed,"highFrequencyCutHz",8,
-                "worldArc",world,"headRelative",local,"frameDeltaReduction",world.stepRms()/local.stepRms(),"passed",true);
+        // Ordinary flight was explicitly changed to constant emission. Testing
+        // it for mandatory animation would reject the user's accepted behavior.
+        // Rainbow/cloud animation has separate nonzero-energy GPU probes.
+        if(world.meanSignal()<.01||local.meanSignal()<.01||world.stepRms()>1e-6||local.stepRms()>1e-6||local.totalPower()>1e-10)
+            throw new AssertionError("Ordinary constant material flickers or is empty: "+world+" / "+local);
+        return Map.of("scope","Shipping ordinary band0 remains lit and invariant under time advancement and a300m/s arc sweep; rainbow animation is checked separately.",
+                "frames",frames,"fps",fps,"worldSpeed",speed,"worldArc",world,"headRelative",local,"passed",true);
     }
     private record TemporalStats(double stepRms,double meanSignal,double totalPower,double highFraction,List<Map<String,Double>> peakFrequencies){}
     private static TemporalStats temporalSignal(int program,int frames,double fps,double speed){
@@ -212,27 +218,24 @@ final class HuahongMaterialQa {
         return new TemporalStats(Math.sqrt(steps/(count*(double)(frames-1))),signal/(count*(double)frames),total,total>0?high/total:0,List.copyOf(peaks.subList(0,8)));
     }
     private static Map<String,Object> smokeField(){
-        int checks=0;double seam=0,maxPositionStep=0,maxRadiusStep=0,maxCrimsonStep=0;
-        for(double behind=0;behind<=24;behind+=.25){
-            for(int tick=0;tick<2560;tick+=16){
-                var a=cn.blockforge.generated.generatedmod.client.HuahongFlowField.smoke(behind,tick+.25);
-                for(long epoch:new long[]{2560,16_775_680,999_997_440}){
-                    var b=cn.blockforge.generated.generatedmod.client.HuahongFlowField.smoke(behind,epoch+tick+.25);
-                    double d=Math.max(Math.max(Math.abs(a.side()-b.side()),Math.abs(a.up()-b.up())),Math.max(Math.abs(a.radius()-b.radius()),Math.abs(a.crimson()-b.crimson())));
-                    seam=Math.max(seam,d);checks++;
-                }
-                var b=cn.blockforge.generated.generatedmod.client.HuahongFlowField.smoke(behind,tick+.25+20.0/120);
-                maxPositionStep=Math.max(maxPositionStep,Math.hypot(a.side()-b.side(),a.up()-b.up()));
-                maxRadiusStep=Math.max(maxRadiusStep,Math.abs(a.radius()-b.radius()));maxCrimsonStep=Math.max(maxCrimsonStep,Math.abs(a.crimson()-b.crimson())*.075);
+        // The renderer consumes time-born parcels, not the obsolete smoke()
+        // fixed-slot API. Follow the SAME birth identities between frames.
+        int checks=0,birthChecks=0;double maxSide=0,maxRadius=0,maxAlpha=0,maxTravelError=0;
+        for(double epoch:new double[]{0,10200336,999997440})for(int fps:new int[]{60,120,240})for(int k=0;k<160;k++){
+            double tick=epoch+100+k*.71,dt=1.0/fps;
+            var a=cn.blockforge.generated.generatedmod.client.HuahongFlowField.parcels(tick);
+            var b=cn.blockforge.generated.generatedmod.client.HuahongFlowField.parcels(tick+20*dt);
+            var previous=new HashMap<Long,cn.blockforge.generated.generatedmod.client.HuahongFlowField.Parcel>();for(var q:a)previous.put(q.id(),q);
+            for(var q:b){var old=previous.get(q.id());
+                if(old==null){if(q.alpha()>.05)throw new AssertionError("New smoke birth pops at full opacity");birthChecks++;continue;}
+                maxSide=Math.max(maxSide,Math.hypot(q.side()-old.side(),q.up()-old.up()));
+                maxRadius=Math.max(maxRadius,Math.abs(q.radius()-old.radius()));maxAlpha=Math.max(maxAlpha,Math.abs(q.alpha()-old.alpha()));
+                maxTravelError=Math.max(maxTravelError,Math.abs(q.behind()-old.behind()-7.2*dt));checks++;
             }
-            var a=cn.blockforge.generated.generatedmod.client.HuahongFlowField.smoke(behind,2560-.00001);
-            var b=cn.blockforge.generated.generatedmod.client.HuahongFlowField.smoke(behind,2560+.00001);
-            seam=Math.max(seam,Math.max(Math.abs(a.side()-b.side()),Math.max(Math.abs(a.up()-b.up()),Math.max(Math.abs(a.radius()-b.radius()),Math.abs(a.crimson()-b.crimson())))));
         }
-        if(seam>2e-6||maxPositionStep>.002||maxRadiusStep>.001||maxCrimsonStep>.001)
-            throw new AssertionError("Smoke field discontinuity: "+seam+" / "+maxPositionStep+" / "+maxRadiusStep+" / "+maxCrimsonStep);
-        return Map.of("productionFieldChecks",checks,"maxPeriodOrBoundaryDifference",seam,"max120FpsPositionStep",maxPositionStep,"max120FpsRadiusStep",maxRadiusStep,
-                "max120FpsCrimsonAlphaStep",maxCrimsonStep,"periodSeconds",128,"angularTimeHarmonics",List.of(22,15,14,40),"crimsonAdvectionWorldUnitsPerSecond",Math.PI*2*40/128/1.4,"passed",true);
+        if(checks<10000||birthChecks<10||maxSide>.03||maxRadius>.02||maxAlpha>.20||maxTravelError>1e-6)
+            throw new AssertionError("Actual smoke parcel discontinuity: "+checks+" / "+maxSide+" / "+maxRadius+" / "+maxAlpha+" / "+maxTravelError);
+        return Map.of("passed",true,"productionParcelChecks",checks,"newBirthChecks",birthChecks,"maxTransverseStep",maxSide,"maxRadiusStep",maxRadius,"maxAlphaStep",maxAlpha,"maxAdvectionError",maxTravelError,"fps",List.of(60,120,240),"scope","Actual rendered parcels; same birth id, rearward travel, transverse roll, radius growth, soft newborn alpha and old world clocks. Not obsolete fixed-slot smoke().");
     }
     private static double difference(float[] a,float[] b){double max=0;for(int i=0;i<a.length;i++){if(!Float.isFinite(a[i])||!Float.isFinite(b[i]))throw new AssertionError("Nonfinite material output");max=Math.max(max,Math.abs(a[i]-b[i]));}return max;}
     private HuahongMaterialQa(){}

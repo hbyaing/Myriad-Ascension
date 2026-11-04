@@ -44,7 +44,7 @@ public final class HuahongVisuals {
     private static boolean headLinked;
     public static int vertices;
     public static boolean absorbingThisFrame;
-    public static boolean hasAbsorbingTrail(){return TRAILS.values().stream().anyMatch(t->t.skin==cn.blockforge.generated.generatedmod.yujian.HuahongSkin.SMOKE);}
+    public static boolean hasAbsorbingTrail(){return TRAILS.values().stream().anyMatch(t->(t.skin==cn.blockforge.generated.generatedmod.yujian.HuahongSkin.SMOKE||t.skin==cn.blockforge.generated.generatedmod.yujian.HuahongSkin.FAN));}
     @SubscribeEvent public static void linkHead(net.minecraftforge.event.TickEvent.ClientTickEvent event){
         if(event.phase==net.minecraftforge.event.TickEvent.Phase.END&&!headLinked){
             // JFR identified class definition on the first visible flight frame.
@@ -98,10 +98,12 @@ public final class HuahongVisuals {
             if(center.distanceToSqr(eye)>4096)continue;
             boolean active=!sword.isRemoved()&&frame.huahong()>.001F;
             if(!active)continue;
-            if(trail.skin==cn.blockforge.generated.generatedmod.yujian.HuahongSkin.SMOKE)absorbingThisFrame=true;
+            if(trail.skin==cn.blockforge.generated.generatedmod.yujian.HuahongSkin.SMOKE||trail.skin==cn.blockforge.generated.generatedmod.yujian.HuahongSkin.FAN)absorbingThisFrame=true;
             VertexConsumer entryBuffer=new MorphAlpha(buffer,FlyingSwordEffects.morphWeight(frame.huahong()));
             var canonical=active?trail.history.renderNodes(now,point(center)):trail.history.nodes();
-            var nodes=active?SwordFlightTrailHistory.uniformHead(canonical,.125,HuahongHeadBridge.WORLD_HISTORY_DISTANCE):canonical;
+            boolean historyRows=trail.skin!=cn.blockforge.generated.generatedmod.yujian.HuahongSkin.DENSE
+                    &&trail.skin!=cn.blockforge.generated.generatedmod.yujian.HuahongSkin.FAN;
+            var nodes=active&&historyRows?SwordFlightTrailHistory.uniformHead(canonical,.125,HuahongHeadBridge.WORLD_HISTORY_DISTANCE):canonical;
             float attachment=active?HuahongHeadBridge.attachmentWeight(frame.huahong()):0;
             // DENSE consumes the same filtered drawing curve as the ribbons.
             var headNodes=trail.skin==cn.blockforge.generated.generatedmod.yujian.HuahongSkin.DENSE
@@ -121,6 +123,10 @@ public final class HuahongVisuals {
                 continue;
             }
             var path=new HuahongFlightPath(canonical,center,forward,modelSide,Double.POSITIVE_INFINITY,true,attachment);
+            // All five history layers consume identical stations. Evaluate once
+            // for this submission, rather than caching every local flame query.
+            var sections=new HuahongFlightPath.Frame[nodes.size()];
+            for(int i=0;i<nodes.size();i++)sections[i]=path.behind(nodes.get(nodes.size()-1).arc()-nodes.get(i).arc());
             double origin=nodes.isEmpty()?0:SwordTrailPhase.origin(nodes.get(nodes.size()-1).arc(),sword.getUUID().hashCode());
             ArrayList<Row> rows=new ArrayList<>(nodes.size());
             for(int i=0;i<nodes.size();i++){
@@ -128,7 +134,7 @@ public final class HuahongVisuals {
                 if(n.tick()>now)continue;
                 double behind=nodes.get(nodes.size()-1).arc()-n.arc();
                 double age=HuahongHeadBridge.luminousSupportAge((now-n.tick())/20,behind),left=clamp(1-age/3.8);
-                rows.add(new Row(path.behind(behind).p(),n.arc()-origin,HuahongHeadBridge.luminousEnvelope(behind),
+                rows.add(new Row(sections[i].p(),n.arc()-origin,HuahongHeadBridge.luminousEnvelope(behind),
                         (float)Math.pow(left,1.7),mix(0x8274ff,0xe8faff,Math.exp(-age*2)),null));
             }
             var head=path.behind(0);
@@ -145,7 +151,7 @@ public final class HuahongVisuals {
                     Vec3 f=vec(nodes.get(Math.min(nodes.size()-1,i+1)).point()).subtract(vec(nodes.get(Math.max(0,i-1)).point()));
                     if(f.lengthSqr()<1e-10)f=forward;else f=f.normalize();
                     double behind=nodes.get(nodes.size()-1).arc()-n.arc();
-                    var section=path.behind(behind);Vec3 side=section.side(),up=section.up();
+                    var section=sections[i];Vec3 side=section.side(),up=section.up();
                     double localArc=n.arc()-nodes.get(nodes.size()-1).arc();
                     double curl=Math.sin(localArc*.65+strand*1.7)*.24+Math.sin(localArc*1.73+strand)*.11;
                     double open=smooth((age-.025)/.375),spread=open*SPREAD*.035*(1+age*.24)*HuahongHeadBridge.WIDTH_MULTIPLIER;
@@ -237,7 +243,7 @@ public final class HuahongVisuals {
         return Math.max(physical,pixels);
     }
     private static void vertex(VertexConsumer b,PoseStack.Pose pose,Vec3 eye,Vec3 p,float u,float v,float alpha,int color){
-        Vec3 r=p.subtract(eye);b.vertex(pose.pose(),(float)r.x,(float)r.y,(float)r.z).uv(u,v)
+        b.vertex(pose.pose(),(float)(p.x-eye.x),(float)(p.y-eye.y),(float)(p.z-eye.z)).uv(u,v)
                 .color((color>>16)&255,(color>>8)&255,color&255,Mth.clamp(Math.round(alpha*255),0,255)).endVertex();vertices++;
     }
     private static double historyJoin(double behind){return smooth((behind-1.5)/2);}

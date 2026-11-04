@@ -136,6 +136,10 @@ vec4 swordMaterial(){
             vec3 rgb=vertexColor.rgb*(.70+.27*coarse+.26*fold)+vec3(.035,.065,.090)*fold;
             return vec4(rgb,pow(edge,.70)*torn*(.49+.31*fiber+.20*detail)*vertexColor.a);
         }
+        if(band==38.0){
+            float stripe=sin(flowAngle(arc,36.0,32.0)+sin(flowAngle(arc,9.0,8.0)));
+            return vec4(vertexColor.rgb,pow(edge,2.3)*(.61+.39*smoothstep(-.7,.8,stripe))*vertexColor.a);
+        }
         if(band==28.0){
             // V7 open silk: broad density patches and curled ragged edges.
             vec2 p=vec2(arc*.25+EffectTime*.5,across*2.2);
@@ -233,6 +237,6 @@ void main(){
     // Premultiplied light adds radiance; absorbing smoke keeps destination
     // attenuation. Ordinary light bands must not absorb other crossed light sheets.
     float materialBand=floor((trailCoord.y+.001)*.5)*2.0;
-    bool luminous=materialBand!=14.0&&materialBand!=30.0;
+    bool luminous=materialBand!=14.0&&materialBand!=30.0&&materialBand!=28.0;
     fragColor=vec4(material.rgb*material.a,luminous?0.0:material.a);
 }
