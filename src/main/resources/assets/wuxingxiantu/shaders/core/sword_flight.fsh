@@ -197,12 +197,17 @@ vec4 swordMaterial(){
     float edge=pow(max(0.0,1.0-abs(across)),1.4);
     // Keep the ordinary nucleus at least a pixel wide when the tapered
     // root projects below a pixel; otherwise its peak fades as coverage changes.
-    float core=filteredSpine(across,max(spiral?.13:.12,fwidth(across)*.65));
-    float veil=exp(-across*across*4.6);
-    float alpha=clamp((core*.98+veil*.22)*edge*vertexColor.a,0.0,.96);
+    float core=filteredSpine(across,max(spiral?.17:.18,fwidth(across)*.8));
+    float veil=exp(-across*across*3.2);
+    float alpha=clamp((core*1.25+veil*.42)*edge*vertexColor.a,0.0,.98);
     vec3 blue=mix(vertexColor.rgb,vec3(.20,.60,.98),.30);
     vec3 color=mix(blue,vec3(.94,1.0,1.0),clamp(core*.92,0.0,1.0));
-    return vec4(color,alpha);
+    return vec4(color*1.25,alpha);
+}
+
+float xiantuSwordViewDepth(mat4 inverseDepth,vec2 uv,float depth){
+    vec4 p=inverseDepth*vec4(uv*2.0-1.0,depth*2.0-1.0,1.0);
+    return -p.z/max(abs(p.w),0.000001);
 }
 
 void main(){

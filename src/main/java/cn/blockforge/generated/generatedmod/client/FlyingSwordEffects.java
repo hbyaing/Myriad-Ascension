@@ -110,7 +110,7 @@ public final class FlyingSwordEffects {
         if(pending!=null){
             var mesh=pending;pending=null;
             activeRenderTarget=Minecraft.getInstance().getMainRenderTarget().frameBufferId;
-            boolean submitted=SwordFlightTrailRenderer.drawPost(mesh,projection,effectTime);
+            boolean submitted=SwordFlightTrailRenderer.drawPost(mesh,projection,inverseProjection,effectTime);
             normalTrailSubmitted=submitted&&normalTrailVertexCount>0;
             spiralSubmitted=submitted&&spiralVertexCount>0;
         }
@@ -187,7 +187,7 @@ public final class FlyingSwordEffects {
                 float strength=sword.renderPhase().trailIntensity*(1+1.5F*jinghong);
                 double length=Math.min(22,(4+5*f.sprintFactor()+7*f.spiralFactor())*strength);
                 double width=Math.min(.85,(.36+.18*f.sprintFactor()+.09*f.spiralFactor())*Math.sqrt(strength));
-                float alpha=ordinary*Math.min(.94F,(.72F+.11F*f.sprintFactor()+.10F*f.spiralFactor())*(float)Math.sqrt(strength));
+                float alpha=ordinary*Math.min(.94F,(.90F+.035F*f.sprintFactor()+.025F*f.spiralFactor())*(float)Math.sqrt(strength));
                 int start=0;double headArc=nodes.get(nodes.size()-1).arc();
                 while(start<nodes.size()-2&&headArc-nodes.get(start).arc()>length)start++;
                 double origin=SwordTrailPhase.origin(headArc,sword.getUUID().hashCode());
@@ -263,7 +263,7 @@ public final class FlyingSwordEffects {
             }
             if(previousSide!=null&&side.dot(previousSide)<0)side=side.scale(-1);
             double ageFade=fade(node,headArc,length,now),weight=plane==0?1:plane>=3?.7071067811865476:near*.7071067811865476;
-            side=side.scale(width*ageFade*swordJoin(behind));
+            side=side.scale(width*Math.sqrt(ageFade)*swordJoin(behind));
             float u=SwordTrailPhase.coordinate(node.arc(),origin),a=alpha*(float)(ageFade*weight);
             float mode=plane>=3?36:0;
             if(previous!=null&&previous.distanceToSqr(center)>1e-12&&(a>0||previousA>0)){

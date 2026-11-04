@@ -70,6 +70,9 @@ public final class SwordFlightTrailRenderer {
         return Types.TRAIL;
     }
     public static boolean drawPost(BufferBuilder.RenderedBuffer mesh,Matrix4f projection,float time){
+        return drawPost(mesh,projection,null,time);
+    }
+    public static boolean drawPost(BufferBuilder.RenderedBuffer mesh,Matrix4f projection,Matrix4f inverseDepth,float time){
         int depth=TrailShaderBridge.capturedDepthTexture();
         if(mesh==null)return false;
         if(post==null||depth<0){mesh.release();status="Awaiting sword world depth";return false;}
@@ -88,6 +91,8 @@ public final class SwordFlightTrailRenderer {
             RenderSystem.setShaderColor(1,1,1,1);
             post.safeGetUniform("EmissionPass").set(0F);
             post.safeGetUniform("TrailProjection").set(projection);
+            post.safeGetUniform("DepthSoftness").set(inverseDepth==null?0F:.08F);
+            if(inverseDepth!=null)post.safeGetUniform("InverseDepthProjection").set(inverseDepth);
             post.safeGetUniform("OutputSize").set((float)main.viewWidth,(float)main.viewHeight);
             post.safeGetUniform("EffectTime").set(time);
             smokeAtlas(post);

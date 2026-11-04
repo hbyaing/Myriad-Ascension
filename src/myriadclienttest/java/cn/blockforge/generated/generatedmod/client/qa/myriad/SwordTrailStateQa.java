@@ -15,7 +15,7 @@ final class SwordTrailStateQa {
   var shader=SwordFlightTrailRenderer.emissionShader();BlendMode blend=null;
   for(var f:net.minecraft.client.renderer.ShaderInstance.class.getDeclaredFields())if(f.getType()==BlendMode.class){f.setAccessible(true);blend=(BlendMode)f.get(shader);break;}
   if(blend==null)throw new AssertionError("No actual shader blend state");
-  var overlaps=new ArrayList<Object>();var results=new ArrayList<Object>();int[] reference=null;int maximum=0;double clearDepth=GL11.glGetDouble(GL11.GL_DEPTH_CLEAR_VALUE);boolean offsetWas=GL11.glIsEnabled(GL11.GL_POLYGON_OFFSET_FILL);float oldFactor=GL11.glGetFloat(GL11.GL_POLYGON_OFFSET_FACTOR),oldUnits=GL11.glGetFloat(GL11.GL_POLYGON_OFFSET_UNITS);
+  var softDepth=new ArrayList<Object>();var overlaps=new ArrayList<Object>();var results=new ArrayList<Object>();int[] reference=null;int maximum=0;double clearDepth=GL11.glGetDouble(GL11.GL_DEPTH_CLEAR_VALUE);boolean offsetWas=GL11.glIsEnabled(GL11.GL_POLYGON_OFFSET_FILL);float oldFactor=GL11.glGetFloat(GL11.GL_POLYGON_OFFSET_FACTOR),oldUnits=GL11.glGetFloat(GL11.GL_POLYGON_OFFSET_UNITS);
   try(var saved=new MeteorBloomRenderer.State()){
    for(String mode:List.of("reference","reverseEquation","staleBlendFactors","emissionUniform","polygonOffset")){
     var main=mc.getMainRenderTarget();main.bindWrite(true);RenderSystem.disableScissor();RenderSystem.colorMask(true,true,true,true);
@@ -50,8 +50,27 @@ final class SwordTrailStateQa {
     }
     overlaps.add(Map.of("band",band,"redAfterEachLayer",levels));
    }
+   var main=mc.getMainRenderTarget();
+   var projection=new Matrix4f().perspective((float)Math.toRadians(70),(float)main.viewWidth/main.viewHeight,.05F,512F);
+   var inverse=new Matrix4f(projection).invert();
+   var surface=new org.joml.Vector4f(0,0,-10,1).mul(projection);
+   double sceneDepth=(surface.z/surface.w+1)*.5;
+   int prior=-1;
+   for(float gap:new float[]{-.04F,.02F,.04F,.08F,.16F}){
+    main.bindWrite(true);GL11.glClearColor(0,0,0,0);GL11.glDepthMask(true);GL11.glClearDepth(sceneDepth);GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
+    TrailShaderBridge.resetFrame();if(!TrailShaderBridge.captureDepth())throw new AssertionError("No perspective scene depth");
+    var b=new BufferBuilder(256);b.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.POSITION_TEX_COLOR);
+    for(float[] p:new float[][]{{-1,-1},{1,-1},{1,1},{-1,1}})b.vertex(p[0],p[1],-10+gap).uv(0,36.5F).color(.28F,.82F,1F,.5F).endVertex();
+    if(!SwordFlightTrailRenderer.drawPost(b.end(),projection,inverse,0))throw new AssertionError("Perspective post draw failed");
+    int value=red(mc);softDepth.add(Map.of("frontGapMetres",gap,"red",value));
+    if(gap<0&&value!=0)throw new AssertionError("Soft intersection leaks through opaque surface");
+    if(value<prior)throw new AssertionError("Soft intersection is not monotonic: "+softDepth);
+    if(gap==.04F&&(value<8||value>35))throw new AssertionError("Soft intersection midpoint not between hidden and full: "+value);
+    if(gap==.16F&&value<40)throw new AssertionError("Soft intersection erased free-standing light");
+    prior=value;
+   }
   }finally{GL11.glPolygonOffset(oldFactor,oldUnits);if(offsetWas)GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL);else GL11.glDisable(GL11.GL_POLYGON_OFFSET_FILL);shader.safeGetUniform("EmissionPass").set(0F);GL11.glClearDepth(clearDepth);TrailShaderBridge.resetFrame();}
   if(requireStable&&maximum>1)throw new AssertionError("Production post depends on incoming GL state: "+results);
-  return Map.of("scope","Real SwordFlightTrailRenderer.drawPost and shipping post shader, actual main target; one diagnostic quad, not real flight/visual acceptance. GL readback only here, never cold route.","stableRequired",requireStable,"maxRgbDifference",maximum,"states",results,"ordinaryOverlap",overlaps);
+  return Map.of("scope","Real SwordFlightTrailRenderer.drawPost and shipping post shader, actual main target; diagnostic quads, not real flight/visual acceptance. GL readback only here, never cold route.","stableRequired",requireStable,"maxRgbDifference",maximum,"states",results,"ordinaryOverlap",overlaps,"perspectiveSoftIntersection",softDepth);
  }
 }
