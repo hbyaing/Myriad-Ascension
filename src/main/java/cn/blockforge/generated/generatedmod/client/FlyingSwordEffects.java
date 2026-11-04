@@ -178,10 +178,8 @@ public final class FlyingSwordEffects {
                 var history=entry.getValue();
                 Vec3 anchor=morphAnchor(sword,f.position(),f.yaw(),f.pitch(),f.roll(),f.huahong());
                 var nodes=history.renderNodes(now,point(anchor));if(nodes.size()<2)continue;
-                nodes=HuahongHeadBridge.swordRootNodes(SwordFlightTrailHistory.uniformHead(nodes,
-                        f.huahong()>.001F?.125:.09,f.huahong()>.001F?HuahongHeadBridge.WORLD_HISTORY_DISTANCE:1.5),anchor,f.forward());
-                if(f.huahong()>.001F)nodes=HuahongHeadBridge.presentationNodes(
-                        nodes,anchor,f.forward(),HuahongHeadBridge.attachmentWeight(f.huahong()));
+                nodes=HuahongHeadBridge.swordRootNodes(nodes,anchor,f.forward());
+                nodes=SwordFlightTrailHistory.uniformHead(nodes,.09,22);
                 float jinghong=sword.renderJinghong(event.getPartialTick());
                 float ordinary=1-morphWeight(f.huahong());
                 if(ordinary<=.001F)continue;

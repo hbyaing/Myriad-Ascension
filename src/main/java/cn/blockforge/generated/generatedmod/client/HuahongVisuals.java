@@ -103,11 +103,9 @@ public final class HuahongVisuals {
             var canonical=active?trail.history.renderNodes(now,point(center)):trail.history.nodes();
             var nodes=active?SwordFlightTrailHistory.uniformHead(canonical,.125,HuahongHeadBridge.WORLD_HISTORY_DISTANCE):canonical;
             float attachment=active?HuahongHeadBridge.attachmentWeight(frame.huahong()):0;
-            // Only the attached head is stabilized. Canonical samples still
-            // own detached births, time/arc and the distant world-space trail.
+            // DENSE consumes the same filtered drawing curve as the ribbons.
             var headNodes=trail.skin==cn.blockforge.generated.generatedmod.yujian.HuahongSkin.DENSE
-                    ||trail.skin==cn.blockforge.generated.generatedmod.yujian.HuahongSkin.METEOR_PRISM
-                    ?HuahongHeadBridge.presentationNodes(nodes,center,forward,attachment):nodes;
+                    ?HuahongHeadBridge.presentationNodes(canonical,center,forward,attachment):nodes;
             Vec3 modelSide=frame.local(1,0,0).subtract(frame.position());
             if(trail.skin==cn.blockforge.generated.generatedmod.yujian.HuahongSkin.DENSE){
                 // Residual history is no longer carried by the current sword.
@@ -130,14 +128,14 @@ public final class HuahongVisuals {
                 if(n.tick()>now)continue;
                 double behind=nodes.get(nodes.size()-1).arc()-n.arc();
                 double age=HuahongHeadBridge.luminousSupportAge((now-n.tick())/20,behind),left=clamp(1-age/3.8);
-                Vec3 tangent=vec(nodes.get(Math.min(nodes.size()-1,i+1)).point()).subtract(vec(nodes.get(Math.max(0,i-1)).point()));
-                Vec3 side=(active&&behind<HuahongHeadBridge.WORLD_HISTORY_DISTANCE?path.behind(behind):path.frame(vec(n.point()),tangent)).side();
-                rows.add(new Row(vec(headNodes.get(i).point()),n.arc()-origin,Math.pow(left,1.3)*(.22+.78*Math.exp(-age*.35)),
-                        (float)(Math.pow(left,1.7)*HuahongHeadBridge.luminousCoreJoin(behind)),mix(0x8274ff,0xe8faff,Math.exp(-age*2)),side));
+                rows.add(new Row(path.behind(behind).p(),n.arc()-origin,HuahongHeadBridge.luminousEnvelope(behind),
+                        (float)Math.pow(left,1.7),mix(0x8274ff,0xe8faff,Math.exp(-age*2)),null));
             }
-            strip(entryBuffer,pose,eye,rows,WIDTH*1.4,.045F,10,path);
-            strip(entryBuffer,pose,eye,rows,WIDTH*.42,.35F,6,path);
-            strip(entryBuffer,pose,eye,rows,.008+WIDTH*.045,.48F,8,path);
+            var head=path.behind(0);
+            for(int i=1;i<=8;i++){double d=-.65*i/8;rows.add(new Row(head.p().subtract(head.forward().scale(d)),nodes.get(nodes.size()-1).arc()-origin-d,HuahongHeadBridge.luminousEnvelope(d),1,0xe8faff,null));}
+            strip(entryBuffer,pose,eye,rows,WIDTH*1.4,.045F,10,null);
+            strip(entryBuffer,pose,eye,rows,WIDTH*.42,.35F,6,null);
+            strip(entryBuffer,pose,eye,rows,.008+WIDTH*.045,.48F,8,null);
             // Offset each filament from its own world-path tangent, not the current head axis.
             for(int strand=0;strand<4;strand++){
                 rows.clear();double phase=strand*2.399;
@@ -147,11 +145,11 @@ public final class HuahongVisuals {
                     Vec3 f=vec(nodes.get(Math.min(nodes.size()-1,i+1)).point()).subtract(vec(nodes.get(Math.max(0,i-1)).point()));
                     if(f.lengthSqr()<1e-10)f=forward;else f=f.normalize();
                     double behind=nodes.get(nodes.size()-1).arc()-n.arc();
-                    var section=active&&behind<HuahongHeadBridge.WORLD_HISTORY_DISTANCE?path.behind(behind):path.frame(vec(n.point()),f);Vec3 side=section.side(),up=section.up();
+                    var section=path.behind(behind);Vec3 side=section.side(),up=section.up();
                     double localArc=n.arc()-nodes.get(nodes.size()-1).arc();
                     double curl=Math.sin(localArc*.65+strand*1.7)*.24+Math.sin(localArc*1.73+strand)*.11;
                     double open=smooth((age-.025)/.375),spread=open*SPREAD*.035*(1+age*.24)*HuahongHeadBridge.WIDTH_MULTIPLIER;
-                    Vec3 p=vec(headNodes.get(i).point()).add(side.scale(Math.cos(phase+curl)*spread)).add(up.scale(Math.sin(phase+curl)*spread));
+                    Vec3 p=section.p().add(side.scale(Math.cos(phase+curl)*spread)).add(up.scale(Math.sin(phase+curl)*spread));
                     rows.add(new Row(p,n.arc()-origin+strand*.93,.15+.85*Math.pow(left,1.2),
                             (float)(Math.pow(left,1.5)*historyJoin(behind)),mix(0x8274ff,0xe8faff,Math.exp(-age*2)*.5),side));
                 }
@@ -159,14 +157,7 @@ public final class HuahongVisuals {
             }
             if(active){
                 float strength=1;rows.clear();
-                for(int i=0;i<=68;i++){
-                    double q=i/68.0,w=Math.max(.012,Math.pow(Math.max(0,Math.sin(Math.PI*q)),.65)*Math.exp(-q*2.7));
-                    var section=path.behind(q*HEAD_LENGTH);
-                    rows.add(new Row(section.p().add(forward.scale(.26)),-q*HEAD_LENGTH,w,strength*(float)(1-q),0xe8faff,section.side()));
-                }
-                strip(entryBuffer,pose,eye,rows,WIDTH*2.1,.054F,10,path);
-                strip(entryBuffer,pose,eye,rows,WIDTH*.19,.68F,8,path);
-                noseGlow(entryBuffer,pose,eye,center,forward,strength);
+                noseGlow(entryBuffer,pose,eye,center,head.forward(),strength);
                 for(int strand=0;strand<4;strand++){
                     rows.clear();double phase=strand*2.399;
                     for(int i=0;i<=60;i++){

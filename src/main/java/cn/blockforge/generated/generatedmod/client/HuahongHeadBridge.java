@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.world.phys.Vec3;
 
-/** Presentation-only bridge from a rigid carrier head back to world history. */
+/** Presentation filtering and luminous support; original history is never rewritten. */
 public final class HuahongHeadBridge {
     public static final double FIXED_HEAD_LENGTH=6;
     public static final double WORLD_HISTORY_DISTANCE=12;
@@ -23,6 +23,10 @@ public final class HuahongHeadBridge {
     public static float luminousCoreJoin(double behind){
         double q=Math.max(0,Math.min(1,behind-.5));return (float)(q*q*(3-2*q));
     }
+    /** One continuous luminous nose/body envelope, full width from 0.75m aft. */
+    public static double luminousEnvelope(double behind){
+        double q=Math.max(0,Math.min(1,(behind+.65)/1.4));return q*q*(3-2*q);
+    }
     /** Rigid head support belongs to the active carrier, not an old stationary
      * history birth. Blend back to real age only as the head joins world history. */
     public static double luminousSupportAge(double age,double behind){
@@ -31,8 +35,7 @@ public final class HuahongHeadBridge {
     }
 
 
-    /** Preserve source order, time and material arc. Distant nodes retain their
-     * exact instances; neither source history nor its recorded positions change. */
+    /** Preserve source order, time and material arc; filter only the drawing copy. */
     public static List<SwordFlightTrailHistory.Node> presentationNodes(
             List<SwordFlightTrailHistory.Node> source,Vec3 center,Vec3 forward){
         return presentationNodes(source,center,forward,1);
@@ -40,31 +43,19 @@ public final class HuahongHeadBridge {
     /** Weight follows the rendered lifecycle; zero retains the exact source. */
     public static List<SwordFlightTrailHistory.Node> presentationNodes(
             List<SwordFlightTrailHistory.Node> source,Vec3 center,Vec3 forward,float weight){
-        return attach(source,center,forward,weight,FIXED_HEAD_LENGTH,WORLD_HISTORY_DISTANCE);
-    }
-    /** Weld only the last half metre to the pommel; keep the older turning trail. */
-    public static List<SwordFlightTrailHistory.Node> swordRootNodes(
-            List<SwordFlightTrailHistory.Node> source,Vec3 center,Vec3 forward){
-        return attach(source,center,forward,1,.5,1.5);
-    }
-    private static List<SwordFlightTrailHistory.Node> attach(
-            List<SwordFlightTrailHistory.Node> source,Vec3 center,Vec3 forward,float weight,double fixed,double distance){
-        if(!Float.isFinite(weight)||weight<=0)return source;
-        weight=Math.min(1,weight);
-        if(source.isEmpty()||!finite(center)||!finite(forward)||forward.lengthSqr()<1e-10)return source;
-        Vec3 direction=forward.normalize();double headArc=source.get(source.size()-1).arc();
+        if(!Float.isFinite(weight)||weight<=0||source.isEmpty()||!finite(center)||!finite(forward))return source;
+        var curve=new FlightTrailCurve(source,center,forward);double arc=source.get(source.size()-1).arc();
         var result=new ArrayList<SwordFlightTrailHistory.Node>(source.size());
-        for(var node:source){
-            double behind=Math.max(0,headArc-node.arc());
-            if(behind>=distance){result.add(node);continue;}
-            Vec3 straight=center.subtract(direction.scale(behind));
-            double q=Math.max(0,Math.min(1,(behind-fixed)/(distance-fixed)));
-            double blend=q*q*(3-2*q);
-            var p=node.point();Vec3 world=new Vec3(p.x(),p.y(),p.z()),position=straight.lerp(world,blend);
-            if(weight<1)position=world.lerp(position,weight);
-            result.add(new SwordFlightTrailHistory.Node(new SwordFlightTrailHistory.Point(position.x,position.y,position.z),node.tick(),node.arc()));
+        for(var n:source){var p=n.point();Vec3 raw=new Vec3(p.x(),p.y(),p.z());
+            Vec3 shown=raw.lerp(curve.at(arc-n.arc()).point(),Math.min(1,weight));
+            result.add(new SwordFlightTrailHistory.Node(new SwordFlightTrailHistory.Point(shown.x,shown.y,shown.z),n.tick(),n.arc()));
         }
         return result;
+    }
+    /** Follow actual motion all the way to the pommel; do not impose a steering-axis hook. */
+    public static List<SwordFlightTrailHistory.Node> swordRootNodes(
+            List<SwordFlightTrailHistory.Node> source,Vec3 center,Vec3 forward){
+        return presentationNodes(source,center,forward,1);
     }
     private static boolean finite(Vec3 p){return p!=null&&Double.isFinite(p.x)&&Double.isFinite(p.y)&&Double.isFinite(p.z);}
 }

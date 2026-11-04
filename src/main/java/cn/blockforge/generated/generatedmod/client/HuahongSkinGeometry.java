@@ -29,7 +29,6 @@ final class HuahongSkinGeometry {
     private final Vec3 eye,center,forward;
     private final List<SwordFlightTrailHistory.Node> nodes;
     private final List<SwordFlightTrailHistory.Node> canonical;
-    private final List<SwordFlightTrailHistory.Node> headNodes;
     private final Frame[] historyFrames;
     private final double now,origin;
     private final float strength;
@@ -38,7 +37,6 @@ final class HuahongSkinGeometry {
     private HuahongSkinGeometry(HuahongSkin skin,VertexConsumer out,PoseStack.Pose pose,Vec3 eye,Vec3 center,Vec3 forward,Vec3 headSide,
             List<SwordFlightTrailHistory.Node> nodes,List<SwordFlightTrailHistory.Node> canonical,double now,float strength){
         this.skin=skin;this.out=out;this.pose=pose;this.eye=eye;this.center=center;this.forward=forward;this.nodes=nodes;this.canonical=canonical;this.now=now;this.strength=strength;
-        headNodes=skin==HuahongSkin.DENSE?nodes:HuahongHeadBridge.presentationNodes(nodes,center,forward,HuahongHeadBridge.attachmentWeight(strength));
         historyFrames=skin==HuahongSkin.DENSE?null:new Frame[nodes.size()];
         // DENSE's source sprite never queries a transported path. SMOKE uses
         // at most24.05m, including its zero-alpha last station, with32m reserve.
@@ -75,9 +73,7 @@ final class HuahongSkinGeometry {
         double behind=origin-node.arc();
         // Head stations have known arc distances. A nearest-position search can
         // select another arm of a tight turn even when their centers are rigid.
-        Frame frame=behind<HuahongHeadBridge.WORLD_HISTORY_DISTANCE?path.behind(behind):
-                path.frame(vec(node.point()),vec(nodes.get(Math.min(nodes.size()-1,i+1)).point()).subtract(vec(nodes.get(Math.max(0,i-1)).point())));
-        if(headNodes.get(i)!=node)frame=new Frame(vec(headNodes.get(i).point()),frame.forward(),frame.side(),frame.up());
+        Frame frame=path.behind(behind);
         return historyFrames[i]=frame;
     }
     /** Walk the recorded path backwards; turn local flames with the trail, not a rigid spine. */
@@ -142,25 +138,23 @@ final class HuahongSkinGeometry {
         strip(rows,22,true);
     }
     private void needle(){
-        // The active Skill selects flow-lookdev V5: a concentrated LONG head,
-        // not the older single thin-needle consumer and not a reduced white line.
-        double half=.026+.14*.20,length=1+3.4*.76+9.6*.025;
-        strip(opacity(history(5.8,half*4.8,0xffca74,0,0,false),.05F),10);
-        strip(opacity(history(5.8,half*1.35,0xffd69b,0,0,false),.40F),34);
-        strip(opacity(history(5.8,half*.23,0xfff3d6,0,0,false),.63F),22);
-        for(int k=0;k<3;k++)strip(opacity(history(5.8,half*(.08+.10*rnd(k+21)),0xffdfaa,k,.08,false),.32F),22);
-        var veil=new ArrayList<Row>();var body=new ArrayList<Row>();var core=new ArrayList<Row>();
-        for(int i=0;i<=96;i++){
-            double q=i/96.0;Frame f=back(q*length);
-            double shape=Math.pow(smooth(0,.15,q),.8)*Math.pow(1-q,1.8);
-            Vec3 p=f.p().add(f.forward().scale(.68));
-            int color=mix(0xffc45c,0xfff5cf,.20+.80*Math.pow(1-q,1.7));
-            float alpha=strength*(float)(1-q*.7);
-            veil.add(new Row(p,-q*length,shape*(.12+.14*.48)*1.9,alpha*.08F,0xffca73,f.side()));
-            body.add(new Row(p,-q*length,shape*(.12+.14*.48),alpha*.50F,color,f.side()));
-            core.add(new Row(p,-q*length,shape*(.018+.14*.07),alpha*.72F,0xfff4d4,f.side()));
+        // A single centreline and width envelope owns both nose and history.
+        // Separate crossed local spindles created a view-dependent thin neck.
+        double half=.026+.14*.20;
+        for(int layer=0;layer<3;layer++){
+            double width=half*(layer==0?4.8:layer==1?1.35:.23);
+            int color=layer==0?0xffca74:layer==1?0xffd69b:0xfff3d6;
+            float opacity=layer==0?.05F:layer==1?.40F:.63F;
+            var rows=new ArrayList<Row>();
+            for(int i=0;i<nodes.size();i++){
+                var n=nodes.get(i);double d=headArc()-n.arc(),age=HuahongHeadBridge.luminousSupportAge((now-n.tick())/20,d);
+                if(age<0||age>=5.8)continue;
+                rows.add(new Row(at(i).p(),n.arc()-origin,width*HuahongHeadBridge.luminousEnvelope(d),strength*opacity*(float)fade(age,5.8),color,null));
+            }
+            Frame head=back(0);
+            for(int i=1;i<=8;i++){double d=-.65*i/8;rows.add(new Row(head.p().subtract(head.forward().scale(d)),-d,width*HuahongHeadBridge.luminousEnvelope(d),strength*opacity,color,null));}
+            strip(rows,layer==0?10:layer==1?34:22);
         }
-        strip(veil,10,true);strip(body,34,true);strip(core,22,true);
     }
     private void fire(boolean torn){
         // Unequal open combustion tongues retain separate dark gaps. A few

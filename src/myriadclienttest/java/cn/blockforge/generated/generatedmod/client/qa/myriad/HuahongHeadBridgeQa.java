@@ -1,111 +1,44 @@
 package cn.blockforge.generated.generatedmod.client.qa.myriad;
-
-import cn.blockforge.generated.generatedmod.client.HuahongFlightPath;
-import cn.blockforge.generated.generatedmod.client.HuahongHeadBridge;
-import cn.blockforge.generated.generatedmod.client.SwordFlightTrailHistory;
+import cn.blockforge.generated.generatedmod.client.*;
 import net.minecraft.world.phys.Vec3;
 import java.util.*;
 
-/** Geometry invariants on production history/path; no shaders or game client required. */
+/** Regression of the user's hook, hard corners, and diverging local/history curves. */
 public final class HuahongHeadBridgeQa {
-    private static int checks;
-    private static void check(boolean value,String message){checks++;if(!value)throw new AssertionError(message);}
-    private static SwordFlightTrailHistory.Point point(Vec3 p){return new SwordFlightTrailHistory.Point(p.x,p.y,p.z);}
-    private static Vec3 vec(SwordFlightTrailHistory.Point p){return new Vec3(p.x(),p.y(),p.z());}
-    private static Vec3 position(double t,double speed,double turn){return turn==0?new Vec3(t*speed,0,0):new Vec3(speed/turn*Math.sin(t*turn),0,speed/turn*(1-Math.cos(t*turn)));}
-    private static double error(HuahongFlightPath.Frame a,HuahongFlightPath.Frame b){return Math.max(Math.max(a.p().distanceTo(b.p()),a.forward().distanceTo(b.forward())),Math.max(a.side().distanceTo(b.side()),a.up().distanceTo(b.up())));}
-    private static double range(double[] values){return Arrays.stream(values).max().orElse(0)-Arrays.stream(values).min().orElse(0);}
-    private static void derivative(HuahongFlightPath path,double d){
-        double e=1e-6;var before=path.behind(d-e);var after=path.behind(d+e);var frame=path.behind(d);
-        Vec3 difference=before.p().subtract(after.p());Vec3 tangent=difference.scale(1/difference.length());
-        check(tangent.distanceTo(frame.forward())<1e-6,"Attached analytic tangent differs from curve derivative at "+d+": "+tangent.distanceTo(frame.forward()));
-        check(before.forward().distanceTo(after.forward())<.001,"Attached join has a tangent discontinuity at "+d);
-    }
-    public static Map<String,Object> verify(){
-        checks=0;
-        // A hard turn leaves old samples off axis. Only the welded root may move.
-        for(Vec3 direction:List.of(new Vec3(0,0,1),new Vec3(1,1,-1).normalize(),new Vec3(0,-1,0))){
-            Vec3 center=new Vec3(12,11000,21);var source=new ArrayList<SwordFlightTrailHistory.Node>();
-            for(int i=40;i>=0;i--){double d=i*.05;source.add(new SwordFlightTrailHistory.Node(point(center.add(d*.4,d*.2,-d)),10200336-d,100-d));}
-            var saved=List.copyOf(source);var root=HuahongHeadBridge.swordRootNodes(source,center,direction);
-            check(source.equals(saved),"Sword root mutated world history");
-            for(int i=0;i<source.size();i++){
-                var raw=source.get(i);var shown=root.get(i);double d=100-raw.arc();
-                check(raw.arc()==shown.arc()&&raw.tick()==shown.tick(),"Sword root altered material age/arc");
-                if(d<=.5)check(vec(shown.point()).distanceTo(center.subtract(direction.scale(d)))<1e-10,"Sword root bends off carrier axis");
-                if(d>=1.5)check(raw==shown,"Sword root displaced distant turn history");
-            }
-        }
-        for(double age:new double[]{0,.5,1.8,3.7}){
-            check(HuahongHeadBridge.luminousSupportAge(age,2)==0,"Live luminous neck inherits stationary history age");
-            check(HuahongHeadBridge.luminousSupportAge(age,12)==age,"Luminous support refreshed distant history");
-        }
-        for(double speed:new double[]{.2,3.85,7,15}){
-            var h=new SwordFlightTrailHistory(.09,1000,160,2048);
-            for(int tick=0;tick<=128;tick++)h.sample(new SwordFlightTrailHistory.Point(0,0,tick*speed),tick,1000);
-            for(int phase=0;phase<60;phase++){
-                double t=127+phase/60.0;var source=h.renderNodes(t,new SwordFlightTrailHistory.Point(0,0,t*speed));
-                var saved=List.copyOf(source);var uniform=SwordFlightTrailHistory.uniformHead(source,.125,8);double arc=uniform.get(uniform.size()-1).arc();
-                check(source.equals(saved),"Presentation grid mutated history");
-                for(var n:uniform){double d=arc-n.arc();
-                    if(d>8+1e-8){check(source.stream().anyMatch(old->old==n),"Grid replaced distant source instance");continue;}
-                    check(Math.abs(d/.125-Math.rint(d/.125))<1e-7,"Drawing lattice still moves at tick rate");
-                    check(Math.abs(n.point().z()-(t*speed-d))<1e-8,"Uniform station left canonical line");
-                    check(Math.abs((t-n.tick())-d/speed)<1e-7,"Uniform station changed true age");
-                }
-            }
-        }
-
-        for(float strength:new float[]{.015F,.02F,.05F,.1F,.25F,.5F,1F})check(HuahongHeadBridge.attachmentWeight(strength)==1,"Visible entry did not retain rigid attachment");
-        check(HuahongHeadBridge.attachmentWeight(0)==0,"Invisible endpoint changed");
-        double oldHeadPulse=0,newHeadPulse=0,windowError=0,defaultError=0;
-        for(double speed:new double[]{.2,7,15,30})for(double degrees:new double[]{0,10,35})for(double bank:new double[]{0,20}){
-            double turn=Math.toRadians(degrees);var history=new SwordFlightTrailHistory(.25,116,160,720);
-            for(int n=0;n<=24;n++)history.sample(point(position(n,speed,turn)),n,1000);
-            double[] oldLocal=new double[48],newLocal=new double[48];
-            for(int k=0;k<48;k++){
-                double partial=k/48.0,t=23+partial,a=t*turn,b=t*Math.toRadians(bank);
-                Vec3 center=position(23,speed,turn).lerp(position(24,speed,turn),partial);
-                Vec3 forward=new Vec3(Math.cos(a),0,Math.sin(a)),base=new Vec3(-Math.sin(a),0,Math.cos(a));
-                Vec3 side=base.scale(Math.cos(b)).add(new Vec3(0,1,0).scale(Math.sin(b))),up=side.cross(forward);
-                var source=history.renderNodes(t,point(center));var snapshot=List.copyOf(source);double arc=source.get(source.size()-1).arc();
-                var presentation=HuahongHeadBridge.presentationNodes(source,center,forward);
-                check(source.equals(snapshot),"Bridge mutated source history");check(presentation.size()==source.size(),"Bridge changed sample identity/order");
-                check(HuahongHeadBridge.presentationNodes(source,center,forward,0)==source,"Zero presentation weight did not return exact source");
-                for(int i=0;i<source.size();i++){
-                    var raw=source.get(i);var shown=presentation.get(i);double d=arc-raw.arc();
-                    check(raw.tick()==shown.tick()&&raw.arc()==shown.arc(),"Bridge changed material arc or age");
-                    if(d>=HuahongHeadBridge.WORLD_HISTORY_DISTANCE)check(raw==shown,"Distant world history node was replaced");
-                    if(d<=HuahongHeadBridge.FIXED_HEAD_LENGTH)check(vec(shown.point()).distanceTo(center.subtract(forward.scale(d)))<1e-10,"Rigid head presentation moved off carrier");
-                }
-                var old=new HuahongFlightPath(source,center,forward,side);
-                var disabled=new HuahongFlightPath(source,center,forward,side,Double.POSITIVE_INFINITY,false);
-                var zero=new HuahongFlightPath(source,center,forward,side,Double.POSITIVE_INFINITY,true,0);
-                var full=new HuahongFlightPath(source,center,forward,side,Double.POSITIVE_INFINITY,true);
-                var bounded=new HuahongFlightPath(source,center,forward,side,32,true);
-                for(double d:new double[]{0,.15,.5,1,2,2.5,3,4,5,6,8,12,24,26}){
-                    double de=Math.max(error(old.behind(d),disabled.behind(d)),error(old.behind(d),zero.behind(d)));
-                    defaultError=Math.max(defaultError,de);check(de==0,"Default/zero-weight path changed");
-                    double we=error(full.behind(d),bounded.behind(d));windowError=Math.max(windowError,we);check(we<1e-9,"Bounded attached window changed a visible frame");
-                    var frame=full.behind(d);
-                    if(d<=HuahongHeadBridge.FIXED_HEAD_LENGTH){Vec3 relative=frame.p().subtract(center);check(Math.abs(relative.dot(side))<1e-10&&Math.abs(relative.dot(up))<1e-10&&Math.abs(relative.dot(forward)+d)<1e-10,"Attached body-local rigid head position oscillates");check(frame.forward().distanceTo(forward)<1e-12&&frame.side().distanceTo(side)<1e-12,"Attached rigid head basis changed");}
-                    if(d>=full.headTransitionLength()){check(frame.p().equals(old.behind(d).p()),"Attached path displaced original far curve");check(frame.forward().equals(old.behind(d).forward()),"Attached path changed original far tangent");}
-                }
-                oldLocal[k]=old.behind(2).p().subtract(center).dot(base);newLocal[k]=full.behind(2).p().subtract(center).dot(base);
-                if(k==17){
-                    derivative(full,HuahongHeadBridge.FIXED_HEAD_LENGTH);derivative(full,full.headTransitionLength());
-                    for(double weight:new double[]{.001,.25,.5,.75,.999}){
-                        var fade=new HuahongFlightPath(source,center,forward,side,32,true,weight);derivative(fade,HuahongHeadBridge.FIXED_HEAD_LENGTH);derivative(fade,fade.headTransitionLength());
-                        var faded=HuahongHeadBridge.presentationNodes(source,center,forward,(float)weight);
-                        for(int i=0;i<source.size();i++){var raw=source.get(i);var shown=faded.get(i);check(raw.arc()==shown.arc()&&raw.tick()==shown.tick(),"Fade changed source clocks");if(arc-raw.arc()>=HuahongHeadBridge.WORLD_HISTORY_DISTANCE)check(raw==shown,"Fade replaced distant node");else check(vec(shown.point()).distanceTo(vec(raw.point()).lerp(vec(presentation.get(i).point()),(float)weight))<1e-10,"Presentation fade is discontinuous between endpoints");}
-                    }
-                }
-            }
-            oldHeadPulse=Math.max(oldHeadPulse,range(oldLocal));newHeadPulse=Math.max(newHeadPulse,range(newLocal));
-        }
-        check(oldHeadPulse>.05,"Cadence fixture did not reproduce original head deformation");check(newHeadPulse<1e-10,"Rigid head retained tick-phase body-local deformation");
-        return Map.of("checks",checks,"oldHead2mPeakToPeak",oldHeadPulse,"attachedHead2mPeakToPeak",newHeadPulse,"maxVisibleWindowError",windowError,"maxDefaultPathError",defaultError,"passed",true,"scope","Production path/history/bridge mathematics, including linear entity interpolation; no in-game or shader acceptance.");
-    }
-    public static void main(String[] args){System.out.println(verify());}
-    private HuahongHeadBridgeQa(){}
+ private static int checks;
+ private static void check(boolean v,String text){checks++;if(!v)throw new AssertionError(text);}
+ private static Vec3 vec(SwordFlightTrailHistory.Node n){var p=n.point();return new Vec3(p.x(),p.y(),p.z());}
+ private static List<SwordFlightTrailHistory.Node> fixture(Vec3 origin,boolean corner){
+  var rows=new ArrayList<SwordFlightTrailHistory.Node>();
+  for(int i=400;i>=0;i--){double d=i*.1;Vec3 p=origin.add(corner?-Math.max(0,Math.min(8,d-4)):0,0,-(corner?Math.min(d,4)+Math.max(0,d-12):d));rows.add(new SwordFlightTrailHistory.Node(new SwordFlightTrailHistory.Point(p.x,p.y,p.z),10200336-d/8,400-d));}
+  return rows;
+ }
+ public static Map<String,Object> verify(){
+  checks=0;double oldHook=0,newHook=0,maxSharedError=0,maxDerivativeError=0;
+  for(Vec3 origin:List.of(Vec3.ZERO,new Vec3(29999000,11000,29999000)))for(boolean corner:new boolean[]{false,true})for(Vec3 forward:List.of(new Vec3(0,0,1),new Vec3(1,0,1).normalize(),new Vec3(0,1,0),new Vec3(0,0,-1))){
+   var source=fixture(origin,corner);var saved=List.copyOf(source);var curve=new FlightTrailCurve(source,origin,forward);
+   var shown=HuahongHeadBridge.presentationNodes(source,origin,forward);var path=new HuahongFlightPath(source,origin,forward,new Vec3(1,0,0),Double.POSITIVE_INFINITY,true,1);
+   check(source.equals(saved),"Drawing filter mutated canonical world history");check(shown.size()==source.size(),"Filter changed material station count");
+   check(HuahongHeadBridge.presentationNodes(source,origin,forward,0)==source,"Zero filter did not retain source");
+   for(int i=0;i<source.size();i++){
+    var raw=source.get(i);double d=400-raw.arc();check(raw.tick()==shown.get(i).tick()&&raw.arc()==shown.get(i).arc(),"Filter changed sample age/arc");
+    double error=vec(shown.get(i)).distanceTo(path.behind(d).p());maxSharedError=Math.max(maxSharedError,error);check(error<1e-7,"Local head and historical ribbon have different centreline positions");
+   }
+   check(path.behind(0).p().equals(origin),"Rendered path detached from true model attachment");
+   for(double d=.01;d<=26;d+=.037){var s=curve.at(d);Vec3 p=s.point().subtract(origin);
+    if(!corner){newHook=Math.max(newHook,Math.hypot(p.x,p.y));check(Math.hypot(p.x,p.y)<1e-7,"Steering yaw created a hook in straight actual travel");}
+    else{check(p.x<=1e-7&&p.x>=-8-1e-7&&Math.abs(p.y)<1e-7&&p.z<=1e-7,"Smoothing escaped historical convex hull");}
+   }
+   for(double d:new double[]{.2,.5,1,1.5,2,3.9,4,4.1,6,11.9,12,12.1,18,25}){
+    double e=.001;Vec3 numeric=curve.at(d-e).point().subtract(curve.at(d+e).point()).normalize();
+    double error=numeric.distanceTo(curve.at(d).forward());maxDerivativeError=Math.max(maxDerivativeError,error);check(error<2e-5,"Curve orientation differs from continuous centreline derivative: "+error);
+    check(curve.at(d-e).forward().distanceTo(curve.at(d+e).forward())<.01,"Rendered historical corner is still a hard angle");
+   }
+   if(!corner)for(double d=.01;d<1.5;d+=.01){double q=Math.max(0,Math.min(1,(d-.5)));double blend=q*q*(3-2*q);Vec3 old=forward.scale(-d).lerp(new Vec3(0,0,-d),blend);oldHook=Math.max(oldHook,Math.hypot(old.x,old.y));}
+  }
+  check(oldHook>.5,"Fixture failed to reproduce the old forced-axis hook");check(newHook<1e-7,"Filtered path retains the forced-axis hook");
+  for(double d=.75;d<=26;d+=.07)check(HuahongHeadBridge.luminousEnvelope(d)==1,"Unified luminous spine has an internal width dip");
+  return Map.of("passed",true,"checks",checks,"oldForcedAxisHook",oldHook,"newStraightTravelHook",newHook,"maxLocalHistoryCentrelineError",maxSharedError,"maxCurveDerivativeError",maxDerivativeError,"scope","Production positive-kernel history curve; mismatched steering versus true motion, L-shaped history corners, far-world precision, shared local/history centreline and no internal primary width dip. Visual/video acceptance is separate.");
+ }
+ private HuahongHeadBridgeQa(){}
 }

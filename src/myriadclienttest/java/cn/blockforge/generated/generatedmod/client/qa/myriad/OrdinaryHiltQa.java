@@ -27,13 +27,40 @@ public final class OrdinaryHiltQa {
     private static ModelFrame model;
     private static int rootSamples;
     private static double rootAxisError;
+    private static double rootTurn;
+    private static double oldRootTurn;
     public static void history(List<SwordFlightTrailHistory.Node> nodes,Vec3 forward,double arc){
         if(!ENABLED||nodes.isEmpty()||TrailShaderBridge.shadowPass())return;
-        rootSamples=0;rootAxisError=0;
+        rootSamples=0;rootAxisError=0;rootTurn=0;
         var p=nodes.get(nodes.size()-1).point();Vec3 center=new Vec3(p.x(),p.y(),p.z());
         for(var n:nodes){double d=arc-n.arc();if(d<0||d>.5)continue;
             var v=n.point();rootSamples++;rootAxisError=Math.max(rootAxisError,new Vec3(v.x(),v.y(),v.z()).distanceTo(center.subtract(forward.scale(d))));
         }
+        for(int i=1;i+1<nodes.size();i++){
+            if(arc-nodes.get(i).arc()>4)continue;
+            var a=nodes.get(i-1).point();var b=nodes.get(i).point();var c=nodes.get(i+1).point();
+            Vec3 ab=new Vec3(b.x()-a.x(),b.y()-a.y(),b.z()-a.z()),bc=new Vec3(c.x()-b.x(),c.y()-b.y(),c.z()-b.z());
+            if(ab.lengthSqr()>1e-12&&bc.lengthSqr()>1e-12)rootTurn=Math.max(rootTurn,Math.toDegrees(Math.acos(Math.max(-1,Math.min(1,ab.normalize().dot(bc.normalize()))))));
+        }
+        try{
+            var mc=Minecraft.getInstance();if(mc.player!=null&&mc.player.getVehicle() instanceof ControlledSwordEntity sword){
+                var shared=FlyingSwordEffects.class.getDeclaredMethod("sharedHistory",ControlledSwordEntity.class);shared.setAccessible(true);
+                var h=(SwordFlightTrailHistory)shared.invoke(null,sword);var field=SwordFlightTrailHistory.class.getDeclaredField("presentation");field.setAccessible(true);
+                @SuppressWarnings("unchecked") var raw=(List<SwordFlightTrailHistory.Node>)field.get(h);
+                var old=new ArrayList<SwordFlightTrailHistory.Node>();
+                for(var n:SwordFlightTrailHistory.uniformHead(raw,.09,22)){
+                    var v=n.point();double d=arc-n.arc(),q=Math.max(0,Math.min(1,d-.5)),blend=q*q*(3-2*q);
+                    Vec3 p0=new Vec3(v.x(),v.y(),v.z()),p1=d>=1.5?p0:center.subtract(forward.normalize().scale(d)).lerp(p0,blend);
+                    old.add(new SwordFlightTrailHistory.Node(new SwordFlightTrailHistory.Point(p1.x,p1.y,p1.z),n.tick(),n.arc()));
+                }
+                oldRootTurn=0;
+                for(int i=1;i+1<old.size();i++)if(arc-old.get(i).arc()<=4){
+                    var a=old.get(i-1).point();var b=old.get(i).point();var c=old.get(i+1).point();
+                    Vec3 ab=new Vec3(b.x()-a.x(),b.y()-a.y(),b.z()-a.z()),bc=new Vec3(c.x()-b.x(),c.y()-b.y(),c.z()-b.z());
+                    if(ab.lengthSqr()>1e-12&&bc.lengthSqr()>1e-12)oldRootTurn=Math.max(oldRootTurn,Math.toDegrees(Math.acos(Math.max(-1,Math.min(1,ab.normalize().dot(bc.normalize()))))));
+                }
+            }
+        }catch(Exception ex){throw new AssertionError("Matched old root observation failed",ex);}
     }
     private record Sample(Vec3 world,Matrix4f pose,float u,float v,float alpha,boolean spiral){}
     private record ModelFrame(Vec3 hilt,Vec3 attachment,Vec3 center,Vec3 forward,Vec3 eye,Vec3 actualHiltView,Matrix4f actualEntityPose,List<Vec3> rearView,String item,int modelVertices){}
@@ -84,7 +111,7 @@ public final class OrdinaryHiltQa {
             out.put("actualModelRearPixels",model.rearView.stream().map(p->projectView(p,projection)).toList());out.put("hiltPixel",projectView(model.actualHiltView,projection));out.put("canonicalHiltPixel",project(model.hilt,trailPose,projection,model.eye));out.put("attachmentPixel",project(model.attachment,trailPose,projection,model.eye));
             out.put("viewAngleFromForwardDegrees",Math.toDegrees(Math.acos(Math.max(-1,Math.min(1,model.eye.subtract(model.hilt).normalize().dot(model.forward))))));
             out.put("ordinary",vertices(ordinary,projection));out.put("spiral",vertices(spirals,projection));out.put("ordinaryNearHilt2_5m",vertices(ordinary.stream().filter(v->v.world.distanceToSqr(model.hilt)<=6.25).toList(),projection));out.put("spiralNearHilt2_5m",vertices(spirals.stream().filter(v->v.world.distanceToSqr(model.hilt)<=6.25).toList(),projection));out.put("allOrdinaryBounds",bounds(VERTICES.stream().filter(v->!v.spiral).toList()));out.put("allSpiralBounds",bounds(VERTICES.stream().filter(v->v.spiral).toList()));out.put("bloomSubmissionAttemptCalls",bloomCalls);out.put("bloomSubmissionAttemptVertices",bloomVertices);out.put("productionTrailDiagnostics",FlyingSwordEffects.trailDiagnostics());
-            out.put("rootSamples",rootSamples);out.put("rootAxisError",rootAxisError);
+            out.put("rootSamples",rootSamples);out.put("rootMaximumDistanceFromSwordAxis",rootAxisError);out.put("rootMaximumTurnPerSegmentDegrees",rootTurn);out.put("oldSpliceMaximumTurnPerSegmentDegrees",oldRootTurn);
             out.put("scope","Observation only: actual ControlledSwordRenderer input pose plus same baked-model transform/display context; true ordinary vertex input with actual pose/projection and actual drawHistory root samples. No render forcing, camera hook, exposure change or acceptance threshold.");return out;
         }catch(Exception e){throw new AssertionError("Ordinary hilt observation failed",e);}
     }

@@ -30,6 +30,7 @@ public final class HuahongFlightPath {
     private final Map<Vec3,Double> nodeDistances=new HashMap<>();
     private final Map<Vec3,Frame> nodeFrames=new HashMap<>();
     private final Station[] stations;
+    private final FlightTrailCurve attachedCurve;
     private final double[] stationDistances;
 
     public HuahongFlightPath(List<SwordFlightTrailHistory.Node> nodes,Vec3 center,Vec3 forward,Vec3 side) {
@@ -54,6 +55,7 @@ public final class HuahongFlightPath {
         this.attachedJoin=Math.max(HuahongHeadBridge.WORLD_HISTORY_DISTANCE,headJoin);
         double horizon=Double.isFinite(maxFrameDistance)?Math.max(8,maxFrameDistance):Double.POSITIVE_INFINITY;
         this.center=finite(center)?center:Vec3.ZERO;this.forward=unit(forward,new Vec3(0,0,1));
+        attachedCurve=this.attachedHead?new FlightTrailCurve(nodes,this.center,this.forward):null;
         Vec3 transverse=side.subtract(this.forward.scale(side.dot(this.forward)));
         this.side=unit(transverse,this.forward.cross(Math.abs(this.forward.y)>.95?new Vec3(0,0,1):new Vec3(0,1,0)).normalize());
         // Cache relative coordinates and the exact integral of the recorded
@@ -64,7 +66,7 @@ public final class HuahongFlightPath {
             var p=nodes.get(i).point();Vec3 world=new Vec3(p.x(),p.y(),p.z()),next=world.subtract(this.center);
             double length=next.distanceTo(path.get(path.size()-1));
             if(finite(next)&&Double.isFinite(length)&&length>1e-8){path.add(next);arc+=length;}
-            if(finite(world))nodeDistances.putIfAbsent(world,arc);
+            if(finite(world))nodeDistances.putIfAbsent(world,attachedCurve==null?arc:nodes.get(nodes.size()-1).arc()-nodes.get(i).arc());
             if(arc>=horizon+smoothRadius+FRAME_STEP)break;
         }
         points=path.toArray(Vec3[]::new);distances=new double[points.length];integrals=new Vec3[points.length];integrals[0]=Vec3.ZERO;
@@ -77,7 +79,8 @@ public final class HuahongFlightPath {
         // to a distant, potentially opposite tangent. Double reflection supplies
         // the rotation-minimizing frame without an antipodal-angle branch.
         var frames=new ArrayList<Station>();
-        frames.add(new Station(0,Vec3.ZERO,this.forward,this.side,rotation(this.forward,this.side)));
+        Vec3 initial=curve(0).tangent(),initialSide=orthogonal(this.side,initial,this.side);
+        frames.add(new Station(0,Vec3.ZERO,initial,initialSide,rotation(initial,initialSide)));
         double end=Math.max(8,Math.min(horizon,distances[distances.length-1]+smoothRadius));
         // Keep the grid anchored to the head. Rescaling every interval when the
         // oldest node expires would move all near-head transport samples at once.
@@ -139,14 +142,13 @@ public final class HuahongFlightPath {
 
     public Frame behind(double distance) {
         double d=Double.isFinite(distance)?Math.max(0,distance):0;
-        if(d<=1e-8)return new Frame(center,forward,side,side.cross(forward).normalize());
+        if(d<=1e-8){Vec3 f=curve(0).tangent(),s=orthogonal(side,f,side);return new Frame(center,f,s,s.cross(f).normalize());}
         Pose pose=curve(d);Frame basis=orientation(d,pose.tangent());
         return new Frame(center.add(pose.p()),basis.forward(),basis.side(),basis.up());
     }
 
     private Pose curve(double distance) {
-        if(attachedHead&&attachmentWeight==1&&distance<=HuahongHeadBridge.FIXED_HEAD_LENGTH)
-            return new Pose(forward.scale(-distance),forward);
+        if(attachedCurve!=null&&attachmentWeight==1){var s=attachedCurve.at(distance);return new Pose(s.point().subtract(center),s.forward());}
         double a=distance-smoothRadius,b=distance+smoothRadius;
         // A box integral of a continuous polyline is C1. Its exact derivative
         // stays continuous when the moving head crosses a recorded corner;
@@ -156,16 +158,10 @@ public final class HuahongFlightPath {
         if(!finite(smooth))smooth=point(distance);
         double q=Mth.clamp(distance/headJoin,0,1),blend=q*q*(3-2*q);
         double rate=q>=1?0:6*q*(1-q)/headJoin;
-        if(attachedHead&&distance<attachedJoin){
-            double u=Mth.clamp((distance-HuahongHeadBridge.FIXED_HEAD_LENGTH)/(attachedJoin-HuahongHeadBridge.FIXED_HEAD_LENGTH),0,1);
-            double w=attachmentWeight*(1-u*u*(3-2*u));
-            double attachmentDerivative=u<=0?0:-attachmentWeight*6*u*(1-u)/(attachedJoin-HuahongHeadBridge.FIXED_HEAD_LENGTH);
-            rate=rate*(1-w)-blend*attachmentDerivative;
-            blend*=1-w;
-        }
         Vec3 straight=forward.scale(-distance);
         Vec3 p=straight.lerp(smooth,blend);
         Vec3 tangent=forward.scale(1-blend).subtract(derivative.scale(blend)).subtract(smooth.subtract(straight).scale(rate));
+        if(attachedCurve!=null){var s=attachedCurve.at(distance);p=p.lerp(s.point().subtract(center),attachmentWeight);tangent=tangent.lerp(s.derivative().scale(-1),attachmentWeight);}
         return new Pose(finite(p)?p:straight,unit(tangent,forward));
     }
 
@@ -194,8 +190,6 @@ public final class HuahongFlightPath {
     }
 
     private Frame orientation(double distance,Vec3 tangent) {
-        if(attachedHead&&attachmentWeight==1&&distance<=HuahongHeadBridge.FIXED_HEAD_LENGTH)
-            return new Frame(Vec3.ZERO,forward,side,side.cross(forward).normalize());
         int i=Arrays.binarySearch(stationDistances,distance);
         if(i<0)i=Math.max(0,-i-2);
         Station a=stations[i];
