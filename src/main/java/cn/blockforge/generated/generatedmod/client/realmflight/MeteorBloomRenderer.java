@@ -80,7 +80,7 @@ public final class MeteorBloomRenderer {
             RenderSystem.disableDepthTest();RenderSystem.depthMask(false);RenderSystem.disableCull();
             var shader=sword?SwordFlightTrailRenderer.emissionShader():TrailShaderBridge.meteorPostShader();
             shader.safeGetUniform("TrailProjection").set(projection);
-            if(sword){shader.safeGetUniform("InverseDepthProjection").set(inverseProjection);shader.safeGetUniform("DepthSoftness").set(.08F);}
+            if(sword){shader.safeGetUniform("InverseDepthProjection").set(inverseProjection);shader.safeGetUniform("DepthSoftness").set(.08F);shader.safeGetUniform("OpticalPass").set(0F);}
             shader.safeGetUniform("TrailView").set(view);
             shader.safeGetUniform("EffectTime").set(sword?cn.blockforge.generated.generatedmod.client.FlyingSwordEffects.capturedEffectTime():
                     (Minecraft.getInstance().level.getGameTime()+Minecraft.getInstance().getFrameTime())/20F);

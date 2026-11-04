@@ -10,6 +10,7 @@ uniform mat4 InverseDepthProjection;
 uniform float DepthSoftness;
 uniform sampler2D SmokeAtlas;
 uniform float EmissionPass;
+uniform float OpticalPass;
 in vec2 trailCoord;
 in vec4 vertexColor;
 in vec3 viewPosition;
@@ -19,6 +20,17 @@ float filteredSpine(float spine,float physicalCore){
     float footprint=fwidth(spine);
     float width=sqrt(physicalCore*physicalCore+footprint*footprint*.4225);
     return exp(-spine*spine/(width*width))*(physicalCore/width);
+}
+float spineIntegral(float x,float exponent){
+    float p=exponent+1.0;
+    if(x<=-1.0)return 0.0;
+    if(x<0.0)return pow(1.0+x,p)/p;
+    if(x<1.0)return (2.0-pow(1.0-x,p))/p;
+    return 2.0/p;
+}
+float pixelFilteredEdge(float across,float exponent){
+    float footprint=max(fwidth(across),.00001);
+    return max(0.0,(spineIntegral(across+footprint*.5,exponent)-spineIntegral(across-footprint*.5,exponent))/footprint);
 }
 float hash21(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float periodicHash(vec2 p,float period){return hash21(vec2(mod(p.x,period),p.y));}
@@ -139,7 +151,7 @@ vec4 swordMaterial(){
             vec3 rgb=vertexColor.rgb*(.65+n*.25)+vec3(.20,.16,.07)*(fibers*.13+ridges*.12);
             return vec4(rgb,fringe*(.38+large*.50)*(.60+fibers*.22+ridges*.20)*(.82+.18*silk)*vertexColor.a);
         }
-        if(band==22.0)return vec4(vertexColor.rgb*1.3,pow(edge,1.7)*vertexColor.a);
+        if(band==22.0)return vec4(vertexColor.rgb*1.3,pixelFilteredEdge(across,1.7)*vertexColor.a);
         if(band==14.0||band==20.0){
             vec2 p=vec2(fract(arc),v)*2.0-1.0;
             float smoke=periodicNoise(p*4.3+vec2(EffectTime*.5,floor(arc)*.13),64.0);
@@ -175,7 +187,7 @@ vec4 swordMaterial(){
         float across=(trailCoord.y-(soft?10.0:hot?8.0:6.0))*2.0-1.0;
         float edge=max(0.0,1.0-abs(across));
         if(soft)return vec4(vertexColor.rgb,pow(edge,1.7)*vertexColor.a);
-        if(hot)return vec4(mix(vertexColor.rgb,vec3(.93,1.0,1.0),.75)*2.1,pow(edge,2.1)*vertexColor.a);
+        if(hot)return vec4(mix(vertexColor.rgb,vec3(.93,1.0,1.0),.75)*2.1,pixelFilteredEdge(across,2.1)*vertexColor.a);
         // Independent V9 prism transport, using periodic noise for long flights.
         float axis=trailCoord.x+EffectTime*(512.0/128.0);
         float density=0.0,weight=.52,period=64.0;
@@ -231,6 +243,10 @@ void main(){
     float materialBand=floor((trailCoord.y+.001)*.5)*2.0;
     bool luminous=materialBand!=14.0&&materialBand!=30.0;
     fragColor=vec4(material.rgb*material.a,luminous?0.0:material.a);
+    if(OpticalPass>0.5){
+        float tau=luminous?0.0:-log(max(1.0-material.a,.000001));
+        fragColor=vec4(material.rgb*(luminous?material.a:tau),tau);
+    }
     if(EmissionPass>0.5){
         float band=floor((trailCoord.y+.001)*.5)*2.0;
         float gain=(band==14.0||band==30.0||band==36.0)?0.0:band==12.0?.14:band==24.0?.12:band==26.0?.22:band==28.0?.18:band==34.0?.30:band==32.0?.60:band==18.0?.08:band==22.0?.22:band==16.0?.40:band==8.0?.52:band==6.0?.62:1.0;

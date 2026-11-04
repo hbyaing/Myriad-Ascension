@@ -123,6 +123,14 @@
       "values": [
         0
       ]
+    },
+    {
+      "name": "OpticalPass",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0
+      ]
     }
   ]
 }

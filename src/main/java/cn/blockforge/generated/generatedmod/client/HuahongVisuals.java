@@ -43,6 +43,8 @@ public final class HuahongVisuals {
     private static double corePixelScale;
     private static boolean headLinked;
     public static int vertices;
+    public static boolean absorbingThisFrame;
+    public static boolean hasAbsorbingTrail(){return TRAILS.values().stream().anyMatch(t->t.skin==cn.blockforge.generated.generatedmod.yujian.HuahongSkin.SMOKE);}
     @SubscribeEvent public static void linkHead(net.minecraftforge.event.TickEvent.ClientTickEvent event){
         if(event.phase==net.minecraftforge.event.TickEvent.Phase.END&&!headLinked){
             // JFR identified class definition on the first visible flight frame.
@@ -52,7 +54,14 @@ public final class HuahongVisuals {
         }
     }
     public static boolean hasTrails(){return !TRAILS.isEmpty();}
-    public static void clear(){TRAILS.clear();vertices=0;}
+    public static void coreProjection(org.joml.Matrix4f projection,int height){
+        // Three pixels are raster support, not a larger physical nucleus.
+        // Strip emitters conserve energy with physical/covered alpha; use the
+        // captured world projection rather than mutable global GL projection.
+        double y=Math.abs(projection.m11());
+        corePixelScale=Double.isFinite(y)&&y>1e-6?3.0/(y*Math.max(1,height)):0;
+    }
+    public static void clear(){TRAILS.clear();vertices=0;absorbingThisFrame=false;}
     public static void sample(long tick){
         var mc=Minecraft.getInstance();
         if(level!=mc.level){clear();level=mc.level;}
@@ -79,10 +88,7 @@ public final class HuahongVisuals {
         });
     }
     public static void draw(VertexConsumer buffer,PoseStack.Pose pose,Vec3 eye,double now,float partial){
-        vertices=0;var mc=Minecraft.getInstance();
-        double projectionY=Math.abs(com.mojang.blaze3d.systems.RenderSystem.getProjectionMatrix().m11());
-        corePixelScale=Double.isFinite(projectionY)&&projectionY>1e-6
-                ?.85/(projectionY*Math.max(1,mc.getMainRenderTarget().viewHeight)):0;
+        vertices=0;absorbingThisFrame=false;var mc=Minecraft.getInstance();
         for(var entry:TRAILS.entrySet()){
             var sword=entry.getKey();var trail=entry.getValue();
             if(mc.player!=null&&mc.options.getCameraType().isFirstPerson()&&sword==mc.player.getVehicle())continue;
@@ -92,6 +98,7 @@ public final class HuahongVisuals {
             if(center.distanceToSqr(eye)>4096)continue;
             boolean active=!sword.isRemoved()&&frame.huahong()>.001F;
             if(!active)continue;
+            if(trail.skin==cn.blockforge.generated.generatedmod.yujian.HuahongSkin.SMOKE)absorbingThisFrame=true;
             VertexConsumer entryBuffer=new MorphAlpha(buffer,FlyingSwordEffects.morphWeight(frame.huahong()));
             var canonical=active?trail.history.renderNodes(now,point(center)):trail.history.nodes();
             var nodes=active?SwordFlightTrailHistory.uniformHead(canonical,.125,HuahongHeadBridge.WORLD_HISTORY_DISTANCE):canonical;
@@ -234,7 +241,9 @@ public final class HuahongVisuals {
         if(distance<1e-6)return physical;
         double facing=side.cross(view.scale(1/distance)).length();
         double pixels=distance*corePixelScale/Math.max(.12,facing);
-        return Math.max(physical,Math.min(physical*8,pixels));
+        // A multiplicative cap would defeat the pixel floor for the thinnest
+        // tips, leaving entire rows between raster sample centers.
+        return Math.max(physical,pixels);
     }
     private static void vertex(VertexConsumer b,PoseStack.Pose pose,Vec3 eye,Vec3 p,float u,float v,float alpha,int color){
         Vec3 r=p.subtract(eye);b.vertex(pose.pose(),(float)r.x,(float)r.y,(float)r.z).uv(u,v)

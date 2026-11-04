@@ -2,6 +2,7 @@ package cn.blockforge.generated.generatedmod.client.qa.myriad.mixin;
 
 import cn.blockforge.generated.generatedmod.client.realmflight.MeteorBloomRenderer;
 import cn.blockforge.generated.generatedmod.client.qa.myriad.OrdinaryHiltQa;
+import cn.blockforge.generated.generatedmod.client.qa.myriad.HuahongReproCapture;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,4 +16,6 @@ public abstract class OrdinaryHiltBloomLayerMixin {
         OrdinaryHiltQa.bloomAttempt(mesh);
         if(OrdinaryHiltQa.ENABLED&&OrdinaryHiltQa.suppressBloom()){if(mesh!=null)mesh.release();ci.cancel();}
     }
+    @Inject(method="drawSword",at=@At("RETURN"),remap=false)
+    private static void after(BufferBuilder.RenderedBuffer mesh,Matrix4f projection,Matrix4f view,Matrix4f inverseProjection,CallbackInfo ci){HuahongReproCapture.rootLayer("after-bloom");}
 }

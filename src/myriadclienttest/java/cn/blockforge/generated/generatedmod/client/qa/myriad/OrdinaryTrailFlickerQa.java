@@ -37,6 +37,9 @@ final class OrdinaryTrailFlickerQa {
         String unchanged=body(baseline).substring(0,body(baseline).indexOf(marker));
         String candidatePrefix=body(current).substring(0,body(current).indexOf(marker));
         candidatePrefix=candidatePrefix.replace("float pulse=1.0;","float pulse=.94+.06*cos(flowAngle(arc,12.0,-12.0));");
+        candidatePrefix=candidatePrefix.replaceAll("(?s)float spineIntegral.*?(?=float hash21)","")
+            .replace("pixelFilteredEdge(across,1.7)","pow(edge,1.7)")
+            .replace("pixelFilteredEdge(across,2.1)","pow(edge,2.1)");
         if(!unchanged.equals(candidatePrefix))throw new AssertionError("Nonordinary material/halo branch changed");
         int previousProgram=GL33.glGetInteger(GL33.GL_CURRENT_PROGRAM),previousVao=GL33.glGetInteger(GL33.GL_VERTEX_ARRAY_BINDING),
             previousDraw=GL33.glGetInteger(GL33.GL_DRAW_FRAMEBUFFER_BINDING),previousRead=GL33.glGetInteger(GL33.GL_READ_FRAMEBUFFER_BINDING),
@@ -84,7 +87,7 @@ final class OrdinaryTrailFlickerQa {
             if(period>.025||wrap>.005)throw new AssertionError("Ordinary phase period/wrap failure "+period+" / "+wrap);
             int error=GL33.glGetError();if(error!=0)throw new AssertionError("Ordinary GPU GL error "+error);
             var result=new LinkedHashMap<String,Object>();result.put("passed",true);result.put("baselineShaderSha256",sha(baseline));result.put("nativeShaderSha256",sha(current));result.put("postShaderSha256",sha(post));
-            result.put("actualMaterialNativePostEqual",true);result.put("huahongMaterialUnchangedOrdinaryHaloConstant",true);result.put("frames",FRAMES);result.put("fps",FPS);result.put("coreCases",cases);result.put("peripheralCases",edges);result.put("ordinaryConstantHalo",constantHalo);result.put("max128s256mPeriodDifference",period);result.put("timeWrapTwoMillisecondDifference",wrap);
+            result.put("actualMaterialNativePostEqual",true);result.put("huahongChangesLimitedToThinCoreFootprintFilter",true);result.put("frames",FRAMES);result.put("fps",FPS);result.put("coreCases",cases);result.put("peripheralCases",edges);result.put("ordinaryConstantHalo",constantHalo);result.put("max128s256mPeriodDifference",period);result.put("timeWrapTwoMillisecondDifference",wrap);
             result.put("scope","Actual old/new shipping GLSL on the same head-relative local patches. Per-point minima/dropouts and absolute PSD complement real mesh/video; no claim of projected triangle subpixel coverage or pommel bounds from a shader fixture.");return result;
         }finally{
             GL33.glBindFramebuffer(GL33.GL_DRAW_FRAMEBUFFER,previousDraw);GL33.glBindFramebuffer(GL33.GL_READ_FRAMEBUFFER,previousRead);GL33.glActiveTexture(GL33.GL_TEXTURE0);GL33.glBindTexture(GL33.GL_TEXTURE_2D,previousTexture);GL33.glActiveTexture(previousActive);GL33.glUseProgram(previousProgram);GL33.glBindVertexArray(previousVao);GL33.glViewport(viewport[0],viewport[1],viewport[2],viewport[3]);

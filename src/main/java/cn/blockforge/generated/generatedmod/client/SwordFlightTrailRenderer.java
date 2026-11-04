@@ -76,6 +76,11 @@ public final class SwordFlightTrailRenderer {
         int depth=TrailShaderBridge.capturedDepthTexture();
         if(mesh==null)return false;
         if(post==null||depth<0){mesh.release();status="Awaiting sword world depth";return false;}
+        if(HuahongVisuals.absorbingThisFrame&&inverseDepth!=null){
+            boolean submitted=HuahongSmokeCompositor.draw(mesh,projection,inverseDepth,time);
+            if(submitted){postDraws++;status="Sword smoke / order-independent optical mixture";}
+            return submitted;
+        }
         try(var saved=new MeteorBloomRenderer.State()){
             var main=Minecraft.getInstance().getMainRenderTarget();main.bindWrite(true);
             RenderSystem.disableDepthTest();RenderSystem.depthMask(false);RenderSystem.disableCull();RenderSystem.disableScissor();
@@ -90,6 +95,7 @@ public final class SwordFlightTrailRenderer {
             org.lwjgl.opengl.GL11.glColorMask(true,true,true,false);
             RenderSystem.setShaderColor(1,1,1,1);
             post.safeGetUniform("EmissionPass").set(0F);
+            post.safeGetUniform("OpticalPass").set(0F);
             post.safeGetUniform("TrailProjection").set(projection);
             post.safeGetUniform("DepthSoftness").set(inverseDepth==null?0F:.08F);
             if(inverseDepth!=null)post.safeGetUniform("InverseDepthProjection").set(inverseDepth);
