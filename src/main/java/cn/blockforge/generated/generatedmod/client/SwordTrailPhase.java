@@ -33,6 +33,13 @@ public final class SwordTrailPhase {
     }
     /** Subtract in double precision before submitting small, continuous float coordinates. */
     public static float coordinate(double arc,double origin){return (float)(arc-origin);}
+    /** Match the interpolated pose without promoting a long clock to float.
+     * Assigning long+float to a double is too late: old worlds lose their
+     * fractional tick first, making history overtake its smooth attachment. */
+    public static double renderTick(long tick,float partial){
+        double fraction=Float.isFinite(partial)?Math.max(0,Math.min(1,(double)partial)):0;
+        return (tick-1)+fraction;
+    }
     /** Reduce the integer tick before float conversion, including worlds older than 2^24 ticks. */
     public static float time(long tick,float partial){
         double fraction=Float.isFinite(partial)?Math.max(0,Math.min(1,partial)):0;

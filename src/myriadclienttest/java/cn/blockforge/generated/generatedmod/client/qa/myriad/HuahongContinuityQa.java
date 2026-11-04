@@ -37,7 +37,7 @@ public final class HuahongContinuityQa {
     static void frame(Minecraft mc,float partial,Path out)throws Exception{
         if(!ENABLED||!HuahongDynamicsQa.started()||mc.player==null||!(mc.player.getVehicle() instanceof ControlledSwordEntity sword))return;
         var c=HuahongDynamicsQa.control();var f=InterpolatedFlyingSwordTransform.get(sword,partial);
-        double now=FlyingSwordEffects.samplerTick()-1+partial;
+        double now=SwordTrailPhase.renderTick(FlyingSwordEffects.samplerTick(),partial);
         var row=new LinkedHashMap<String,Object>();ROWS.add(row);
         row.put("canonicalStrength",f.huahong());row.put("roll",f.roll());
         row.put("riderDraws",renderedRiders);

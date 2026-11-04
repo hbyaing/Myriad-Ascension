@@ -174,7 +174,7 @@ public final class RealmFlightEffects {
         if(post){POST.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.NEW_ENTITY);buffer=POST;}
         else buffer=BUFFERS.getBuffer(Types.ENERGY);
         EMISSION.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.NEW_ENTITY);buffer=VertexMultiConsumer.create(buffer,EMISSION);
-        var pose=event.getPoseStack().last();double now=clock-1+event.getPartialTick();
+        var pose=event.getPoseStack().last();double now=cn.blockforge.generated.generatedmod.client.SwordTrailPhase.renderTick(clock,event.getPartialTick());
         var flights=new ArrayList<>(FLIGHTS.entrySet());
         flights.sort(Comparator.comparingDouble((Map.Entry<UUID,Flight> entry)->{
             var p=world.getPlayerByUUID(entry.getKey());return p==null?Double.MAX_VALUE:p.position().distanceToSqr(eye);

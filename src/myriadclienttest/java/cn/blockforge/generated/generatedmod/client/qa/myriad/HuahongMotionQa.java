@@ -234,7 +234,7 @@ public final class HuahongMotionQa {
         var history=(SwordFlightTrailHistory)field(trail.getClass(),trail,"history");
         var transform=InterpolatedFlyingSwordTransform.get(sword,partial);
         Vec3 center=transform.position().add(0,.85,0),forward=transform.forward();
-        long sampler=FlyingSwordEffects.capturedTrailTick();double now=sampler-1+partial;
+        long sampler=FlyingSwordEffects.capturedTrailTick();double now=SwordTrailPhase.renderTick(sampler,partial);
         var nodes=history.renderNodes(now,new SwordFlightTrailHistory.Point(center.x,center.y,center.z));
         Vec3 side=transform.local(1,0,0).subtract(transform.position());
         var path=new HuahongFlightPath(nodes,center,forward,side);

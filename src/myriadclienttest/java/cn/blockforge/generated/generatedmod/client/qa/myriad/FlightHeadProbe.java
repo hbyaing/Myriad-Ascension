@@ -28,6 +28,12 @@ public final class FlightHeadProbe {
     private static float pairX,pairY,pairZ,pairV;
     private static int corePairs,subpixelCorePairs;
     private static double minCorePixels,maxCorePixels;
+    private static final Map<Integer,BandExtent> BAND_EXTENTS=new TreeMap<>();
+    private static final class BandExtent {
+        int count,forwardCount;double maxZ=-Double.MAX_VALUE,minZ=Double.MAX_VALUE;List<Double> pixel=List.of();
+        void add(double z,float x,float y,float worldZ){count++;if(z>0)forwardCount++;minZ=Math.min(minZ,z);if(z>maxZ){maxZ=z;pixel=FlightHeadProbe.pixel(x,y,worldZ);}}
+        Map<String,Object> snapshot(){return Map.of("count",count,"positiveForwardCount",forwardCount,"minLocalZ",minZ,"maxLocalZ",maxZ,"frontmostPixel",pixel);}
+    }
     private record Frame(Vec3 center,Vec3 forward,Vec3 side,Vec3 up,Vec3 eye,Matrix4f pose,Matrix4f inversePose,Matrix4f clip,double now,float partial,String skin){}
     @SubscribeEvent(priority=EventPriority.HIGHEST) public static void begin(TickEvent.RenderTickEvent e){if(ENABLED&&e.phase==TickEvent.Phase.START){serial++;frame=null;rawProjection=null;ordinal=nearVertices=billboardOrdinal=billboardEligible=untaggedSmokeVertices=pathCalls=pathAttached=0;activeBillboard=-1;VERTICES.clear();BRIDGES.clear();PATHS.clear();SEEN_PATHS.clear();BILLBOARDS.clear();}}
     @SubscribeEvent(priority=EventPriority.LOWEST) public static void world(RenderLevelStageEvent e){if(ENABLED&&e.getStage()==RenderLevelStageEvent.Stage.AFTER_PARTICLES&&!TrailShaderBridge.shadowPass())rawProjection=new Matrix4f(e.getProjectionMatrix());}
@@ -49,7 +55,7 @@ public final class FlightHeadProbe {
         };
     }
     private static void observeVertex(float x,float y,float z,float u,float v,int rgba){
-        if(ordinal==0){corePairs=subpixelCorePairs=0;minCorePixels=Double.POSITIVE_INFINITY;maxCorePixels=0;}
+        if(ordinal==0){corePairs=subpixelCorePairs=0;minCorePixels=Double.POSITIVE_INFINITY;maxCorePixels=0;BAND_EXTENTS.clear();}
         int index=ordinal++;if(frame==null)return;var relative=frame.inversePose.transformPosition(new Vector3f(x,y,z));Vec3 world=new Vec3(relative).add(frame.eye),local=world.subtract(frame.center);double lx=local.dot(frame.side),ly=local.dot(frame.up),lz=local.dot(frame.forward);
         if(index%4==0||index%4==2){pairX=x;pairY=y;pairZ=z;pairV=v;}
         else if((rgba>>>24)>=4&&lz>=-2.6&&lz<=4){
@@ -60,7 +66,9 @@ public final class FlightHeadProbe {
                 if(Double.isFinite(pixels)){corePairs++;minCorePixels=Math.min(minCorePixels,pixels);maxCorePixels=Math.max(maxCorePixels,pixels);if(pixels<1)subpixelCorePairs++;}
             }
         }
-        if(lz< -2.6||lz>4||Math.abs(lx)>4||Math.abs(ly)>4)return;nearVertices++;if(frame.skin.equals("SMOKE")&&activeBillboard<0)untaggedSmokeVertices++;if(VERTICES.size()>=MAX_VERTICES)return;
+        if(lz< -2.6||lz>4||Math.abs(lx)>4||Math.abs(ly)>4)return;
+        if((rgba>>>24)>=4){int band=(int)Math.floor((v+.001)*.5)*2;BAND_EXTENTS.computeIfAbsent(band,key->new BandExtent()).add(lz,x,y,z);}
+        nearVertices++;if(frame.skin.equals("SMOKE")&&activeBillboard<0)untaggedSmokeVertices++;if(VERTICES.size()>=MAX_VERTICES)return;
         var pixel=pixel(x,y,z);VERTICES.add(List.of(index,world.x,world.y,world.z,lx,ly,lz,pixel.get(0),pixel.get(1),pixel.get(2),u,v,Integer.toUnsignedLong(rgba),activeBillboard));
     }
     private static List<Double> pixel(float x,float y,float z){var c=frame.clip.transform(new Vector4f(x,y,z,1));if(!Float.isFinite(c.w)||Math.abs(c.w)<1e-8)return List.of(-99999D,-99999D,0D);var w=Minecraft.getInstance().getWindow();return List.of((c.x/c.w*.5+.5)*w.getWidth(),(.5-c.y/c.w*.5)*w.getHeight(),(double)c.w);}
@@ -71,8 +79,10 @@ public final class FlightHeadProbe {
     private static Object value(Object row,String field)throws ReflectiveOperationException{Method m=row.getClass().getDeclaredMethod(field);m.setAccessible(true);return m.invoke(row);}
     public static void billboard(Object row,int mode){activeBillboard=-1;if(!ENABLED||frame==null||TrailShaderBridge.shadowPass())return;int index=billboardOrdinal++;try{Vec3 p=(Vec3)value(row,"p"),local=p.subtract(frame.center);double radius=((Number)value(row,"width")).doubleValue(),bound=radius*Math.sqrt(2);if(local.dot(frame.forward)+bound< -2.6||local.dot(frame.forward)-bound>4||Math.abs(local.dot(frame.side))-bound>4||Math.abs(local.dot(frame.up))-bound>4)return;billboardEligible++;if(BILLBOARDS.size()>=512)return;activeBillboard=index;BILLBOARDS.add(Map.of("submissionOrder",index,"world",vec(p),"seed",value(row,"u"),"radius",radius,"alpha",value(row,"alpha"),"color",value(row,"color"),"mode",mode,"eyeDistanceSquared",p.distanceToSqr(frame.eye)));}catch(ReflectiveOperationException e){throw new AssertionError(e);}}
     public static void endBillboard(){activeBillboard=-1;}
+    public static Double observedGeometryNow(){return frame==null?null:frame.now;}
     public static Map<String,Object> snapshot(){var out=new LinkedHashMap<String,Object>();out.put("frameSerial",serial);out.put("observed",frame!=null);out.put("actualVertexCount",ordinal);out.put("nearHeadVertexCount",nearVertices);out.put("recordedVertexCount",VERTICES.size());out.put("vertexLimit",MAX_VERTICES);out.put("vertices",List.copyOf(VERTICES));out.put("vertexColumns",List.of("submissionIndex","worldX","worldY","worldZ","carrierLocalX","carrierLocalY","carrierLocalZ","screenX","screenY","clipW","u","v","rgba","billboardSubmissionOrder"));out.put("bridges",List.copyOf(BRIDGES));out.put("attachedPaths",List.copyOf(PATHS));out.put("billboards",List.copyOf(BILLBOARDS));out.put("capturedSourceEffectTime",FlyingSwordEffects.capturedEffectTime());
         out.put("completeHeadCoreRasterSupport",Map.of("quadEdges",corePairs,"subpixelEdges",subpixelCorePairs,"minPixels",corePairs==0?0:minCorePixels,"maxPixels",maxCorePixels,"scope","All submitted near-head band8/22 cross-sections with alpha>=4, before the 512 vertex detail limit; projected full strip width, not a visual brightness claim."));
+        var bands=new TreeMap<Integer,Object>();BAND_EXTENTS.forEach((band,extent)->bands.put(band,extent.snapshot()));out.put("completeNearHeadBandExtents",bands);out.put("nearHeadBandExtentsScope","All submitted vertices within carrier local +/-4 lateral/up and -2.6..4 forward, alpha>=4, before 512-vertex detail cap. Max forward includes its actual projected position.");
         if(rawProjection!=null){out.put("rawProjectionM20",rawProjection.m20());out.put("rawProjectionM21",rawProjection.m21());out.put("rawProjection",rawProjection.get(new float[16]));}
         if(frame!=null){out.put("geometryNow",frame.now);out.put("geometryPartial",frame.partial);out.put("skin",frame.skin);out.put("center",vec(frame.center));out.put("eye",vec(frame.eye));out.put("eyeToHead",vec(frame.center.subtract(frame.eye)));out.put("forward",vec(frame.forward));out.put("side",vec(frame.side));out.put("up",vec(frame.up));out.put("worldToClip",frame.clip.get(new float[16]));var p=frame.center.subtract(frame.eye);var v=frame.pose.transformPosition(new Vector3f((float)p.x,(float)p.y,(float)p.z));out.put("headScreen",pixel(v.x,v.y,v.z));}
         out.put("pathConstructorCalls",pathCalls);out.put("pathConstructorAttachedTrue",pathAttached);out.put("billboardMetadataEligible",billboardEligible);out.put("billboardMetadataLimit",512);out.put("billboardMetadataTruncated",billboardEligible>BILLBOARDS.size());out.put("untaggedNearSmokeVertices",untaggedSmokeVertices);out.put("scope","Only actual production helper returns/constructor instances and submitted float vertices; no altered return, exposure, camera, positions, time or render forcing. Rows are in actual submit order; billboard seeds/order identify transparency changes.");return out;

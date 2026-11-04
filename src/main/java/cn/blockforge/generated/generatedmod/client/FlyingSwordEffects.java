@@ -155,7 +155,7 @@ public final class FlyingSwordEffects {
         // Entity interpolation runs between the previous and current tick pose.
         capturedTrailTick=TRAIL_CLOCK.tick();
         float partial=InterpolatedFlyingSwordTransform.partial(event.getPartialTick());
-        double now=capturedTrailTick-1+partial;
+        double now=SwordTrailPhase.renderTick(capturedTrailTick,partial);
         effectTime=SwordTrailPhase.time(capturedTrailTick,partial);
         RenderType type=SwordFlightTrailRenderer.renderType(effectTime);
         VertexConsumer buffer;
