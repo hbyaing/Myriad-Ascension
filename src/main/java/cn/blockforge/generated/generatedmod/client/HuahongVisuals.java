@@ -133,7 +133,7 @@ public final class HuahongVisuals {
                 double behind=nodes.get(nodes.size()-1).arc()-n.arc();
                 Vec3 side=(active&&behind<HuahongHeadBridge.WORLD_HISTORY_DISTANCE?path.behind(behind):path.frame(vec(n.point()),tangent)).side();
                 rows.add(new Row(vec(headNodes.get(i).point()),n.arc()-origin,Math.pow(left,1.3)*(.22+.78*Math.exp(-age*.35)),
-                        (float)(Math.pow(left,1.7)*historyJoin(behind)),mix(0x8274ff,0xe8faff,Math.exp(-age*2)),side));
+                        (float)(Math.pow(left,1.7)*HuahongHeadBridge.luminousCoreJoin(behind)),mix(0x8274ff,0xe8faff,Math.exp(-age*2)),side));
             }
             strip(entryBuffer,pose,eye,rows,WIDTH*1.4,.045F,10,path);
             strip(entryBuffer,pose,eye,rows,WIDTH*.42,.35F,6,path);

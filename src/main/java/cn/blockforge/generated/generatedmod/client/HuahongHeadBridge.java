@@ -15,6 +15,12 @@ public final class HuahongHeadBridge {
         float t=Math.min(1,strength/.015F);return t*t*(3-2*t);
     }
     public static final double BODY_SCALE=1.8;
+    /** The shortest luminous head ends 1.965m behind its attachment. Its
+     * history must already have full support there, rather than fading in
+     * through 3.5m and leaving a thin unsupported neck between the two. */
+    public static float luminousCoreJoin(double behind){
+        double q=Math.max(0,Math.min(1,behind-.5));return (float)(q*q*(3-2*q));
+    }
 
 
     /** Preserve source order, time and material arc. Distant nodes retain their

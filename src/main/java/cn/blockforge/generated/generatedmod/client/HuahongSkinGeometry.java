@@ -33,10 +33,11 @@ final class HuahongSkinGeometry {
     private final Frame[] historyFrames;
     private final double now,origin;
     private final float strength;
+    private final HuahongSkin skin;
     private int vertices;
     private HuahongSkinGeometry(HuahongSkin skin,VertexConsumer out,PoseStack.Pose pose,Vec3 eye,Vec3 center,Vec3 forward,Vec3 headSide,
             List<SwordFlightTrailHistory.Node> nodes,List<SwordFlightTrailHistory.Node> canonical,double now,float strength){
-        this.out=out;this.pose=pose;this.eye=eye;this.center=center;this.forward=forward;this.nodes=nodes;this.canonical=canonical;this.now=now;this.strength=strength;
+        this.skin=skin;this.out=out;this.pose=pose;this.eye=eye;this.center=center;this.forward=forward;this.nodes=nodes;this.canonical=canonical;this.now=now;this.strength=strength;
         headNodes=skin==HuahongSkin.DENSE?nodes:HuahongHeadBridge.presentationNodes(nodes,center,forward,HuahongHeadBridge.attachmentWeight(strength));
         historyFrames=skin==HuahongSkin.DENSE?null:new Frame[nodes.size()];
         // DENSE's source sprite never queries a transported path. SMOKE uses
@@ -118,7 +119,9 @@ final class HuahongSkinGeometry {
             Frame f=at(i);double phase=strand*2.399+Math.sin((n.arc()-origin)*.47+strand)*.28;
             double open=(1-Math.exp(-age*5))*spread;
             Vec3 normal=f.side().scale(Math.cos(phase)).add(f.up().scale(Math.sin(phase)));
-            rows.add(new Row(f.p().add(normal.scale(open*HuahongHeadBridge.BODY_SCALE)),n.arc()-origin,width*(.18+.82*fade(age,life)),(float)(fade(age,life)*smooth(1.5,3.5,headArc()-n.arc())),color,oriented?normal:null));
+            double behind=headArc()-n.arc();
+            double join=skin==HuahongSkin.NEEDLE?HuahongHeadBridge.luminousCoreJoin(behind):smooth(1.5,3.5,behind);
+            rows.add(new Row(f.p().add(normal.scale(open*HuahongHeadBridge.BODY_SCALE)),n.arc()-origin,width*(.18+.82*fade(age,life)),(float)(fade(age,life)*join),color,oriented?normal:null));
         }
         return rows;
     }
