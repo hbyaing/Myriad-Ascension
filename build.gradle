@@ -467,89 +467,9 @@ processResources {
 }
 jar.finalizedBy('reobfJar')
 
-// Use -PpythonExecutable=/path/to/python when Python is not on PATH.
-tasks.register('validateResources', Exec) {
-    def python = providers.gradleProperty('pythonExecutable').orElse('python')
-    commandLine python.get(), file('tools/check_resources.py').absolutePath
-    inputs.dir('src/main/resources')
-    inputs.file('tools/check_resources.py')
-}
-tasks.named('check') { dependsOn('validateResources') }
-
-def specialistScripts = ['check_talisman_frame', 'check_weapon_flames', 'check_heart_sword_assets', 'check_source_package', 'check_alchemy_art', 'check_exotic_burn_architecture', 'check_audit_contracts', 'check_entry_ui', 'check_boss_motions', 'check_art_particle_library', 'check_shader_builtins']
-specialistScripts.each { script ->
-    tasks.register(script, Exec) {
-        commandLine providers.gradleProperty('pythonExecutable').orElse('python').get(), file("tools/${script}.py").absolutePath
-        inputs.dir('src/main')
-        inputs.dir('source-assets')
-        inputs.dir('reference_assets')
-        inputs.file("tools/${script}.py")
-    }
-}
-tasks.register('specialistChecks') { dependsOn(specialistScripts) }
-tasks.named('check') { dependsOn('check_talisman_frame') }
-tasks.named('check') { dependsOn('specialistChecks') }
-
-sourceSets {
-    gameTest {
-        java.setSrcDirs(['src/gametest/java'])
-        resources.setSrcDirs(['src/gametest/resources'])
-        compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
-        runtimeClasspath += sourceSets.main.output + sourceSets.main.runtimeClasspath
-    }
-    regression {
-        java.srcDir 'src/regression/java'
-        compileClasspath = sourceSets.main.output
-        runtimeClasspath = output + compileClasspath
-    }
-}
-tasks.register('regressionTest', JavaExec) {
-    dependsOn tasks.named('regressionClasses')
-    classpath = sourceSets.regression.runtimeClasspath
-    mainClass = 'cn.blockforge.generated.generatedmod.BalanceRegression'
-    javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(17) }
-}
-tasks.named('check') { dependsOn('regressionTest') }
-tasks.register('balanceReport', JavaExec) {
-    dependsOn tasks.named('regressionClasses')
-    classpath = sourceSets.regression.output + sourceSets.main.runtimeClasspath
-    mainClass = 'cn.blockforge.generated.generatedmod.BalanceReport'
-    javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(17) }
-    args file('reports/balance').absolutePath
-}
-tasks.named('check') { dependsOn('balanceReport') }
-// Compile test fixtures in ordinary builds; the full server run is explicitly opt-in.
-tasks.named('check') { dependsOn('compileGameTestJava') }
-tasks.register('verifyFull') {
-    group = 'verification'
-    description = 'Build, compile all GameTests and execute the Forge GameTest server.'
-    dependsOn('build', 'runGameTestServer')
-}
-tasks.matching { it.name == 'runGameTestServer' }.configureEach { mustRunAfter('build') }
-
-minecraft.runs {
-    gameTestServer {
-            if (project.hasProperty('infuserCompatibility')) {
-                property 'mixin.env.remapRefMap', 'true'
-                property 'mixin.env.refMapRemappingFile', file('build/createSrgToMcp/output.srg').absolutePath
-            }
-            workingDirectory project.file(project.hasProperty('alchemyMigrationOnly') ? 'build/alchemy-migration-gametest' : project.hasProperty('v5DawnOnly') ? 'build/v5-dawn-gametest' : project.hasProperty('carvingOnly') ? 'build/carving-gametest' : project.hasProperty('fireTargetingOnly') ? 'build/fire-targeting-gametest' : project.hasProperty('domainDamageOnly') ? 'build/domain-damage-gametest' : project.hasProperty('spiritShieldOnly') ? 'build/shield-shatter-gametest' : project.hasProperty('xuanlingAnvilOnly') ? 'build/xuanling-anvil-gametest' : project.hasProperty('realmFlightOnly') ? 'build/realm-flight-gametest' :
-                (project.hasProperty('entryUiOnly') ? 'build/entry-ui-gametest' : 'build/gametest-run'))
-            property 'forge.enabledGameTestNamespaces', project.hasProperty('v5DawnOnly') ? 'wuxingxiantu_v5dawn' : project.hasProperty('alchemyMigrationOnly') ? 'wuxingxiantu_alchemymigration' : project.hasProperty('carvingOnly') ? 'wuxingxiantu_carving' : project.hasProperty('fireTargetingOnly') ? 'wuxingxiantu_firetargets' : project.hasProperty('herbLookbackOnly') ? 'wuxingxiantu_herblookback' : project.hasProperty('talismansOnly') ? 'wuxingxiantu_talismans' : project.hasProperty('furnaceExplosionOnly') ? 'wuxingxiantu_furnaceexplosion' : project.hasProperty('domainDamageOnly') ? 'wuxingxiantu_domainbalance' : project.hasProperty('spiritShieldOnly') ? 'wuxingxiantu_shield' : project.hasProperty('xuanlingAnvilOnly') ? 'wuxingxiantu_anvil' : project.hasProperty('tribulationOnly') ? 'wuxingxiantu_tribulation' : project.hasProperty('realmFlightOnly') ? 'wuxingxiantu_realmflight' :
-                (project.hasProperty('entryUiOnly') ? 'wuxingxiantu_entry' :
-                (project.hasProperty('bossCombatOnly') ? 'wuxingxiantu_boss' : 'wuxingxiantu,wuxingxiantu_boss,wuxingxiantu_entry,wuxingxiantu_alchemymigration,wuxingxiantu_realmflight,wuxingxiantu_anvil,wuxingxiantu_shield,wuxingxiantu_domainbalance,wuxingxiantu_carving'))
-            if (project.hasProperty('flightXianjieCompatibility')) {
-                workingDirectory project.file('build/flight-xianjie-gametest')
-                property 'forge.enabledGameTestNamespaces', 'wuxingxiantu_flightcompat'
-            }
-        mods {
-            wuxingxiantu {
-                source sourceSets.main
-                source sourceSets.gameTest
-            }
-        }
-    }
-}
+// Verification tasks and their GameTest runtime are isolated so ordinary feature work does
+// not need to modify the main build entry point.
+apply from: 'gradle/verification.gradle'
 
 // Isolated visual verification; capture code and temporary worlds never enter the production JAR.
 if (project.hasProperty('bossCombatCapture')) {
