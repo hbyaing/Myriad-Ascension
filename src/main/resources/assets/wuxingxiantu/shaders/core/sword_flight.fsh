@@ -92,7 +92,11 @@ vec4 swordMaterial(){
             float phase=flowAngle(0.0,0.0,32.0);
             float roll=flowAngle(0.0,0.0,48.0);
             vec2 curl=vec2(sin(seed*2.17+phase),cos(seed*1.31-roll))*.18;
-            vec2 q=p+curl*(1.0-dot(p,p)*.18);
+            float angle=seed*2.399+.65*sin(phase+seed)+.35*sin(roll-seed);
+            mat2 rotation=mat2(cos(angle),-sin(angle),sin(angle),cos(angle));
+            vec2 turned=rotation*p;
+            vec2 fold=.16*vec2(sin(turned.y*4.0+roll+seed),sin(turned.x*3.7-phase+seed*.73));
+            vec2 q=turned+fold+curl*(1.0-dot(p,p)*.18);
             float smoke=periodicNoise(vec2(q.x*3.2+seed*4.0+EffectTime*.5,q.y*3.2+.35*sin(phase+seed)),64.0)*.58;
             smoke+=periodicNoise(vec2(q.x*7.1+seed*8.0-EffectTime,q.y*7.1+.25*cos(phase*.5+seed)),128.0)*.29;
             smoke+=periodicNoise(vec2(q.x*15.0+seed*16.0+EffectTime*2.0,q.y*15.0),256.0)*.13;
@@ -100,9 +104,10 @@ vec4 swordMaterial(){
             float density=smoothstep(.23,.76,smoke)*lobe;
             float variant=mod(seed,4.0);
             vec2 tile=vec2(mod(variant,2.0),floor(variant/2.0));
-            vec2 spriteUV=clamp(p*.5+.5+curl*.08,vec2(.005),vec2(.995));
+            vec2 spriteUV=clamp(q*.46+.5,vec2(.005),vec2(.995));
             float sprite=texture(SmokeAtlas,(spriteUV+tile)*vec2(.25,.5)).a;
-            float alpha=1.0-exp(-density*sprite*vertexColor.a*3.0);
+            float window=1.0-smoothstep(.88,1.0,max(abs(p.x),abs(p.y)));
+            float alpha=(1.0-exp(-density*sprite*vertexColor.a*3.0))*window;
             vec3 soot=mix(vertexColor.rgb,vec3(.0035,.0012,.002),smoke*.36);
             return vec4(soot,alpha);
         }

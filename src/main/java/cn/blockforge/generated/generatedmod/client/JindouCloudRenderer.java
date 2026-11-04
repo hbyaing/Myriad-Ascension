@@ -230,7 +230,7 @@ public final class JindouCloudRenderer {
                 shader.safeGetUniform("Opacity").set((float) Mth.clamp((96 - distance) / 16, 0, 1));
                 double seed = (volume.player().getUUID().getLeastSignificantBits() & 65535) / 65536.0;
                 double flow = JindouCloudTrailCache.flow(volume.player(), partial);
-                shader.safeGetUniform("NoiseOffset").set((float) seed, fract(seed * 0.37), fract(seed * 0.73));
+                shader.safeGetUniform("NoiseOffset").set((float) seed, fract(seed * 0.37), fract(seed * 0.73-flow));
                 JindouCloudTime.material(MATERIAL_FLOW,materialTime,flow,seed);
                 shader.safeGetUniform("FlowPhase").set(MATERIAL_FLOW[0],MATERIAL_FLOW[1],MATERIAL_FLOW[2]);
                 shader.safeGetUniform("DetailOffset").set(MATERIAL_FLOW[3],MATERIAL_FLOW[4],MATERIAL_FLOW[5]);

@@ -142,14 +142,14 @@ float densityAt(vec3 p) {
     if (boundary > 0.0) {
         vec3 domain = p * 0.38;
         vec2 curl = worley(domain * 1.7 + DetailOffset);
-        vec3 flowing = domain + 0.080 * vec3(curl.y - 0.5, curl.x - 0.5, 0.5 - curl.y);
+        vec3 flowing = domain + 0.16 * vec3(curl.y - 0.5, curl.x - 0.5, 0.5 - curl.y);
         vec2 noise = worley(domain + NoiseOffset);
         float wake = smoothstep(0.85, 2.5, length(q));
         float detail = worley(flowing * 1.8 + DetailOffset).r;
         float fine = worley(flowing * 3.2 - DetailOffset * 2.0).r;
         density = erodedDensity(boundary, noise, curl.x, detail, fine, wake, 0.0) * DensityScale;
     }
-    // History appearance is anchored in world axes; turning the emitter cannot rotate old noise.
+    // World-history support is retained; visible material rolls with bounded source-local advection.
     vec2 historyNoise = vec2(0.0);
     vec3 historyDetail = vec3(0.0);
     bool historyNoiseReady = false;
@@ -188,7 +188,7 @@ float densityAt(vec3 p) {
             // of travel speed instead of scanning world cells through the rider.
             vec3 historyDomain = p * 0.38;
             vec2 historyCurl = worley(historyDomain * 1.7 + DetailOffset);
-            vec3 historyFlow = historyDomain + 0.080 * vec3(historyCurl.y - 0.5, historyCurl.x - 0.5, 0.5 - historyCurl.y);
+            vec3 historyFlow = historyDomain + 0.16 * vec3(historyCurl.y - 0.5, historyCurl.x - 0.5, 0.5 - historyCurl.y);
             historyNoise = worley(historyDomain + NoiseOffset);
             historyDetail = vec3(historyCurl.x, worley(historyFlow * 1.8 + DetailOffset).r,
                     worley(historyFlow * 3.2 - DetailOffset * 2.0).r);

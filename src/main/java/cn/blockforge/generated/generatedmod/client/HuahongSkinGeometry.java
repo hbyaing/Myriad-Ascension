@@ -298,29 +298,24 @@ final class HuahongSkinGeometry {
         // does not add the generic white nucleus used by the meteor families.
     }
     private void smoke(){
-        // A coherent body is sampled at fixed distances along the real curved
-        // wake. The slots' identities do not change as the head crosses world
-        // birth cells, so travel speed cannot reroll the visible smoke texture.
+        // Time-born parcels advect, roll and grow along the coherent curved wake.
+        // Their identities belong to emission time, never to fast world-arc cells.
         var clouds=new ArrayList<Cloud>();
         final double bodyLife=.18+3.2*.07,smokeLife=bodyLife*1.8;
         double recorded=nodes.isEmpty()?0:Math.max(0,headArc()-nodes.get(0).arc());
         if(strength>.001){
-            for(int k=0;k<=32;k++){
-                double behind=1.65+k*.70;
+            for(var parcel:HuahongFlowField.parcels(now)){
+                double behind=parcel.behind();
                 Frame f=back(behind);
-                double envelope=smooth(1.65,3.05,behind)*smooth(24,18,behind)
+                double envelope=parcel.alpha()*smooth(24,18,behind)
                         *smooth(behind-.7,behind+.7,recorded);
                 double rear=smooth(12,24,behind);
-                var field=HuahongFlowField.smoke(behind,now);
-                Vec3 p=offset(f,field.side(),field.up());
-                double radius=field.radius();
+                Vec3 p=offset(f,parcel.side(),parcel.up());
+                double radius=parcel.radius(),seed=Math.floorMod(parcel.id(),64);
                 float alpha=(float)(strength*envelope*(1-.35*rear)*.34);
-                clouds.add(new Cloud(p,k*5,radius,alpha,0x060101,30));
-                // Crimson density travels backwards through the body at a
-                // controlled 1.4025 world units/s, instead of swapping a random
-                // high-contrast cell several times per video frame.
-                clouds.add(new Cloud(p.add(.025,.02,-.015),k*5+19,radius*.48,
-                        (float)(strength*envelope*(1-.35*rear)*field.crimson()*.075),0xce252f,20));
+                clouds.add(new Cloud(p,seed,radius,alpha,0x060101,30));
+                if(parcel.crimson()>.15)clouds.add(new Cloud(p.add(f.side().scale(radius*.12)),Math.floorMod(parcel.id()+19,64),radius*.48,
+                        (float)(strength*envelope*(1-.35*rear)*parcel.crimson()*.095),0xce252f,20));
             }
         }
         // Old residue retains canonical world births and their original world
@@ -341,13 +336,8 @@ final class HuahongSkinGeometry {
         }
         // The head is broad dark smoke with a small red fracture, never a white
         // nucleus. These layers disappear with the local transformation fade.
-        if(strength>.001){
-            for(int k=0;k<8;k++){
-                Frame f=back(.15+k*.34);var field=HuahongFlowField.smokeHead(k,now);Vec3 p=offset(f,field.side(),field.up());
-                clouds.add(new Cloud(p,k*5,field.radius(),strength*.23F,0x080001,30));
-                if(k==1||k==4)clouds.add(new Cloud(p,k*5+3,.22,strength*(float)(.06+.10*field.crimson()),0xb92235,20));
-            }
-        }
+        // No static eight-card head shell: successive soft time births fill the
+        // nose while older parcels roll, grow and travel visibly down the wake.
         // Several depth slices give packets actual spatial thickness and
         // intersect world depth independently; this is layered smoke, not a
         // claim of ray-marched density or a fluid solver.

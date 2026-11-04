@@ -21,16 +21,16 @@ public final class JindouCloudTime {
             renderTime=Math.max(renderTime,tick-1+p);rendered=true;return renderTime;
         }
     }
-    /** At most0.05 atlas periods/second, regardless of world travel speed. */
+    /** Visible, bounded advection: at most0.20 atlas periods/second, independent of travel. */
     public static double flowStep(float motion){
-        return Math.max(0,Math.min(1,Float.isFinite(motion)?motion:0))*.0025;
+        return Math.max(0,Math.min(1,Float.isFinite(motion)?motion:0))*.01;
     }
     /** Phase angles then periodic detail offsets, shared by renderer and GPU QA. */
     public static void material(float[] out,double tick,double flow,double seed){
         double time=tick/20;
-        out[0]=(float)(fraction(time/11+seed)*Math.PI*2);
-        out[1]=(float)(fraction(time/17+seed*.37)*Math.PI*2);
-        out[2]=(float)(fraction(time/23+seed*.73)*Math.PI*2);
+        out[0]=(float)(fraction(time/5+seed)*Math.PI*2);
+        out[1]=(float)(fraction(time/7+seed*.37)*Math.PI*2);
+        out[2]=(float)(fraction(time/11+seed*.73)*Math.PI*2);
         out[3]=fraction(time*.025+seed);out[4]=fraction(time*.016+seed*.37);
         out[5]=fraction(-time*.020-flow+seed*.73);
     }

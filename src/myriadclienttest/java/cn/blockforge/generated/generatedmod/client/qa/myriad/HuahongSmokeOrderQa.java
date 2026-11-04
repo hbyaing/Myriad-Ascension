@@ -17,16 +17,20 @@ final class HuahongSmokeOrderQa {
   var baseline=measure(mc,false);var candidate=measure(mc,true);
   if(((Number)baseline.get("maxRgbDifference")).intValue()<5)throw new AssertionError("Order fixture did not reproduce smoke discontinuity");
   if(((Number)candidate.get("maxRgbDifference")).intValue()>1)throw new AssertionError("Optical smoke still depends on slice order: "+candidate);
-  double minimum=Double.POSITIVE_INFINITY,maximum=0,step=0;
-  for(int k=0;k<8;k++){
-   var before=HuahongFlowField.smokeHead(k,10200336);
-   for(int i=1;i<=960;i++){
-    var after=HuahongFlowField.smokeHead(k,10200336+i/6.0);minimum=Math.min(minimum,after.radius());maximum=Math.max(maximum,after.radius());
-    step=Math.max(step,Math.max(Math.abs(after.radius()-before.radius()),Math.hypot(after.side()-before.side(),after.up()-before.up()))*HuahongHeadBridge.BODY_SCALE);before=after;
-   }
+  var first=HuahongFlowField.parcels(10200336);var second=HuahongFlowField.parcels(10200346);
+  var later=new HashMap<Long,HuahongFlowField.Parcel>();for(var p:second)later.put(p.id(),p);
+  var changes=new ArrayList<Vec3>();double minimumAdvection=Double.POSITIVE_INFINITY,growth=0,maxStep=0;
+  for(var p:first){var q=later.get(p.id());if(q==null)continue;
+   minimumAdvection=Math.min(minimumAdvection,q.behind()-p.behind());growth=Math.max(growth,q.radius()-p.radius());
+   changes.add(new Vec3((q.side()-p.side())*HuahongHeadBridge.BODY_SCALE,(q.up()-p.up())*HuahongHeadBridge.BODY_SCALE,q.behind()-p.behind()));
   }
-  if(maximum-minimum<.2||step>.02)throw new AssertionError("Smoke lobe animation frozen or stepping: "+(maximum-minimum)+" / "+step);
-  return Map.of("baseline",baseline,"opticalMixture",candidate,"headLobeRadiusRange",List.of(minimum,maximum),"headLobeMaxStepAt120fps",step,"passed",true);
+  Vec3 mean=Vec3.ZERO;for(var v:changes)mean=mean.add(v);mean=mean.scale(1.0/changes.size());double residual=0;for(var v:changes)residual+=v.distanceToSqr(mean);residual=Math.sqrt(residual/changes.size());
+  for(int frame=0;frame<240;frame++){
+   var a=HuahongFlowField.parcels(10200336+frame/6.0);var b=HuahongFlowField.parcels(10200336+(frame+1)/6.0);var next=new HashMap<Long,HuahongFlowField.Parcel>();for(var q:b)next.put(q.id(),q);
+   for(var p:a){var q=next.get(p.id());if(q==null)continue;maxStep=Math.max(maxStep,new Vec3((q.side()-p.side())*HuahongHeadBridge.BODY_SCALE,(q.up()-p.up())*HuahongHeadBridge.BODY_SCALE,q.behind()-p.behind()).length());}
+  }
+  if(minimumAdvection<3.5||residual<.1||growth<.03||maxStep>.1)throw new AssertionError("Smoke merely translates, is frozen, or jumps: "+minimumAdvection+" / "+residual+" / "+growth+" / "+maxStep);
+  return Map.of("baseline",baseline,"opticalMixture",candidate,"matchedTimeBirths",changes.size(),"backwardAdvectionOverHalfSecond",minimumAdvection,"nonRigidResidualRms",residual,"maximumRadiusGrowth",growth,"maxParcelStepAt120fps",maxStep,"passed",true);
  }
  static Map<String,Object> measure(Minecraft mc,boolean optical)throws Exception{
   var type=Class.forName("cn.blockforge.generated.generatedmod.client.HuahongSkinGeometry");

@@ -74,6 +74,10 @@ final class JindouCloudMaterialQa {
                 Stats baseline=temporal(before,mode,true),candidate=temporal(after,mode,false);
                 if(baseline.stepRms<1e-4||candidate.stepRms<1e-6||candidate.totalPower<1e-8||candidate.meanDensity<1e-4||candidate.stepRms>baseline.stepRms/3)
                     throw new AssertionError("Cloud density empty/frozen/still aliases mode"+mode+": "+baseline+" / "+candidate);
+                // The previous low-RMS candidate passed but looked frozen to
+                // the user. Retain visible temporal energy in this fixed probe.
+                if(candidate.totalPower<(mode==0?.0005:.00008))
+                    throw new AssertionError("Cloud flow has been over-stabilized again: "+candidate);
                 results.put(mode==0?"sourceBody":"historicalWake",Map.of("baseline",baseline,"candidate",candidate,"frameDeltaReduction",baseline.stepRms/candidate.stepRms));
             }
             float[] reference=render(after,1,false,0,0,0);double rigid=0,oldRigid=0;
@@ -103,6 +107,7 @@ final class JindouCloudMaterialQa {
         GL33.glUniform1i(GL33.glGetUniformLocation(program,"TrailCount"),mode==0?0:32);GL33.glUniform1f(GL33.glGetUniformLocation(program,"TrailLifetime"),20);
         double t=7.125+seconds,seed=.25,flow=seconds*(legacy?100*.035:candidateFlowRate);
         GL33.glUniform3f(GL33.glGetUniformLocation(program,"NoiseOffset"),(float)seed,fract(seed*.37),fract(seed*.73));
+        if(!legacy)GL33.glUniform3f(GL33.glGetUniformLocation(program,"NoiseOffset"),(float)seed,fract(seed*.37),fract(seed*.73-flow));
         float[] phases=new float[6];
         if(legacy){phases[0]=(float)(fract(t/11+seed)*Math.PI*2);phases[1]=(float)(fract(t/17+seed*.37)*Math.PI*2);phases[2]=(float)(fract(t/23+seed*.73)*Math.PI*2);phases[3]=fract(t*.025+seed);phases[4]=fract(t*.016+seed*.37);phases[5]=fract(-t*.020-flow+seed*.73);}
         else try{materialField.invoke(null,phases,t*20,flow,seed);}catch(Exception failure){throw new AssertionError("Production cloud material fields unavailable",failure);}
@@ -136,7 +141,7 @@ final class JindouCloudMaterialQa {
         long paused=(long)tick.invoke(clock);for(int i=0;i<20;i++){advance.invoke(clock,false);sample.invoke(track,p,(long)tick.invoke(clock),Vec3.ZERO,p);if((long)tick.invoke(clock)!=paused||reset.getLong(track)!=first)throw new AssertionError("Paused cloud clock/history changed");checks++;}
         advance.invoke(clock,true);Vec3 fast=new Vec3(40,0,0);sample.invoke(track,p.add(fast),(long)tick.invoke(clock),fast,p);p=p.add(fast);if(reset.getLong(track)!=first)throw new AssertionError("Fast legitimate cloud path reset");checks++;
         advance.invoke(clock,true);Vec3 teleport=p.add(100,0,0);long now=(long)tick.invoke(clock);sample.invoke(track,teleport,now,Vec3.ZERO,teleport);if(reset.getLong(track)!=now)throw new AssertionError("Genuine cloud teleport did not reset");checks++;
-        if(maxFlow>.00250001)throw new AssertionError("Cloud travel flow still unbounded: "+maxFlow);
+        if(maxFlow>.01000001)throw new AssertionError("Cloud travel flow still unbounded: "+maxFlow);
         return Map.of("passed",true,"actualTrackReflectionChecks",checks,"maxFlowStep",maxFlow,"stoppedHeadingDifference",0,"pauseKeptHistory",true,"fast40BlocksPerTickKeptHistory",true,"trueTeleportReset",true,"scope","Actual production Track plus pure production clock; real active-stop/cloud video validates integration separately.");
     }
     private JindouCloudMaterialQa(){}
