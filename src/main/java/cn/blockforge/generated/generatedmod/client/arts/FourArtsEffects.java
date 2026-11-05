@@ -93,6 +93,13 @@ public final class FourArtsEffects {
                 state.removedEffects=state.passivePurification?0:Math.min(4,packet.state());
             }
             case GATHER_PULSE -> state.gatherPulse=tick;
+            case FLAME_WAVE -> {
+                Vec3 origin=packet.position();
+                if(!Double.isFinite(origin.x)||!Double.isFinite(origin.y)||!Double.isFinite(origin.z)
+                        ||!Float.isFinite(packet.yaw())||origin.distanceToSqr(player.position())>16*16) return;
+                if(state.flames.size()>=6) state.flames.removeFirst();
+                state.flames.addLast(new FlameWaveAnimation(level,player,origin,packet.yaw(),tick));
+            }
             case BLOOD_HIT, PASSIVE_BLOOD_HIT -> {
                 Vec3 p=packet.position();
                 if(!Double.isFinite(p.x)||!Double.isFinite(p.y)||!Double.isFinite(p.z)
@@ -118,9 +125,11 @@ public final class FourArtsEffects {
             var player=entry.getKey();
             State state=entry.getValue();
             state.hits.removeIf(hit->now-hit.tick>=14);
+            state.flames.removeIf(cast->now-cast.tick>=FlameWaveAnimation.LIFETIME);
             if(now-state.lastState>27) state.bits=0;
             if(player.isRemoved() || !player.isAlive() || player.isSpectator() ||
-                    state.bits==0&&now-state.renewal>32&&now-state.purification>42&&now-state.gatherPulse>20&&state.hits.isEmpty()) {
+                    state.bits==0&&now-state.renewal>32&&now-state.purification>42&&now-state.gatherPulse>20
+                            &&state.hits.isEmpty()&&state.flames.isEmpty()) {
                 iterator.remove();
                 continue;
             }
@@ -146,7 +155,9 @@ public final class FourArtsEffects {
 
     static boolean needsPose(AbstractClientPlayer player) {
         var state=STATES.get(player);
-        return state!=null && ((state.bits&BLOOD_AURA)!=0 || needsSurface(player))
+        var flame=state==null?null:state.flames.peekLast();
+        return state!=null && ((state.bits&BLOOD_AURA)!=0 || needsSurface(player)
+                || flame!=null && player.level().getGameTime()-flame.tick<11)
                 && !TrailShaderBridge.shadowPass();
     }
 
@@ -207,15 +218,22 @@ public final class FourArtsEffects {
                 FourArtsAnimation.purification(geometry,surface,base,chest,player.getBbHeight(),(now-state.purification)/20,
                         state.passivePurification,state.removedEffects>0);
             }
-            if((state.bits&BLOOD_AURA)!=0) {
-                Vec3 hand=sample==null?FourArtsPose.fallbackHand(player,base,partial)
+            var newestFlame=state.flames.peekLast();
+            boolean igniting=newestFlame!=null && now-newestFlame.tick<11;
+            Vec3 hand=null;
+            if((state.bits&BLOOD_AURA)!=0 || igniting) {
+                hand=sample==null?FourArtsPose.fallbackHand(player,base,partial)
                         :FourArtsPose.Sample.inWorld(sample.hand(),inverse,camera);
                 if(hand.distanceToSqr(base)>9) hand=FourArtsPose.fallbackHand(player,base,partial);
                 if(mc.getCameraEntity()==player && mc.options.getCameraType().isFirstPerson()) {
                     double sign=player.getMainArm()==HumanoidArm.RIGHT?1:-1;
                     hand=camera.add(player.getViewVector(partial).scale(.87)).add(right.scale(sign*.36)).subtract(up.scale(.44));
                 }
-                FourArtsAnimation.bloodCharge(geometry,hand,(now-state.blood)/20);
+            }
+            if((state.bits&BLOOD_AURA)!=0) FourArtsAnimation.bloodCharge(geometry,hand,(now-state.blood)/20);
+            for(var cast:state.flames) {
+                if(cast.origin.distanceToSqr(camera)<=RANGE_SQUARED)
+                    cast.render(geometry,cast==newestFlame?hand:null,(now-cast.tick)/20);
             }
             for(var hit:state.hits) FourArtsAnimation.bloodHit(geometry,hit.point,hit.direction,(now-hit.tick)/20,hit.passive);
         }
@@ -259,7 +277,8 @@ public final class FourArtsEffects {
             RenderSystem.enableBlend();
             RenderSystem.blendFuncSeparate(GL11.GL_ONE,GL11.GL_ONE_MINUS_SRC_ALPHA,GL11.GL_ONE,GL11.GL_ONE_MINUS_SRC_ALPHA);
             shader.safeGetUniform("ClipMatrix").set(frame.clip);
-            if((frame.materials&((1<<FourArtsGeometry.RECOVERY)|(1<<FourArtsGeometry.ICE_GROUND)|(1<<FourArtsGeometry.ICE_WAKE)))!=0)
+            if((frame.materials&((1<<FourArtsGeometry.RECOVERY)|(1<<FourArtsGeometry.ICE_GROUND)
+                    |(1<<FourArtsGeometry.ICE_WAKE)|(1<<FourArtsGeometry.FLAME_GROUND)))!=0)
                 shader.safeGetUniform("InverseClip").set(new Matrix4f(frame.clip).invert());
             shader.safeGetUniform("OutputSize").set((float)target.viewWidth,(float)target.viewHeight);
             shader.safeGetUniform("time").set(frame.time);
@@ -337,5 +356,6 @@ public final class FourArtsEffects {
         int removedEffects;
         final ArrayDeque<WindPoint> history=new ArrayDeque<>();
         final ArrayDeque<Hit> hits=new ArrayDeque<>();
+        final ArrayDeque<FlameWaveAnimation> flames=new ArrayDeque<>();
     }
 }

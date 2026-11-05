@@ -52,18 +52,20 @@ public final class FourArtsCapture {
     private static final Path OUT=Path.of(System.getProperty("wuxingxiantu.myriadCaptureOutput","captures"));
     private static final String[] CASES={"active-renewal","passive-renewal","active-spirit","passive-spirit",
             "active-wind","passive-slow-fall","active-blood-charge","active-blood-impact","passive-blood-impact",
-            "active-purification","clean-purification","passive-purification","ice-flight","ice-homing","ice-blocked"};
+            "active-purification","clean-purification","passive-purification","ice-flight","ice-homing","ice-blocked","flame-wave"};
     private static final String[] ARTS={FourArtsVisuals.RENEWAL,FourArtsVisuals.RENEWAL,FourArtsVisuals.GATHER,
             FourArtsVisuals.GATHER,FourArtsVisuals.LIGHT,FourArtsVisuals.LIGHT,FourArtsVisuals.BLOOD,
             FourArtsVisuals.BLOOD,FourArtsVisuals.BLOOD,
             FourArtsVisuals.PURIFICATION,FourArtsVisuals.PURIFICATION,FourArtsVisuals.PURIFICATION,
-            FourArtsVisuals.ICE,FourArtsVisuals.ICE,FourArtsVisuals.ICE};
-    private static final int[] LIMIT={14,40,31,25,35,31,31,24,24,21,21,40,29,82,88};
+            FourArtsVisuals.ICE,FourArtsVisuals.ICE,FourArtsVisuals.ICE,FourArtsVisuals.FLAME};
+    private static final int[] LIMIT={14,40,31,25,35,31,31,24,24,21,21,40,29,82,88,76};
     private static final int LOTUS_BASE=1<<9|1<<11|1<<12|1<<15;
     private static final int LOTUS_ACTIVE=1<<13|1<<14|1<<17;
     private static final int LOTUS_STAINS=1<<10|1<<16;
     private static final int ICE_FORMATION=1<<18|1<<19|1<<21|1<<22;
     private static final int ICE_FLIGHT=1<<18|1<<20|1<<22|1<<23|1<<24;
+    private static final int FLAME_GATHER=1<<6|1<<28|1<<29;
+    private static final int FLAME_TRAVEL=1<<25|1<<26|1<<27|1<<28|1<<30;
     private static final List<Map<String,Object>> RESULTS=new ArrayList<>();
     private static final long START=System.nanoTime();
     private static boolean opened,ready,prepared,finished;
@@ -73,7 +75,9 @@ public final class FourArtsCapture {
     private static Field draws,materials,states;
     private static int dummyId;
     private static final List<Integer> iceTargets=new ArrayList<>();
+    private static final List<Integer> flameTargets=new ArrayList<>();
     private static boolean formationCaptured;
+    private static boolean flameGatherCaptured;
     private static float iceDamage;
     private static Method cameraPosition;
 
@@ -156,6 +160,7 @@ public final class FourArtsCapture {
                 var target=serverPlayer(mc).serverLevel().getEntity(iceTargets.get(1));
                 target.teleportTo(target.getX()+1.15,target.getY(),target.getZ()+.42);
             });
+            if(stage==15 && tick==57) pending=mc.getSingleplayerServer().submit(()->checkFlameTargets(serverPlayer(mc),false));
             if(stage==4&&tick==9) mc.options.keyUp.setDown(true);
             if((stage==7||stage==8)&&tick==20) pending=mc.getSingleplayerServer().submit(()->hit(serverPlayer(mc)));
             if(tick>170) throw new AssertionError("No acceptable frame for "+CASES[stage]+" draws="+(drawCount()-baseline));
@@ -190,6 +195,12 @@ public final class FourArtsCapture {
         player.setItemInHand(InteractionHand.MAIN_HAND,mode>=6&&mode<=8?new ItemStack(Items.IRON_SWORD):ItemStack.EMPTY);
         player.connection.teleport(.5,mode==5?220:200,.5,0,0);
         if(mode>=12) configureIce(player,mode);
+        if(mode==15) {
+            flameTargets.add(spawnTarget(player,1.75,2.8));
+            flameTargets.add(spawnTarget(player,-1.5,5.7));
+            flameTargets.add(spawnTarget(player,-3.5,1.7));
+            flameTargets.add(spawnTarget(player,.5,7.2));
+        }
         GeneratedMod.sync(player);
     }
 
@@ -205,13 +216,13 @@ public final class FourArtsCapture {
                 player.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE),
                 data.wuxingxiantu$getArtMastery(FourArtsVisuals.ICE),CultivationLogic.maxAura(data));
         if(mode==13) {
-            spawnIceTarget(player,-4.5,-3.5);
-            spawnIceTarget(player,2.6,-5.3);
+            iceTargets.add(spawnTarget(player,-4.5,-3.5));
+            iceTargets.add(spawnTarget(player,2.6,-5.3));
         }
-        if(mode==14) spawnIceTarget(player,.5,6.5);
+        if(mode==14) iceTargets.add(spawnTarget(player,.5,6.5));
     }
 
-    private static void spawnIceTarget(ServerPlayer player,double x,double z) {
+    private static int spawnTarget(ServerPlayer player,double x,double z) {
         var target=EntityType.HUSK.create(player.serverLevel());
         target.setNoAi(true);
         target.addTag("four_arts_qa_dummy");
@@ -219,7 +230,7 @@ public final class FourArtsCapture {
         target.setHealth(target.getMaxHealth());
         target.setPos(x,200,z);
         player.serverLevel().addFreshEntity(target);
-        iceTargets.add(target.getId());
+        return target.getId();
     }
 
     private static void hit(ServerPlayer player) {
@@ -251,6 +262,10 @@ public final class FourArtsCapture {
                 target=p.position().add(-.38,1.02,stage==13?-2.6:2.3);
                 origin=target.add(stage==13?-7.9:-8.5,3.25,stage==13?-3.4:-2.2);
             }
+            if(stage==15) {
+                target=p.position().add(-.15,.82,2.7);
+                origin=target.add(-8.75,5.75,1.55);
+            }
             Vec3 toward=target.subtract(origin);
             cameraPosition.invoke(event.getCamera(),origin);
             event.setYaw((float)Math.toDegrees(Math.atan2(-toward.x,toward.z)));
@@ -276,6 +291,7 @@ public final class FourArtsCapture {
                 case 12 -> ICE_FLIGHT;
                 case 13 -> 1<<18|1<<21|1<<22|1<<23|1<<6;
                 case 14 -> 1<<18|1<<21|1<<22|1<<23;
+                case 15 -> FLAME_TRAVEL;
                 default -> 1<<2;
             };
             if(stage==12 && !formationCaptured && tick>=15 && tick<=17 && count>baseline
@@ -284,6 +300,13 @@ public final class FourArtsCapture {
                     screenshot.writeToFile(OUT.resolve("ice-formation.png"));
                 }
                 formationCaptured=true;
+            }
+            if(stage==15 && !flameGatherCaptured && tick>=55 && tick<=59 && count>baseline
+                    && (drawMaterials()&FLAME_GATHER)==FLAME_GATHER) {
+                try(var screenshot=Screenshot.takeScreenshot(mc.getMainRenderTarget())) {
+                    screenshot.writeToFile(OUT.resolve("flame-gather.png"));
+                }
+                flameGatherCaptured=true;
             }
             boolean actual=count>baseline && (drawMaterials()&wanted)==wanted && matchesMode(mc);
             if(actual && firstDrawTick<0) firstDrawTick=tick;
@@ -307,9 +330,17 @@ public final class FourArtsCapture {
                     || (stage==11 && (drawMaterials()&LOTUS_ACTIVE)!=0)))
                 throw new AssertionError("Purification visual did not match the applied heal and cleanse");
             if(stage==12 && !formationCaptured) throw new AssertionError("Missing ice formation frame");
-            if(stage>=13) {
+            if(stage==13 || stage==14) {
                 boolean shouldHit=stage==13;
                 mc.getSingleplayerServer().submit(()->checkIceTargets(serverPlayer(mc),shouldHit)).join();
+            }
+            if(stage==15) {
+                if(!flameGatherCaptured) throw new AssertionError("Missing flame gathering frame");
+                mc.getSingleplayerServer().submit(()->checkFlameTargets(serverPlayer(mc),true)).join();
+                for(int id:flameTargets.subList(0,2)) {
+                    var target=mc.level.getEntity(id);
+                    if(target==null || !target.isOnFire()) throw new AssertionError("Vanilla fire flag did not reach client");
+                }
             }
             try(var screenshot=Screenshot.takeScreenshot(mc.getMainRenderTarget())) {
                 screenshot.writeToFile(OUT.resolve(CASES[stage]+".png"));
@@ -374,6 +405,22 @@ public final class FourArtsCapture {
             var slow=target.getEffect(MobEffects.MOVEMENT_SLOWDOWN);
             if(shouldHit ? Math.abs(lost-iceDamage)>.05 || slow==null || slow.getAmplifier()!=2 : lost!=0 || slow!=null)
                 throw new AssertionError("Wrong ice impact for "+target.position()+", damage="+lost+", expected="+iceDamage+", slow="+slow);
+        }
+    }
+
+    private static void checkFlameTargets(ServerPlayer player,boolean afterWave) {
+        int nearTicks=0;
+        for(int i=0;i<flameTargets.size();i++) {
+            if(!(player.serverLevel().getEntity(flameTargets.get(i)) instanceof net.minecraft.world.entity.LivingEntity target))
+                throw new AssertionError("Missing flame target "+i);
+            boolean hit=afterWave && i<2;
+            int remaining=target.getRemainingFireTicks();
+            if(hit ? remaining<55 || remaining>80 || target.getHealth()>=target.getMaxHealth()
+                    : remaining>0 || target.getHealth()!=target.getMaxHealth())
+                throw new AssertionError("Wrong vanilla flame result for target "+i+" fire="+remaining+" health="+target.getHealth());
+            if(i==0) nearTicks=remaining;
+            if(i==1 && hit && remaining<nearTicks+4)
+                throw new AssertionError("The distant target should ignite later than the near target");
         }
     }
 

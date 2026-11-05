@@ -69,7 +69,7 @@ import cn.blockforge.generated.generatedmod.*;
 
 public final class NetworkChannel {
     // Flight snapshots now carry presentation state on their motion timestamp.
-    private static final String VERSION = "113";
+    private static final String VERSION = "114";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(GeneratedMod.MOD_ID, "main"), () -> VERSION, VERSION::equals, VERSION::equals);
     private static final java.util.Set<Integer> IDS=new java.util.HashSet<>();

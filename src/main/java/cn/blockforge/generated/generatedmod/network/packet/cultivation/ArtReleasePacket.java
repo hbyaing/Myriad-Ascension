@@ -5,6 +5,7 @@ import cn.blockforge.generated.generatedmod.ArtCatalog;
 import cn.blockforge.generated.generatedmod.items.HumanEmperorBannerItem;
 import cn.blockforge.generated.generatedmod.arts.ArtParticleLibrary;
 import cn.blockforge.generated.generatedmod.arts.FourArtsVisuals;
+import cn.blockforge.generated.generatedmod.arts.FlameWave;
 import cn.blockforge.generated.generatedmod.arts.IceSpikeVolley;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -74,6 +75,7 @@ public record ArtReleasePacket(int slot) {
                     return;
                 }
                 if (FourArtsVisuals.ICE.equals(art) && !IceSpikeVolley.canCast(player)) return;
+                if (FourArtsVisuals.FLAME.equals(art) && !FlameWave.canCast(player)) return;
                 net.minecraft.world.phys.Vec3 flashDestination=null;
                 if (art.equals("art_flash_step")) {
                     flashDestination=cn.blockforge.generated.generatedmod.arts.FlashStep.destination(player,effectPercent>=30?10:8);
@@ -100,8 +102,12 @@ public record ArtReleasePacket(int slot) {
             int buffTicks = (6 + masteryLevel) * 20;
             double playerAttack = player.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
             float damage = ArtCatalog.damageFor(art, playerAttack, mastery, CultivationLogic.maxAura(GeneratedMod.data(player)));
-            if (art.equals("art_flame_wave")) damage *= cn.blockforge.generated.generatedmod.balance.HeartMethodBalance.fireDamageMultiplier(
-                    cn.blockforge.generated.generatedmod.ProgressionGate.effectiveHeartMethod(player,GeneratedMod.data(player)));
+            if (FourArtsVisuals.FLAME.equals(art)) {
+                damage *= cn.blockforge.generated.generatedmod.balance.HeartMethodBalance.fireDamageMultiplier(
+                        ProgressionGate.effectiveHeartMethod(player,GeneratedMod.data(player)));
+                FlameWave.cast(player,damage);
+                return;
+            }
             if (art.equals(FourArtsVisuals.RENEWAL) || art.equals(FourArtsVisuals.PURIFICATION)) {
                 float healing=ArtCatalog.currentHealing(art, mastery);
                 if (art.equals(FourArtsVisuals.RENEWAL)) FourArtsVisuals.renew(player,healing);
@@ -149,7 +155,7 @@ public record ArtReleasePacket(int slot) {
             }
             if (art.equals(FourArtsVisuals.ICE)) IceSpikeVolley.cast(player, damage);
             if (art.equals("art_sword_aura") || art.equals("art_armor_break")
-                    || art.equals("art_flame_wave") || art.equals("art_thunder") || art.equals("art_myriad_swords")
+                    || art.equals("art_thunder") || art.equals("art_myriad_swords")
                     || art.equals("art_five_elements")) {
                 ArtCatalog.AttackProfile profile = ArtCatalog.attackProfile(art);
                 double radius = profile.shape() == ArtCatalog.AttackShape.TARGET_AREA ? profile.width() : profile.range();
@@ -192,7 +198,6 @@ public record ArtReleasePacket(int slot) {
                     if (!inShape) continue;
                     var source=art.equals("art_thunder")?new net.minecraft.world.damagesource.DamageSource(level.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE).getHolderOrThrow(net.minecraft.world.damagesource.DamageTypes.LIGHTNING_BOLT),player):player.damageSources().magic();
                     boolean hit = target.hurt(source, art.equals("art_thunder")?damage*1.35F:damage);
-                    if (hit && art.equals("art_flame_wave")) target.setSecondsOnFire(4);
                     if (art.equals("art_armor_break")) {
                         target.addEffect(new net.minecraft.world.effect.MobEffectInstance(
                                 ModEffects.ARMOR_BREAK.get(), 100, 0, false, true, true));

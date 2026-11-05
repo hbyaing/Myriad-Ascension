@@ -14,6 +14,7 @@ final class FourArtsGeometry {
     static final int LINE=0, LEAF=1, INK=2, SPARK=3, SIGIL=4, GAUZE=5, CORE=6, SHARD=7, AIR=8, RECOVERY=9;
     static final int ASH=10, LOTUS=11, LOTUS_FIELD=12, LIGHT_SHAFT=13, SCRIPT_BAND=14, GOLD_PETAL=15, ASH_CHIP=16, GOLD_MOTE=17;
     static final int ICE_CRYSTAL=18, ICE_RIBBON=19, ICE_GRAIN=20, ICE_FOG=21, ICE_SNOW=22, ICE_GROUND=23, ICE_WAKE=24;
+    static final int FLAME_CREST=25, FLAME_SHEET=26, FLAME_SMOKE=27, FLAME_SPARK=28, FLAME_TONGUE=29, FLAME_GROUND=30;
     static final int RISE=0, LOTUS_LIGHT=3;
     private final Vec3 camera, right, up;
     private final List<Quad> quads=new ArrayList<>();
@@ -71,9 +72,13 @@ final class FourArtsGeometry {
     }
 
     void quad(Vec3 a,Vec3 b,Vec3 c,Vec3 d,double u,double v,int rgb,int kind,double strength,int seed) {
+        quad(a,b,c,d,u,v,-1,1,rgb,kind,strength,seed);
+    }
+
+    void quad(Vec3 a,Vec3 b,Vec3 c,Vec3 d,double u,double v,double low,double high,int rgb,int kind,double strength,int seed) {
         if(strength<=.004) return;
         materials|=1<<kind;
-        quads.add(new Quad(a,b,c,d,(float)u,(float)v,rgb,kind,
+        quads.add(new Quad(a,b,c,d,(float)u,(float)v,(float)low,(float)high,rgb,kind,
                 Mth.clamp((int)(strength*255),1,255),seed&31,a.add(c).scale(.5).distanceToSqr(camera)));
     }
 
@@ -88,10 +93,10 @@ final class FourArtsGeometry {
             }
         }
         for(var q:quads) {
-            vertex(buffer,q,q.a,q.u,-1);
-            vertex(buffer,q,q.b,q.u,1);
-            vertex(buffer,q,q.c,q.v,1);
-            vertex(buffer,q,q.d,q.v,-1);
+            vertex(buffer,q,q.a,q.u,q.low);
+            vertex(buffer,q,q.b,q.u,q.high);
+            vertex(buffer,q,q.c,q.v,q.high);
+            vertex(buffer,q,q.d,q.v,q.low);
         }
         return buffer.end();
     }
@@ -106,5 +111,5 @@ final class FourArtsGeometry {
     }
 
     private record Surface(List<Vec3> points,double bottom,double height,float crest,int mode,int rgb,int alpha) {}
-    private record Quad(Vec3 a,Vec3 b,Vec3 c,Vec3 d,float u,float v,int rgb,int kind,int alpha,int seed,double depth) {}
+    private record Quad(Vec3 a,Vec3 b,Vec3 c,Vec3 d,float u,float v,float low,float high,int rgb,int kind,int alpha,int seed,double depth) {}
 }

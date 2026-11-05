@@ -67,6 +67,12 @@ vec3 sceneAt(vec2 pixel) {
     return texture(Sampler1, clamp(pixel, vec2(.5), OutputSize - .5) / OutputSize).rgb;
 }
 
+vec3 fireColor(float heat) {
+    vec3 copper=mix(vec3(.35,.028,.013),vec3(.99,.23,.037),smoothstep(.02,.60,heat));
+    vec3 amber=mix(copper,vec3(1.,.66,.16),smoothstep(.39,.86,heat));
+    return mix(amber,vec3(1.,.96,.73),smoothstep(.74,1.04,heat));
+}
+
 void main() {
     vec2 sceneUv=gl_FragCoord.xy/OutputSize;
     float worldDepth=texture(Sampler0,sceneUv).r;
@@ -94,7 +100,7 @@ void main() {
         frag=vec4(mix(color,vec3(.84,1.,1.),ridge*.25)*opacity,opacity);
         return;
     }
-    if(kind>23.5) {
+    if(kind<24.5 && kind>23.5) {
         // Integrate across one continuous cross section along the curved flight history.
         float u=p.x, y=p.y;
         float extent=sqrt(max(0.,1.-y*y));
@@ -135,7 +141,7 @@ void main() {
         return;
     }
     // Evaluate frost against the captured terrain, including block and slab top heights.
-    if(kind>22.5) {
+    if(kind<23.5 && kind>22.5) {
         if(worldDepth>=.999999) discard;
         vec4 surface=InverseClip*vec4(sceneUv*2.-1.,worldDepth*2.-1.,1.);
         if(abs(surface.w)<.00001) discard;
@@ -161,7 +167,125 @@ void main() {
         frag=vec4(tint*opacity+vec3(.27,.66,1.)*light*contact*strength*.39,opacity);
         return;
     }
+    if(kind==30.) {
+        if(worldDepth>=.999999) discard;
+        vec4 surface=InverseClip*vec4(sceneUv*2.-1.,worldDepth*2.-1.,1.);
+        if(abs(surface.w)<.00001) discard;
+        vec3 point=surface.xyz/surface.w;
+        vec3 delta=point-relativePosition;
+        vec3 normal=cross(dFdx(point),dFdy(point));
+        float upward=abs(normal.y)/max(length(normal),1.e-7);
+        float floorMask=(1.-smoothstep(.036,.112,abs(delta.y)))
+            *(1.-smoothstep(.07,.19,length(delta.xz)))*smoothstep(.64,.92,upward);
+        float age=strength*3.-.35;
+        float radius=(p.y*.5+.5)*6.5;
+        float head=6.5*(1.-pow(1.-clamp(age/.90,0.,1.),1.37));
+        float angle=(p.x*2.-1.)*.9424778;
+        float fan=1.-smoothstep(.82,.944,abs(angle));
+        float elapsed=age-.9*(1.-pow(1.-clamp(radius/6.5,0.,1.),.729927));
+        float contact=smoothstep(-.03,.11,elapsed)*(1.-smoothstep(.88,1.74,elapsed));
+        float bounce=(.82*gaussian((radius-head+.30)*1.53)+.26*gaussian((radius-head+1.22)*.73))
+            *fan*smoothstep(.17,1.4,head)*(1.-smoothstep(.70,1.34,age));
+        vec2 cell=floor(vec2(cos(angle),sin(angle))*radius*26.);
+        float grain=noise(cell*.11+vec2(4.4,8.3));
+        float splatter=noise(cell*.29+8.);
+        float scorched=contact*fan*smoothstep(.6,1.3,radius)*(1.-smoothstep(6.42,6.51,radius));
+        float cinder=smoothstep(.71,.91,hash(cell))*smoothstep(.48,.79,grain*.68+.32*splatter);
+        float shine=scorched*cinder*(1.-smoothstep(.28,1.25,elapsed))*(.67+.33*sin(time*9.+splatter*13.));
+        float opacity=floorMask*scorched*smoothstep(.29,.79,grain)*.25;
+        vec3 light=vec3(1.,.38,.068)*(shine*.68+bounce*(.37+.28*grain));
+        frag=vec4(light*floorMask,opacity);
+        return;
+    }
     if(gl_FragCoord.z>worldDepth+.000045) discard;
+    if(kind==28.) {
+        vec2 v=vec2(p.y,p.x*2.-1.);
+        float square=max(abs(v.x),abs(v.y));
+        float spark=(1.-smoothstep(.36,.78,square))*(.56+.44*hash(vec2(seed,5.2)));
+        float halo=gaussian(length(v)*1.9)*.32;
+        float alpha=clamp((spark+halo)*strength,0.,1.);
+        vec3 hot=mix(color,vec3(1.,.95,.69),spark*.69);
+        frag=vec4(hot*alpha,alpha);
+        frag.rgb+=(hot*alpha*(.57+.72*spark))*.38;
+        return;
+    }
+    if(kind==29.) {
+        float u=p.x;
+        float flow=time*3.5+seed*.63;
+        float lean=.22*sin(u*7.-flow)+.27*u*sin(seed);
+        float center=p.y-lean;
+        float rim=.12+.63*pow(max(0.,sin(3.14159*u)),.72);
+        float turbulence=noise(vec2(center*3.3+seed,u*6.-flow));
+        float mask=(1.-smoothstep(rim*.72,rim,abs(center)))
+            *smoothstep(0.,.15,u)*(1.-smoothstep(.71,1.,u+(turbulence-.50)*.31));
+        float heat=.27+.68*gaussian(center*2.66)*(.88-.49*u)+turbulence*.18;
+        float alpha=strength*mask*(.58+.42*turbulence);
+        vec3 light=fireColor(heat);
+        frag=vec4(light*alpha,alpha);
+        frag.rgb+=(light*alpha*(.46+.49*heat))*.38;
+        return;
+    }
+    if(kind==27.) {
+        vec2 v=vec2(p.y,p.x*2.-1.);
+        float radial=dot(v,v);
+        if(radial>=1.) discard;
+        float extent=sqrt(1.-radial);
+        float stride=extent*.125;
+        float transmission=1.;
+        vec3 smoke=vec3(0.);
+        for(int i=0;i<16;i++) {
+            float z=-extent+(float(i)+.5)*stride;
+            vec3 q=vec3(v,z);
+            vec3 domain=q*vec3(2.9,2.4,2.5)+vec3(seed*.69,-time*.87,seed*.33);
+            float curl=mistNoise(domain)+.39*mistNoise(domain*2.21+vec3(1.8,0.,2.5));
+            float density=smoothstep(.35,.91,curl)*(1.-smoothstep(.17,1.,dot(q,q)));
+            float opacity=1.-exp(-density*stride*strength*1.48);
+            vec3 lit=mix(color*.62,vec3(.65,.39,.25),smoothstep(.14,.90,curl)*(.59-.32*q.y));
+            smoke+=lit*opacity*transmission;
+            transmission*=1.-opacity;
+        }
+        frag=vec4(smoke,1.-transmission);
+        frag.rgb+=(smoke*.13)*.38;
+        return;
+    }
+    if(kind==26.) {
+        float x=p.x, y=p.y*.5+.5;
+        float end=smoothstep(0.,.08,x)*(1.-smoothstep(.92,1.,x));
+        float flow=noise(vec2(x*42.+seed,y*3.-time*4.));
+        float cracks=noise(vec2(x*95.,y*6.+time*2.));
+        float heat=.34+.44*y+.31*flow;
+        float alpha=end*strength*smoothstep(.04,.73,y)*(1.-smoothstep(.84,1.,y))
+            *(.39+.61*smoothstep(.22,.76,flow+.24*cracks));
+        vec3 light=fireColor(heat);
+        frag=vec4(light*alpha,alpha);
+        frag.rgb+=(light*alpha*(.52+.41*y))*.38;
+        return;
+    }
+    if(kind==25.) {
+        float u=p.x, h=p.y*.5+.5;
+        float drift=time*4.8;
+        vec2 flow=vec2(u*19.+seed*.37,h*4.5-drift);
+        float fold=noise(flow);
+        float grains=noise(vec2(u*88.+h*1.6+seed+fold*2.6,h*15.-drift*2.2));
+        float knots=noise(vec2(u*44.+seed+h*3.1,h*5.2-drift*1.45));
+        float tongues=noise(vec2(u*36.+fold*2.2+seed*.23,drift*.48));
+        float body=mix(.63,.99,tongues);
+        float gate=(1.-smoothstep(body-.20,min(1.,body+.08),h))
+            *smoothstep(.002,.08,h)*smoothstep(0.,.11,u)*(1.-smoothstep(.89,1.,u));
+        float turbulence=fold*.38+grains*.19+knots*.43;
+        float filament=gaussian((fract(u*34.+knots*.44+fold*.37)-.5)*9.)
+            *smoothstep(.33,.67,fold)*smoothstep(.07,.45,h);
+        float streak=gaussian((turbulence-.55)*10.)*smoothstep(.08,.69,h);
+        float root=gaussian((h-.15-.13*fold)*6.2);
+        float curl=gaussian((h-.68-.09*fold)*10.0)*smoothstep(.17,.87,knots);
+        float heat=.22+.42*root+.28*streak+.25*curl+.19*grains+.28*filament-.18*h;
+        float alpha=gate*strength*(.24+.48*smoothstep(.18,.73,turbulence)+.31*root+.15*curl+.21*filament);
+        vec3 light=fireColor(heat)*mix(color*.75+vec3(.29),vec3(1.),root*.72);
+        frag=vec4(light*alpha,alpha);
+        frag.rgb+=(light*alpha*(.30+.64*heat))*.38;
+        return;
+    }
+
     if(kind>21.5) {
         vec2 v=vec2(p.y,p.x*2.-1.);
         v=(floor(v*16.+.5))*.0625;

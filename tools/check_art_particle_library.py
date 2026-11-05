@@ -13,7 +13,7 @@ shader_ids = dict(re.findall(r'\b([A-Z_]+)="(art_[^"]+)"', shader_source))
 replacement = re.search(r'boolean replaces\(String art\) \{(.*?)\}', shader_source, re.S)
 assert replacement, 'missing shader replacement routing'
 shader_arts = {shader_ids[name] for name in re.findall(r'([A-Z_]+)\.equals\(art\)', replacement[1])}
-assert len(shader_arts) == 6 and shader_arts <= set(ids), f'invalid shader art list: {shader_arts}'
+assert len(shader_arts) == 7 and shader_arts <= set(ids), f'invalid shader art list: {shader_arts}'
 assert not shader_arts & recipes, f'legacy recipes for shader arts: {shader_arts & recipes}'
 shader_dir = ROOT / 'src/main/resources/assets/wuxingxiantu/shaders/core'
 for suffix in ('json', 'vsh', 'fsh'):

@@ -7,8 +7,12 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
-public record FourArtsPacket(int playerId, Action action, int state, Vec3 position) {
-    public enum Action { STATE, RENEWAL, PASSIVE_RENEWAL, GATHER_PULSE, BLOOD_HIT, PASSIVE_BLOOD_HIT, PURIFICATION, PASSIVE_PURIFICATION }
+public record FourArtsPacket(int playerId, Action action, int state, Vec3 position, float yaw) {
+    public enum Action { STATE, RENEWAL, PASSIVE_RENEWAL, GATHER_PULSE, BLOOD_HIT, PASSIVE_BLOOD_HIT, PURIFICATION, PASSIVE_PURIFICATION, FLAME_WAVE }
+
+    public FourArtsPacket(int playerId, Action action, int state, Vec3 position) {
+        this(playerId,action,state,position,0);
+    }
 
     public void encode(FriendlyByteBuf buf) {
         buf.writeVarInt(playerId);
@@ -17,11 +21,15 @@ public record FourArtsPacket(int playerId, Action action, int state, Vec3 positi
         buf.writeDouble(position.x);
         buf.writeDouble(position.y);
         buf.writeDouble(position.z);
+        if(action==Action.FLAME_WAVE) buf.writeFloat(yaw);
     }
 
     public static FourArtsPacket decode(FriendlyByteBuf buf) {
-        return new FourArtsPacket(buf.readVarInt(), buf.readEnum(Action.class), buf.readUnsignedByte(),
-                new Vec3(buf.readDouble(), buf.readDouble(), buf.readDouble()));
+        int playerId=buf.readVarInt();
+        Action action=buf.readEnum(Action.class);
+        int state=buf.readUnsignedByte();
+        Vec3 position=new Vec3(buf.readDouble(),buf.readDouble(),buf.readDouble());
+        return new FourArtsPacket(playerId,action,state,position,action==Action.FLAME_WAVE?buf.readFloat():0);
     }
 
     public void handle(Supplier<NetworkEvent.Context> supplier) {

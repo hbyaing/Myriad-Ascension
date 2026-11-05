@@ -30,12 +30,12 @@ public final class ArtVisualEffects {
                 Vec3 flat = new Vec3(direction.x, 0, direction.z).normalize();
                 if (flat.lengthSqr() < .01) flat = new Vec3(0,0,1);
                 double heading = Math.atan2(flat.z, flat.x);
-                int n = p.art().equals("art_flame_wave") ? 13 : p.art().equals("art_sword_sweep") ? 11 : 7;
+                int n = p.art().equals("art_sword_sweep") ? 11 : 7;
                 for (int i = 0; i < n; i++) {
                     double a = heading - angle / 2 + angle * i / (n - 1);
                     double lift = p.art().equals("art_sword_sweep") ? 0.22D * Math.sin(i * 0.9D) : 0.0D;
                     Vec3 point = p.start().add(Math.cos(a) * p.size(), lift, Math.sin(a) * p.size());
-                    spawn(level,r.body(),point,Vec3.ZERO,p.art().equals("art_flame_wave") ? .85 : 1.2,1.0,9,r.color(),false,Vec3.ZERO,(float)(a-heading));
+                    spawn(level,r.body(),point,Vec3.ZERO,1.2,1.0,9,r.color(),false,Vec3.ZERO,(float)(a-heading));
                     if (p.art().equals("art_sword_sweep")) {
                         spawn(level,r.accent(),point.add(0,0.18,0),Vec3.ZERO,.38,.6,11,r.color(),false,Vec3.ZERO,(float)(a-heading+.35));
                     }
