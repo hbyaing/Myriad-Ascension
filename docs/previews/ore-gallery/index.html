@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>灵石矿 · 贴图展示工作台</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#141918;color:#efe8d4;font:16px system-ui,sans-serif}
+main{max-width:1050px;margin:auto;padding:44px 22px}header{border-bottom:1px solid #776846;margin-bottom:24px}
+small,p,figcaption{color:#c4bda9}h1{font-size:clamp(28px,5vw,44px);margin:8px 0}h2{margin:0 0 5px}
+.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,370px),1fr));gap:18px}
+article{background:#202824;border:1px solid #685d43;border-radius:12px;padding:20px}
+code,a{color:#e6ca89;overflow-wrap:anywhere}.views{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
+figure{margin:0;text-align:center;min-width:0}.stage{height:164px;display:grid;place-items:center;background:#101715;border-radius:8px;overflow:hidden}
+img,.face{image-rendering:pixelated}.stage img{width:min(100%,128px);height:auto}.cube{width:70px;height:70px;position:relative;transform-style:preserve-3d;transform:rotateX(-29deg) rotateY(37deg)}
+.face{position:absolute;inset:0;background:var(--ore) center/100% 100%;backface-visibility:hidden}
+.front{transform:translateZ(35px)}.left{transform:rotateY(-90deg) translateZ(35px);filter:brightness(.69)}.top{transform:rotateX(90deg) translateZ(35px);filter:brightness(1.12)}
+figcaption{margin-top:8px;font-size:14px}
+</style>
+</head>
+<body><main>
+<header><small>万界仙途 · 方块资源</small><h1>灵石矿贴图展示</h1><p>下品与中品共用同一张灵脉矿石源码贴图。</p></header>
+<section class="gallery" aria-label="矿石贴图对照">
+<article style="--ore:url(spirit_vein_ore.png)">
+<h2>中品灵石矿石</h2><code>spirit_vein_ore</code>
+<div class="views"><figure><div class="stage"><img src="spirit_vein_ore.png" alt="灵脉矿石原图"></div><figcaption>原图放大</figcaption></figure>
+<figure><div class="stage" role="img" aria-label="灵脉矿石方块三面预览"><div class="cube"><i class="face front"></i><i class="face left"></i><i class="face top"></i></div></div><figcaption>方块预览</figcaption></figure></div>
+<a href="spirit_vein_ore.png" download>下载中品灵石矿石 PNG</a>
+</article>
+<article style="--ore:url(spirit_vein_ore.png)">
+<h2>下品灵石矿石</h2><code>共用中品材质</code>
+<div class="views"><figure><div class="stage"><img src="spirit_vein_ore.png" alt="下品灵石矿石贴图"></div><figcaption>原图放大</figcaption></figure>
+<figure><div class="stage" role="img" aria-label="下品灵石矿石方块三面预览"><div class="cube"><i class="face front"></i><i class="face left"></i><i class="face top"></i></div></div><figcaption>方块预览</figcaption></figure></div>
+<a href="spirit_vein_ore.png" download="low_spirit_ore.png">下载下品灵石矿石 PNG</a>
+</article>
+</section></main></body></html>
