@@ -109,12 +109,17 @@ public final class V5BatchGameTests {
             h.assertTrue(items.stream().filter(e->e.getItem().hasTag()&&e.getItem().getTag().hasUUID(V5Batch.KEY)&&e.getItem().getTag().getUUID(V5Batch.KEY).equals(id)).mapToInt(e->e.getItem().getCount()).sum()==1,"Dismantle lost/duplicated sealed batch");
         }h.succeed();
     }
-    @GameTest(template="empty",timeoutTicks=650) public static void actualLoadedFurnaceTicksV5ToCompletionWithoutLegacyJobOrPreRolledPill(GameTestHelper h){
+    @GameTest(template="empty",batch="v5_loaded_furnace",timeoutTicks=650) public static void actualLoadedFurnaceTicksV5ToCompletionWithoutLegacyJobOrPreRolledPill(GameTestHelper h){
         var f=setup(h);f.player.cleanupAfter(h,f::close);
+        // Run this long-lived multiblock separately from adjacent fixture mutation.
+        // The furnace extends beyond the 4x4 template. Keep every corner loaded for
+        // this live-tick test; a fixture chunk unload is not a gameplay device failure.
+        for(int x:new int[]{-2,2})for(int z:new int[]{-2,2})
+            f.player.keepTicking(h.getLevel(),f.pos.offset(x,0,z));
         h.assertTrue(f.furnace.startV5Batch(f.player),"Start failed");var id=f.furnace.v5ServerRecord().getUUID("Id");
         h.runAfterDelay(470,()->{
             var doc=f.furnace.v5ServerRecord();var core=V5Batch.core(doc);
-            h.assertTrue(doc.getString("State").equals("READY")&&core.status()==cn.blockforge.generated.generatedmod.alchemy.simulation.AlchemySimulation.Status.FINISHED,"Real furnace did not finish V5: "+core.status()+" tick="+core.tick());
+            h.assertTrue(doc.getString("State").equals("READY")&&core.status()==cn.blockforge.generated.generatedmod.alchemy.simulation.AlchemySimulation.Status.FINISHED,"Real furnace did not finish V5: "+core.status()+" tick="+core.tick()+" reason="+core.reason()+" structureDamage="+doc.getInt("StructureDamage")+" missing="+AlchemyFurnaceStructure.missingCount(h.getLevel(),f.pos));
             h.assertTrue(core.ledger().initialMass()==40000&&doc.contains("ReactionCore")&&core.stocks().containsKey(cn.blockforge.generated.generatedmod.alchemy.effects.AbilityCompiler.BOUND),"Live core did not react/conserve actual herbs");
             h.assertTrue(f.furnace.completedResult().is(WuXingItems.V5_PILL.get())&&!Network.hasAlchemyJob(h.getLevel(),f.pos),"Batch used a legacy planned result");
             h.assertTrue(core.tick()==21&&doc.getInt("FuelReserved")==0&&doc.getInt("FuelSpent")==28,"Loaded timing/fuel accounting changed");
