@@ -21,9 +21,9 @@ public final class JindouCloudTime {
             renderTime=Math.max(renderTime,tick-1+p);rendered=true;return renderTime;
         }
     }
-    /** Visible, bounded advection: at most0.20 atlas periods/second, independent of travel. */
+    /** Visible, bounded advection: at most0.32 atlas periods/second, independent of travel. */
     public static double flowStep(float motion){
-        return Math.max(0,Math.min(1,Float.isFinite(motion)?motion:0))*.01;
+        return Math.max(0,Math.min(1,Float.isFinite(motion)?motion:0))*.016;
     }
     /** Phase angles then periodic detail offsets, shared by renderer and GPU QA. */
     public static void material(float[] out,double tick,double flow,double seed){
@@ -33,9 +33,9 @@ public final class JindouCloudTime {
         out[2]=(float)(fraction(time/11+seed*.73)*Math.PI*2);
         // Closed orbits roll in place. Only measured movement advances the
         // longitudinal phase; idle time must not pump a rearward conveyor.
-        out[3]=fraction(seed+.045*Math.sin(time*Math.PI*2/7));
-        out[4]=fraction(seed*.37+.035*Math.cos(time*Math.PI*2/11));
-        out[5]=fraction(seed*.73-flow+.025*Math.sin(time*Math.PI*2/5));
+        out[3]=fraction(seed+.090*Math.sin(time*Math.PI*2/7));
+        out[4]=fraction(seed*.37+.075*Math.cos(time*Math.PI*2/11));
+        out[5]=fraction(seed*.73-flow+.060*Math.sin(time*Math.PI*2/5));
     }
     private static float fraction(double value){return (float)(value-Math.floor(value));}
 }

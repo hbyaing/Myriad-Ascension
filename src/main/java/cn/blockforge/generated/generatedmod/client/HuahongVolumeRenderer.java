@@ -38,8 +38,8 @@ public final class HuahongVolumeRenderer {
     private static final ArrayList<Packet> PENDING=new ArrayList<>();
     private static final ArrayList<Trace> TRACE=new ArrayList<>();
     private static List<Trace> previousTrace=List.of();
-    private static ShaderInstance shader;
-    private static int pathLocation=-1;
+    private static ShaderInstance shader,direct;
+    private static int pathLocation=-1,boundsLocation=-1,directPathLocation=-1;
     private static long frameSequence;
     private static float exposureMultiplier=1;
     public static int queuedThisFrame,submittedThisFrame,totalDraws;
@@ -51,19 +51,20 @@ public final class HuahongVolumeRenderer {
                         List<Float> pathAges,List<Float> worldToClip,List<Float> inverseWorldToClip,List<Float> clipBounds,
                         List<Float> boundsMin,List<Float> boundsMax,List<Float> materialOrigin,List<Float> shapeProfile,float effectTime,double worldTime,long frame,
                         List<Float> worldToMaterial) {}
-    private record Packet(float[] path,float[] ages,int count,float length,float strength,float exposure,
+    private record Packet(float[] path,float[] ages,float[] segments,int count,float length,float strength,float exposure,
                           float time,double now,Vec3 min,Vec3 max,Matrix3f materialBasis,Matrix4f projection,Matrix4f inverse,float[] clip,int depth,long frame) {}
     private HuahongVolumeRenderer() {}
-    public static boolean ready(){return shader!=null&&pathLocation>=0;}
+    public static boolean ready(){return shader!=null&&pathLocation>=0&&direct!=null&&directPathLocation>=0;}
     public static List<Trace> currentTrace(){return List.copyOf(TRACE);}
     public static List<Trace> lastTrace(){return previousTrace;}
     /** Submit a queued world layer before a foreground consumer or capture. */
     public static void flushPending(){flush();}
     public static void setExposure(float multiplier){exposureMultiplier=Float.isFinite(multiplier)?Math.max(.01F,multiplier):1;}
     public static Map<String,Object> diagnostics(){return Map.of("frame",frameSequence,"queued",queuedThisFrame,"submitted",submittedThisFrame,
-            "totalDraws",totalDraws,"ready",ready(),"status",status,"shaderHash",shaderHash,"currentPackets",currentTrace(),"lastPackets",lastTrace());}
+            "totalDraws",totalDraws,"ready",ready(),"status",status,"shaderHash",shaderHash,"currentPackets",currentTrace(),"lastPackets",lastTrace(),"noiseCache",HuahongVolumeNoiseCache.status());}
 
     @SubscribeEvent public static void register(RegisterShadersEvent event)throws IOException {
+        HuahongVolumeNoiseCache.release();
         PENDING.clear();TRACE.clear();previousTrace=List.of();queuedThisFrame=submittedThisFrame=0;pathLocation=-1;
         try{
             var digest=java.security.MessageDigest.getInstance("SHA-256");
@@ -76,8 +77,13 @@ public final class HuahongVolumeRenderer {
         event.registerShader(new ShaderInstance(event.getResourceProvider(),
                 ResourceLocation.fromNamespaceAndPath(GeneratedMod.MOD_ID,"huahong_volume"),DefaultVertexFormat.POSITION_TEX),value->{
             shader=value;pathLocation=GL20.glGetUniformLocation(value.getId(),"PathPoints[0]");
+            boundsLocation=GL20.glGetUniformLocation(value.getId(),"SegmentBounds[0]");
             status=pathLocation>=0?"Huahong volume shader ready":"Huahong volume path uniform unavailable";
         });
+        event.registerShader(new ShaderInstance(event.getResourceProvider(),ResourceLocation.fromNamespaceAndPath(GeneratedMod.MOD_ID,"huahong_volume_direct"),DefaultVertexFormat.POSITION_TEX),value->{direct=value;directPathLocation=GL20.glGetUniformLocation(value.getId(),"PathPoints[0]");});
+        try(var input=event.getResourceProvider().getResource(ResourceLocation.fromNamespaceAndPath(GeneratedMod.MOD_ID,"shaders/core/huahong_volume.fsh")).orElseThrow().open()){
+            HuahongVolumeNoiseCache.reload(new String(input.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8));
+        }
     }
 
     /** Call during the world draw. Positions and this matrix both use camera-relative world space. */
@@ -119,12 +125,30 @@ public final class HuahongVolumeRenderer {
         float[] clip=clipBounds(worldToClip,min,max);if(clip==null)return null;
         Matrix4f inverse=new Matrix4f(worldToClip).invert();
         Matrix3f materialBasis=materialBasis(forward,side);
-        Packet packet=new Packet(path,ages,POINTS,(float)length,Mth.clamp(strength,0,1),Math.max(.01F,exposure)*exposureMultiplier,
+        Packet packet=new Packet(path,ages,segmentBounds(path,ages,POINTS,(float)length),POINTS,(float)length,Mth.clamp(strength,0,1),Math.max(.01F,exposure)*exposureMultiplier,
                 (float)((now%2560+2560)%2560/20),now,min,max,materialBasis,new Matrix4f(worldToClip),inverse,clip,depth,frameSequence);
         PENDING.add(packet);queuedThisFrame++;
         Trace trace=trace(packet,false);TRACE.add(trace);return trace;
     }
 
+    /** Conservative Gaussian support; discarded segments have sub-float contribution. */
+    public static float[] segmentBounds(float[] path,float[] ages,int count,float length){
+        float[] result=new float[31*4];
+        for(int i=0;i<count-1;i++){
+            int a=i*4,b=a+4;double dx=path[b]-path[a],dy=path[b+1]-path[a+1],dz=path[b+2]-path[a+2];
+            double q=Math.max(Math.max(ages[i],ages[i+1])/DEFAULT_LIFE,Math.max(-path[a+3],-path[b+3])/length);q=Math.max(0,Math.min(1,q));
+            double radius=.025+DEFAULT_WIDTH*(.10+DEFAULT_SHELL*.012+Math.pow(q,.9)*DEFAULT_SPREAD*3.9);
+            double reach=Math.sqrt(dx*dx+dy*dy+dz*dz)*.5+radius*2.5+.001;
+            result[a]=(path[a]+path[b])*.5F;result[a+1]=(path[a+1]+path[b+1])*.5F;result[a+2]=(path[a+2]+path[b+2])*.5F;result[a+3]=(float)(reach*reach);
+        }
+        return result;
+    }
+    public static boolean accelerate(float[] path,Matrix3f basis){
+        // Front views see most path segments at once. Retain the original
+        // program there, including its lower register pressure and no branches.
+        double front=-(basis.m02()*path[0]+basis.m12()*path[1]+basis.m22()*path[2]);
+        return front<=2;
+    }
     /** One smooth rendered carrier frame, never a nearest-segment winner. */
     public static Matrix3f materialBasis(Vec3 forward,Vec3 side){
         Vec3 f=forward.lengthSqr()>1e-12?forward.normalize():new Vec3(0,0,1);
@@ -165,6 +189,7 @@ public final class HuahongVolumeRenderer {
         if(PENDING.isEmpty())return;
         var packets=new ArrayList<>(PENDING);PENDING.clear();
         if(Minecraft.getInstance().level==null||!ready()){status="Volume shader or level unavailable";return;}
+        HuahongVolumeNoiseCache.ensure();
         packets.sort(Comparator.comparingDouble((Packet p)->p.min().add(p.max()).scale(.5).lengthSqr()).reversed());
         try(var saved=new MeteorBloomRenderer.State()){
             SwordFlightTrailRenderer.clearPolygonOffset();
@@ -173,21 +198,27 @@ public final class HuahongVolumeRenderer {
             RenderSystem.enableBlend();RenderSystem.blendFuncSeparate(GL11.GL_ONE,GL11.GL_ONE_MINUS_SRC_ALPHA,GL11.GL_ONE,GL11.GL_ONE_MINUS_SRC_ALPHA);
             RenderSystem.colorMask(true,true,true,false);RenderSystem.setShaderColor(1,1,1,1);
             for(var p:packets){
-                shader.safeGetUniform("InverseWorldToClip").set(p.inverse());
-                shader.safeGetUniform("OutputSize").set((float)target.viewWidth,(float)target.viewHeight);
-                shader.safeGetUniform("BoundsMin").set((float)p.min().x,(float)p.min().y,(float)p.min().z);
-                shader.safeGetUniform("BoundsMax").set((float)p.max().x,(float)p.max().y,(float)p.max().z);
-                shader.safeGetUniform("WorldToMaterial").set(p.materialBasis());
-                shader.safeGetUniform("PathAges").set(p.ages());shader.safeGetUniform("PathCount").set(p.count());
-                shader.safeGetUniform("PathLength").set(p.length());shader.safeGetUniform("Strength").set(p.strength());
-                shader.safeGetUniform("ShapeProfile").set(DEFAULT_WIDTH,DEFAULT_LIFE,DEFAULT_SPREAD,DEFAULT_SHELL);
-                shader.safeGetUniform("Exposure").set(p.exposure());shader.safeGetUniform("EffectTime").set(p.time());
-                RenderSystem.setShaderTexture(0,p.depth());RenderSystem.setShader(()->shader);
-                shader.apply();GL20.glUniform4fv(pathLocation,p.path());
+                boolean accelerated=accelerate(p.path(),p.materialBasis());
+                ShaderInstance pass=accelerated?shader:direct;
+                int cache=HuahongVolumeNoiseCache.texture();
+                pass.safeGetUniform("GradientCacheEnabled").set(cache!=0&&accelerated?1:0);
+                pass.safeGetUniform("FieldCullEnabled").set(boundsLocation>=0&&accelerated?1:0);
+                pass.setSampler("GradientCache",cache);RenderSystem.setShaderTexture(1,cache);
+                pass.safeGetUniform("InverseWorldToClip").set(p.inverse());
+                pass.safeGetUniform("OutputSize").set((float)target.viewWidth,(float)target.viewHeight);
+                pass.safeGetUniform("BoundsMin").set((float)p.min().x,(float)p.min().y,(float)p.min().z);
+                pass.safeGetUniform("BoundsMax").set((float)p.max().x,(float)p.max().y,(float)p.max().z);
+                pass.safeGetUniform("WorldToMaterial").set(p.materialBasis());
+                pass.safeGetUniform("PathAges").set(p.ages());pass.safeGetUniform("PathCount").set(p.count());
+                pass.safeGetUniform("PathLength").set(p.length());pass.safeGetUniform("Strength").set(p.strength());
+                pass.safeGetUniform("ShapeProfile").set(DEFAULT_WIDTH,DEFAULT_LIFE,DEFAULT_SPREAD,DEFAULT_SHELL);
+                pass.safeGetUniform("Exposure").set(p.exposure());pass.safeGetUniform("EffectTime").set(p.time());
+                RenderSystem.setShaderTexture(0,p.depth());RenderSystem.setShader(()->pass);
+                pass.apply();GL20.glUniform4fv(accelerated?pathLocation:directPathLocation,p.path());if(accelerated&&boundsLocation>=0)GL20.glUniform4fv(boundsLocation,p.segments());
                 var b=Tesselator.getInstance().getBuilder();b.begin(VertexFormat.Mode.TRIANGLES,DefaultVertexFormat.POSITION_TEX);
                 float[] c=p.clip();vertex(b,c[0],c[1]);vertex(b,c[2],c[1]);vertex(b,c[2],c[3]);
                 vertex(b,c[0],c[1]);vertex(b,c[2],c[3]);vertex(b,c[0],c[3]);
-                BufferUploader.drawWithShader(b.end());shader.clear();submittedThisFrame++;totalDraws++;
+                BufferUploader.drawWithShader(b.end());pass.clear();submittedThisFrame++;totalDraws++;
                 TRACE.add(trace(p,true));
             }
             status="Original 3D path density / 128 steps / scene-depth clipped / direct exposure";
@@ -201,6 +232,8 @@ public final class HuahongVolumeRenderer {
 
     @Mod.EventBusSubscriber(modid=GeneratedMod.MOD_ID,value=Dist.CLIENT)
     public static final class Events {
+        private static boolean hadWorld;
+        @SubscribeEvent public static void world(TickEvent.ClientTickEvent event){if(event.phase==TickEvent.Phase.END){boolean present=Minecraft.getInstance().level!=null;if(hadWorld&&!present)HuahongVolumeNoiseCache.release();hadWorld=present;}}
         @SubscribeEvent(priority=EventPriority.LOWEST) public static void frame(TickEvent.RenderTickEvent event){
             if(event.phase==TickEvent.Phase.START){frameSequence++;previousTrace=List.copyOf(TRACE);TRACE.clear();PENDING.clear();queuedThisFrame=submittedThisFrame=0;}
             else flush();

@@ -15,6 +15,7 @@ import java.util.*;
 final class JindouCloudMaterialQa {
     private static final int WIDTH=64,HEIGHT=32,FRAMES=240;
     private static double candidateFlowRate;
+    private static boolean idleProbe;
     private static java.lang.reflect.Method materialField;
     private static String resource(Minecraft mc,String path)throws Exception{
         try(var in=mc.getResourceManager().getResource(new ResourceLocation("wuxingxiantu",path)).orElseThrow().open()){
@@ -81,6 +82,9 @@ final class JindouCloudMaterialQa {
                 results.put(mode==0?"sourceBody":"historicalWake",Map.of("baseline",baseline,"candidate",candidate,"frameDeltaReduction",baseline.stepRms/candidate.stepRms));
             }
             float[] reference=render(after,1,false,0,0,0);double rigid=0,oldRigid=0;
+            idleProbe=true;Stats idle;try{idle=temporal(after,0,false);}finally{idleProbe=false;}
+            if(idle.totalPower<.00015||idle.stepRms<1e-6||idle.powerAbove8HzFraction>.02)throw new AssertionError("Idle primary cloud frozen/aliases: "+idle);
+            results.put("idlePrimaryRolling",idle);
             for(float yaw:new float[]{45,90,179,270}){
                 rigid=Math.max(rigid,difference(reference,render(after,1,false,0,137,yaw)));
                 oldRigid=Math.max(oldRigid,difference(render(before,1,true,0,0,0),render(before,1,true,0,137,yaw)));
@@ -105,7 +109,7 @@ final class JindouCloudMaterialQa {
         GL33.glUniform1i(GL33.glGetUniformLocation(program,"ProbeMode"),mode);GL33.glUniform3f(GL33.glGetUniformLocation(program,"CloudRadii"),2.025F,.9522F,1.575F);
         GL33.glUniform1f(GL33.glGetUniformLocation(program,"DensityScale"),1);GL33.glUniform1f(GL33.glGetUniformLocation(program,"MotionAmount"),5F/5.7F);
         GL33.glUniform1i(GL33.glGetUniformLocation(program,"TrailCount"),mode==0?0:32);GL33.glUniform1f(GL33.glGetUniformLocation(program,"TrailLifetime"),20);
-        double t=7.125+seconds,seed=.25,flow=seconds*(legacy?100*.035:candidateFlowRate);
+        double t=7.125+seconds,seed=.25,flow=idleProbe?0:seconds*(legacy?100*.035:candidateFlowRate);
         GL33.glUniform3f(GL33.glGetUniformLocation(program,"NoiseOffset"),(float)seed,fract(seed*.37),fract(seed*.73));
         if(!legacy)GL33.glUniform3f(GL33.glGetUniformLocation(program,"NoiseOffset"),(float)seed,fract(seed*.37),fract(seed*.73-flow));
         float[] phases=new float[6];
@@ -141,7 +145,7 @@ final class JindouCloudMaterialQa {
         long paused=(long)tick.invoke(clock);for(int i=0;i<20;i++){advance.invoke(clock,false);sample.invoke(track,p,(long)tick.invoke(clock),Vec3.ZERO,p);if((long)tick.invoke(clock)!=paused||reset.getLong(track)!=first)throw new AssertionError("Paused cloud clock/history changed");checks++;}
         advance.invoke(clock,true);Vec3 fast=new Vec3(40,0,0);sample.invoke(track,p.add(fast),(long)tick.invoke(clock),fast,p);p=p.add(fast);if(reset.getLong(track)!=first)throw new AssertionError("Fast legitimate cloud path reset");checks++;
         advance.invoke(clock,true);Vec3 teleport=p.add(100,0,0);long now=(long)tick.invoke(clock);sample.invoke(track,teleport,now,Vec3.ZERO,teleport);if(reset.getLong(track)!=now)throw new AssertionError("Genuine cloud teleport did not reset");checks++;
-        if(maxFlow>.01000001)throw new AssertionError("Cloud travel flow still unbounded: "+maxFlow);
+        if(maxFlow>.01600001)throw new AssertionError("Cloud travel flow still unbounded: "+maxFlow);
         return Map.of("passed",true,"actualTrackReflectionChecks",checks,"maxFlowStep",maxFlow,"stoppedHeadingDifference",0,"stoppedFlowDifference",0,"pauseKeptHistory",true,"fast40BlocksPerTickKeptHistory",true,"trueTeleportReset",true,"scope","Actual production Track plus pure production clock; real active-stop/cloud video validates integration separately.");
     }
     private JindouCloudMaterialQa(){}

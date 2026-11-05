@@ -184,7 +184,7 @@ vec4 swordMaterial(){
             float ridges=pow(max(0.0,1.0-abs(n-.49)*7.0),4.0);
             float silk=detailMask(vec2(across*.48+.5,arc*.125),warp*.18,true);
             vec3 rgb=vertexColor.rgb*(.65+n*.25)+vec3(.20,.16,.07)*(fibers*.13+ridges*.12);
-            return vec4(rgb,fringe*(.38+large*.50)*(.60+fibers*.22+ridges*.20)*(.82+.18*silk)*vertexColor.a);
+            return vec4(rgb*1.45,fringe*(.38+large*.50)*(.60+fibers*.22+ridges*.20)*(.82+.18*silk)*vertexColor.a);
         }
         // Wider finite support lets the light decay before the mesh ends.
         // Retain the bright width without the old HDR-clipped flat slab.

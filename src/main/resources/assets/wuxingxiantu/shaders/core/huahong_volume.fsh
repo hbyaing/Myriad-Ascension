@@ -3,6 +3,10 @@
 // User-supplied material provenance is retained in docs/testing/THREE_FORM_FIDELITY_20261105.md.
 // Local acceptance build only; do not include this adaptation in a public MIT release.
 uniform sampler2D Sampler0;
+uniform sampler2D GradientCache;
+uniform int GradientCacheEnabled;
+uniform int FieldCullEnabled;
+uniform vec4 SegmentBounds[31];
 uniform mat4 InverseWorldToClip;
 uniform vec2 OutputSize;
 uniform vec3 BoundsMin;
@@ -42,7 +46,7 @@ const vec3 P_C = vec3(1.);
 const vec3 P_D = vec3(0., .33, .67);
 
 // ---------- noise ----------
-vec3 hh_hash33(vec3 p) {
+vec3 hh_hash33_direct(vec3 p) {
     p=mod(p,64.0);
     p = vec3(
         dot(p, vec3(127.1, 311.7,  74.7)),
@@ -50,6 +54,15 @@ vec3 hh_hash33(vec3 p) {
         dot(p, vec3(113.5, 271.9, 124.6))
     );
     return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
+}
+
+vec3 hh_hash33(vec3 p) {
+    if(GradientCacheEnabled!=0){
+        ivec3 cell=ivec3(mod(p,64.));
+        int n=cell.x+cell.y*64+cell.z*4096;
+        return texelFetch(GradientCache,ivec2(n%512,n/512),0).xyz;
+    }
+    return hh_hash33_direct(p);
 }
 
 float hh_hash12(vec2 p) {
@@ -129,6 +142,12 @@ vec4 field(vec3 p,vec3 ray,float stepLength,vec3 pixelX,vec3 pixelY){
  float best=1e6,weightSum=0.,ageSum=0.,radiusSum=0.;vec3 deltaSum=vec3(0.);
  for(int i=0;i<31;i++){
   if(i>=PathCount-1)break;
+  // Beyond this conservative sphere every Gaussian weight is <2e-22.
+  // Such segments cannot own visible support or affect float material sums.
+  if(FieldCullEnabled!=0){
+   vec3 boundDelta=p-SegmentBounds[i].xyz;
+   if(dot(boundDelta,boundDelta)>SegmentBounds[i].w)continue;
+  }
   vec3 a=PathPoints[i].xyz,b=PathPoints[i+1].xyz,d=b-a;
   float len2=dot(d,d);if(len2<1e-8)continue;
   float t=clamp(dot(p-a,d)/len2,0.,1.),behind=-mix(PathPoints[i].w,PathPoints[i+1].w,t);
