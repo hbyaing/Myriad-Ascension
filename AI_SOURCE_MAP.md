@@ -5,6 +5,8 @@
 平台：Minecraft 1.20.1 / Forge 47.4.10 / Java 17 / GeckoLib 4.8.4。
 Java 根目录：`src/main/java/cn/blockforge/generated/generatedmod/`。
 
+结构优化准备入口：[V5 现状、责任与首批改造边界](docs/development/STRUCTURE_OPTIMIZATION_PREPARATION_20261105.md)。该导航静态核对基线为 `05fd2f9`，不代表本次实机验收；长期方向见 [V0.3 参考稿](docs/development/ARCHITECTURE_EVOLUTION_REFERENCE_V0.3.md)，采用以实际工程为准。
+
 | 模块 | Java 入口 |
 |---|---|
 | 噬灵虫与植物参考资源 | `entity/SpiritDevourerEntity`、`SpiritDevourerSpawns`、`client/SpiritDevourerRenderer`；`tools/import_spirit_devourer.py`、`import_oct07_pixel_references.py`；[整合记录](docs/audits/current/20261007_SPIRIT_DEVOURER_FLIGHT_PLANTS.md) |
@@ -20,6 +22,8 @@ Java 根目录：`src/main/java/cn/blockforge/generated/generatedmod/`。
 | 获取来源审计 | `AcquisitionCatalog`、`WuXingItemSources`；`acquisition/SourceEvidence`、`AcquisitionSourcesEvent`、`EvidenceTrade`；首批提供者 `SpiritTradeEvents`、`event/WorldEvents`、`event/ServerTickEvents`、`HeartSwordSystem` |
 | 灵修者空岛与道士职业 | `SpiritShrineManager`、`SpiritShrineLocations`、`TaoistEvents`；`data/wuxingxiantu/structures/spirit_shrine_island.nbt`；[职业修复](docs/audits/current/20261005_SHRINE_TAOIST_PROFESSION.md) |
 | 炼丹炼器持久任务 | `network/service/CraftingJobs`（位置主键、owner 索引、到期队列）、`AlchemyService`、`CraftingRecoveryCommands`、`AlchemyFurnaceBlockEntity`、`RefiningForgeBlockEntity` |
+| V5 炼丹批次与领取权威 | `AlchemyService.handleAlchemyPacket` → `AlchemyFurnaceBlockEntity.startV5Batch` → `alchemy/batch/V5Batch`、`BatchJournal`；领取 `BatchDelivery`；旧 `CraftingJobs` 与 V5 并存，不是 V5 的唯一记录 |
+| V5 规则内核与恢复验证 | `alchemy/simulation/AlchemySimulation`、`SimulationRules`、`SimulationRuleLoader`、`SimulationSnapshotCodec`；测试 `src/gametest/java/cn/blockforge/generated/generatedmod/V5BatchGameTests.java`；模拟快照为服务端私有数据，不可直接作为客户端 DTO |
 | 服务端交互校验 | `network/service/CompassService`、`AlchemyService`、`TalismanService` |
 | 心剑与心铸 | `HeartSwordSystem`、`combat/HeartSwordCombatProfile`、`HeartForgeContracts`、`client/heartsword/` |
 | Boss 与心境 | `boss/combat/`、`HeartDemonEntity`、`mindscape/MindscapeArenas`、`MindscapeProgression` |
@@ -47,5 +51,5 @@ Java 根目录：`src/main/java/cn/blockforge/generated/generatedmod/`。
 
 资源：`src/main/resources/assets/wuxingxiantu/`、`data/wuxingxiantu/`。原始资产：`source-assets/`、`reference_assets/`。
 
-验证与报告入口：`build.gradle` 的 `specialistChecks`、`balanceReport`、`verifyFull`；网络 ID 表 `tools/network-message-ids.json`；Java 回归与报表 `src/regression/java/`；GameTest `src/gametest/java/`；构建警告预算 `tools/check_warning_budget.py`。
+验证与报告入口：`build.gradle` 应用的 `gradle/verification.gradle` 定义 `specialistChecks`、`balanceReport`、`verifyFull` 和 GameTest 服务端运行约定；客户端专项配置仍见 `build.gradle`。网络 ID 表 `tools/network-message-ids.json`；Java 回归与报表 `src/regression/java/`；GameTest `src/gametest/java/`；构建警告预算 `tools/check_warning_budget.py`。以上是入口说明，历史通过率不代表当前版本验收结果。
 
