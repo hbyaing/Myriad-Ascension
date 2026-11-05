@@ -1,6 +1,7 @@
 package cn.blockforge.generated.generatedmod.client;
 
 import cn.blockforge.generated.generatedmod.yujian.FlyingSwordConfig;
+import cn.blockforge.generated.generatedmod.yujian.HuahongSkin;
 import cn.blockforge.generated.generatedmod.HudConfig;
 import cn.blockforge.generated.generatedmod.GeneratedMod;
 import cn.blockforge.generated.generatedmod.realmflight.RealmFlightSelection;
@@ -9,6 +10,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import org.lwjgl.glfw.GLFW;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 /** Client-only display and control preferences inside the existing inventory settings. */
@@ -16,66 +20,105 @@ public final class CultivationSettingsPage extends CultivationPage {
     private int category, bodyX, bodyW;
     private boolean huahongSkinsExpanded;
     private CultivationUi.Action huahongSkinSelector;
-    private static final int HUAHONG_SELECTOR_Y=664,HUAHONG_CHOICES_Y=696,HUAHONG_CHOICE_STEP=28;
+    private final List<CultivationUi.Action> huahongChoices=new ArrayList<>();
+    private int pickerY,pickerHeight,pickerRows,pickerFirst,pickerFocus;
+    private static final int HUAHONG_SELECTOR_Y=664,HUAHONG_HINT_Y=696,PICKER_ROW=20,PICKER_HEADER=16;
     private static final int LAYOUT=0,SWORD=1,FLIGHT=2,COMBAT=3,MANA=4;
     private static final String[] CATEGORIES = {"界面布局", "御剑飞行", "遁光", "战斗特效", "灵力损耗"};
     public CultivationSettingsPage() { super("设置"); }
     @Override public int contentHeight(int w, int h) {
         return Math.max(h, switch(category){
-            case SWORD -> huahongContentHeight(w);
+            case SWORD -> HUAHONG_HINT_Y+20;
             case FLIGHT -> 332 + 28 * RealmFlightSelection.unlockedRealms(actualRealm()).size();
             case MANA -> tracking()?600:64;
             case COMBAT -> 274;
             default -> 328;
         });
     }
-    private static int huahongColumns(int pageWidth) {
-        int tabsWidth=pageWidth>=280?65:49;
-        return pageWidth-tabsWidth-18>=192?2:1;
+    private void openHuahongPicker() {
+        huahongSkinsExpanded=true;
+        var skins=HuahongSkin.values();
+        pickerRows=Math.min(skins.length,Math.max(1,(host.contentViewportHeight()-PICKER_HEADER-26)/PICKER_ROW));
+        pickerHeight=PICKER_HEADER+pickerRows*PICKER_ROW;
+        pickerY=HUAHONG_SELECTOR_Y-pickerHeight-3;
+        pickerFirst=0;
+        pickerFocus=0;
+        for(var skin:skins) {
+            var choice=new CultivationUi.Action(bodyX+3,0,bodyW-6,19,Component.literal(skin.label),button->{
+                HuahongSkinPreferences.select(skin);
+                closeTransientUi();
+            },()->FlyingSwordConfig.HUAHONG_SKIN.get()==skin);
+            choice.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(skin.description)));
+            huahongChoices.add(addWidget(choice));
+        }
+        layoutHuahongPicker();
+        host.ensurePageRegionVisible(pickerY-2,HUAHONG_SELECTOR_Y+20);
+        setFocused(huahongChoices.get(pickerFocus));
     }
-    private int huahongContentHeight(int pageWidth) {
-        if(!huahongSkinsExpanded)return HUAHONG_CHOICES_Y+20;
-        int columns=huahongColumns(pageWidth),count=cn.blockforge.generated.generatedmod.yujian.HuahongSkin.values().length;
-        return HUAHONG_CHOICES_Y+((count+columns-1)/columns)*HUAHONG_CHOICE_STEP+20;
-    }
-    private void rebuildHuahongChoices(boolean expanded) {
-        huahongSkinsExpanded=expanded;
-        host.selectPage("settings");
-        if(expanded)host.ensurePageRegionVisible(HUAHONG_SELECTOR_Y-28,huahongContentHeight(width));
-        setFocused(huahongSkinSelector);
+    private void layoutHuahongPicker() {
+        for(int i=0;i<huahongChoices.size();i++){
+            var button=huahongChoices.get(i);
+            button.visible=i>=pickerFirst&&i<pickerFirst+pickerRows;
+            button.setY(pickerY+14+(i-pickerFirst)*PICKER_ROW);
+        }
     }
     @Override public boolean closeTransientUi() {
-        if(category!=SWORD||!huahongSkinsExpanded)return false;
-        rebuildHuahongChoices(false);
+        if(!huahongSkinsExpanded)return false;
+        huahongSkinsExpanded=false;
+        huahongChoices.forEach(this::removeWidget);
+        huahongChoices.clear();
+        setFocused(huahongSkinSelector);
+        updateHuahongSelector();
         return true;
     }
+    @Override public void removed(){closeTransientUi();super.removed();}
     @Override public boolean mouseClicked(double mouseX,double mouseY,int button) {
+        if(huahongSkinsExpanded){
+            for(var choice:List.copyOf(huahongChoices))if(choice.mouseClicked(mouseX,mouseY,button))return true;
+            if(mouseY<pickerY-2||mouseY>=pickerY+pickerHeight+2||mouseX<bodyX-3||mouseX>=bodyX+bodyW+3)closeTransientUi();
+            return true;
+        }
+        if(category==SWORD&&huahongSkinSelector.mouseClicked(mouseX,mouseY,button))return true;
         boolean handled=super.mouseClicked(mouseX,mouseY,button);
-        // A selector/choice press rebuilds this page during the callback. Vanilla
-        // focuses the clicked widget after that callback, so reconcile it with
-        // the new children before keyboard input can reach the removed widget.
-        if(getFocused()!=null&&!children().contains(getFocused())) {
+        if(getFocused()!=null&&!children().contains(getFocused())){
             setFocused(category==SWORD?huahongSkinSelector:null);
             setDragging(false);
         }
         return handled;
     }
-    private void huahongSkinChoices() {
-        var selected=FlyingSwordConfig.HUAHONG_SKIN.get();
-        // Reuse the domain selector's complete 20-high reference-atlas control.
-        huahongSkinSelector=new CultivationUi.Action(bodyX,HUAHONG_SELECTOR_Y,bodyW,20,
-                Component.literal(selected.label+"  ▾"),b->rebuildHuahongChoices(!huahongSkinsExpanded));
-        huahongSkinSelector.chrome=1;
-        huahongSkinSelector.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(selected.description+"\n点击"+(huahongSkinsExpanded?"收起":"展开选择")+"；仅改变外观，速度和消耗不变。")));
-        addRenderableWidget(huahongSkinSelector);
-        if(!huahongSkinsExpanded)return;
-        int columns=huahongColumns(width),gap=6,choiceW=(bodyW-gap*(columns-1))/columns,index=0;
-        for(var skin:cn.blockforge.generated.generatedmod.yujian.HuahongSkin.values()) {
-            var choice=new CultivationUi.Action(bodyX+(index%columns)*(choiceW+gap),HUAHONG_CHOICES_Y+(index/columns)*HUAHONG_CHOICE_STEP,choiceW,22,
-                    Component.literal(skin.label),b->{HuahongSkinPreferences.select(skin);rebuildHuahongChoices(false);},()->FlyingSwordConfig.HUAHONG_SKIN.get()==skin);
-            choice.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(skin.description+"\n仅改变化虹外观，速度和消耗不变；其他玩家可见。")));
-            addRenderableWidget(choice);index++;
+    @Override public boolean mouseScrolled(double x,double y,double amount) {
+        if(!huahongSkinsExpanded)return super.mouseScrolled(x,y,amount);
+        pickerFirst=Math.max(0,Math.min(huahongChoices.size()-pickerRows,pickerFirst-(int)Math.signum(amount)));
+        pickerFocus=Math.max(pickerFirst,Math.min(pickerFirst+pickerRows-1,pickerFocus));
+        layoutHuahongPicker();
+        setFocused(huahongChoices.get(pickerFocus));
+        return true;
+    }
+    @Override public boolean keyPressed(int key,int scan,int mods) {
+        if(!huahongSkinsExpanded)return super.keyPressed(key,scan,mods);
+        if(key==GLFW.GLFW_KEY_ESCAPE)return closeTransientUi();
+        if(key==GLFW.GLFW_KEY_UP||key==GLFW.GLFW_KEY_DOWN||key==GLFW.GLFW_KEY_TAB){
+            int step=key==GLFW.GLFW_KEY_UP||key==GLFW.GLFW_KEY_TAB&&(mods&GLFW.GLFW_MOD_SHIFT)!=0?-1:1;
+            pickerFocus=Math.floorMod(pickerFocus+step,huahongChoices.size());
+            pickerFirst=Math.max(pickerFocus-pickerRows+1,Math.min(pickerFirst,pickerFocus));
+            layoutHuahongPicker();
+            setFocused(huahongChoices.get(pickerFocus));
+        }else{
+            huahongChoices.get(pickerFocus).keyPressed(key,scan,mods);
         }
+        return true;
+    }
+    private void huahongSkinChoices() {
+        huahongSkinSelector=new CultivationUi.Action(bodyX,HUAHONG_SELECTOR_Y,bodyW,20,
+                Component.empty(),b->openHuahongPicker());
+        huahongSkinSelector.chrome=1;
+        updateHuahongSelector();
+        addRenderableWidget(huahongSkinSelector);
+    }
+    private void updateHuahongSelector(){
+        var selected=FlyingSwordConfig.HUAHONG_SKIN.get();
+        huahongSkinSelector.setMessage(Component.literal(selected.label+"  ▾"));
+        huahongSkinSelector.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(selected.description+"\n点击展开选择；其他玩家可见。")));
     }
     private int actualRealm() {
         var player = Minecraft.getInstance().player;
@@ -127,7 +170,7 @@ public final class CultivationSettingsPage extends CultivationPage {
         for (int i = 0; i < CATEGORIES.length; i++) {
             final int selected = i;
             addRenderableWidget(new CultivationUi.Tab(0, 5 + i * 28, tabsW, 23, Component.literal(CATEGORIES[i]), b -> {
-                category = selected; huahongSkinsExpanded=false; host.selectPage("settings"); host.scrollToTop();
+                category = selected; host.selectPage("settings"); host.scrollToTop();
             }, () -> category == selected));
         }
         if (category == COMBAT) {
@@ -229,8 +272,7 @@ public final class CultivationSettingsPage extends CultivationPage {
         if(category==SWORD){
             section(g,28,"基础显示");section(g,134,"视角与镜头");
             section(g,454,"横滚操控");section(g,546,"调试与兼容");section(g,642,"化虹皮肤");
-            int hintY=huahongSkinsExpanded?huahongContentHeight(width)-16:HUAHONG_CHOICES_Y;
-            CultivationUi.fit(g,Component.literal("仅改变外观，速度和消耗不变"),bodyX,hintY,bodyW,CultivationUi.MUTED,mx,my);
+            CultivationUi.fit(g,Component.literal("仅改变外观，速度和消耗不变"),bodyX,HUAHONG_HINT_Y,bodyW,CultivationUi.MUTED,mx,my);
         }
         if(category==COMBAT){section(g,60,"异火缠绕 · 显示");section(g,198,"异火缠绕 · 伤害");}
         if(category==FLIGHT) {
@@ -238,7 +280,16 @@ public final class CultivationSettingsPage extends CultivationPage {
             int y = 296 + 28 * RealmFlightSelection.unlockedRealms(actualRealm()).size();
             g.drawString(font, actualRealm()<3 ? "元婴境界解锁特效选择" : "仅改变外观，速度和消耗不变", bodyX, y, CultivationUi.MUTED, false);
         }
-        super.render(g, mx, my, delta);
+        super.render(g,huahongSkinsExpanded?-1000:mx,huahongSkinsExpanded?-1000:my,delta);
+        if(huahongSkinsExpanded){
+            g.pose().pushPose();
+            g.pose().translate(0,0,100);
+            CultivationUi.pickerPanel(g,bodyX-1,pickerY,bodyW+2,pickerHeight,"选择化虹皮肤 · 再点关闭");
+            for(var option:huahongChoices)option.render(g,mx,my,delta);
+            var focused=huahongChoices.get(pickerFocus);
+            g.renderOutline(focused.getX(),focused.getY(),focused.getWidth(),focused.getHeight(),CultivationUi.CYAN);
+            g.pose().popPose();
+        }
     }
     private void section(GuiGraphics g,int y,String label){g.drawString(font,label,bodyX,y,CultivationUi.GOLD,false);}
     private String fireTargetingLabel(){return "伤害非敌对生物："+(fireHurtsNonHostile()?"开启":"关闭");}

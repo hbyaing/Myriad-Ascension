@@ -252,6 +252,11 @@ public final class CultivationUi {
                         sx[col], sy[row], sx[col + 1] - sx[col], sy[row + 1] - sy[row], tw, th);
         com.mojang.blaze3d.systems.RenderSystem.disableBlend();
     }
+    static void pickerPanel(GuiGraphics g, int x, int y, int w, int h, String title) {
+        g.fill(x-2,y-2,x+w+2,y+h+2,0xFF101E26);
+        g.renderOutline(x-2,y-2,w+4,h+4,GOLD);
+        g.drawString(Minecraft.getInstance().font,title,x+4,y+3,GOLD,false);
+    }
     public static void panel(GuiGraphics g, int x, int y, int w, int h, boolean primary) {
         com.mojang.blaze3d.systems.RenderSystem.enableBlend();
         com.mojang.blaze3d.systems.RenderSystem.defaultBlendFunc();

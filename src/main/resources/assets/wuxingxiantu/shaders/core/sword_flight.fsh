@@ -161,18 +161,18 @@ vec4 swordMaterial(){
         }
         if(band==48.0||band==52.0||band==54.0||band==56.0)return vec4(vertexColor.rgb*(band==52.0||band==56.0?2.8:1.3),pow(edge,1.7)*vertexColor.a);
         if(band==38.0){
-            float stripe=sin(flowAngle(arc,36.0,32.0)+sin(flowAngle(arc,9.0,8.0)));
-            return vec4(vertexColor.rgb,pow(edge,2.3)*(.61+.39*smoothstep(-.7,.8,stripe))*vertexColor.a);
+            float stripe=sin(flowAngle(arc,20.0,12.0)+sin(flowAngle(arc,5.0,4.0)));
+            return vec4(vertexColor.rgb,pow(edge,2.3)*(.78+.22*smoothstep(-.7,.8,stripe))*vertexColor.a);
         }
         if(band==28.0){
             // V7 open silk: broad density patches and curled ragged edges.
-            vec2 p=vec2(arc*.25+EffectTime*.5,across*2.2);
-            vec2 warp=warpFlow(p,64.0);
-            float n=layeredFlow(p+warp*.82,64.0);
-            float large=layeredFlow(vec2(arc*.125+EffectTime*.25,across*.90)+warp*.35,32.0);
-            float ragged=abs(across)+(.09+.14*(1.0-edge))*sin(flowAngle(arc,48.0,96.0)+n*6.0);
-            float fringe=(1.0-smoothstep(.64,.99,ragged))*smoothstep(.22,.63,large+edge*.29);
-            float fibers=pow(smoothstep(.30,.79,layeredFlow(vec2(arc*.0625+EffectTime*.125,across*8.0+n*.9)+warp*.35,16.0)),2.8);
+            vec2 p=vec2(arc*.125+EffectTime*.25,across*2.2);
+            vec2 warp=warpFlow(p,32.0);
+            float n=layeredFlow(p+warp*.82,32.0);
+            float large=layeredFlow(vec2(arc*.0625+EffectTime*.125,across*.90)+warp*.35,16.0);
+            float ragged=abs(across)+(.07+.11*(1.0-edge))*sin(flowAngle(arc,24.0,24.0)+n*4.0);
+            float fringe=(1.0-smoothstep(.59,.99,ragged))*smoothstep(.15,.59,large+edge*.29);
+            float fibers=pow(smoothstep(.30,.79,layeredFlow(vec2(arc*.03125+EffectTime*.0625,across*8.0+n*.9)+warp*.35,8.0)),2.8);
             float ridges=pow(max(0.0,1.0-abs(n-.49)*7.0),4.0);
             float silk=detailMask(vec2(across*.48+.5,arc*.125),warp*.18,true);
             vec3 rgb=vertexColor.rgb*(.65+n*.25)+vec3(.20,.16,.07)*(fibers*.13+ridges*.12);

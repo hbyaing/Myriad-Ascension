@@ -61,8 +61,10 @@ final class HuahongSkinQa {
                 check(page.getFocused()==skinToggle(host)&&page.children().contains(page.getFocused()),"Mouse selection left focus on a retired widget");
                 check(host.keyPressed(org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER,0,0),"Focused skin selector ignored Enter");host.keyReleased(org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER,0,0);
                 page=(CultivationPage)get(host,"page");
-                check(Boolean.TRUE.equals(get(page,"huahongSkinsExpanded"))&&page.getFocused()==skinToggle(host)&&page.children().contains(page.getFocused()),"Keyboard expansion lost the real selector focus");
+                check(Boolean.TRUE.equals(get(page,"huahongSkinsExpanded"))&&page.getFocused()!=skinToggle(host)&&page.children().contains(page.getFocused()),"Keyboard expansion did not focus a live popup option");
                 verifyDropdownVisible(host);
+                check(host.keyPressed(org.lwjgl.glfw.GLFW.GLFW_KEY_DOWN,0,0)
+                        &&((AbstractWidget)page.getFocused()).getMessage().getString().equals(HuahongSkin.values()[1].label),"Down did not move popup focus");
                 check(host.keyPressed(org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE,0,0),"Expanded skin dropdown ignored Escape");host.keyReleased(org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE,0,0);
                 page=(CultivationPage)get(host,"page");
                 check(mc.screen==host&&!Boolean.TRUE.equals(get(page,"huahongSkinsExpanded"))&&page.getFocused()==skinToggle(host)&&page.children().contains(page.getFocused())&&FlyingSwordConfig.HUAHONG_SKIN.get()==skin,"Escape did not preserve the selected skin and real selector focus");
@@ -192,6 +194,13 @@ final class HuahongSkinQa {
         var choices=page.children().stream().filter(w->w instanceof AbstractWidget a&&Arrays.stream(HuahongSkin.values()).anyMatch(s->s.label.equals(a.getMessage().getString()))).map(w->(AbstractWidget)w).toList();
         check(choices.size()==8,"Expanded skin dropdown did not contain eight options");
         var selector=skinToggle(host);
+        check((int)get(page,"pickerY")-2>=top&&(int)get(page,"pickerY")+(int)get(page,"pickerHeight")+2<selector.getY(),
+                "Picker is clipped or no longer opens above its selector");
+        for(int i=0;i<choices.size();i++){
+            var b=choices.get(i);
+            check(b.getHeight()==19&&b.getWidth()==selector.getWidth()-6&&b.getX()==selector.getX()+3
+                    &&b.getY()==choices.get(0).getY()+20*i,"Picker no longer uses the domain's single-column rows");
+        }
         for(var button:java.util.stream.Stream.concat(java.util.stream.Stream.of(selector),choices.stream()).toList())
             check(button.visible&&button.getX()>=0&&button.getX()+button.getWidth()<=page.width&&button.getY()>=top&&button.getY()+button.getHeight()<=bottom,
                     "Expanded skin control is outside actual host viewport: "+button.getMessage().getString()+" bounds="+List.of(button.getX(),button.getY(),button.getWidth(),button.getHeight())+" viewport="+List.of(top,bottom));

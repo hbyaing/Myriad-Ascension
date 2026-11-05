@@ -1,0 +1,11 @@
+{
+  "blend": {"func":"add","srcrgb":"1","dstrgb":"1"},
+  "vertex": "wuxingxiantu:huahong_volume",
+  "fragment": "wuxingxiantu:huahong_volume_reconstruct",
+  "attributes": ["Position","UV0"],
+  "samplers": [{"name":"Sampler0"},{"name":"Sampler1"}],
+  "uniforms": [
+    {"name":"InverseWorldToClip","type":"matrix4x4","count":16,"values":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]},
+    {"name":"OutputSize","type":"float","count":2,"values":[1,1]}
+  ]
+}

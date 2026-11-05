@@ -14,6 +14,8 @@ uniform vec3 CloudRadii;
 uniform vec3 NoiseOffset;
 uniform vec3 DetailOffset;
 uniform vec3 FlowPhase;
+uniform vec3 HistoryNoiseOrigin;
+uniform vec3 HistoryDetailOffset;
 uniform vec3 LightDirection;
 uniform float SkyLight;
 uniform float DayLight;
@@ -72,11 +74,11 @@ float cloudShape(vec3 q) {
     q.x *= 1.13;
     q.z *= 0.90;
     float angle = atan(q.z, q.x + 0.000001);
-    float radius = 0.94 + 0.065 * sin(3.0 * angle + FlowPhase.x)
-            + 0.045 * sin(5.0 * angle - FlowPhase.z) + 0.030 * sin(angle + FlowPhase.y);
-    q.y += 0.070 * sin(q.x * 3.0 + FlowPhase.y) * sin(q.z * 3.0 + FlowPhase.z);
+    float radius = 0.94 + 0.035 * sin(3.0 * angle + FlowPhase.x)
+            + 0.025 * sin(5.0 * angle - FlowPhase.z) + 0.018 * sin(angle + FlowPhase.y);
+    q.y += 0.045 * sin(q.x * 3.0 + FlowPhase.y) * sin(q.z * 3.0 + FlowPhase.z);
     float shape = lobe(q, vec3(0.0, -0.10, 0.0), vec3(radius, 0.78, radius));
-    return softUnion(shape, lobe(q, vec3(0.0, 0.09 + 0.055 * sin(FlowPhase.y), 0.0), vec3(0.60, 0.66, 0.60)));
+    return softUnion(shape, lobe(q, vec3(0.0, 0.09 + 0.025 * sin(FlowPhase.y), 0.0), vec3(0.60, 0.66, 0.60)));
 }
 
 vec3 stretchRear(vec3 q, float motion) {
@@ -131,12 +133,6 @@ float erodedDensity(float boundary, vec2 noise, float curl, float detail, float 
             * mix(1.0, breakup, max(wake * wake, age * age)) * (0.90 + 0.10 * curl);
 }
 
-vec3 rollingDomain(vec3 p){
-    // Closed local curls move the primary density too, including while idle.
-    // No world position or flight speed enters this bounded deformation.
-    return p+.14*vec3(sin(p.y*1.7+FlowPhase.y)+sin(p.z*1.3-FlowPhase.x),
-            sin(p.z*1.5+FlowPhase.z),cos(p.x*1.4+FlowPhase.x));
-}
 float densityAt(vec3 p) {
     vec3 q = p / CloudRadii;
     bool inBody = abs(q.x) < 1.15 && abs(q.y) < 1.15 && q.z > -2.4 && q.z < 1.25;
@@ -146,16 +142,16 @@ float densityAt(vec3 p) {
     if (boundary <= 0.0 && TrailCount == 0) return 0.0;
     float density = 0.0;
     if (boundary > 0.0) {
-        vec3 domain = rollingDomain(p * 0.38);
+        vec3 domain = p * 0.38;
         vec2 curl = worley(domain * 1.7 + DetailOffset);
-        vec3 flowing = domain + 0.16 * vec3(curl.y - 0.5, curl.x - 0.5, 0.5 - curl.y);
+        vec3 flowing = domain + 0.080 * vec3(curl.y - 0.5, curl.x - 0.5, 0.5 - curl.y);
         vec2 noise = worley(domain + NoiseOffset);
         float wake = smoothstep(0.85, 2.5, length(q));
         float detail = worley(flowing * 1.8 + DetailOffset).r;
         float fine = worley(flowing * 3.2 - DetailOffset * 2.0).r;
         density = erodedDensity(boundary, noise, curl.x, detail, fine, wake, 0.0) * DensityScale;
     }
-    // World-history support is retained; visible material rolls with bounded source-local advection.
+    // History appearance is anchored in world axes; turning the emitter cannot rotate old noise.
     vec2 historyNoise = vec2(0.0);
     vec3 historyDetail = vec3(0.0);
     bool historyNoiseReady = false;
@@ -190,14 +186,12 @@ float densityAt(vec3 p) {
         float historyBoundary = cloudShape(material);
         if (historyBoundary <= 0.0) continue;
         if (!historyNoiseReady) {
-            // Keep true world-history geometry, but advect texture independently
-            // of travel speed instead of scanning world cells through the rider.
-            vec3 historyDomain = rollingDomain(p * 0.38);
-            vec2 historyCurl = worley(historyDomain * 1.7 + DetailOffset);
-            vec3 historyFlow = historyDomain + 0.16 * vec3(historyCurl.y - 0.5, historyCurl.x - 0.5, 0.5 - historyCurl.y);
+            vec3 historyDomain = transpose(WorldToCloud) * p * 0.38 + HistoryNoiseOrigin;
+            vec2 historyCurl = worley(historyDomain * 1.7 + HistoryDetailOffset);
+            vec3 historyFlow = historyDomain + 0.080 * vec3(historyCurl.y - 0.5, historyCurl.x - 0.5, 0.5 - historyCurl.y);
             historyNoise = worley(historyDomain + NoiseOffset);
-            historyDetail = vec3(historyCurl.x, worley(historyFlow * 1.8 + DetailOffset).r,
-                    worley(historyFlow * 3.2 - DetailOffset * 2.0).r);
+            historyDetail = vec3(historyCurl.x, worley(historyFlow * 1.8 + HistoryDetailOffset).r,
+                    worley(historyFlow * 3.2 - HistoryDetailOffset * 2.0).r);
             historyNoiseReady = true;
         }
         float historyDensity = erodedDensity(historyBoundary,

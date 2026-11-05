@@ -2,6 +2,7 @@ package cn.blockforge.generated.generatedmod.client;
 
 import cn.blockforge.generated.generatedmod.GeneratedMod;
 import cn.blockforge.generated.generatedmod.client.realmflight.MeteorBloomRenderer;
+import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
@@ -21,6 +22,7 @@ import org.joml.Matrix3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,7 +40,8 @@ public final class HuahongVolumeRenderer {
     private static final ArrayList<Packet> PENDING=new ArrayList<>();
     private static final ArrayList<Trace> TRACE=new ArrayList<>();
     private static List<Trace> previousTrace=List.of();
-    private static ShaderInstance shader,direct;
+    private static ShaderInstance shader,direct,reconstruct;
+    private static TextureTarget integrationTarget;
     private static int pathLocation=-1,boundsLocation=-1,directPathLocation=-1;
     private static long frameSequence;
     private static float exposureMultiplier=1;
@@ -65,6 +68,7 @@ public final class HuahongVolumeRenderer {
 
     @SubscribeEvent public static void register(RegisterShadersEvent event)throws IOException {
         HuahongVolumeNoiseCache.release();
+        releaseIntegrationTarget();
         PENDING.clear();TRACE.clear();previousTrace=List.of();queuedThisFrame=submittedThisFrame=0;pathLocation=-1;
         try{
             var digest=java.security.MessageDigest.getInstance("SHA-256");
@@ -81,6 +85,7 @@ public final class HuahongVolumeRenderer {
             status=pathLocation>=0?"Huahong volume shader ready":"Huahong volume path uniform unavailable";
         });
         event.registerShader(new ShaderInstance(event.getResourceProvider(),ResourceLocation.fromNamespaceAndPath(GeneratedMod.MOD_ID,"huahong_volume_direct"),DefaultVertexFormat.POSITION_TEX),value->{direct=value;directPathLocation=GL20.glGetUniformLocation(value.getId(),"PathPoints[0]");});
+        event.registerShader(new ShaderInstance(event.getResourceProvider(),ResourceLocation.fromNamespaceAndPath(GeneratedMod.MOD_ID,"huahong_volume_reconstruct"),DefaultVertexFormat.POSITION_TEX),value->reconstruct=value);
         try(var input=event.getResourceProvider().getResource(ResourceLocation.fromNamespaceAndPath(GeneratedMod.MOD_ID,"shaders/core/huahong_volume.fsh")).orElseThrow().open()){
             HuahongVolumeNoiseCache.reload(new String(input.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8));
         }
@@ -195,9 +200,28 @@ public final class HuahongVolumeRenderer {
             SwordFlightTrailRenderer.clearPolygonOffset();
             var target=Minecraft.getInstance().getMainRenderTarget();target.bindWrite(true);
             RenderSystem.disableDepthTest();RenderSystem.depthMask(false);RenderSystem.disableCull();RenderSystem.disableScissor();
-            RenderSystem.enableBlend();RenderSystem.blendFuncSeparate(GL11.GL_ONE,GL11.GL_ONE_MINUS_SRC_ALPHA,GL11.GL_ONE,GL11.GL_ONE_MINUS_SRC_ALPHA);
-            RenderSystem.colorMask(true,true,true,false);RenderSystem.setShaderColor(1,1,1,1);
+            GL11.glDisable(GL11.GL_STENCIL_TEST);
+            RenderSystem.enableBlend();
+            RenderSystem.blendFuncSeparate(GL11.GL_ONE,GL11.GL_ONE_MINUS_SRC_ALPHA,GL11.GL_ONE,GL11.GL_ONE_MINUS_SRC_ALPHA);
+            GL20.glBlendEquationSeparate(org.lwjgl.opengl.GL14.GL_FUNC_ADD,org.lwjgl.opengl.GL14.GL_FUNC_ADD);
+            RenderSystem.setShaderColor(1,1,1,1);
+            int reducedDraws=0;
+            long screenPixels=(long)target.viewWidth*target.viewHeight;
+            // Keep the scratch allocation stable as the effect moves in and
+            // out of view. High-resolution windows still have a finite ray budget.
+            int divisor=Math.max(2,(int)Math.ceil(Math.sqrt(screenPixels/460800.0)));
             for(var p:packets){
+                float[] c=p.clip();
+                boolean reduced=reconstruct!=null&&(c[2]-c[0])*(c[3]-c[1])>=.16F
+                        &&screenPixels>=640L*360;
+                if(reduced){
+                    var low=integrationTarget((target.viewWidth+divisor-1)/divisor,(target.viewHeight+divisor-1)/divisor);
+                    RenderSystem.colorMask(true,true,true,true);
+                    low.clear(Minecraft.ON_OSX);
+                    low.bindWrite(true);
+                }else{
+                    RenderSystem.colorMask(true,true,true,false);
+                }
                 boolean accelerated=accelerate(p.path(),p.materialBasis());
                 ShaderInstance pass=accelerated?shader:direct;
                 int cache=HuahongVolumeNoiseCache.texture();
@@ -205,7 +229,8 @@ public final class HuahongVolumeRenderer {
                 pass.safeGetUniform("FieldCullEnabled").set(boundsLocation>=0&&accelerated?1:0);
                 pass.setSampler("GradientCache",cache);RenderSystem.setShaderTexture(1,cache);
                 pass.safeGetUniform("InverseWorldToClip").set(p.inverse());
-                pass.safeGetUniform("OutputSize").set((float)target.viewWidth,(float)target.viewHeight);
+                pass.safeGetUniform("OutputSize").set((float)(reduced?integrationTarget.viewWidth:target.viewWidth),
+                        (float)(reduced?integrationTarget.viewHeight:target.viewHeight));
                 pass.safeGetUniform("BoundsMin").set((float)p.min().x,(float)p.min().y,(float)p.min().z);
                 pass.safeGetUniform("BoundsMax").set((float)p.max().x,(float)p.max().y,(float)p.max().z);
                 pass.safeGetUniform("WorldToMaterial").set(p.materialBasis());
@@ -215,14 +240,48 @@ public final class HuahongVolumeRenderer {
                 pass.safeGetUniform("Exposure").set(p.exposure());pass.safeGetUniform("EffectTime").set(p.time());
                 RenderSystem.setShaderTexture(0,p.depth());RenderSystem.setShader(()->pass);
                 pass.apply();GL20.glUniform4fv(accelerated?pathLocation:directPathLocation,p.path());if(accelerated&&boundsLocation>=0)GL20.glUniform4fv(boundsLocation,p.segments());
-                var b=Tesselator.getInstance().getBuilder();b.begin(VertexFormat.Mode.TRIANGLES,DefaultVertexFormat.POSITION_TEX);
-                float[] c=p.clip();vertex(b,c[0],c[1]);vertex(b,c[2],c[1]);vertex(b,c[2],c[3]);
-                vertex(b,c[0],c[1]);vertex(b,c[2],c[3]);vertex(b,c[0],c[3]);
-                BufferUploader.drawWithShader(b.end());pass.clear();submittedThisFrame++;totalDraws++;
+                drawQuad(c[0],c[1],c[2],c[3]);
+                pass.clear();
+                if(reduced){
+                    target.bindWrite(true);
+                    RenderSystem.colorMask(true,true,true,false);
+                    RenderSystem.setShaderTexture(0,integrationTarget.getColorTextureId());
+                    RenderSystem.setShaderTexture(1,p.depth());
+                    reconstruct.safeGetUniform("InverseWorldToClip").set(p.inverse());
+                    reconstruct.safeGetUniform("OutputSize").set((float)target.viewWidth,(float)target.viewHeight);
+                    RenderSystem.setShader(()->reconstruct);
+                    // Cover the extra reconstruction tap beyond the integration proxy.
+                    float dx=2F/integrationTarget.viewWidth,dy=2F/integrationTarget.viewHeight;
+                    drawQuad(Math.max(-1,c[0]-dx),Math.max(-1,c[1]-dy),Math.min(1,c[2]+dx),Math.min(1,c[3]+dy));
+                    reconstruct.clear();
+                    reducedDraws++;
+                }
+                submittedThisFrame++;totalDraws++;
                 TRACE.add(trace(p,true));
             }
-            status="Original 3D path density / 128 steps / scene-depth clipped / direct exposure";
+            status="3D path density / 128 steps / scene-depth clipped / "+reducedDraws+" reconstructed draws";
         }
+    }
+    private static TextureTarget integrationTarget(int width,int height){
+        if(integrationTarget!=null&&integrationTarget.viewWidth==width&&integrationTarget.viewHeight==height)return integrationTarget;
+        releaseIntegrationTarget();
+        var target=new TextureTarget(width,height,false,Minecraft.ON_OSX);
+        RenderSystem.bindTexture(target.getColorTextureId());
+        GL11.glTexImage2D(GL11.GL_TEXTURE_2D,0,GL30.GL_RGBA16F,target.width,target.height,0,
+                GL11.GL_RGBA,GL11.GL_FLOAT,(java.nio.ByteBuffer)null);
+        target.setClearColor(0,0,0,0);
+        integrationTarget=target;
+        return target;
+    }
+    private static void releaseIntegrationTarget(){
+        if(integrationTarget!=null){integrationTarget.destroyBuffers();integrationTarget=null;}
+    }
+    private static void drawQuad(float x0,float y0,float x1,float y1){
+        var b=Tesselator.getInstance().getBuilder();
+        b.begin(VertexFormat.Mode.TRIANGLES,DefaultVertexFormat.POSITION_TEX);
+        vertex(b,x0,y0);vertex(b,x1,y0);vertex(b,x1,y1);
+        vertex(b,x0,y0);vertex(b,x1,y1);vertex(b,x0,y1);
+        BufferUploader.drawWithShader(b.end());
     }
     private static List<Float> floats(float[] values){var list=new ArrayList<Float>(values.length);for(float value:values)list.add(value);return List.copyOf(list);}
     private static List<Float> vector(Vec3 p){return List.of((float)p.x,(float)p.y,(float)p.z);}
@@ -233,7 +292,7 @@ public final class HuahongVolumeRenderer {
     @Mod.EventBusSubscriber(modid=GeneratedMod.MOD_ID,value=Dist.CLIENT)
     public static final class Events {
         private static boolean hadWorld;
-        @SubscribeEvent public static void world(TickEvent.ClientTickEvent event){if(event.phase==TickEvent.Phase.END){boolean present=Minecraft.getInstance().level!=null;if(hadWorld&&!present)HuahongVolumeNoiseCache.release();hadWorld=present;}}
+        @SubscribeEvent public static void world(TickEvent.ClientTickEvent event){if(event.phase==TickEvent.Phase.END){boolean present=Minecraft.getInstance().level!=null;if(hadWorld&&!present){HuahongVolumeNoiseCache.release();releaseIntegrationTarget();}hadWorld=present;}}
         @SubscribeEvent(priority=EventPriority.LOWEST) public static void frame(TickEvent.RenderTickEvent event){
             if(event.phase==TickEvent.Phase.START){frameSequence++;previousTrace=List.copyOf(TRACE);TRACE.clear();PENDING.clear();queuedThisFrame=submittedThisFrame=0;}
             else flush();

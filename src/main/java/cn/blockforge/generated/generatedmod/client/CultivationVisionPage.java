@@ -318,8 +318,8 @@ public final class CultivationVisionPage extends CultivationPage {
         if(layout.foundation().x()>0)CultivationBorderAssets.draw(g,"rule_gold_vertical",
                 layout.foundation().x()-2,0,4,layout.height());
         if(popupMode!=0){
-            g.pose().pushPose();g.pose().translate(0,0,100);g.fill(popup.x()-2,popup.y()-2,popup.x()+popup.w()+2,popup.y()+popup.h()+2,0xFF101E26);g.renderOutline(popup.x()-2,popup.y()-2,popup.w()+4,popup.h()+4,CultivationUi.GOLD);
-            g.drawString(font,popupMode==1?"选择领域 · 再点关闭":"选择异火",popup.x()+4,popup.y()+3,CultivationUi.GOLD,false);
+            g.pose().pushPose();g.pose().translate(0,0,100);
+            CultivationUi.pickerPanel(g,popup.x(),popup.y(),popup.w(),popup.h(),popupMode==1?"选择领域 · 再点关闭":"选择异火");
             for(int i=0;i<options.size();i++){var b=options.get(i);b.render(g,mx,my,delta);if(i==optionFocus)g.renderOutline(b.getX(),b.getY(),b.getWidth(),b.getHeight(),CultivationUi.CYAN);}g.pose().popPose();
         }
     }

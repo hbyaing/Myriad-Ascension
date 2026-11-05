@@ -18,11 +18,11 @@ public final class HuahongFlowField {
             double t=Math.max(0,Math.min(1,(arc-a.arc())/span)),born=a.tick()+(b.tick()-a.tick())*t,age=(now-born)/20,behind=head-arc;
             if(age<0||age>=1.8)continue;
             double join=smooth((behind-7)/9),end=1-smooth((behind-55)/29),life=1-smooth((age-1.2)/.6);
-            double alpha=.14*join*end*life*Math.exp(-age/1.1);if(alpha<.0005)continue;
+            double alpha=.18*join*end*life*Math.exp(-age/1.45);if(alpha<.0005)continue;
             double seed=hash(id),other=hash(id+419),phase=seed*TAU+age*(2.1+other*.9),scatter=.08+.20*smooth(age/.6);
             var p=a.point().lerp(b.point(),t);double dx=b.point().x()-a.point().x(),dy=b.point().y()-a.point().y(),dz=b.point().z()-a.point().z(),length=Math.sqrt(dx*dx+dy*dy+dz*dz);
             double drift=length>1e-8?-.8*age/length:0;
-            double radius=(.42+.16*seed)*(1+.35*smooth(behind/60));
+            double radius=(.42+.16*seed)*(1+.54*smooth(behind/60));
             result.add(new WorldParcel(id,born,age,behind,p.x()+dx*drift+Math.cos(phase)*scatter,p.y()+dy*drift+Math.sin(phase*1.31)*scatter+age*.12,p.z()+dz*drift+Math.sin(phase)*scatter,radius,alpha,
                     Math.exp(-age*.6)*(.2+.8*Math.pow(.5+.5*Math.sin(phase*1.3+other*TAU),2))));
         }
@@ -39,7 +39,8 @@ public final class HuahongFlowField {
             double spread=.045+.15*(1-Math.exp(-age*2.8));
             double radius=(.36+.17*seed)*(.72+.45*smooth(age/.75));
             double heat=Math.exp(-age*.35)*(.25+.75*Math.pow(.5+.5*Math.sin(angle*1.3+other*TAU),2));
-            result.add(new Parcel(id,age,.12+age*7.2,Math.cos(angle)*spread,Math.sin(angle)*spread+age*.015,radius,fade,heat));
+            double behind=.06+age*(3.2+4*smooth(age/.65));
+            result.add(new Parcel(id,age,behind,Math.cos(angle)*spread,Math.sin(angle)*spread+age*.015,radius,fade,heat));
         }
         return result;
     }

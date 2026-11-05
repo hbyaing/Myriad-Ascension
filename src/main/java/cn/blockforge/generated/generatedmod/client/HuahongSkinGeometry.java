@@ -40,8 +40,11 @@ final class HuahongSkinGeometry {
             List<SwordFlightTrailHistory.Node> nodes,List<SwordFlightTrailHistory.Node> canonical,double now,float strength){
         this.skin=skin;this.out=out;this.pose=pose;this.eye=eye;this.center=center;this.forward=forward;this.nodes=nodes;this.canonical=canonical;this.now=now;this.strength=strength;
         if(skin==HuahongSkin.SMOKE||skin==HuahongSkin.DENSE){
-            var camera=net.minecraft.client.Minecraft.getInstance().gameRenderer.getMainCamera();
-            cameraRight=new Vec3(camera.getLeftVector());cameraUp=new Vec3(camera.getUpVector());
+            // Use the submitted view transform. Camera's cached vectors may
+            // precede Forge camera-angle overrides and leave smoke edge-on.
+            var view=new org.joml.Matrix4f(com.mojang.blaze3d.systems.RenderSystem.getModelViewMatrix()).mul(pose.pose());
+            cameraRight=new Vec3(view.m00(),view.m10(),view.m20()).normalize();
+            cameraUp=new Vec3(view.m01(),view.m11(),view.m21()).normalize();
         }else{cameraRight=cameraUp=null;}
         historyFrames=skin==HuahongSkin.DENSE||skin==HuahongSkin.FAN?null:new Frame[nodes.size()];
         fanFrames=skin==HuahongSkin.FAN?new IdentityHashMap<>():null;
@@ -286,6 +289,23 @@ final class HuahongSkinGeometry {
             }
         }
         nucleus(0xfff3bd,.32,.27*.08,.28F);
+        // A soft continuous base carries the local tongues into the older
+        // curved wake. Individual embers can die out without breaking it.
+        var glow=new ArrayList<Row>();
+        var wake=new ArrayList<Row>();
+        for(int i=0;i<nodes.size();i++){
+            var node=nodes.get(i);
+            double behind=headArc()-node.arc();
+            double age=Math.max((now-node.tick())/20,behind/24);
+            double alpha=smooth(4,13,behind)*(1-smooth(.8,2.4,age));
+            if(behind>58)continue;
+            Vec3 point=at(i).p();
+            double width=.24+.31*smooth(4,18,behind);
+            double u=behind*.42;
+            glow.add(new Row(point,u,width*1.9,(float)(strength*alpha*.09),0xff220a,null));
+            wake.add(new Row(point,u,width,(float)(strength*alpha*.20),0xff5426,null));
+        }
+        strip(glow,48);strip(wake,46);
         for(var b:timedBirths(.10,2.8)){
             double age=(now-b.tick())/20;if(age<.09)continue;double fade=Math.pow(Mth.clamp(1-age/2.8,0,1),2);
             Vec3 side=side(b.direction()),up=side.cross(b.direction()).normalize();
@@ -297,8 +317,8 @@ final class HuahongSkinGeometry {
                 for(int i=0;i<=20;i++){
                     double q=i/20.0,w=Math.pow(Math.sin(Math.PI*q),.65)*(.85-.6*q);Vec3 p=center.subtract(b.direction().scale(q*length*HuahongHeadBridge.BODY_SCALE))
                         .add(side.scale(Math.sin(q*4+phase+age*2.1)*q*.21*HuahongHeadBridge.BODY_SCALE)).add(up.scale(q*(.17+age*.06)*HuahongHeadBridge.BODY_SCALE));
-                    red.add(new Row(p,q*length+b.tick()*.15+k,.27*(.40+.37*fade)*w,(float)(strength*fade*(1-q*.84)*.0864*smooth(0,.12,q)),0xff0b02,null));
-                    fire.add(new Row(p,q*length+b.tick()*.15+k,.27*(.16+.24*fade)*w,(float)(strength*fade*(1-q*.84)*.18*smooth(0,.12,q)),0xff2810,null));
+                    red.add(new Row(p,q*length+b.tick()*.15+k,.27*(.40+.37*fade)*w,(float)(strength*fade*(1-q*.84)*.12*smooth(0,.12,q)),0xff0b02,null));
+                    fire.add(new Row(p,q*length+b.tick()*.15+k,.27*(.16+.24*fade)*w,(float)(strength*fade*(1-q*.84)*.23*smooth(0,.12,q)),0xff2810,null));
                 }
                 strip(red,48);strip(fire,46);
             }
@@ -358,22 +378,25 @@ final class HuahongSkinGeometry {
         double rank=(j+.55)/3.15,phase=j*1.79+(sign<0?.94:0);
         double life=2.4*(.43+.43*(1-rank))*(sign>0?1:.92),v=Mth.clamp(1-age/life,0,1);
         double open=1-Math.exp(-age*2.208),arc=h.arc();
+        // Arc age shapes the silhouette. Real elapsed time drives the silk's
+        // motion, so moving faster cannot speed up the oscillation.
+        double elapsed=Math.max(0,(now-h.tick())/20);
         // Birth basis comes only from its immutable canonical world segment.
         // Banking the current sword must never rotate already emitted gauze.
         Frame basis=fanFrames.computeIfAbsent(h,b->{Vec3 f=b.direction(),s=side(f);return new Frame(b.p(),f,s,s.cross(f).normalize());});
         Vec3 f=basis.forward(),s=basis.side(),up=basis.up();
-        double lateral=(.014+1.6*(.26+rank*1.45)*open)*(1+.09*Math.sin(arc*.46+phase-age*.8)*open);
-        double wave=(Math.sin(arc*.38+phase-age*.90)*(.16+1.6*.12)+Math.sin(arc*.87+phase*1.7-age*1.25)*.07)*open;
-        double half=(.045+.36*(.50+.60*(1-rank)))*smooth(0,.21,age)*Math.pow(v,.72)*(1+.29*Math.sin(arc*.55+phase));
+        double lateral=(.014+1.6*(.26+rank*1.45)*open)*(1+.08*Math.sin(arc*.27+phase-elapsed*.55)*open);
+        double wave=(Math.sin(arc*.21+phase-elapsed*.68)*.36+Math.sin(arc*.48+phase*1.7-elapsed*.92)*.055)*open;
+        double half=(.045+.43*(.50+.60*(1-rank)))*smooth(0,.21,age)*Math.pow(v,.65)*(1+.20*Math.sin(arc*.32+phase));
         // Separate birth-anchored azimuths form an open spatial fan. Previously
         // every centre used the same .79/.61 diagonal, so all films shared a plane.
         double azimuth=.15+(j-1)*.78+(sign<0?Math.PI:0);
         Vec3 radial=s.scale(Math.cos(azimuth)).add(up.scale(Math.sin(azimuth))),around=f.cross(radial).normalize();
-        double roll=.25+sign*.32+Math.sin(arc*.29+phase-age*.62)*.45+age*.35;
+        double roll=.25+sign*.32+Math.sin(arc*.20+phase-elapsed*.55)*.45+age*.24;
         Vec3 across=radial.scale(Math.cos(roll)).add(around.scale(Math.sin(roll))),normal=f.cross(across).normalize();
-        double curlGain=.80+.50*Math.sin(arc*.61+phase-age);
+        double curlGain=.80+.42*Math.sin(arc*.35+phase-elapsed*.72);
         double curl=half*(u*u-.27)*curlGain;
-        double wrinkle=(.022*Math.sin(arc*2.2+u*2.5+phase-age*1.4)+.018*Math.sin(arc*1.3-u*3.2+phase*.6))*open;
+        double wrinkle=(.015*Math.sin(arc*.92+u*2.5+phase-elapsed*.85)+.012*Math.sin(arc*.65-u*3.2+phase*.6))*open;
         Vec3 p=h.p().add(f.scale((.12*Math.exp(-age*7)-half*.22*(1-u*u)*open)*HuahongHeadBridge.BODY_SCALE))
                 .add(radial.scale(lateral*HuahongHeadBridge.BODY_SCALE)).add(around.scale(wave*.55*HuahongHeadBridge.BODY_SCALE))
                 .add(up.scale(-age*.06*HuahongHeadBridge.BODY_SCALE))
@@ -381,19 +404,19 @@ final class HuahongSkinGeometry {
         Vec3 du=across.scale(half).add(normal.scale(2*half*u*curlGain)).add(f.scale(half*.44*u*open));
         return new FanPoint(p,f.cross(du).normalize(),half,Math.pow(v,1.8)*(1-.22*rank),phase,life);
     }
-    private double fanAge(Birth h){return Math.max((now-h.tick())/20,(headArc()-h.arc())/7.8);}
+    private static final double FAN_OPENING_SPEED=11.5;
+    private double fanAge(Birth h){return Math.max((now-h.tick())/20,(headArc()-h.arc())/FAN_OPENING_SPEED);}
     private void fan(){
         // V7 fan-lookdev.js: nine columns per open curled film, asymmetric
         // life, full-arc end caps, two embedded ridges and four diffuse wisps.
-        // 7.8m/s spatial adaptation preserves the reference opening at game speed.
-        var births=births(.125,7.8*2.4,2.4);double materialOrigin=Math.floor(headArc()/256)*256;
+        var births=births(.175,FAN_OPENING_SPEED*2.4,2.4);double materialOrigin=Math.floor(headArc()/256)*256;
         for(int sign:new int[]{-1,1})for(int j=0;j<3;j++){
             var valid=new ArrayList<Birth>();
             double life=2.4*(.43+.43*(1-(j+.55)/3.15))*(sign>0?1:.92);
             for(var b:births)if(fanAge(b)<life)valid.add(b);
             if(valid.size()<4)continue;
             double[] arc=new double[valid.size()];for(int i=1;i<arc.length;i++)arc[i]=arc[i-1]+valid.get(i).p().distanceTo(valid.get(i-1).p());
-            double total=arc[arc.length-1],cap=Math.min(.85,total*.22);
+            double total=arc[arc.length-1],cap=Math.min(1.35,total*.22);
             Vec3[] previous=null;float oldAlpha=0;int[] oldColors=null;double oldU=0;
             for(int i=0;i<valid.size();i++){
                 Birth b=valid.get(i);double age=fanAge(b),fade=smooth(0,cap,arc[i])*smooth(0,cap,total-arc[i]);
@@ -437,15 +460,16 @@ final class HuahongSkinGeometry {
             for(var parcel:HuahongFlowField.parcels(now)){
                 double behind=parcel.behind();
                 Frame f=back(behind);
-                double envelope=parcel.alpha()*smooth(14,6,behind)
+                double envelope=parcel.alpha()*smooth(17,7,behind)
                         *smooth(behind-.7,behind+.7,recorded);
                 double rear=smooth(12,24,behind);
                 Vec3 p=offset(f,parcel.side(),parcel.up());
                 double radius=parcel.radius(),seed=Math.floorMod(parcel.id(),64);
-                float alpha=(float)(strength*envelope*(1-.35*rear)*.34);
+                double nose=1-smooth(.5,4.5,behind);
+                float alpha=(float)(strength*envelope*(1-.35*rear)*(.34+.23*nose));
                 clouds.add(new Cloud(p,seed,radius,alpha,0x060101,30));
-                if(parcel.crimson()>.15)clouds.add(new Cloud(p.add(f.side().scale(radius*.12)),Math.floorMod(parcel.id()+19,64),radius*.48,
-                        (float)(strength*envelope*(1-.35*rear)*parcel.crimson()*.095),0xce252f,20));
+                clouds.add(new Cloud(p.add(f.side().scale(radius*.12)),Math.floorMod(parcel.id()+19,64),radius*.48,
+                        (float)(strength*envelope*(1-.35*rear)*parcel.crimson()*(.08+.095*nose)),0xce252f,20));
             }
         }
         // The near body settles into a real world-emitted wake. Old dark/red
@@ -454,7 +478,8 @@ final class HuahongSkinGeometry {
         for(var b:HuahongFlowField.worldParcels(canonical,now)){
             Vec3 p=new Vec3(b.x(),b.y(),b.z());float a=(float)(strength*b.alpha());
             clouds.add(new Cloud(p,Math.floorMod(b.id(),64),b.radius(),a,0x060101,30));
-            if(b.crimson()>.45)clouds.add(new Cloud(p,Math.floorMod(b.id()+19,64),b.radius()*.48,a*(float)b.crimson()*.24F,0xce252f,20));
+            float crimson=(float)(b.crimson()*smooth(.20,.55,b.crimson()));
+            if(crimson>0)clouds.add(new Cloud(p,Math.floorMod(b.id()+19,64),b.radius()*.48,a*crimson*.24F,0xce252f,20));
         }
         // The head is broad dark smoke with a small red fracture, never a white
         // nucleus. These layers disappear with the local transformation fade.

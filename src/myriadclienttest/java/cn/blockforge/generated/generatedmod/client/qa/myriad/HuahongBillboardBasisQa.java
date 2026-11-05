@@ -14,12 +14,16 @@ final class HuahongBillboardBasisQa {
   var emit=type.getDeclaredMethod("billboard",row,int.class);emit.setAccessible(true);
   var b=new BufferBuilder(1024);b.begin(VertexFormat.Mode.QUADS,DefaultVertexFormat.POSITION_TEX_COLOR);
   Vec3 eye=mc.gameRenderer.getMainCamera().getPosition();
-  Object geometry=ctor.newInstance(HuahongSkin.SMOKE,b,new PoseStack().last(),eye,Vec3.ZERO,new Vec3(0,0,1),new Vec3(1,0,0),List.of(),List.of(),0d,1f);
+  PoseStack pose=new PoseStack();
+  pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(67));
+  Object geometry=ctor.newInstance(HuahongSkin.SMOKE,b,pose.last(),eye,Vec3.ZERO,new Vec3(0,0,1),new Vec3(1,0,0),List.of(),List.of(),0d,1f);
   for(double y:new double[]{3,3.1})emit.invoke(geometry,rc.newInstance(eye.add(-1,-y,0),0d,.5d,1f,0xffffff,null),30);
   var mesh=b.end();double dot;
   try{
    var bytes=mesh.vertexBuffer().order(ByteOrder.nativeOrder());int stride=DefaultVertexFormat.POSITION_TEX_COLOR.getVertexSize();
-   Vec3 a=edge(bytes,0,stride),c=edge(bytes,4*stride,stride),camera=new Vec3(mc.gameRenderer.getMainCamera().getLeftVector()).normalize();
+   Vec3 a=edge(bytes,0,stride),c=edge(bytes,4*stride,stride);
+   var modelView=com.mojang.blaze3d.systems.RenderSystem.getModelViewMatrix();
+   Vec3 camera=new Vec3(modelView.m00(),modelView.m10(),modelView.m20()).normalize();
    dot=a.dot(c);
    if(dot<.99999||a.dot(camera)<.99999||c.dot(camera)<.99999)throw new AssertionError("Billboard basis snaps at old vertical threshold: "+dot);
   }finally{mesh.release();}
