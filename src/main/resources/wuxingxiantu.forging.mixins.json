@@ -9,7 +9,8 @@
     "BoundEquipmentResultSlotMixin",
     "SpiritTradeMenuMixin",
     "SpiritTradeResultMixin",
-    "CreativeHerbYearsMixin"
+    "CreativeHerbYearsMixin",
+    "ThunderstruckWoodMixin"
   ],
   "injectors": {
     "defaultRequire": 1

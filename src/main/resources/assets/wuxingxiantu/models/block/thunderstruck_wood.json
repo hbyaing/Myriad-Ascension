@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "wuxingxiantu:block/thunderstruck_wood_north",
+    "down": "wuxingxiantu:block/thunderstruck_wood_bottom",
+    "up": "wuxingxiantu:block/thunderstruck_wood_top",
+    "north": "wuxingxiantu:block/thunderstruck_wood_north",
+    "east": "wuxingxiantu:block/thunderstruck_wood_east",
+    "south": "wuxingxiantu:block/thunderstruck_wood_south",
+    "west": "wuxingxiantu:block/thunderstruck_wood_west"
+  }
+}

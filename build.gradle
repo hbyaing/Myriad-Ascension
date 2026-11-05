@@ -157,6 +157,14 @@ if (project.hasProperty('myriadCapture')) {
             if (project.hasProperty('myriadNativePath')) property 'org.lwjgl.librarypath', project.property('myriadNativePath')
             if (project.hasProperty('myriadCaptureOutput')) property 'wuxingxiantu.myriadCaptureOutput', project.property('myriadCaptureOutput')
             if (project.hasProperty('myriadExternalShaders')) property 'wuxingxiantu.myriadExternalShaders', 'true'
+            if (project.hasProperty('thunderstruckWoodCapture')) {
+                def profile = !project.hasProperty('myriadExternalShaders') ? 'plain' :
+                        project.findProperty('myriadExpectedShaderPack') == 'off' ? 'oculus-off' : 'solas'
+                workingDirectory project.file("build/thunderstruck-runes-${profile}")
+                property 'wuxingxiantu.thunderstruckWoodCapture', 'true'
+                property 'wuxingxiantu.myriadCapture', 'false'
+                property 'wuxingxiantu.thunderstruckWoodOutput', project.file("reports/thunderstruck-runes/${profile}").absolutePath
+            }
             if (project.hasProperty('myriadExpectedShaderPack')) property 'wuxingxiantu.myriadExpectedShaderPack', project.property('myriadExpectedShaderPack')
             mods { wuxingxiantu { source sourceSets.main; source sourceSets.myriadClientTest } }
         }
