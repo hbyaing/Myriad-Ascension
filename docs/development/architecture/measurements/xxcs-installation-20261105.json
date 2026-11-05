@@ -1,0 +1,10 @@
+{
+  "source": "C:\\Users\\33140\\Documents\\ChatGPT\\主要的\\work\\Myriad-Ascension-architecture-20261104\\build\\libs\\myriad-ascension-0.2.jar",
+  "target": "C:\\Users\\33140\\Desktop\\.minecraft\\versions\\xxcs\\mods\\myriad-ascension-0.2.jar",
+  "sha256": "a8c9f3eb18eaa0d7b5340316f4d14c26c4ac210835806813b064b3df1417049a",
+  "gameDir": "C:\\Users\\33140\\Desktop\\.minecraft\\versions\\xxcs",
+  "backup": "C:\\Users\\33140\\Documents\\ChatGPT\\主要的\\outputs\\architecture-test-install\\backups\\2026-11-05\\万界仙途自动安装-175512-6d9fb394",
+  "old": [],
+  "status": "installed_on_disk",
+  "runtime": "Restart required if the game had already loaded the previous JAR; no process was stopped."
+}

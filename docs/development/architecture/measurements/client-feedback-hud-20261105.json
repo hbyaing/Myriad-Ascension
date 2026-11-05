@@ -1,0 +1,28 @@
+{
+  "complete": true,
+  "checks": [
+    "packet without menu rejected without consuming inputs",
+    "production server menu opened",
+    "production client screen received",
+    "encoded client packet reached production admission and escrow",
+    "translated success feedback delivered over real client connection",
+    "private batch identity absent from client block update",
+    "duplicate packet produced busy feedback",
+    "duplicate client request retained original identity"
+  ],
+  "messages": [
+    "V5批次已托管：材料与炉内灵力已锁定，按真实材料反应结算，完成后领取成丹或副产物。",
+    "炼丹炉正在炼制中"
+  ],
+  "failures": [],
+  "pointer": {
+    "blockedGrabs": 4,
+    "passed": true,
+    "captureViolations": 0,
+    "checkedFrames": 1602,
+    "cursorMode": 212993
+  },
+  "batch": "8355edc8-b4d2-4b28-918f-f11f342873b8",
+  "language": "zh_cn",
+  "scope": "Isolated Forge 47.4.10 client, actual AlchemyPacket encode/channel/decode/production handler/menu/block-update and feedback; no external shader or full UI redesign claim."
+}

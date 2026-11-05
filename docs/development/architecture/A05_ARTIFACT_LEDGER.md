@@ -2,6 +2,8 @@
 
 生产输入版本 `1016720`（含 A01—A03），Java 17 / Gradle 8.8 / Forge 47.4.10。新账本工具为本次未提交工具变更，不参与生产源码。先本地交付。
 
+后续更新：以下为初始账本。包含 A04 改造的最终包为 89,151,974 bytes，默认完整 verifyFull 536/536 通过；已按用户后续指定安装至 Desktop/.minecraft/versions/xxcs，哈希核对通过。原 E 盘路径缺失不再阻止安装，见 [最终验收](INTEGRATION_ACCEPTANCE_20261105.md) 与 [最终账本](measurements/final-jar-20261105.json)。
+
 ## 构建与复核
 
 `gradlew.bat build -PpythonExecutable=<实际 Python 3.12> --console=plain -Dfile.encoding=UTF-8` 退出码 0，BUILD SUCCESSFUL，23 个任务。资源 15 项、11 组专项检查、regressionTest、balanceReport、GameTest 编译及 reobfJar 执行通过。此前独立入口 GameTest 297/297 通过；本次 build 不执行服务端 GameTest，不能称为完整 verifyFull。

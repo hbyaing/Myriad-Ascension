@@ -2,6 +2,8 @@
 
 起点：本地 `98c9b8b`，其 A01 基线入口 GameTest 287/287 通过。本批先本地交付。
 
+后续集成更新：A04 补齐未发布异常的原身份隔离与重载保护；本接口、兼容入口及生产调用者在默认完整 536 项测试和真实客户端网络/提示中通过，正式包已安装 xxcs。本文以下保留 A02 当时的结果与限制，最新证据见 [最终验收](INTEGRATION_ACCEPTANCE_20261105.md)。
+
 ## 实际改造
 
 新增 `alchemy/batch/BatchStartResult`，保留原 `startV5Batch(player[,recipe])` boolean 方法，委托 `tryStartV5Batch(player,recipe)`。生产 AlchemyService 的自由炼丹和配方炼丹两条调用改用结果接口，并由 `reportAlchemyStart` 处理动作栏提示。

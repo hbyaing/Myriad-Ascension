@@ -26,6 +26,7 @@ Java 根目录：`src/main/java/cn/blockforge/generated/generatedmod/`。
 | 炼丹炼器持久任务 | `network/service/CraftingJobs`（位置主键、owner 索引、到期队列）、`AlchemyService`、`CraftingRecoveryCommands`、`AlchemyFurnaceBlockEntity`、`RefiningForgeBlockEntity` |
 | V5 炼丹批次与领取权威 | `AlchemyService.handleAlchemyPacket` → `AlchemyFurnaceBlockEntity.tryStartV5Batch` → `alchemy/batch/V5Batch`、`BatchJournal`；结果 `BatchStartResult` 区分资格/提交/恢复，旧 `startV5Batch` 保留 boolean 包装；领取 `BatchDelivery`；旧 `CraftingJobs` 与 V5 并存，不是 V5 的唯一记录 |
 | 局部架构验证与资源测量 | `tools/check_architecture_boundary.py` / Gradle `architectureBoundaryCheck`；`V5AdmissionGameTests`、`TargetEligibilityGameTests`、`ArchitectureIoGameTests`、`V5JournalReadGameTests`；`tools/ArchitectureIoSummary.java`、`architecture_jar_ledger.py`；[任务与证据](docs/development/architecture/TASKS.md)，不代表全仓架构已统一 |
+| 可选附属与真实客户端验收 | [独立开炉附属示例](examples/admission-addon/README.md)，`-PadmissionExample`；`src/architectureclienttest/` 与 `-ParchitectureClient` 验证真实开炉网络、反馈与私有同步，复用 PointerSafety；源集不进入主模组生产包 |
 | V5 规则内核与恢复验证 | `alchemy/simulation/AlchemySimulation`、`SimulationRules`、`SimulationRuleLoader`、`SimulationSnapshotCodec`；测试 `src/gametest/java/cn/blockforge/generated/generatedmod/V5BatchGameTests.java`；模拟快照为服务端私有数据，不可直接作为客户端 DTO |
 | 服务端交互校验 | `network/service/CompassService`、`AlchemyService`、`TalismanService` |
 | 心剑与心铸 | `HeartSwordSystem`、`combat/HeartSwordCombatProfile`、`HeartForgeContracts`、`client/heartsword/` |

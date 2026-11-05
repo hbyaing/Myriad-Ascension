@@ -125,3 +125,30 @@ minecraft.runs {
         }
     }
 }
+
+if (project.hasProperty('architectureClient')) {
+    sourceSets {
+        architectureClientTest {
+            java.setSrcDirs(['src/architectureclienttest/java', 'src/myriadclienttest/java'])
+            java.include '**/ArchitectureAdmissionCapture.java', '**/PointerSafety.java', '**/NoPointerGrabMixin.java'
+            resources.setSrcDirs(['src/architectureclienttest/resources'])
+            compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+            runtimeClasspath += sourceSets.main.output + sourceSets.main.runtimeClasspath
+        }
+    }
+    minecraft.runs { client {
+        workingDirectory project.file('build/architecture-client')
+        jvmArgs '-Xmx3G', '-XX:ActiveProcessorCount=4'
+        args '--mixin', 'wuxingxiantu.architecture-qa.mixins.json', '--width', '1280', '--height', '900'
+        property 'mixin.env.remapRefMap', 'true'
+        property 'mixin.env.refMapRemappingFile', file('build/createSrgToMcp/output.srg').absolutePath
+        mods { wuxingxiantu { source sourceSets.main; source sourceSets.architectureClientTest } }
+    } }
+    tasks.matching { it.name == 'runClient' }.configureEach {
+        doFirst {
+            def config = project.file('build/architecture-client/config/fml.toml')
+            config.parentFile.mkdirs()
+            if (!config.exists()) config.setText('earlyWindowControl=false\n', 'UTF-8')
+        }
+    }
+}

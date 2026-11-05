@@ -10,4 +10,4 @@ Gradle `architectureBoundaryCheck` 使用已配置的 Java 17 compiler 和 pytho
 
 Gradle 接线已实际运行通过：`runGameTestServer -PentryUiOnly architectureBoundaryCheck -PpythonExecutable=<实际 Python>`，298/298 服务端测试通过且 boundary 任务成功；日志 `build/architecture-a04-quarantine-entry.log`。结果值未因后续读取缓冲修改而变化。
 
-这只证明静态编译依赖边界，不证明操作原子性、业务合法性、运行时反射行为或 AI 改动无语义冲突。实际失败/恢复由 GameTest 承担，包体/测试夹具分离由制品账本承担。check 依赖已配置，最终包含本任务的完整 build/verifyFull 仍需集成阶段确认。
+这只证明静态编译依赖边界，不证明操作原子性、业务合法性、运行时反射行为或 AI 改动无语义冲突。实际失败/恢复由 GameTest 承担，包体/测试夹具分离由制品账本承担。最终默认完整 build/verifyFull 已包含本任务并通过，536/536 GameTest，见 [最终验收](INTEGRATION_ACCEPTANCE_20261105.md)。
