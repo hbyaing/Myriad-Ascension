@@ -47,8 +47,8 @@ function focus(pick) {
   const single=pick!=="all";
   const draft=pick==="design"||pick==="flame"||pick==="ice";
   gallery.classList.toggle("focus",single);
-  get("view-caption").textContent=pick==="design"?"冰锥与净化 / 主动对照":pick==="ice"?"冰锥术 / 宽屏演出":draft?"烈焰波 / 主动草案":single?"单术 / 主动与被动":"五术 / 十组演出";
-  get("layout-note").textContent=pick==="design"?"左侧为冰锥齐射，右侧为主动净化。":draft?"木桩用于区分范围内外的命中反馈。":single?"左侧为主动施术，右侧为被动触发。":"上排为主动施术，下排为被动触发。";
+  get("view-caption").textContent=pick==="design"?"冰锥与净化 / 主动对照":pick==="ice"?"冰锥术 / 宽屏演出":draft?"烈焰波 / 主动演出":single?"单术 / 主动与被动":"五术 / 十组演出";
+  get("layout-note").textContent=pick==="design"?"左侧为冰锥齐射，右侧为主动净化。":pick==="flame"?"掌心聚火 → 贴地卷焰 → 命中引燃 → 烟烬消散":draft?"木桩用于区分范围内外的命中反馈。":single?"左侧为主动施术，右侧为被动触发。":"上排为主动施术，下排为被动触发。";
   for(const [i,article] of [...gallery.querySelectorAll("article")].entries()){
     article.hidden=article.hasAttribute("data-draft")?article.dataset.draft!==pick:draft || single && Number(pick)!==i;
   }
@@ -126,7 +126,7 @@ function draw() {
     const wideIce=node.parentElement.dataset.draft==="ice";
     const lotus=art===4;
     const camera = ice?cameraFor(orbit.yaw-.14,orbit.pitch-.065,orbit.half*(wideIce?1.73:2.54),w/h,[.12,1.40,0]):
-      draft?cameraFor(orbit.yaw-.14,orbit.pitch+.23,orbit.half*2.90,w/h,[.05,.43,0]):
+      draft?cameraFor(orbit.yaw-.07,orbit.pitch+.16,orbit.half*2.04,w/h,[-.25,.87,.57]):
       lotus?cameraFor(orbit.yaw,orbit.pitch+.016,orbit.half*(passive?1.25:1.49),w/h,[0,passive?1.10:1.53,0]):
       cameraFor(orbit.yaw,orbit.pitch,orbit.half,w/h,[state.root[0]*.90-tailRoom+strikeRoom,1.03+state.root[1]*.76,0]);
     const scene = (ice?iceStageMesh:draft?attackStageMesh:lotus?lotusStageMesh:stageMesh).slice();
@@ -145,7 +145,7 @@ function draw() {
       }
     }
     const armed=art===3 && !passive && time>=.04 && time<7.55;
-    const pose = actor(scene,state.root,state.stride,state.yaw,state.hit,state.guard,armed,ice?"ice":draft);
+    const pose = actor(scene,state.root,state.stride,state.yaw,state.hit,state.guard,armed,ice?"ice":draft?"flame":false);
     const fx = effectMesh(camera);
     const description = drawArt(fx,art,passive,state,time,pose);
     if(phase.textContent!==description) phase.textContent=description;

@@ -1,6 +1,7 @@
 import {add, clamp, cross, ease, mix, mul, norm, polar, pulse, turn, wave} from "./math.js";
 import {weaponTip} from "./render.js";
 import {iceSpike,iceTargets,purification} from "./remake.js";
+import {flameTargets,flameTime,flameWave} from "./flame.js";
 
 const wind = [.53,.93,1], paleWind = [.82,1,.97];
 const leafColors = [[.286,.616,.212],[.471,.769,.302],[.620,.835,.420],[.224,.545,.294]];
@@ -9,18 +10,7 @@ const spiritBlue = [.13,.48,1], spiritIce = [.49,.83,1];
 const carmine = [1,.10,.22], ruby = [.69,.045,.17];
 const recoveryCyan = [86/255,238/255,219/255];
 const sequence = (count,fn) => Array.from({length:count},(_,i) => fn(i/(count-1),i));
-const ember=[1,.43,.10], coal=[.83,.17,.065];
-const attacks={
-  6:{range:6.5,angle:108*Math.PI/360,targets:[[3.4,0,-2.6],[4.8,0,.42],[3.35,0,2.95],[1.4,0,3.25]]},
-};
-const attackTime=t=>wave(t,3.6,0);
-const flameDistance=t=>6.5*ease(.15,.83,t);
-
-export function attackTargets(art) { return art===5?iceTargets:attacks[art]?.targets??[]; }
-function inAttack(art,[x,,z]) {
-  const attack=attacks[art];
-  return Math.hypot(x,z)<=attack.range && Math.abs(Math.atan2(z,x))<=attack.angle;
-}
+export function attackTargets(art) { return art===5?iceTargets:art===6?flameTargets:[]; }
 
 function windRoot(t, passive) {
   const distance = passive ? 2.75 : 3.50;
@@ -35,13 +25,13 @@ function breathRoot(t) {
 const attackTimes = [2.18,4.08,6.02];
 export function performance(art,passive,t) {
   if(art>=5) {
-    const time=art===5?wave(t,3.9,0):attackTime(t);
+    const time=art===5?wave(t,3.9,0):flameTime(t);
     if(art===5) {
       const cast=ease(.49,.68,time)*(1-ease(1.01,1.43,time));
       return {root:[-3.6,0,0],speed:0,stride:0,yaw:Math.PI/2,guard:pulse(time,.025,.36,.76),hit:cast};
     }
     return {root:[-3.6,0,0],speed:0,stride:0,yaw:Math.PI/2,
-      guard:pulse(time,0,.15,.40),hit:pulse(time,.07,.24,.58)};
+      guard:pulse(time,.015,.29,.51),hit:ease(.24,.45,time)*(1-ease(.73,1.10,time))};
   }
   const root = art===0 ? windRoot(t,passive) : art===2 ? breathRoot(t) : [0,0,0];
   const speed = art===0 ? Math.abs(windRoot(t+.03,passive)[0]-root[0])/.03 :
@@ -153,49 +143,6 @@ function renewal(fx,root,t,passive) {
   return "回血 · 青光上行";
 }
 
-function flameWave(fx,root,t) {
-  const time=attackTime(t);
-  const radius=flameDistance(time);
-  const flame=pulse(time,.10,.37,1.03);
-  const edge=attacks[6].angle;
-  const ignition=pulse(time,0,.12,.24);
-  fx.stamp(add(root,[.48,.85,0]),.46,.52,ember,6,ignition*.86,2);
-  for(let layer=0;layer<2;layer++) {
-    const r=Math.max(.18,radius-layer*.31);
-    const crest=sequence(43,u=>{
-      const angle=mix(-edge,edge,u);
-      const push=r*(.986+.014*Math.sin(17*angle+time*9));
-      const taper=.52+.48*Math.sin(u*Math.PI);
-      const y=(.65+.54*Math.pow(.5+.5*Math.sin(u*38+time*9+layer),2))*taper;
-      return [add(root,polar(push,.033,angle)),add(root,polar(push-.15,y,angle))];
-    });
-    for(let i=1;i<crest.length;i++){
-      const [a,b]=crest[i-1], [c,d]=crest[i];
-      const u=(i-1)/(crest.length-1), v=i/(crest.length-1);
-      fx.face([a,b,d,c],[u,u,v,v],layer===0?ember:coal,12,flame*(layer===0?.97:.76),layer*5);
-    }
-    fx.ribbon(sequence(43,u=>add(root,polar(r,.045,mix(-edge,edge,u)))),
-      .065,layer===0?ember:coal,flame*.87,layer,11);
-  }
-  for(let i=0;i<24;i++) {
-    const age=clamp((time-.16-(i%6)*.042)/.85);
-    const angle=mix(-edge,edge,(i*0.618034)%1);
-    const r=Math.max(.06,radius-age*(.48+(i%4)*.33));
-    const point=add(root,polar(r,.12+age*(.48+(i%7)*.16),angle));
-    fx.stamp(point,.12,.073,ember,7,pulse(age,.01,.23,1)*flame,i,angle);
-  }
-  for(const target of attackTargets(6)) {
-    if(!inAttack(6,target) || radius<Math.hypot(target[0],target[2])) continue;
-    const burn=ease(.34,.47,time)*(1-ease(.95,1.87,time));
-    const point=add(root,target);
-    for(let i=0;i<3;i++) {
-      const angle=i*turn/3+time*2;
-      fx.stamp(add(point,polar(.27,.49+i*.21,angle)),.48,.34,i===1?ember:coal,6,burn*.68,i,angle*.16);
-    }
-  }
-  return time<.15?"起火 · 火核压低":time<.86?"推浪 · 108° 扇面":time<1.87?"命中引燃 · 余烬散去":"等待施术";
-}
-
 function gathering(fx,root,t,passive) {
   const event = passive ? wave(t,2.4,.80) : t;
   const strength = passive ? pulse(event,0,.32,.92) : ease(.07,.66,t)*(1-ease(6.74,7.58,t));
@@ -299,6 +246,6 @@ export function drawArt(fx,art,passive,state,t,pose) {
     case 3: return bloodlust(fx,t,passive,pose);
     case 4: return purification(fx,state.root,t,passive);
     case 5: return iceSpike(fx,state.root,t);
-    case 6: return flameWave(fx,state.root,t);
+    case 6: return flameWave(fx,state.root,t,pose);
   }
 }

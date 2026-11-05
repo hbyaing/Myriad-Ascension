@@ -30,6 +30,7 @@ uniform vec3 recoveryTint;
 uniform vec4 groundLight;
 uniform vec4 iceGround;
 uniform vec3 iceContact;
+uniform vec4 flameGround;
 uniform float time;
 layout(location=0) out vec4 frag;
 layout(location=1) out vec4 glow;
@@ -69,6 +70,28 @@ void main(){
     float bounce=groundLight.w*exp(-r*r*2.85)*(.45+.55*max(0.,surface.y));
     bounce*=actor?.31:1.-smoothstep(.09,.65,world.y);
     shaded+=vec3(.29,.185,.063)*bounce;
+  }
+  if(flameGround.w>=0.) {
+    vec2 p=world.xz-flameGround.xy;
+    float r=length(p), angle=abs(atan(p.y,p.x+.00001)), head=flameGround.z;
+    float fan=1.-smoothstep(.82,.960,angle);
+    float relativeAge=flameGround.w-.9*(1.-pow(1.-clamp(r/6.5,0.,1.),.729927));
+    float contact=smoothstep(-.03,.11,relativeAge)*(1.-smoothstep(.88,1.74,relativeAge));
+    float floorLight=(.82*falloff((r-head+.30)*1.53)+.26*falloff((r-head+1.22)*.73))
+      *fan*smoothstep(.17,1.4,head)*(1.-smoothstep(.70,1.34,flameGround.w));
+    float facing=.30+.70*max(0.,surface.y);
+    shaded+=vec3(.57,.205,.042)*floorLight*facing*(1.-smoothstep(.35,2.6,world.y));
+    if(actorSurface>1.5 && surface.y>.65) {
+      vec2 cell=floor(world.xz*26.);
+      float grain=iceGrain(cell*.11+vec2(4.4,8.3));
+      float splatter=iceGrain(cell*.29+8.);
+      float scorched=contact*fan*smoothstep(.6,1.3,r)*(1.-smoothstep(6.42,6.51,r));
+      shaded=mix(shaded,shaded*vec3(.61,.43,.37),scorched*smoothstep(.29,.79,grain)*.72);
+      float cinder=smoothstep(.71,.91,stoneHash(cell))*smoothstep(.48,.79,grain*.68+.32*splatter);
+      float shine=scorched*cinder*(1.-smoothstep(.28,1.25,relativeAge))*(.67+.33*sin(time*9.+splatter*13.));
+      shaded+=vec3(.78,.31,.057)*(shine*.83+floorLight*grain*.30);
+      emissive+=vec3(1.,.39,.066)*(shine*.71+floorLight*.21);
+    }
   }
   if(actorSurface>1.5 && surface.y>.65) {
     vec2 tile=fract(world.xz+.5)-.5;
@@ -212,7 +235,7 @@ export function createRenderer(canvas, vs, fs) {
   if (!gl) throw Error("此浏览器未提供 WebGL 2。");
   const sky = program(gl,skyVertex,skyFragment,[],["daylight","outdoor"]);
   const opaque = program(gl,solidVertex,solidFragment,[["position",3],["normal",3],["tint",3],["character",1]],
-    ["camera","daylight","fog","recovery","recoveryTint","groundLight","iceGround","iceContact","time"]);
+    ["camera","daylight","fog","recovery","recoveryTint","groundLight","iceGround","iceContact","flameGround","time"]);
   const effect = program(gl,vs,fs,[["position",3],["uv",2],["tint",3],["style",3]],
     ["camera","time","opaqueScene","sampleBounds","viewRight","viewUp","viewBack"]);
   const composite = program(gl,skyVertex,compositeFragment,[],["scene","emission","crop"]);
@@ -283,6 +306,7 @@ export function createRenderer(canvas, vs, fs) {
       gl.uniform4fv(opaque.uniforms.groundLight,effects.groundLight);
       gl.uniform4fv(opaque.uniforms.iceGround,effects.iceGround);
       gl.uniform3fv(opaque.uniforms.iceContact,effects.iceContact);
+      gl.uniform4fv(opaque.uniforms.flameGround,effects.flameGround);
       gl.uniform1f(opaque.uniforms.time,time);
       upload(opaque,solid);
       const [x,y,w,h]=rect;
@@ -395,7 +419,18 @@ export function stage(attack=false) {
     box(out,[0,-.20,0],[17,.32,14],[.19,.24,.25]);
     for(let x=-7;x<=7;x++) for(let z=-5;z<=5;z++) {
       const tint=((x*x*7+z*z*19+x*z*3)&7)*.005;
-      box(out,[x,-.045,z],[.977,.095,.977],[.24+tint,.29+tint,.30+tint]);
+      box(out,[x,-.045,z],[.977,.095,.977],[.25+tint,.28+tint,.315+tint],identity,2);
+    }
+    for(let x=-7;x<=7;x++) {
+      const tint=((x*x+11)&7)*.010;
+      box(out,[x,.21,-4.83],[.99,.42,.49],[.24+tint,.27+tint,.29+tint]);
+      box(out,[x,.47,-4.83],[.99,.10,.57],[.32+tint,.35+tint,.37+tint]);
+    }
+    for(const x of [-6.2,5.5]) {
+      box(out,[x,.52,-4.82],[.54,1.05,.54],[.29,.32,.34]);
+      box(out,[x,1.08,-4.82],[.64,.15,.64],[.36,.38,.40]);
+      box(out,[x,1.28,-4.82],[.28,.24,.30],[.40,.23,.14]);
+      box(out,[x,1.28,-4.65],[.15,.15,.046],[.87,.53,.26]);
     }
     return out;
   }
@@ -459,8 +494,10 @@ export function actor(out, root, stride, turn, hit, guard, armed, casting=false)
   for (const side of [-1,1]) {
     body([side*.094,1.688,.197],[.049,.027,.015],[.14,.22,.23]);
     limb([side*.147,.825,0],.745,.21,side*stride,-side*.025,false);
-    const swing=casting==="ice"?(side===1?1.37*hit+.29*guard:.31*guard):armSwing(side,stride,hit,guard);
-    const spread=casting==="ice"?side*(.10+.51*guard):armSpread(side,hit,guard);
+    const swing=casting==="ice"?(side===1?1.37*hit+.29*guard:.31*guard):
+      casting==="flame"?(side===1?1.48*hit+.67*guard:.60*guard+.18*hit):armSwing(side,stride,hit,guard);
+    const spread=casting==="ice"?side*(.10+.51*guard):
+      casting==="flame"?side*(.10+.21*guard):armSpread(side,hit,guard);
     limb(armAnchor(side),armLength,.176,swing,spread,true);
   }
   function limb(anchor,length,width,swing,spread,arm) {
@@ -483,6 +520,7 @@ export function effectMesh(camera) {
   let recovery=[0,0,0,0], recoveryTint=[0,0,0];
   let groundLight=[0,0,1,0];
   let iceGround=[0,0,0,-1];
+  let flameGround=[0,0,0,-1];
   let iceContact=[0,0,0];
   let refractive=false;
   function face(corners, us, color, kind, strength, seed, ys=[-1,1,1,-1]) {
@@ -579,7 +617,8 @@ export function effectMesh(camera) {
       iceGround=[root[0],root[2],front,age];
       iceContact=[target[0],target[2],hitTime];
     },
-    finish:()=>({recovery,recoveryTint,groundLight,iceGround,iceContact,refractive,
+    flameGround:(root,front,age)=>{flameGround=[root[0],root[2],front,age];},
+    finish:()=>({recovery,recoveryTint,groundLight,iceGround,iceContact,flameGround,refractive,
       vertices:surfaces.sort((a,b)=>a.depth-b.depth).flatMap(s=>s.data)}),
   };
 }
