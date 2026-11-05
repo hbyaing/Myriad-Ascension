@@ -31,7 +31,8 @@ public final class ThunderDomainCapture {
     private static final boolean ENABLED=Boolean.getBoolean("wuxingxiantu.thunderDomainCapture");
     private static final Path OUT=Path.of(System.getProperty("wuxingxiantu.myriadCaptureOutput","captures"));
     private static final long START=System.nanoTime();
-    private static boolean opened,ready,finished,capture;
+    private static boolean opened,ready,finished,capture,baseline;
+    private static long drawsBeforeEmission,firstDrawTick;
     private static int stage,ticks,shadowPasses,worldPasses;
     private static CompletableFuture<?> work;
     private static final List<Map<String,Object>> RESULTS=new ArrayList<>();
@@ -47,30 +48,44 @@ public final class ThunderDomainCapture {
             if(!opened&&mc.getOverlay()==null&&(mc.screen instanceof net.minecraft.client.gui.screens.TitleScreen||mc.screen instanceof net.minecraft.client.gui.screens.AccessibilityOnboardingScreen)){
                 opened=true;mc.getWindow().setWindowed(1280,900);mc.options.renderDistance().set(2);mc.options.simulationDistance().set(5);mc.options.framerateLimit().set(40);mc.options.hideGui=true;
                 mc.getTutorial().setStep(net.minecraft.client.tutorial.TutorialSteps.NONE);
-                var rules=new GameRules();rules.getRule(GameRules.RULE_DOMOBSPAWNING).set(false,null);rules.getRule(GameRules.RULE_RANDOMTICKING).set(0,null);
+                var rules=new GameRules();rules.getRule(GameRules.RULE_DOMOBSPAWNING).set(false,null);rules.getRule(GameRules.RULE_RANDOMTICKING).set(0,null);rules.getRule(GameRules.RULE_DAYLIGHT).set(false,null);
                 mc.createWorldOpenFlows().createFreshLevel("thunder-domain-qa-"+System.currentTimeMillis(),new LevelSettings("Thunder domain projection QA",GameType.CREATIVE,false,net.minecraft.world.Difficulty.NORMAL,true,rules,WorldDataConfiguration.DEFAULT),new WorldOptions(7217,false,false),net.minecraft.world.level.levelgen.presets.WorldPresets::createNormalWorldDimensions);
             }
             if(mc.player==null||mc.getOverlay()!=null)return;
             if(work!=null){if(!work.isDone())return;work.join();work=null;}
             if(!ready){
-                ready=true;ticks=0;mc.setScreen(null);mc.options.hideGui=stage<3;mc.mouseHandler.grabMouse();PointerSafety.verify();
+                ready=true;ticks=0;mc.setScreen(null);mc.options.hideGui=stage<4;firstDrawTick=-1;mc.mouseHandler.grabMouse();PointerSafety.verify();
                 int scene=stage;var server=mc.getSingleplayerServer();var id=mc.player.getUUID();
                 work=server.submit(()->{
                     var p=server.getPlayerList().getPlayer(id);var level=p.serverLevel();
                     if(scene==0)for(int x=-16;x<=16;x++)for(int z=-16;z<=16;z++)level.setBlock(new BlockPos(x,159,z),net.minecraft.world.level.block.Blocks.STONE.defaultBlockState(),2);
-                    level.setDayTime(scene==2?18000:6000);level.setWeatherParameters(12000,0,false,false);
+                    level.setDayTime(scene==2||scene==3?18000:6000);level.setWeatherParameters(12000,0,false,false);
                     p.teleportTo(level,scene==1?28:scene==2?-25:0,178,scene==0?40:scene==1?28:32,scene==1?135:scene==2?-142:180,scene==2?8:0);
                     p.setInvulnerable(true);p.getAbilities().flying=true;p.getAbilities().mayfly=true;p.onUpdateAbilities();
                 });return;
             }
-            if(stage<3&&ticks==38){var server=mc.getSingleplayerServer();var id=mc.player.getUUID();server.execute(()->{
-                var p=server.getPlayerList().getPlayer(id);ThunderField.emit(p.serverLevel(),p,new Vec3(0,160,0),7,false,true);
-            });}
-            if(++ticks==46)capture=true;
+            ticks++;
+            if(stage<4){
+                if(ticks==36)baseline=true;
+                if(ticks==38){
+                    drawsBeforeEmission=LightningShaderBridge.draws;
+                    var server=mc.getSingleplayerServer();var id=mc.player.getUUID();
+                    boolean strong=(stage&1)!=0;
+                    server.execute(()->{
+                        var p=server.getPlayerList().getPlayer(id);
+                        ThunderField.emit(p.serverLevel(),p,new Vec3(0,160,0),7,strong,true);
+                    });
+                }
+                if(ticks>38&&LightningShaderBridge.draws>drawsBeforeEmission){
+                    if(firstDrawTick<0)firstDrawTick=mc.level.getGameTime();
+                    capture=mc.level.getGameTime()-firstDrawTick>=3;
+                }
+                if(ticks>90)throw new AssertionError("Thunder packet did not reach the render stage");
+            }else if(ticks==46)capture=true;
         }catch(Throwable error){fail(error);}
     }
     @SubscribeEvent(priority=EventPriority.HIGHEST) public static void hudBackground(RenderGuiEvent.Pre e){
-        if(ENABLED&&!finished&&ready&&stage>=3)e.getGuiGraphics().fill(0,0,520,160,stage==3?0xFFF1E9CB:0xFF17232D);
+        if(ENABLED&&!finished&&ready&&stage>=4)e.getGuiGraphics().fill(0,0,520,160,stage==4?0xFFF1E9CB:0xFF17232D);
     }
     @SubscribeEvent(priority=EventPriority.LOWEST) public static void world(RenderLevelStageEvent e){
         if(!ENABLED||finished||e.getStage()!=RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS)return;
@@ -87,15 +102,23 @@ public final class ThunderDomainCapture {
             "shadowPasses",shadowPasses,"worldPasses",worldPasses);
     }
     @SubscribeEvent(priority=EventPriority.LOWEST) public static void frame(TickEvent.RenderTickEvent e){
-        if(!ENABLED||finished||!capture||e.phase!=TickEvent.Phase.END)return;
+        if(!ENABLED||finished||(!capture&&!baseline)||e.phase!=TickEvent.Phase.END)return;
         try{
             var mc=Minecraft.getInstance();int error=GL11.glGetError();if(error!=0)throw new AssertionError("GL error "+error);
-            try(var image=Screenshot.takeScreenshot(mc.getMainRenderTarget())){image.writeToFile(OUT.resolve(stage<3?"domain-view-"+stage+".png":stage==3?"hud-light.png":"hud-dark.png"));}
-            RESULTS.add(Map.of("scene",stage,"projection",projection,"glError",error,"shaderPack",TrailShaderBridge.shaderPackDetected(),"lateDraws",LightningShaderBridge.draws));
+            String name=stage<4?((stage&1)==0?"a1-":"b2-")+(stage<2?"day":"night"):stage==4?"hud-light":"hud-dark";
+            try(var image=Screenshot.takeScreenshot(mc.getMainRenderTarget())){
+                image.writeToFile(OUT.resolve(name+(baseline?"-baseline":"")+".png"));
+            }
+            if(baseline){baseline=false;return;}
+            boolean shaderPack=TrailShaderBridge.shaderPackDetected();
+            if(shaderPack!=Boolean.getBoolean("wuxingxiantu.myriadExternalShaders"))
+                throw new AssertionError("Unexpected shader pack state: "+shaderPack);
+            RESULTS.add(Map.of("scene",name,"projection",projection,"glError",error,"shaderPack",shaderPack,
+                "lateDraws",LightningShaderBridge.draws,"sceneDraws",stage<4?LightningShaderBridge.draws-drawsBeforeEmission:0));
             double dx=((Number)projection.get("actualAxisDx")).doubleValue()-((Number)projection.get("expectedAxisDx")).doubleValue();
             double dy=((Number)projection.get("actualAxisDy")).doubleValue()-((Number)projection.get("expectedAxisDy")).doubleValue();
-            if(stage<3&&(Math.abs(dx)>.0002||Math.abs(dy)>.0002))throw new AssertionError("Lightning projection differs from world camera: "+projection);
-            capture=false;if(++stage<5){ready=false;return;}
+            if(stage<4&&(Math.abs(dx)>.0002||Math.abs(dy)>.0002))throw new AssertionError("Lightning projection differs from world camera: "+projection);
+            capture=false;if(++stage<6){ready=false;return;}
             PointerSafety.verify();Files.writeString(OUT.resolve("result.json"),new GsonBuilder().setPrettyPrinting().create().toJson(Map.of("passed",true,"scenes",RESULTS,"pointer",PointerSafety.snapshot())));
             finished=true;mc.stop();
         }catch(Throwable error){fail(error);}

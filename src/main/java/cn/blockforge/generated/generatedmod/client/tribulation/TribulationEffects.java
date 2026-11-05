@@ -41,7 +41,13 @@ public final class TribulationEffects {
   if(p.kind()==6)return;
   if(p.kind()==3){ACTIVE.removeIf(f->f.p.owner().equals(p.owner()));return;}
   String id=p.owner()+":"+p.eventId();if(!SEEN.add(id))return;while(SEEN.size()>512)SEEN.remove(SEEN.iterator().next());
-  try(var stream=mc.getResourceManager().open(new ResourceLocation("wuxingxiantu","tribulation/"+(p.kind()==4?"domain":p.kind()==5?"domain_strong":p.kind()==2?"domain_strong":"0"+(p.realm()+1))+".json"))){
+  String recipeName=switch(p.kind()){
+   case 2 -> "domain_strong";
+   case 4 -> "domain";
+   case 5 -> "thunder_art";
+   default -> "0"+(p.realm()+1);
+  };
+  try(var stream=mc.getResourceManager().open(new ResourceLocation("wuxingxiantu","tribulation/"+recipeName+".json"))){
    var r=LightningRecipe.parse(JsonParser.parseReader(new java.io.InputStreamReader(stream,java.nio.charset.StandardCharsets.UTF_8)));r.seed=p.seed();
    List<BoltGeometry> trees=new ArrayList<>();
    if(p.kind()==0||p.kind()==1)for(int i=0;i<Math.min(11,p.count());i++){
@@ -53,7 +59,35 @@ public final class TribulationEffects {
     trees.add(tree);
    }
    if(p.kind()==1){r.durationTicks=30;r.progressionTicks=.5;r.restrikeCount=0;r.flicker=0;}
-   List<RainGeometry.Bolt> rain=List.of();if(p.kind()==2||p.kind()==4||p.kind()==5){r.strikeHeight=Math.max(24,p.start().y-p.end().y);r.strikeDisplacement=3.5;r.strikeRoughness=.625;r.impactEnabled=p.grounded();if(p.kind()==2){r.strikeWidth=.004+p.realm()*.00015;r.coreGain=3.8;r.glowGain=2.4;r.glowWidth=.155;r.durationTicks=30;r.progressionTicks=.5;r.rainStagger=0;r.restrikeCount=6;r.flicker=0;r.impactDuration=Math.min(29,r.impactDuration);r.rainSpread=3+p.realm()*1.5;r.rainDepthSpread=r.rainSpread*.8;r.rainCount=9+p.realm()*2;}else if(p.kind()==5){r.rainCount=15+p.realm();r.rainSpread=8+p.realm()*.5;r.rainDepthSpread=r.rainSpread*.8;r.coreGain*=1.15;r.glowGain*=1.15;}rain=RainGeometry.generate(r,p.end(),(start,end)->{if(!p.grounded())return end;var hit=mc.level.clip(new net.minecraft.world.level.ClipContext(start,end.add(0,-10,0),net.minecraft.world.level.ClipContext.Block.COLLIDER,net.minecraft.world.level.ClipContext.Fluid.NONE,mc.player));return hit.getType()==net.minecraft.world.phys.HitResult.Type.BLOCK?hit.getLocation():end;});}
+   List<RainGeometry.Bolt> rain=List.of();
+   if(p.kind()==2||p.kind()==4||p.kind()==5){
+    r.impactEnabled = p.grounded() && (p.kind()==2 || r.impactEnabled);
+    if(p.kind()==2){
+     // The tribulation finish still uses its existing realm-scaled rain.
+     r.strikeHeight=Math.max(24,p.start().y-p.end().y);
+     r.strikeDisplacement=3.5;
+     r.strikeRoughness=.625;
+     r.strikeWidth=.004+p.realm()*.00015;
+     r.coreGain=3.8;
+     r.glowGain=2.4;
+     r.glowWidth=.155;
+     r.durationTicks=30;
+     r.progressionTicks=.5;
+     r.rainStagger=0;
+     r.restrikeCount=6;
+     r.flicker=0;
+     r.impactDuration=Math.min(29,r.impactDuration);
+     r.rainSpread=3+p.realm()*1.5;
+     r.rainDepthSpread=r.rainSpread*.8;
+     r.rainCount=9+p.realm()*2;
+    }
+    rain=RainGeometry.generate(r,p.end(),(start,end)->{
+     if(!p.grounded())return end;
+     var hit=mc.level.clip(new net.minecraft.world.level.ClipContext(start,end.add(0,-10,0),
+      net.minecraft.world.level.ClipContext.Block.COLLIDER,net.minecraft.world.level.ClipContext.Fluid.NONE,mc.player));
+     return hit.getType()==net.minecraft.world.phys.HitResult.Type.BLOCK?hit.getLocation():end;
+    });
+   }
    ACTIVE.add(new Fx(p,r,trees,p.kind()==0&&p.grounded()?new ImpactGeometry(p.end(),r):null,rain));while(ACTIVE.size()>32)ACTIVE.remove(0);
   }catch(Exception ex){org.slf4j.LoggerFactory.getLogger("TribulationEffects").error("Cannot load tribulation recipe",ex);}
  }
