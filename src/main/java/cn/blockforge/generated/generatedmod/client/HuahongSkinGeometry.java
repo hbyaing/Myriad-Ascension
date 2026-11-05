@@ -14,6 +14,7 @@ import java.util.*;
 final class HuahongSkinGeometry {
     private record Row(Vec3 p,double u,double width,float alpha,int color,Vec3 side){}
     private record Birth(Vec3 p,double tick,double arc,Vec3 direction,long cell){}
+    private record FanSample(Frame frame,double behind,double opacity){}
     private record Cloud(Vec3 p,double seed,double radius,float alpha,int color,int mode){}
     static void linkCarriers(){
         // Define these data carriers before cold world generation is competing
@@ -31,7 +32,6 @@ final class HuahongSkinGeometry {
     private final List<SwordFlightTrailHistory.Node> nodes;
     private final List<SwordFlightTrailHistory.Node> canonical;
     private final Frame[] historyFrames;
-    private final Map<Birth,Frame> fanFrames;
     private final double now,origin;
     private final float strength;
     private final HuahongSkin skin;
@@ -47,7 +47,6 @@ final class HuahongSkinGeometry {
             cameraUp=new Vec3(view.m01(),view.m11(),view.m21()).normalize();
         }else{cameraRight=cameraUp=null;}
         historyFrames=skin==HuahongSkin.DENSE||skin==HuahongSkin.FAN?null:new Frame[nodes.size()];
-        fanFrames=skin==HuahongSkin.FAN?new IdentityHashMap<>():null;
         // DENSE's sprite and FAN's world-birth films never query transport. SMOKE uses
         // at most24.05m, including its zero-alpha last station, with32m reserve.
         path=skin==HuahongSkin.DENSE||skin==HuahongSkin.FAN?null:new HuahongFlightPath(canonical,center,forward,headSide,
@@ -97,21 +96,6 @@ final class HuahongSkinGeometry {
     private static double curve(double a,double b,double c,double q){return a*(1-q)*(1-q)+2*b*q*(1-q)+c*q*q;}
     private double headArc(){return nodes.isEmpty()?0:nodes.get(nodes.size()-1).arc();}
     private static int mix(int a,int b,double t){t=Mth.clamp(t,0,1);return ((int)(((a>>16)&255)*(1-t)+((b>>16)&255)*t)<<16)|((int)(((a>>8)&255)*(1-t)+((b>>8)&255)*t)<<8)|(int)((a&255)*(1-t)+(b&255)*t);}
-    /** Canonical world-arc births survive render-time head clipping and inserted nodes.
-     * Position and birth time are interpolated together; the cell is the identity. */
-    private List<Birth> births(double spacing,double length,double life){
-        var out=new ArrayList<Birth>();if(canonical.size()<2)return out;
-        double start=Math.max(canonical.get(0).arc(),headArc()-length);int i=0;
-        for(long cell=(long)Math.ceil(start/spacing);cell*spacing<=headArc()+1e-8;cell++){
-            double arc=cell*spacing;while(i<canonical.size()-2&&canonical.get(i+1).arc()<arc)i++;
-            var a=canonical.get(i);var b=canonical.get(i+1);double span=b.arc()-a.arc();if(span<1e-8)continue;
-            double t=Mth.clamp((arc-a.arc())/span,0,1),born=a.tick()+(b.tick()-a.tick())*t;
-            if(now-born<0||now-born>life*20)continue;
-            Vec3 direction=vec(b.point()).subtract(vec(a.point()));if(direction.lengthSqr()<1e-10)direction=forward;
-            out.add(new Birth(vec(a.point()).lerp(vec(b.point()),t),born,arc,direction.normalize(),cell));
-        }
-        return out;
-    }
     private List<Row> history(double life,double width,int color,int strand,double spread,boolean oriented){
         return history(life,width,color,strand,spread,oriented,0);
     }
@@ -373,53 +357,68 @@ final class HuahongSkinGeometry {
         }
         strip(haze,10,true);strip(hot,22,true);
     }
-    private record FanPoint(Vec3 p,Vec3 normal,double half,double alpha,double phase,double life){}
-    private FanPoint fanPoint(Birth h,int j,int sign,double age,double u){
+    private static final double FAN_OPENING_SPEED=11.5,FAN_LIFETIME=2.4,FAN_FLOW_SPEED=.5;
+    private record FanPoint(Vec3 p,Vec3 normal,double alpha,double phase){}
+    private List<FanSample> fanSamples(){
+        if(canonical.size()<2)return List.of();
+        double length=FAN_OPENING_SPEED*FAN_LIFETIME;
+        double head=headArc();
+        var history=SwordFlightTrailHistory.uniformHead(canonical,.175,length);
+        var curve=new FlightTrailCurve(canonical,vec(canonical.get(canonical.size()-1).point()),forward);
+        var samples=new ArrayList<FanSample>();
+        for(var node:history){
+            double behind=head-node.arc();
+            if(behind>length+1e-8)continue;
+            var sample=curve.at(behind);
+            Vec3 f=sample.forward(),s=side(f);
+            // Age only retires the underlying history. It never drives the
+            // displayed opening, or makes a wave follow the rider's speed.
+            double opacity=1-smooth(1.85,FAN_LIFETIME,(now-node.tick())/20);
+            samples.add(new FanSample(new Frame(sample.point(),f,s,s.cross(f).normalize()),behind,opacity));
+        }
+        return samples;
+    }
+    private double fanFlow(FanSample sample){
+        return -sample.behind()+now/20*FAN_FLOW_SPEED;
+    }
+    private FanPoint fanPoint(FanSample h,int j,int sign,double age,double u){
         double rank=(j+.55)/3.15,phase=j*1.79+(sign<0?.94:0);
         double life=2.4*(.43+.43*(1-rank))*(sign>0?1:.92),v=Mth.clamp(1-age/life,0,1);
-        double open=1-Math.exp(-age*2.208),arc=h.arc();
-        // Arc age shapes the silhouette. Real elapsed time drives the silk's
-        // motion, so moving faster cannot speed up the oscillation.
-        double elapsed=Math.max(0,(now-h.tick())/20);
-        // Birth basis comes only from its immutable canonical world segment.
-        // Banking the current sword must never rotate already emitted gauze.
-        Frame basis=fanFrames.computeIfAbsent(h,b->{Vec3 f=b.direction(),s=side(f);return new Frame(b.p(),f,s,s.cross(f).normalize());});
+        double open=1-Math.exp(-age*2.208),flow=fanFlow(h);
+        Frame basis=h.frame();
         Vec3 f=basis.forward(),s=basis.side(),up=basis.up();
-        double lateral=(.014+1.6*(.26+rank*1.45)*open)*(1+.08*Math.sin(arc*.27+phase-elapsed*.55)*open);
-        double wave=(Math.sin(arc*.21+phase-elapsed*.68)*.36+Math.sin(arc*.48+phase*1.7-elapsed*.92)*.055)*open;
-        double half=(.045+.43*(.50+.60*(1-rank)))*smooth(0,.21,age)*Math.pow(v,.65)*(1+.20*Math.sin(arc*.32+phase));
+        double lateral=(.014+1.6*(.26+rank*1.45)*open)*(1+.08*Math.sin(flow*.27+phase)*open);
+        double wave=(Math.sin(flow*.21+phase)*.36+Math.sin(flow*.48+phase*1.7)*.055)*open;
+        double half=(.045+.43*(.50+.60*(1-rank)))*smooth(0,.21,age)*Math.pow(v,.65)*(1+.20*Math.sin(flow*.32+phase));
         // Separate birth-anchored azimuths form an open spatial fan. Previously
         // every centre used the same .79/.61 diagonal, so all films shared a plane.
         double azimuth=.15+(j-1)*.78+(sign<0?Math.PI:0);
         Vec3 radial=s.scale(Math.cos(azimuth)).add(up.scale(Math.sin(azimuth))),around=f.cross(radial).normalize();
-        double roll=.25+sign*.32+Math.sin(arc*.20+phase-elapsed*.55)*.45+age*.24;
+        double roll=.25+sign*.32+Math.sin(flow*.20+phase)*.45+age*.24;
         Vec3 across=radial.scale(Math.cos(roll)).add(around.scale(Math.sin(roll))),normal=f.cross(across).normalize();
-        double curlGain=.80+.42*Math.sin(arc*.35+phase-elapsed*.72);
+        double curlGain=.80+.42*Math.sin(flow*.35+phase);
         double curl=half*(u*u-.27)*curlGain;
-        double wrinkle=(.015*Math.sin(arc*.92+u*2.5+phase-elapsed*.85)+.012*Math.sin(arc*.65-u*3.2+phase*.6))*open;
-        Vec3 p=h.p().add(f.scale((.12*Math.exp(-age*7)-half*.22*(1-u*u)*open)*HuahongHeadBridge.BODY_SCALE))
+        double wrinkle=(.015*Math.sin(flow*.92+u*2.5+phase)+.012*Math.sin(flow*.65-u*3.2+phase*.6))*open;
+        Vec3 p=basis.p().add(f.scale((.12*Math.exp(-age*7)-half*.22*(1-u*u)*open)*HuahongHeadBridge.BODY_SCALE))
                 .add(radial.scale(lateral*HuahongHeadBridge.BODY_SCALE)).add(around.scale(wave*.55*HuahongHeadBridge.BODY_SCALE))
                 .add(up.scale(-age*.06*HuahongHeadBridge.BODY_SCALE))
                 .add(across.scale(half*u*HuahongHeadBridge.BODY_SCALE)).add(normal.scale((curl+wrinkle)*HuahongHeadBridge.BODY_SCALE));
         Vec3 du=across.scale(half).add(normal.scale(2*half*u*curlGain)).add(f.scale(half*.44*u*open));
-        return new FanPoint(p,f.cross(du).normalize(),half,Math.pow(v,1.8)*(1-.22*rank),phase,life);
+        return new FanPoint(p,f.cross(du).normalize(),h.opacity()*Math.pow(v,1.8)*(1-.22*rank),phase);
     }
-    private static final double FAN_OPENING_SPEED=11.5;
-    private double fanAge(Birth h){return Math.max((now-h.tick())/20,(headArc()-h.arc())/FAN_OPENING_SPEED);}
     private void fan(){
         // V7 fan-lookdev.js: nine columns per open curled film, asymmetric
         // life, full-arc end caps, two embedded ridges and four diffuse wisps.
-        var births=births(.175,FAN_OPENING_SPEED*2.4,2.4);double materialOrigin=Math.floor(headArc()/256)*256;
+        var samples=fanSamples();
+        if(samples.size()<4)return;
         for(int sign:new int[]{-1,1})for(int j=0;j<3;j++){
-            var valid=new ArrayList<Birth>();
             double life=2.4*(.43+.43*(1-(j+.55)/3.15))*(sign>0?1:.92);
-            for(var b:births)if(fanAge(b)<life)valid.add(b);
-            if(valid.size()<4)continue;
-            double[] arc=new double[valid.size()];for(int i=1;i<arc.length;i++)arc[i]=arc[i-1]+valid.get(i).p().distanceTo(valid.get(i-1).p());
-            double total=arc[arc.length-1],cap=Math.min(1.35,total*.22);
+            double total=Math.min(samples.get(0).behind(),life*FAN_OPENING_SPEED);
+            double cap=Math.min(1.35,total*.22);
             Vec3[] previous=null;float oldAlpha=0;int[] oldColors=null;double oldU=0;
-            for(int i=0;i<valid.size();i++){
-                Birth b=valid.get(i);double age=fanAge(b),fade=smooth(0,cap,arc[i])*smooth(0,cap,total-arc[i]);
+            for(var b:samples){
+                if(b.behind()>total)continue;
+                double age=b.behind()/FAN_OPENING_SPEED,fade=smooth(0,cap,b.behind())*smooth(0,cap,total-b.behind());
                 Vec3[] row=new Vec3[9];int[] colors=new int[9];FanPoint q=null;
                 for(int k=0;k<=8;k++){
                     q=fanPoint(b,j,sign,age,(k/4.0-1)*Math.pow(fade,.6));row[k]=q.p();
@@ -428,7 +427,7 @@ final class HuahongSkinGeometry {
                     colors[k]=mix(0xefb75e,0xfff5d9,.16+.20*(1-age/life)+rim*.42);
                 }
                 float alpha=(float)(strength*q.alpha()*fade*.72);
-                double u=b.arc()-materialOrigin+q.phase()*2.2;
+                double u=-b.behind()+q.phase()*2.2;
                 if(previous!=null)for(int k=0;k<8;k++){
                     vertex(previous[k],oldU,28+k/8.0,oldAlpha,oldColors[k]);vertex(previous[k+1],oldU,28+(k+1)/8.0,oldAlpha,oldColors[k+1]);
                     vertex(row[k+1],u,28+(k+1)/8.0,alpha,colors[k+1]);vertex(row[k],u,28+k/8.0,alpha,colors[k]);
@@ -437,17 +436,20 @@ final class HuahongSkinGeometry {
             }
             for(double ridge:new double[]{-.32,.41}){
                 var rows=new ArrayList<Row>();
-                for(var b:valid){double age=fanAge(b);var q=fanPoint(b,j,sign,age,ridge+.09*Math.sin(b.arc()*.42+j));
-                    rows.add(new Row(q.p(),b.arc()-materialOrigin+q.phase(),(.005+.36*.017)*(.2+.8*Mth.clamp(1-age/life,0,1)),
-                        (float)(strength*q.alpha()*(.5+.5*smooth(-.5,1,Math.sin(b.arc()*.35+j)))*(j==0?.23:.15)),0xffe6b4,null));}
+                for(var b:samples){
+                    if(b.behind()>total)continue;
+                    double age=b.behind()/FAN_OPENING_SPEED,flow=fanFlow(b);
+                    var q=fanPoint(b,j,sign,age,ridge+.09*Math.sin(flow*.42+j));
+                    rows.add(new Row(q.p(),-b.behind()+q.phase(),(.005+.36*.017)*(.2+.8*Mth.clamp(1-age/life,0,1)),
+                        (float)(strength*q.alpha()*smooth(0,cap,b.behind())*smooth(0,cap,total-b.behind())
+                                *(.5+.5*smooth(-.5,1,Math.sin(flow*.35+j)))*(j==0?.23:.15)),0xffe6b4,null));}
                 strip(rows,38);
             }
         }
         for(int sign:new int[]{-1,1})for(int j=0;j<2;j++){
-            var rows=new ArrayList<Row>();for(var b:births){double age=fanAge(b),v=Mth.clamp(1-age/2.4,0,1);var q=fanPoint(b,j,sign,age,.25);
-                Vec3 up=side(b.direction()).cross(b.direction()).normalize();
-                rows.add(new Row(q.p().add(up.scale(smooth(.65,2.2,age)*(j==0?.24:-.22)*HuahongHeadBridge.BODY_SCALE)),b.arc()-materialOrigin+j*1.4,
-                    (.009+.36*.026)*(.2+.8*v),(float)(strength*Math.pow(v,2.4)*smooth(0,.10,age)*.13),0xc7ad7e,null));}
+            var rows=new ArrayList<Row>();for(var b:samples){double age=b.behind()/FAN_OPENING_SPEED,v=Mth.clamp(1-age/FAN_LIFETIME,0,1);var q=fanPoint(b,j,sign,age,.25);
+                rows.add(new Row(q.p().add(b.frame().up().scale(smooth(.65,2.2,age)*(j==0?.24:-.22)*HuahongHeadBridge.BODY_SCALE)),-b.behind()+j*1.4,
+                    (.009+.36*.026)*(.2+.8*v),(float)(strength*b.opacity()*Math.pow(v,2.4)*smooth(0,.10,age)*.13),0xc7ad7e,null));}
             strip(rows,38);
         }
     }
@@ -477,9 +479,12 @@ final class HuahongSkinGeometry {
         // the current head. Both retain live density animation and soft aging.
         for(var b:HuahongFlowField.worldParcels(canonical,now)){
             Vec3 p=new Vec3(b.x(),b.y(),b.z());float a=(float)(strength*b.alpha());
-            clouds.add(new Cloud(p,Math.floorMod(b.id(),64),b.radius(),a,0x060101,30));
+            // Neighboring coverage samples share the same material during
+            // their emission interval, regardless of blocks flown per tick.
+            int seed=Math.floorMod((long)Math.floor(b.birthTick()/8),64);
+            clouds.add(new Cloud(p,seed,b.radius(),a,0x060101,30));
             float crimson=(float)(b.crimson()*smooth(.20,.55,b.crimson()));
-            if(crimson>0)clouds.add(new Cloud(p,Math.floorMod(b.id()+19,64),b.radius()*.48,a*crimson*.24F,0xce252f,20));
+            if(crimson>0)clouds.add(new Cloud(p,(seed+19)%64,b.radius()*.48,a*crimson*.24F,0xce252f,20));
         }
         // The head is broad dark smoke with a small red fracture, never a white
         // nucleus. These layers disappear with the local transformation fade.

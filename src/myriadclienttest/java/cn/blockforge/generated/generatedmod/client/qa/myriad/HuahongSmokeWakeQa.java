@@ -15,7 +15,14 @@ final class HuahongSmokeWakeQa {
   var next=new HashMap<Long,HuahongFlowField.WorldParcel>();for(var p:HuahongFlowField.worldParcels(turned,101.25+20./120))next.put(p.id(),p);double step=0,motion=0;
   for(var p:b.values()){var q=next.get(p.id());if(q==null)continue;double d=Math.sqrt(Math.pow(p.x()-q.x(),2)+Math.pow(p.y()-q.y(),2)+Math.pow(p.z()-q.z(),2));step=Math.max(step,d);motion+=d;}
   if(step>.03||motion<1e-4)throw new AssertionError("World smoke drift frozen/discontinuous: "+step+" / "+motion);
-  return Map.of("passed",true,"matchedPastBirths",matches,"maxPastBirthPositionErrorAfterTurn",error,"max120FpsWorldDrift",step,"nonzeroDrift",motion,"scope","Actual worldParcels used by renderer, identical old path followed by straight versus90deg future heading; old positions stay fixed while time-driven diffusion remains live. Visual/video acceptance separate.");
+  double crimsonStep=0,radiusStep=0;
+  for(int i=1;i<a.size();i++){
+   var p=a.get(i-1);var q=a.get(i);
+   crimsonStep=Math.max(crimsonStep,Math.abs(p.crimson()-q.crimson()));
+   radiusStep=Math.max(radiusStep,Math.abs(p.radius()-q.radius()));
+  }
+  if(crimsonStep>.01||radiusStep>.01)throw new AssertionError("Adjacent smoke coverage parcels still produce high-frequency pulses");
+  return Map.of("passed",true,"matchedPastBirths",matches,"maxPastBirthPositionErrorAfterTurn",error,"max120FpsWorldDrift",step,"nonzeroDrift",motion,"maxAdjacentCrimsonStep",crimsonStep,"maxAdjacentRadiusStep",radiusStep,"scope","Actual world parcels on straight and turning flight history. Old world positions stay fixed through a future turn, while diffusion stays live and adjacent fast-flight coverage samples blend coherently.");
  }
  private HuahongSmokeWakeQa(){}
 }

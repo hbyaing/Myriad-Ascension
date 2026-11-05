@@ -17,14 +17,19 @@ public final class HuahongFlowField {
             var a=path.get(cursor);var b=path.get(cursor+1);double span=b.arc()-a.arc();if(span<1e-9)continue;
             double t=Math.max(0,Math.min(1,(arc-a.arc())/span)),born=a.tick()+(b.tick()-a.tick())*t,age=(now-born)/20,behind=head-arc;
             if(age<0||age>=1.8)continue;
-            double join=smooth((behind-7)/9),end=1-smooth((behind-55)/29),life=1-smooth((age-1.2)/.6);
+            double join=smooth((behind-7)/10),end=1-smooth((behind-55)/29),life=1-smooth((age-1.2)/.6);
             double alpha=.18*join*end*life*Math.exp(-age/1.45);if(alpha<.0005)continue;
-            double seed=hash(id),other=hash(id+419),phase=seed*TAU+age*(2.1+other*.9),scatter=.08+.20*smooth(age/.6);
+            // The distance lattice supplies coverage. A coherent birth-time
+            // profile supplies motion, so faster travel cannot sweep past a
+            // new random radius, roll and crimson pulse every .55 blocks.
+            double birthSeconds=born/20;
+            double seed=.5+.5*Math.sin(birthSeconds*2.3);
+            double phase=birthSeconds*1.35+age*2.35,scatter=.08+.20*smooth(age/.6);
             var p=a.point().lerp(b.point(),t);double dx=b.point().x()-a.point().x(),dy=b.point().y()-a.point().y(),dz=b.point().z()-a.point().z(),length=Math.sqrt(dx*dx+dy*dy+dz*dz);
             double drift=length>1e-8?-.8*age/length:0;
             double radius=(.42+.16*seed)*(1+.54*smooth(behind/60));
             result.add(new WorldParcel(id,born,age,behind,p.x()+dx*drift+Math.cos(phase)*scatter,p.y()+dy*drift+Math.sin(phase*1.31)*scatter+age*.12,p.z()+dz*drift+Math.sin(phase)*scatter,radius,alpha,
-                    Math.exp(-age*.6)*(.2+.8*Math.pow(.5+.5*Math.sin(phase*1.3+other*TAU),2))));
+                    Math.exp(-age*.6)*(.54+.29*Math.sin(phase+.5*Math.sin(birthSeconds*1.9)))));
         }
         return result;
     }
