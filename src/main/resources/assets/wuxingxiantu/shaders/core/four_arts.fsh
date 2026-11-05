@@ -67,9 +67,13 @@ void main() {
         float fork=abs(fract(u*5.6-abs(side)*.83)-.5);
         float lateralVeins=gaussian(fork*18.)*smoothstep(.06,.19,abs(side))*(1.-smoothstep(.38,.83,abs(side)));
         float fold=.70+.21*tanh(-side*7.)+.11*sin(u*5.1+seed);
-        alpha=silhouette*.94;
-        core=silhouette*(centerVein*.22+lateralVeins*.09);
-        hue=mix(hue*fold,vec3(.66,.87,.35),.54*centerVein+.32*lateralVeins);
+        float rim=gaussian((distanceToEdge+.045)*18.);
+        float detail=.52*centerVein+.24*lateralVeins+.32*rim;
+        alpha=silhouette*(.31+.25*detail)*strength;
+        vec3 blade=mix(hue*fold,vec3(.56,1.,.46),detail);
+        vec3 glow=vec3(.35,.96,.28)*silhouette*(.16+.84*detail)*strength;
+        frag=vec4(blade*alpha+glow*.32,alpha);
+        return;
     } else if (kind < 2.5) {
         vec2 v=vec2(p.x*2.-1.,p.y);
         float r=length(v), a=atan(v.y,v.x);
