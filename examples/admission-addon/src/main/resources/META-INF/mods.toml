@@ -1,0 +1,14 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="All Rights Reserved"
+[[mods]]
+modId="myriad_admission_example"
+version="0.1"
+displayName="Myriad Admission Integration Example"
+description='''Optional operator-only admission probe. Not part of the production Myriad JAR.'''
+[[dependencies.myriad_admission_example]]
+modId="wuxingxiantu"
+mandatory=true
+versionRange="[0.2,)"
+ordering="AFTER"
+side="SERVER"
