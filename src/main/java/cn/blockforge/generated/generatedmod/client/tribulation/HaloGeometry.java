@@ -50,9 +50,13 @@ final class HaloGeometry {
         return build(points,prepare(actualClip,width,height),recipe,halo);
     }
     static Mesh build(List<Point> points, Projection projection, LightningRecipe recipe, boolean halo) {
+        return build(points,projection,recipe,halo,false);
+    }
+    static Mesh build(List<Point> points, Projection projection, LightningRecipe recipe, boolean halo, boolean combat) {
         if(points==null||points.size()<2||projection==null)return emptyMesh();
         Matrix4d clip=projection.clip(),inverse=projection.inverse();
         int width=projection.width(),height=projection.height();
+        double halfLimit=combat?(halo?12.0:2.4)*height/900.0:Double.POSITIVE_INFINITY;
         var palette=LightningAppearance.palette(recipe,halo);
         var body = new ArrayList<Vertex>((points.size() - 1) * 4);
         var round = new ArrayList<Vertex>(Math.max(0, points.size() - 2) * 4);
@@ -75,6 +79,8 @@ final class HaloGeometry {
             if (!(unitA > 0) || !(unitB > 0)) continue;
             double nativeA = a.radius() / unitA, nativeB = b.radius() / unitB;
             if (!positiveFinite(nativeA) || !positiveFinite(nativeB)) continue;
+            nativeA = limitHalfWidth(nativeA,halfLimit);
+            nativeB = limitHalfWidth(nativeB,halfLimit);
             double renderedA = Math.max(MIN_HALF_PIXELS, nativeA), renderedB = Math.max(MIN_HALF_PIXELS, nativeB);
             float coverageA = (float)(nativeA / renderedA), coverageB = (float)(nativeB / renderedB);
             if (!(coverageA > 0) || !(coverageB > 0)) continue;
@@ -115,6 +121,8 @@ final class HaloGeometry {
             if (!(unitX > 0) || !(unitY > 0)) continue;
             double nativeX = point.radius() / unitX, nativeY = point.radius() / unitY;
             if (!positiveFinite(nativeX) || !positiveFinite(nativeY)) continue;
+            nativeX = limitHalfWidth(nativeX,halfLimit);
+            nativeY = limitHalfWidth(nativeY,halfLimit);
             double renderedX = Math.max(MIN_HALF_PIXELS, nativeX), renderedY = Math.max(MIN_HALF_PIXELS, nativeY);
             // A disk expands in two axes, so its integrated-energy correction
             // is an area ratio, rather than the strip's one-dimensional ratio.
@@ -134,6 +142,14 @@ final class HaloGeometry {
             extent.include(corners);
         }
         return new Mesh(List.copyOf(body), List.copyOf(round), extent.bounds(width, height));
+    }
+
+    private static double limitHalfWidth(double pixels,double limit) {
+        // Keep the original width below the knee and match its slope at the transition.
+        double knee=limit*.8;
+        if(pixels<=knee)return pixels;
+        double shoulder=limit-knee;
+        return knee-shoulder*Math.expm1((knee-pixels)/shoulder);
     }
 
     private static Mesh emptyMesh() { return new Mesh(List.of(), List.of(), new Bounds(0, 0, 0, 0)); }

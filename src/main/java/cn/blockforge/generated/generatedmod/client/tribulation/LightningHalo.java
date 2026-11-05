@@ -45,14 +45,16 @@ final class LightningHalo {
                      Matrix4f pose,int width,int height,boolean translucent){
         drawLayer(paths,recipe,projection,pose,width,height,true,translucent);
     }
-    static boolean drawCore(List<List<HaloGeometry.Point>> paths,LightningRecipe recipe,HaloGeometry.Projection projection,Matrix4f pose,int width,int height){
-        return drawLayer(paths,recipe,projection,pose,width,height,false,false);
+    static boolean drawCore(List<List<HaloGeometry.Point>> paths,LightningRecipe recipe,HaloGeometry.Projection projection,
+                            Matrix4f pose,int width,int height,boolean combat){
+        return drawLayer(paths,recipe,projection,pose,width,height,false,combat);
     }
-    private static boolean drawLayer(List<List<HaloGeometry.Point>> paths,LightningRecipe recipe,HaloGeometry.Projection projection,Matrix4f pose,int width,int height,boolean halo,boolean translucent){
+    private static boolean drawLayer(List<List<HaloGeometry.Point>> paths,LightningRecipe recipe,HaloGeometry.Projection projection,Matrix4f pose,int width,int height,boolean halo,boolean combat){
         if(profile==null||composite==null||paths.isEmpty()||(halo?recipe.glowGain:recipe.coreGain)<=0)return false;
         var main=Minecraft.getInstance().getMainRenderTarget();
         // Leave alternate framebuffer owners to an explicit integration adapter.
         if(GL11.glGetInteger(GL30.GL_DRAW_FRAMEBUFFER_BINDING)!=main.frameBufferId||main.getDepthTextureId()<0)return false;
+        boolean translucent=halo&&combat;
         boolean vividCore=!halo&&LightningAppearance.vividCore(recipe);
         long started=PROBES?System.nanoTime():0;
         try(State state=new State()){
@@ -71,7 +73,7 @@ final class LightningHalo {
             GL30.glBlitFramebuffer(0,0,main.width,main.height,0,0,scratch.width,scratch.height,GL11.GL_DEPTH_BUFFER_BIT,GL11.GL_NEAREST);
             }
             for(var path:paths){
-                var mesh=HaloGeometry.build(path,projection,recipe,halo);
+                var mesh=HaloGeometry.build(path,projection,recipe,halo,combat);
                 var bounds=mesh.bounds();
                 if(bounds.width()<=0||bounds.height()<=0)continue;
                 if(PROBES){framePaths++;frameBodyQuads+=mesh.body().size()/4;frameRoundQuads+=mesh.round().size()/4;}
