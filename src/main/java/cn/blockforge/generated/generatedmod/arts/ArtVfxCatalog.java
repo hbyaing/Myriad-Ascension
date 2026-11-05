@@ -10,18 +10,14 @@ public final class ArtVfxCatalog {
     public static Recipe recipe(String id) {
         return switch (id) {
             case "art_sword_aura" -> new Recipe("ink_crescent", "pierce_diamond", "spark_needle", 0xA7F0FF);
-            case "art_renewal" -> new Recipe("branch_bloom", "seed_pod", "leaf", 0x79DFA0);
             case "art_spirit_shield" -> new Recipe("shield_hex", "meridian_knot", "spark_soft", 0xA7F0FF);
             case "art_immobilize" -> new Recipe("root_lattice", "chain_barb", "seal_glyph", 0xFFD167);
-            case "art_light_body" -> new Recipe("feather_lift", "wind_curl", "wind_streak", 0xB6E4D9);
             case "art_golden_bell" -> new Recipe("bell_shell", "armor_scale", "coin_charm", 0xFFD167);
             case "art_ice_spike" -> new Recipe("ice_lance", "frost_fern", "snow_crystal", 0x64CFEF);
-            case "art_spirit_gathering" -> new Recipe("meridian_knot", "seed_pod", "spark_soft", 0x79DFA0);
             case "art_armor_break" -> new Recipe("pierce_diamond", "armor_scale", "sword_cross", 0xFFD167);
             case "art_flame_wave" -> new Recipe("fire_brush", "heat_wisp", "ember_fragment", 0xFF793D);
             case "art_flash_step" -> new Recipe("thought_rift", "feather_lift", "lens_crescent", 0xA88DFF);
             case "art_purification" -> new Recipe("lotus", "glyph_purge", "talisman_ash", 0xA7F0FF);
-            case "art_bloodlust" -> new Recipe("blood_fang", "karma_petal", "heart_fissure", 0xEE5870);
             case "art_thunder" -> new Recipe("lightning_branch", "thunder_core", "spark_needle", 0xA88DFF);
             case "art_myriad_swords" -> new Recipe("sword_fan", "sword_ghost", "pierce_diamond", 0xFFD167);
             case "art_wanjian_guizong" -> new Recipe("sword_fan", "sword_ghost", "pierce_diamond", 0xFFD167);
@@ -42,6 +38,7 @@ public final class ArtVfxCatalog {
     public static Set<String> materials() {
         Set<String> result = new LinkedHashSet<>(ELEMENTS);
         for (var entry : cn.blockforge.generated.generatedmod.ArtCatalog.ENTRIES) {
+            if (FourArtsVisuals.replaces(entry.id())) continue;
             Recipe r = recipe(entry.id());
             result.add(r.body()); result.add(r.accent()); result.add(r.debris());
         }

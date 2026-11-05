@@ -101,7 +101,7 @@ public final class ArtVisualEffects {
                     double a=i*Math.PI/4;
                     if (p.art().equals("art_sword_guard")) a=i*Math.PI/3 + .12D;
                     Vec3 point=p.start().add(Math.cos(a)*p.size()*.55,-.45,Math.sin(a)*p.size()*.55);
-                    Vec3 velocity=p.art().equals("art_spirit_gathering")?p.start().subtract(point).scale(.05):new Vec3(0,.025,0);
+                    Vec3 velocity=new Vec3(0,.025,0);
                     spawn(level,r.accent(),point,velocity,.25,.4,16,r.color(),false,Vec3.ZERO,(float)a);
                     if (p.art().equals("art_sword_guard")) spawn(level,r.debris(),point.add(0,.22,0),Vec3.ZERO,.34,.75,14,r.color(),false,new Vec3(0,1,0),(float)a);
                 }

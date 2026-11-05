@@ -12,6 +12,7 @@ public final class RenderResourceLifecycle {
         SpiritGuardArmorRenderer.release();SoulPlayerVisuals.clearNativeCaches();
         cn.blockforge.generated.generatedmod.client.firecoil.Client.reset();
         TrailShaderBridge.release();
+        cn.blockforge.generated.generatedmod.client.arts.FourArtsEffects.release();
         HeavenlyFurnaceGpu.release();
         HeavenlyFurnaceVisuals.releaseMaterials();
         cn.blockforge.generated.generatedmod.client.realmflight.MeteorBloomRenderer.release();

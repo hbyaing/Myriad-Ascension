@@ -70,6 +70,7 @@ if (project.hasProperty('myriadCapture')) {
             if (project.hasProperty('reforgeCapture')) { property 'wuxingxiantu.reforgeCapture', 'true'; property 'wuxingxiantu.myriadCapture', 'false' }
             if (project.hasProperty('senseHeavenlyCapture')) { property 'wuxingxiantu.senseHeavenlyCapture', 'true'; property 'wuxingxiantu.myriadCapture', 'false' }
             if (project.hasProperty('senseEffectsCapture')) { property 'wuxingxiantu.senseEffectsCapture', 'true'; property 'wuxingxiantu.myriadCapture', 'false' }
+            if (project.hasProperty('fourArtsCapture')) { property 'wuxingxiantu.fourArtsCapture', 'true'; property 'wuxingxiantu.myriadCapture', 'false' }
             if (project.hasProperty('mindscapeCapture')) {
                 property 'wuxingxiantu.mindscapeCapture', 'true'
                 property 'wuxingxiantu.myriadCapture', 'false'

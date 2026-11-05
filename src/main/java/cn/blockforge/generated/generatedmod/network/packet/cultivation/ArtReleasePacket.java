@@ -4,6 +4,7 @@ import cn.blockforge.generated.generatedmod.items.CultivationLogic;
 import cn.blockforge.generated.generatedmod.ArtCatalog;
 import cn.blockforge.generated.generatedmod.items.HumanEmperorBannerItem;
 import cn.blockforge.generated.generatedmod.arts.ArtParticleLibrary;
+import cn.blockforge.generated.generatedmod.arts.FourArtsVisuals;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -100,7 +101,9 @@ public record ArtReleasePacket(int slot) {
             if (art.equals("art_flame_wave")) damage *= cn.blockforge.generated.generatedmod.balance.HeartMethodBalance.fireDamageMultiplier(
                     cn.blockforge.generated.generatedmod.ProgressionGate.effectiveHeartMethod(player,GeneratedMod.data(player)));
             if (art.equals("art_renewal") || art.equals("art_purification")) {
-                player.heal(ArtCatalog.currentHealing(art, mastery));
+                float healing=ArtCatalog.currentHealing(art, mastery);
+                if (art.equals(FourArtsVisuals.RENEWAL)) FourArtsVisuals.renew(player,healing);
+                else player.heal(healing);
                 if (art.equals("art_purification")) {
                     // Copy first: removing effects mutates the live collection.
                     for (var effect : java.util.List.copyOf(player.getActiveEffects())) {
@@ -120,7 +123,8 @@ public record ArtReleasePacket(int slot) {
             }
             if (art.equals("art_light_body")) {
                 player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
-                        net.minecraft.world.effect.MobEffects.MOVEMENT_SPEED, buffTicks, 1));
+                        net.minecraft.world.effect.MobEffects.MOVEMENT_SPEED, buffTicks, 1, false, false, true));
+                FourArtsVisuals.cast(player,art,buffTicks);
             }
             if (art.equals("art_flash_step")) {
                 player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
@@ -130,11 +134,13 @@ public record ArtReleasePacket(int slot) {
             }
             if (art.equals("art_spirit_gathering")) {
                 player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
-                        net.minecraft.world.effect.MobEffects.REGENERATION, buffTicks, 1));
+                        net.minecraft.world.effect.MobEffects.REGENERATION, buffTicks, 1, false, false, true));
+                FourArtsVisuals.cast(player,art,buffTicks);
             }
             if (art.equals("art_bloodlust") || art.equals("art_human_harmony")) {
                 player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
-                        net.minecraft.world.effect.MobEffects.DAMAGE_BOOST, buffTicks, tier == 4 ? 2 : 1));
+                        net.minecraft.world.effect.MobEffects.DAMAGE_BOOST, buffTicks, tier == 4 ? 2 : 1, false, !art.equals(FourArtsVisuals.BLOOD), true));
+                if (art.equals(FourArtsVisuals.BLOOD)) FourArtsVisuals.cast(player,art,buffTicks);
             }
             if (art.equals("art_immobilize")) {
                 int controlTicks = (2 + masteryLevel / 2) * 20;
@@ -205,11 +211,11 @@ public record ArtReleasePacket(int slot) {
                     }
                 }
             }
-            if(!art.equals("art_thunder"))emitArtParticles(level, player, art, tier);
+            if(!art.equals("art_thunder") && !FourArtsVisuals.replaces(art)) emitArtParticles(level, player, art);
         }
 
         /** 每种功法使用不同的粒子组合，保证释放时能立即辨认技能类型。 */
-        private static void emitArtParticles(ServerLevel level, ServerPlayer player, String art, int tier) {
+        private static void emitArtParticles(ServerLevel level, ServerPlayer player, String art) {
             if (art.equals("art_spirit_shield")) return;
             net.minecraft.world.phys.Vec3 origin = player.position().add(0.0D, 1.0D, 0.0D);
             net.minecraft.world.phys.Vec3 end = origin.add(player.getLookAngle().scale(
@@ -225,53 +231,5 @@ public record ArtReleasePacket(int slot) {
             } else {
                 ArtParticleLibrary.emit(level, art, ArtVisualPacket.AURA, origin, origin, 1.8D, 0);
             }
-            return;
-            /* Legacy vanilla fallback retained in source history; production uses the V2 material library. */
-            /*
-            double x = player.getX();
-            double y = player.getY() + 1.0D;
-            double z = player.getZ();
-            int count = 8 + tier * 4;
-            if (art.equals("art_sword_aura") || art.equals("art_armor_break")) {
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.SWEEP_ATTACK, x, y, z, 3, 1.2D, 0.5D, 1.2D, 0.0D);
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.CRIT, x, y, z, count, 1.0D, 0.5D, 1.0D, 0.18D);
-            } else if (art.equals("art_renewal") || art.equals("art_spirit_gathering")) {
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.HAPPY_VILLAGER, x, y, z, count, 0.8D, 0.8D, 0.8D, 0.05D);
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.COMPOSTER, x, y, z, count / 2, 0.5D, 0.7D, 0.5D, 0.1D);
-            } else if (art.equals("art_spirit_shield") || art.equals("art_golden_bell") || art.equals("art_immovable_mountain")) {
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.END_ROD, x, y, z, count, 0.9D, 0.9D, 0.9D, 0.03D);
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.ENCHANT, x, y, z, count, 0.7D, 0.7D, 0.7D, 0.2D);
-            } else if (art.equals("art_immobilize") || art.equals("art_thunder")) {
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.ELECTRIC_SPARK, x, y, z, count, 1.4D, 0.8D, 1.4D, 0.12D);
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.CLOUD, x, y, z, count / 2, 1.0D, 0.4D, 1.0D, 0.04D);
-            } else if (art.equals("art_light_body")) {
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.CLOUD, x, y, z, count, 0.6D, 0.2D, 0.6D, 0.08D);
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.END_ROD, x, y, z, count / 2, 0.4D, 0.7D, 0.4D, 0.03D);
-            } else if (art.equals("art_ice_spike")) {
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.SNOWFLAKE, x, y, z, count, 1.2D, 0.7D, 1.2D, 0.04D);
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.CLOUD, x, y, z, count / 2, 0.8D, 0.4D, 0.8D, 0.02D);
-            } else if (art.equals("art_flame_wave")) {
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.FLAME, x, y, z, count * 2, 2.0D, 0.25D, 2.0D, 0.08D);
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.SMOKE, x, y, z, count, 1.8D, 0.2D, 1.8D, 0.03D);
-            } else if (art.equals("art_flash_step")) {
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.PORTAL, x, y, z, count * 2, 0.5D, 0.9D, 0.5D, 0.4D);
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.REVERSE_PORTAL, x, y, z, count, 0.4D, 0.7D, 0.4D, 0.2D);
-            } else if (art.equals("art_purification")) {
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.WITCH, x, y, z, count, 0.7D, 0.9D, 0.7D, 0.06D);
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.END_ROD, x, y, z, count / 2, 0.5D, 0.8D, 0.5D, 0.03D);
-            } else if (art.equals("art_bloodlust")) {
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.DAMAGE_INDICATOR, x, y, z, count, 0.8D, 0.8D, 0.8D, 0.08D);
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.ANGRY_VILLAGER, x, y, z, count / 2, 0.6D, 0.8D, 0.6D, 0.04D);
-            } else if (art.equals("art_myriad_swords")) {
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.CRIT, x, y + 0.6D, z, count * 3, 3.0D, 1.4D, 3.0D, 0.25D);
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.SWEEP_ATTACK, x, y, z, 8, 2.5D, 0.6D, 2.5D, 0.0D);
-            } else if (art.equals("art_human_harmony")) {
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.TOTEM_OF_UNDYING, x, y, z, count * 2, 0.8D, 1.0D, 0.8D, 0.1D);
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.HAPPY_VILLAGER, x, y, z, count, 0.8D, 0.8D, 0.8D, 0.04D);
-            } else if (art.equals("art_five_elements")) {
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.DRAGON_BREATH, x, y, z, count * 2, 2.5D, 1.0D, 2.5D, 0.08D);
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.EXPLOSION, x, y, z, 2, 1.0D, 0.5D, 1.0D, 0.0D);
-            }
-            */
         }
     }

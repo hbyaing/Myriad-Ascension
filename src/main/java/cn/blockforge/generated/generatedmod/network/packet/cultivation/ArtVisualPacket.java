@@ -26,7 +26,7 @@ public record ArtVisualPacket(String art, int mode, Vec3 start, Vec3 end, float 
     }
     public static void handle(ArtVisualPacket p, Supplier<NetworkEvent.Context> supplier) {
         var ctx = supplier.get();
-        if (ArtCatalog.isValid(p.art) && p.mode <= TRAIL && Float.isFinite(p.size) && p.size > 0 && p.size <= 32
+        if (ArtCatalog.isValid(p.art) && !cn.blockforge.generated.generatedmod.arts.FourArtsVisuals.replaces(p.art) && p.mode <= TRAIL && Float.isFinite(p.size) && p.size > 0 && p.size <= 32
                 && finite(p.start) && finite(p.end) && p.start.distanceToSqr(p.end) <= 4096) {
             ctx.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
                     () -> () -> cn.blockforge.generated.generatedmod.client.arts.ArtVisualEffects.accept(p)));
