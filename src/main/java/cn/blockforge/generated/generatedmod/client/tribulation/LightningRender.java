@@ -121,21 +121,21 @@ public final class LightningRender extends RenderType {
         if(paths.isEmpty())return;
         boolean translucentHalo=deferredCores!=null;
         halos(paths,r,baseWidth,pose,camera,view,translucentHalo);
-        if(translucentHalo)deferredCores.add(()->drawCores(paths,r,pose,camera,view));
-        else drawCores(paths,r,pose,camera,view);
+        if(translucentHalo)deferredCores.add(()->drawCores(paths,r,pose,camera,view,true));
+        else drawCores(paths,r,pose,camera,view,false);
     }
-    private static void drawCores(java.util.Collection<List<Node>> paths,LightningRecipe r,PoseStack pose,Vec3 camera,CoverageView view) {
-        if(cores(paths,r,pose,camera,view))return;
+    private static void drawCores(java.util.Collection<List<Node>> paths,LightningRecipe r,PoseStack pose,Vec3 camera,CoverageView view,boolean combat) {
+        if(cores(paths,r,pose,camera,view,combat))return;
         material(r,false);
-        for(var path:paths)ribbon(path,2,pose,camera,false,r,view);
+        for(var path:paths)ribbon(path,pose,camera,r,view,combat);
         BUFFER.endBatch(type(false,r));
     }
-    private static boolean cores(java.util.Collection<List<Node>> paths,LightningRecipe r,PoseStack pose,Vec3 camera,CoverageView view){
+    private static boolean cores(java.util.Collection<List<Node>> paths,LightningRecipe r,PoseStack pose,Vec3 camera,CoverageView view,boolean combat){
         // Union body and round joints before compositing so a joint cannot
         // accumulate a second or third core contribution into a bright bead.
         List<List<HaloGeometry.Point>> strokes=new ArrayList<>();
         for(var path:paths)strokes.add(path.stream().map(node->new HaloGeometry.Point(node.p().subtract(camera),node.width()*2,node.along(),node.alpha())).toList());
-        return LightningHalo.drawCore(strokes,r,view.projection(),pose.last().pose(),view.width(),view.height());
+        return LightningHalo.drawCore(strokes,r,view.projection(),pose.last().pose(),view.width(),view.height(),combat);
     }
     private static void halos(java.util.Collection<List<Node>> paths,LightningRecipe r,double baseWidth,PoseStack pose,Vec3 camera,CoverageView view,boolean translucent){
         if(r.glowGain<=0)return;
@@ -144,14 +144,14 @@ public final class LightningRender extends RenderType {
         for(var path:paths)strokes.add(path.stream().map(node->new HaloGeometry.Point(node.p().subtract(camera),node.width()*scale,node.along(),node.alpha())).toList());
         LightningHalo.draw(strokes,r,view.projection(),pose.last().pose(),view.width(),view.height(),translucent);
     }
-    private static void ribbon(List<Node> path,double scale,PoseStack pose,Vec3 cam,boolean halo,LightningRecipe r,CoverageView view) {
+    private static void ribbon(List<Node> path,PoseStack pose,Vec3 cam,LightningRecipe r,CoverageView view,boolean combat) {
         if(path.size()<2)return;
         // Project independent convex strips in the actual camera transform.
         // Shared 3D miters can turn into self-intersecting sheets when looking
         // along the channel; widening their almost tangential projection made
         // the old subpixel correction amplify those sheets into bright spikes.
-        var points=path.stream().map(n->new HaloGeometry.Point(n.p().subtract(cam),n.width()*scale,n.along(),n.alpha())).toList();
-        var mesh=HaloGeometry.build(points,view.projection(),r,halo);
+        var points=path.stream().map(n->new HaloGeometry.Point(n.p().subtract(cam),n.width()*2,n.along(),n.alpha())).toList();
+        var mesh=HaloGeometry.build(points,view.projection(),r,false,combat);
         ShaderInstance selected=LightningAppearance.vividCore(r)?vividShader:shader;
         coreVertices(mesh.body(),false,pose,selected,r);
         coreVertices(mesh.round(),true,pose,selected,r);
