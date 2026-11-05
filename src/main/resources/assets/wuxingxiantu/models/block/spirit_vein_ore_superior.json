@@ -1,3 +1,6 @@
 {
-  "parent": "wuxingxiantu:block/spirit_vein_ore"
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "wuxingxiantu:block/spirit_vein_ore_superior"
+  }
 }

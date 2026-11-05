@@ -51,6 +51,8 @@ public final class WuXingBlocks {
             "spirit_ore", () -> new Block(oreProperties(0)));
     public static final RegistryObject<Block> SPIRIT_VEIN_ORE = BLOCKS.register(
             "spirit_vein_ore", () -> new Block(oreProperties(5)));
+    public static final RegistryObject<Block> SPIRIT_VEIN_ORE_LOW = BLOCKS.register("spirit_vein_ore_low", () -> new Block(oreProperties(5)));
+    public static final RegistryObject<Item> SPIRIT_VEIN_ORE_LOW_ITEM = blockItem("spirit_vein_ore_low", SPIRIT_VEIN_ORE_LOW, 64);
     public static final RegistryObject<Block> SPIRIT_VEIN_ORE_MIDDLE = BLOCKS.register("spirit_vein_ore_middle", () -> new Block(oreProperties(7)));
     public static final RegistryObject<Item> SPIRIT_VEIN_ORE_MIDDLE_ITEM = blockItem("spirit_vein_ore_middle", SPIRIT_VEIN_ORE_MIDDLE, 64);
     public static final RegistryObject<Block> SPIRIT_VEIN_ORE_SUPERIOR = BLOCKS.register("spirit_vein_ore_superior", () -> new Block(oreProperties(11)));

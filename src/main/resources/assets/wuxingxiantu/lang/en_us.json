@@ -2137,11 +2137,11 @@
   "message.wuxingxiantu.vein_not_found": "No generated vein nearby; unexplored chunks are not loaded.",
   "message.wuxingxiantu.vein_found": "Size %s vein at %s, %s, %s; local aura concentration %s",
   "item.wuxingxiantu.spirit_stone_middle": "Middle-grade Spirit Stone",
-  "block.wuxingxiantu.spirit_vein_ore_middle": "Middle-grade Spirit Vein Ore",
+  "block.wuxingxiantu.spirit_vein_ore_middle": "Mid-Grade Spirit Stone Ore",
   "item.wuxingxiantu.spirit_stone_superior": "Superior Spirit Stone",
-  "block.wuxingxiantu.spirit_vein_ore_superior": "Superior Spirit Vein Ore",
+  "block.wuxingxiantu.spirit_vein_ore_superior": "High-Grade Spirit Stone Ore",
   "item.wuxingxiantu.spirit_stone_exquisite": "Exquisite Spirit Stone",
-  "block.wuxingxiantu.spirit_vein_ore_exquisite": "Exquisite Spirit Vein Ore",
+  "block.wuxingxiantu.spirit_vein_ore_exquisite": "Exquisite Spirit Stone Ore",
   "item.wuxingxiantu.herb_juling": "Spirit Gathering Grass",
   "block.wuxingxiantu.herb_juling": "Spirit Gathering Grass",
   "tooltip.wuxingxiantu.hint.herb_juling": "Cultivate in its natural habitat; spirit soil and veins support medicinal aging.",
@@ -2483,5 +2483,6 @@
   "message.wuxingxiantu.compendium_research_next": "Next: study traditions on the research table Formula tab. Inference requires compatibility, heat knowledge and actual brewing; rereading does not grant practice.",
   "message.wuxingxiantu.compendium_admin_only": "This complete compendium requires Creative mode or operator permission.",
   "tooltip.wuxingxiantu.compendium_use": "Right-click the air to study. Already learned books are retained; research prerequisites are studied separately.",
-  "message.wuxingxiantu.alchemy_introduction_unlocked": "Alchemy unlocked. This introduction grants no formulas; official formulas will be obtained separately."
+  "message.wuxingxiantu.alchemy_introduction_unlocked": "Alchemy unlocked. This introduction grants no formulas; official formulas will be obtained separately.",
+  "block.wuxingxiantu.spirit_vein_ore_low": "Low-Grade Spirit Stone Ore"
 }

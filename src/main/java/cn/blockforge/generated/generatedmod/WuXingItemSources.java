@@ -42,7 +42,6 @@ public final class WuXingItemSources {
 
     /** 系统内部物品 ID：仅由结构、实体或渲染管线使用。 */
     private static final Set<String> INTERNAL = Set.of(
-            "spirit_vein_ore_middle", "spirit_vein_ore_superior", "spirit_vein_ore_exquisite",
             "human_emperor_banner_stand",
             "spirit_liquid",
             "alchemy_furnace_part",
