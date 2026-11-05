@@ -22,6 +22,10 @@ function iceFlight(raw,side,height,lag) {
 
 export function iceSpike(fx,root,t) {
   const time=wave(t,3.9,0);
+  if(time>.37 && time<2.38) {
+    const front=Math.min(iceTargets[0][0],iceFlight((time-.37)/.66,0,1.08,0)[0]);
+    fx.iceGround(root,front,time,iceTargets[0],iceImpact);
+  }
   const seal=pulse(time,.015,.25,.82);
   const sealRadius=.24+.32*ease(.02,.27,time);
   const castCenter=add(root,[.75,1.13,0]);
@@ -72,10 +76,32 @@ export function iceSpike(fx,root,t) {
       const chip=.026+.083*Math.pow(.5+.5*Math.cos(seed*2.29),3);
       fx.stamp(point,chip,chip,frost,18,visibility*lengthFade*(1-fraction*.54),seed,seed*.27+time*.9);
     }
-    const wake=add(root,trailPoint(.56));
-    fx.stamp(wake,.32+travel*.30,1.12+travel*.32,ice,26,visibility*lengthFade*.29,i,.08*(i-3));
-    const ground=add(root,[Math.max(.32,x-size*.48),.027,z*.84]);
-    fx.plane(ground,[Math.min(2.3,x*.45),0,0],[0,0,.26+width*.38],ice,19,visibility*lengthFade*.52,i);
+    const cloudStrength=visibility*lengthFade;
+    for(let j=0;j<6;j++) {
+      const along=(j+.37)/6;
+      const roll=i*2.399963+j*1.71+time*2.8;
+      const drift=.078+.19*(1-along);
+      const wave=[0,Math.sin(roll)*drift,Math.cos(roll)*drift];
+      const center=add(root,add(trailPoint(along),add(wave,[.16+.30*along,0,-.072])));
+      const height=(.39+.28*(1-along)+travel*.25)*(i===0?1.29:.82);
+      const length=(1.40+1.48*(1-along)+travel*.50)*(i===0?1.15:.84);
+      const launchFade=ease(.06,.74,along);
+      const pitch=.16*Math.sin(roll)+.18*(height-1);
+      fx.stamp(center,height,length,ice,27,cloudStrength*(i===0?.73:.61)*(.35+.65*launchFade),i*7+j,pitch);
+    }
+    const shoulder=add(root,[rear+.55,y-.11,z-.19]);
+    fx.stamp(shoulder,.40+width*.77,1.28+width*2.9,ice,27,cloudStrength*.57,i+64,.06);
+    for(let j=0;j<14;j++) {
+      const along=(j+.45)/14;
+      const key=i*17+j;
+      const swirl=key*2.399963+time*(2.0+(j%4)*.41);
+      const radius=.19+.49*(1-along)+.17*travel;
+      const center=add(root,add(trailPoint(along),[Math.sin(key*1.67)*.31,
+        Math.cos(swirl)*radius,Math.sin(swirl)*radius]));
+      const shape=.055+.178*Math.pow(.5+.5*Math.sin(key*3.7),3);
+      const shimmer=.76+.24*Math.sin(key*.71+time*8.7);
+      fx.stamp(center,shape,shape,frost,28,cloudStrength*shimmer*(.80+.20*along),key,swirl*.56);
+    }
   }
   const impactAge=time-iceImpact;
   const impact=pulse(impactAge,0,.09,.84);
@@ -85,6 +111,11 @@ export function iceSpike(fx,root,t) {
     fx.plane(add(point,[0,.043,0]),[.49+.85*grow,0,0],[0,0,.34+.60*grow],ice,24,impact*.91,7);
     fx.stamp(add(point,[0,1.27,0]),1.14,1.22,frost,6,pulse(impactAge,0,.043,.27)*.88,0,0);
     fx.stamp(add(point,[.15,.98+.38*grow,0]),.89+grow*.61,1.44+grow*.61,ice,26,impact*.50,8,-.19);
+    for(let i=0;i<9;i++) {
+      const a=i*2.399963;
+      const gas=add(point,polar((.24+(i%3)*.19)*grow,.25+(i%5)*.18+.39*grow,a));
+      fx.stamp(gas,.60+.59*grow,1.02+.53*grow,ice,27,impact*.64,i+54,a*.13);
+    }
     for(let i=0;i<21;i++) {
       const angle=i*2.399963;
       const scatter=1-Math.pow(1-clamp(impactAge/.64),3);
@@ -93,6 +124,9 @@ export function iceSpike(fx,root,t) {
       const axis=norm(polar(.76,.53*Math.cos(scatter*2.7+i*.41),angle+scatter*.86));
       const tip=add(add(point,[.47*scatter,y,0]),polar(radial,0,angle));
       fx.crystal(tip,axis,.11+(i%4)*.083,.029+(i%3)*.021,impact*.89,i,true);
+      const flake=add(point,polar(radial*1.53,.43+y*.71,angle+.41));
+      const flakeSize=.066+(i%6)*.022;
+      fx.stamp(flake,flakeSize,flakeSize,frost,28,impact*.87,i+121,angle+scatter*.88);
     }
   }
   return time<.36?"起诀 · 结晶引锋":time<iceImpact?"齐射 · 主锥领锋":time<iceImpact+.84?"命中 · 冰体碎裂，霜纹铺开":"等待施术";

@@ -125,7 +125,7 @@ function draw() {
     const ice=art===5;
     const wideIce=node.parentElement.dataset.draft==="ice";
     const lotus=art===4;
-    const camera = ice?cameraFor(orbit.yaw-.14,orbit.pitch+.055,orbit.half*(wideIce?1.73:2.54),w/h,[.12,1.40,0]):
+    const camera = ice?cameraFor(orbit.yaw-.14,orbit.pitch-.065,orbit.half*(wideIce?1.73:2.54),w/h,[.12,1.40,0]):
       draft?cameraFor(orbit.yaw-.14,orbit.pitch+.23,orbit.half*2.90,w/h,[.05,.43,0]):
       lotus?cameraFor(orbit.yaw,orbit.pitch+.016,orbit.half*(passive?1.25:1.49),w/h,[0,passive?1.10:1.53,0]):
       cameraFor(orbit.yaw,orbit.pitch,orbit.half,w/h,[state.root[0]*.90-tailRoom+strikeRoom,1.03+state.root[1]*.76,0]);
@@ -137,13 +137,19 @@ function draw() {
       box(scene,add(feet,[0,.56,0]),[.30,.95,.26],[.37,.28,.20]);
       box(scene,add(feet,[0,1.10,0]),[.53,.50,.37],[.50,.37,.23]);
       box(scene,add(feet,[.155,1.10,0]),[.25,.26,.40],[.28,.22,.17]);
+      if(ice) {
+        for(const [index,size] of [.42,.32,.23,.14,.067].entries()) {
+          const tint=index%2===0?[.59,.22,.16]:[.67,.55,.35];
+          box(scene,add(feet,[0,1.11,.206+index*.012]),[size,size,.013],tint);
+        }
+      }
     }
     const armed=art===3 && !passive && time>=.04 && time<7.55;
     const pose = actor(scene,state.root,state.stride,state.yaw,state.hit,state.guard,armed,ice?"ice":draft);
     const fx = effectMesh(camera);
     const description = drawArt(fx,art,passive,state,time,pose);
     if(phase.textContent!==description) phase.textContent=description;
-    renderer.draw([x,y,w,h],camera,scene,fx.finish(),time,ice?(day?1:.62):lotus?(day?1:.77):Number(day),lotus);
+    renderer.draw([x,y,w,h],camera,scene,fx.finish(),time,ice?(day?1:.82):lotus?(day?1:.77):Number(day),lotus||ice);
   }
   renderer.finish();
   dirty=false;

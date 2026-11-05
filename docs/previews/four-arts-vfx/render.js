@@ -28,14 +28,28 @@ uniform vec3 fog;
 uniform vec4 recovery;
 uniform vec3 recoveryTint;
 uniform vec4 groundLight;
+uniform vec4 iceGround;
+uniform vec3 iceContact;
 uniform float time;
 layout(location=0) out vec4 frag;
 layout(location=1) out vec4 glow;
+float stoneHash(vec2 p) {
+  return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);
+}
+float iceGrain(vec2 p) {
+  vec2 i=floor(p), f=fract(p);
+  f=f*f*(3.-2.*f);
+  return mix(mix(stoneHash(i),stoneHash(i+vec2(1,0)),f.x),
+    mix(stoneHash(i+vec2(0,1)),stoneHash(i+1.),f.x),f.y);
+}
+float falloff(float x) { return exp(-x*x); }
 void main(){
   float key=max(0.,dot(surface,normalize(vec3(-.6,.9,.48))));
   float rim=max(0.,dot(surface,normalize(vec3(.5,.26,-1.))));
   vec3 shaded=color*(.45+.57*key+.24*rim+daylight*.27);
-  if(actorSurface>.5 && recovery.w>0.) {
+  vec3 emissive=vec3(0.);
+  bool actor=actorSurface>.5 && actorSurface<1.5;
+  if(actor && recovery.w>0.) {
     float y=(world.y-recovery.z)/2.075;
     float mode=recovery.x;
     float offset=(mode>1.5?abs(y-.60):y)-recovery.y;
@@ -53,12 +67,59 @@ void main(){
   if(groundLight.w>0.) {
     float r=length(world.xz-groundLight.xy)/groundLight.z;
     float bounce=groundLight.w*exp(-r*r*2.85)*(.45+.55*max(0.,surface.y));
-    bounce*=actorSurface>.5?.31:1.-smoothstep(.09,.65,world.y);
+    bounce*=actor?.31:1.-smoothstep(.09,.65,world.y);
     shaded+=vec3(.29,.185,.063)*bounce;
+  }
+  if(actorSurface>1.5 && surface.y>.65) {
+    vec2 tile=fract(world.xz+.5)-.5;
+    float grain=stoneHash(floor(world.xz*23.));
+    float blocks=iceGrain(floor(world.xz*27.)*.118);
+    float chisels=iceGrain(floor(world.xz*11.)*.22+19.);
+    float lip=1.-smoothstep(.010,.052,.5-max(abs(tile.x),abs(tile.y)));
+    shaded*=.78+.23*blocks+.13*chisels+.08*grain;
+    shaded=mix(shaded,shaded*.67,lip*.57);
+    if(iceGround.w>=0.) {
+      vec2 p=world.xz-iceGround.xy;
+      float head=iceGround.z;
+      float age=iceGround.w-.37-(p.x-.88)*.09103448;
+      vec2 chips=floor(world.xz*27.);
+      float wind=iceGrain(chips*vec2(.095,.178)+vec2(8.1,2.4));
+      float sweep=sin(p.x*1.12)*.14;
+      float distanceToTrace=abs(p.y-sweep)+.31*(wind-.42);
+      float spread=.58+.29*smoothstep(.1,.74,age);
+      float track=(1.-smoothstep(spread*.47,spread*1.41,distanceToTrace))
+        *smoothstep(.28,1.04,p.x)*(1.-smoothstep(head-.04,head+.38,p.x));
+      float residue=smoothstep(-.045,.11,age)*(1.-smoothstep(.72,1.40,age));
+      float rime=track*residue*smoothstep(.33,.78,wind*.75+.25*stoneHash(chips+51.));
+      float flecks=track*residue*smoothstep(.56,.93,stoneHash(chips-15.))*smoothstep(.36,.70,wind);
+      vec2 crystalCell=floor(world.xz*3.2), crystal=fract(world.xz*3.2)-.5;
+      crystal+=(vec2(stoneHash(crystalCell+35.),stoneHash(crystalCell-27.))-.5)*.28;
+      float cellPhase=stoneHash(crystalCell+91.)*.9;
+      float crystalAngle=(fract((atan(crystal.y,crystal.x+.00001)+cellPhase)/1.04719755+.5)-.5)*1.04719755;
+      vec2 ray=vec2(cos(crystalAngle),sin(crystalAngle))*length(crystal);
+      float twig=1.-smoothstep(.012,.034,abs(abs(ray.y)-.68*(ray.x-.139)));
+      twig*=smoothstep(.11,.17,ray.x)*(1.-smoothstep(.27,.36,ray.x));
+      float twigStem=(1.-smoothstep(.014,.033,abs(ray.y)))*(1.-smoothstep(.24,.43,ray.x));
+      float crystalMask=max(twig*.84,twigStem)*smoothstep(.34,.62,stoneHash(crystalCell));
+      float frozen=crystalMask*track*residue;
+      float leading=falloff((p.x-head+.44)*1.17);
+      float wake=falloff((p.x-head+1.87)*.66)*.43;
+      float halo=(leading+wake)*falloff((p.y-sweep)*1.47)
+        *smoothstep(.35,1.22,head)*(1.-smoothstep(1.03,1.57,iceGround.w));
+      float band=.57+.43*iceGrain(chips*vec2(.073,.21)+vec2(14.,0.));
+      vec2 hit=(p-iceContact.xy)*vec2(1.07,1.62);
+      float hitAge=iceGround.w-iceContact.z;
+      float impact=falloff(length(hit)*1.44)*smoothstep(0.,.11,hitAge)*(1.-smoothstep(.37,1.07,hitAge));
+      float iceFilm=clamp(.79*rime+.47*flecks+.26*impact,0.,.83);
+      shaded=mix(shaded,vec3(.43,.65,.79)*(.71+.39*blocks),iceFilm);
+      shaded=mix(shaded,vec3(.66,.84,.96),clamp(frozen*.85+flecks*.22,0.,.87));
+      shaded+=vec3(.15,.39,.57)*(halo*band*.79+impact*.45);
+      emissive=vec3(.25,.69,1.)*(halo*band*.65+impact*.27+flecks*.13+frozen*.12);
+    }
   }
   float fade=smoothstep(4.,12.,length(world.xz));
   frag=vec4(mix(shaded,fog,fade),1.);
-  glow=vec4(0.);
+  glow=vec4(emissive,0.);
 }`;
 const skyVertex = `#version 300 es
 out vec2 uv;
@@ -151,7 +212,7 @@ export function createRenderer(canvas, vs, fs) {
   if (!gl) throw Error("此浏览器未提供 WebGL 2。");
   const sky = program(gl,skyVertex,skyFragment,[],["daylight","outdoor"]);
   const opaque = program(gl,solidVertex,solidFragment,[["position",3],["normal",3],["tint",3],["character",1]],
-    ["camera","daylight","fog","recovery","recoveryTint","groundLight","time"]);
+    ["camera","daylight","fog","recovery","recoveryTint","groundLight","iceGround","iceContact","time"]);
   const effect = program(gl,vs,fs,[["position",3],["uv",2],["tint",3],["style",3]],
     ["camera","time","opaqueScene","sampleBounds","viewRight","viewUp","viewBack"]);
   const composite = program(gl,skyVertex,compositeFragment,[],["scene","emission","crop"]);
@@ -220,6 +281,8 @@ export function createRenderer(canvas, vs, fs) {
       gl.uniform4fv(opaque.uniforms.recovery,effects.recovery);
       gl.uniform3fv(opaque.uniforms.recoveryTint,effects.recoveryTint);
       gl.uniform4fv(opaque.uniforms.groundLight,effects.groundLight);
+      gl.uniform4fv(opaque.uniforms.iceGround,effects.iceGround);
+      gl.uniform3fv(opaque.uniforms.iceContact,effects.iceContact);
       gl.uniform1f(opaque.uniforms.time,time);
       upload(opaque,solid);
       const [x,y,w,h]=rect;
@@ -293,11 +356,30 @@ export function stage(attack=false) {
       box(out,[x,h+.22,z],[.97,.58,.93],[.23,.37,.26]);
       box(out,[x-.15,h+.56,z-.07],[.73,.36,.71],[.29,.43,.29]);
     }
+    if(attack==="ice") {
+      for(let x=-7;x<=7;x++) {
+        const tone=(x*x%5)*.013;
+        box(out,[x,.14,-3.55],[.985,.31,.43],[.27+tone,.30+tone,.37+tone]);
+        box(out,[x,.345,-3.55],[.97,.10,.53],[.37+tone,.40+tone,.44+tone]);
+      }
+      for(const x of [-5,4.85]) {
+        box(out,[x,.29,-3.55],[.48,.63,.48],[.34,.37,.42]);
+        box(out,[x,.69,-3.55],[.31,.22,.31],[.30,.26,.23]);
+        box(out,[x,.71,-3.38],[.17,.14,.044],[.87,.63,.29]);
+      }
+      for(let i=0;i<22;i++) {
+        const x=-7.4+i*.70;
+        const z=i%3===0?2.84:-2.84;
+        const height=.08+.17*(.5+.5*Math.sin(i*6.15));
+        box(out,[x,height*.5,z],[.082,height,.062],[.27,.44,.21]);
+        box(out,[x+.11,height*.35,z+.055],[.067,height*.69,.065],[.32,.47,.24]);
+      }
+    }
     for(let x=-8;x<=8;x++) for(let z=-5;z<=5;z++) {
-      const road=attack==="ice"?x<=-3 || (z===-3 && x<5):Math.abs(x)<=2 && z>=-2 && z<=2;
+      const road=attack==="ice"?x>=-6&&x<=6&&Math.abs(z)<=2:Math.abs(x)<=2 && z>=-2 && z<=2;
       const tint=((x*x*7+z*z*19+x*z*3)&7)*.009;
       const color=road?[.36+tint,.40+tint,.47+tint]:[.21+tint,.34+tint,.23+tint*.65];
-      box(out,[x,-.046,z],[road?.975:1.01,.097,road?.97:1.01],color);
+      box(out,[x,-.046,z],[road?.978:1.01,.097,road?.978:1.01],color,identity,attack==="ice"&&road?2:0);
       if(road) continue;
       for(let i=0;i<5;i++) {
         const a=Math.sin(x*2.7+z*3.5+i*14.3);
@@ -400,6 +482,8 @@ export function effectMesh(camera) {
   const surfaces = [];
   let recovery=[0,0,0,0], recoveryTint=[0,0,0];
   let groundLight=[0,0,1,0];
+  let iceGround=[0,0,0,-1];
+  let iceContact=[0,0,0];
   let refractive=false;
   function face(corners, us, color, kind, strength, seed, ys=[-1,1,1,-1]) {
     if (strength <= .004) return;
@@ -453,7 +537,8 @@ export function effectMesh(camera) {
     const outline=[[1,.54],[.57,1],[-.64,1],[-1,.61],[-1,-.63],[-.61,-1],[.69,-1],[1,-.57]];
     const profile=fragment?[[0,.10],[.12,.73],[.31,1],[.53,.71],[1,0]]
       :[[0,.27],[.022,.61],[.07,.64],[.084,.81],[.136,.84],[.153,1.05],[.216,1.10],
-        [.245,1.01],[.265,1.17],[.311,1.07],[.337,.99],[.58,.57],[.83,.21],[1,0]];
+        [.245,1.01],[.265,1.17],[.311,1.07],[.337,.99],[.417,.85],[.430,.90],
+        [.568,.61],[.59,.57],[.713,.42],[.735,.37],[.851,.20],[1,0]];
     const angle=.13+Math.sin(seed*8.13)*(fragment?.71:.25);
     const rows=profile.map(([u,r],row)=>outline.map(([y,z],i)=>{
       const lobe=row>=2&&row<=9?1+.10*Math.sin(i*2.7+seed):1;
@@ -482,6 +567,11 @@ export function effectMesh(camera) {
       recoveryTint=tint;
     },
     groundLight:(root,radius,strength)=>{groundLight=[root[0],root[2],radius,strength];},
-    finish:()=>({recovery,recoveryTint,groundLight,refractive,vertices:surfaces.sort((a,b)=>a.depth-b.depth).flatMap(s=>s.data)}),
+    iceGround:(root,front,age,target,hitTime)=>{
+      iceGround=[root[0],root[2],front,age];
+      iceContact=[target[0],target[2],hitTime];
+    },
+    finish:()=>({recovery,recoveryTint,groundLight,iceGround,iceContact,refractive,
+      vertices:surfaces.sort((a,b)=>a.depth-b.depth).flatMap(s=>s.data)}),
   };
 }

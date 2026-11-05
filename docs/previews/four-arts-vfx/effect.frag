@@ -62,11 +62,65 @@ float glyph(vec2 g,float variation) {
     return clamp(rails+stem+mix(cut,block,variation)*.86,0.,1.);
 }
 
+float mistNoise(vec3 p) {
+    vec3 i=floor(p), f=fract(p);
+    f=f*f*(3.-2.*f);
+    vec2 cell=i.xy+vec2(37.2,19.5)*i.z;
+    return mix(noise(cell+f.xy),noise(cell+vec2(37.2,19.5)+f.xy),f.z);
+}
+
 void main() {
     vec2 p = shapeUV;
     float kind = params.x;
     float strength = params.y;
     float seed = params.z;
+    if(kind>27.5) {
+        vec2 v=vec2(p.y,p.x*2.-1.);
+        v=(floor(v*16.+.5))*.0625;
+        float r=length(v);
+        float a=(fract(atan(v.y,v.x+.00001)/1.04719755+.5)-.5)*1.04719755;
+        vec2 branch=vec2(cos(a),sin(a))*r;
+        float axis=1.-smoothstep(.048,.094,abs(branch.y));
+        axis*=1.-smoothstep(.75,.91,branch.x);
+        float arm=1.-smoothstep(.040,.082,abs(abs(branch.y)-.82*(branch.x-.42)));
+        arm*=smoothstep(.37,.47,branch.x)*(1.-smoothstep(.59,.70,branch.x));
+        float heart=1.-smoothstep(.12,.24,r);
+        float shape=max(max(axis*.94,arm*.87),heart);
+        float halo=gaussian(r*2.1)*.11;
+        float alpha=clamp((shape+halo)*strength,0.,1.);
+        vec3 light=mix(color,vec3(.90,.99,1.),max(heart,axis)*.71);
+        frag=vec4(light*alpha,alpha);
+        emissionLayer=vec4(light*alpha*(.48+.35*shape),alpha);
+        return;
+    }
+    if(kind>26.5) {
+        vec2 v=vec2(p.y,p.x*2.-1.);
+        float radius=dot(v,v);
+        if(radius>=1.) discard;
+        float extent=sqrt(1.-radius);
+        float stepSize=2.*extent/18.;
+        float transmission=1.;
+        vec3 scattering=vec3(0.);
+        for(int i=0;i<18;i++) {
+            float z=-extent+(float(i)+.5)*stepSize;
+            vec3 q=vec3(v.x,v.y,z);
+            vec3 flow=vec3(1.2*time,-.29*time,seed*.42);
+            vec3 domain=q*vec3(2.3,4.8,2.9)+flow;
+            domain.y+=.42*sin(q.x*3.3+q.z*2.8+seed+time*.63);
+            float low=mistNoise(domain+vec3(seed*.38,0.,0.));
+            float folds=mistNoise(domain*2.32+vec3(time*.65,-seed*.76,2.7));
+            float edge=1.-smoothstep(.17,1.,dot(q,q));
+            float density=edge*smoothstep(.24,.77,low*.67+folds*.33);
+            float slice=1.-exp(-density*stepSize*strength*1.65);
+            vec3 tint=mix(color*.48,vec3(.64,.84,1.),clamp(.27+.58*low-.13*q.y,0.,1.));
+            scattering+=tint*slice*transmission;
+            transmission*=1.-slice;
+        }
+        float alpha=1.-transmission;
+        frag=vec4(scattering,alpha);
+        emissionLayer=vec4(scattering*.28,alpha);
+        return;
+    }
     if(kind>25.5) {
         vec2 v=vec2(p.y,p.x*2.-1.);
         float grain=noise(v*vec2(7.4,5.8)+vec2(seed,time*.58));
@@ -158,16 +212,6 @@ void main() {
         emissionLayer=vec4(color*alpha*.52,alpha);
         return;
     }
-    if(kind>18.5) {
-        vec2 v=vec2(p.x*2.-1.,p.y);
-        vec2 pixel=floor(v*vec2(45.,14.)+seed*13.);
-        float fleck=smoothstep(.54,.87,hash(pixel));
-        float mist=gaussian(v.x*1.43)*gaussian(v.y*2.42);
-        float alpha=mist*strength*(.19+fleck*.67);
-        frag=vec4(mix(color,vec3(.68,.89,1.),fleck*.42)*alpha,alpha);
-        emissionLayer=vec4(color*fleck*alpha*.25,alpha);
-        return;
-    }
     if(kind>17.5) {
         vec2 v=vec2(p.x*2.-1.,p.y);
         float radius=max(abs(v.x),abs(v.y));
@@ -252,7 +296,7 @@ void main() {
         float microCrack=stroke(gap,.019)*smoothstep(.44,.72,noise(faceCoord*.79+seed*.29));
         float drift=abs(fract(p.x*2.32+p.y*.33+noise(faceCoord*1.27)*.28+seed*.163)-.5);
         float fault=stroke(drift,.013)*(1.-smoothstep(.77,.97,p.x));
-        float crack=max(fault*.89,microCrack*.66);
+        float crack=max(fault*.82,microCrack*.61);
         float frost=noise(floor(faceCoord*11.)*.66+seed);
         float edge=pow(clamp(abs(p.y),0.,1.),24.);
         float collar=(1.-smoothstep(.288,.340,p.x));
@@ -267,9 +311,12 @@ void main() {
         float rim=pow(1.-clamp(dot(n,viewBack),0.,1.),3.)*.34+edge*.51;
         float front=gl_FrontFacing?1.:.32;
         float rib=gaussian((p.y+.08*sin(p.x*9.+seed))*6.)*smoothstep(.19,.93,p.x);
+        float slab=(.43+.57*noise(floor(faceCoord*vec2(8.5,6.7))*.76+seed*.33))
+            *gaussian((p.y-.22*sin(p.x*5.1+seed*.83))*2.45)*smoothstep(.18,.37,p.x);
         vec3 ice=mix(backdrop*vec3(.49,.74,1.16),color*key,.47+.25*collar+.12*frost);
         ice=mix(ice,vec3(.57,.83,1.),collar*smoothstep(.32,.85,frost)*.58);
-        vec3 glint=vec3(.61,.92,1.)*(.51*crack+rim*.89+.52*shoulder+point*.65+rib*.21)*front;
+        ice=mix(ice,mix(vec3(.29,.53,.90),vec3(.78,.94,1.),frost),slab*.67);
+        vec3 glint=vec3(.64,.93,1.)*(.39*crack+rim*.89+.56*shoulder+point*.71+rib*.19)*front;
         float alpha=strength*(.68+.18*collar+.11*edge)*mix(.64,1.,front);
         frag=vec4((ice+glint)*alpha,alpha);
         emissionLayer=vec4(glint*strength*.44,alpha);
