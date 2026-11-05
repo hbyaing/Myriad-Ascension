@@ -1,0 +1,1071 @@
+{
+  "schema": 1,
+  "jar": "C:\\Users\\33140\\Documents\\ChatGPT\\主要的\\work\\Myriad-Ascension-architecture-20261104\\build\\libs\\myriad-ascension-0.2.jar",
+  "sha256": "25fd539822214cd344964c66878ed5791825413db434218b35bd6358d79304e0",
+  "sourceHead": "1016720b026495c078fb25a3a7a1a5c179edbf27",
+  "workingTreeDirty": true,
+  "compiledGameTestClassNamesChecked": 142,
+  "jarBytes": 89151926,
+  "entries": 4372,
+  "rawBytes": 170203635,
+  "compressedPayloadBytes": 88155904,
+  "categories": {
+    "assets/alchemy": {
+      "entries": 1,
+      "rawBytes": 913,
+      "compressedBytes": 367
+    },
+    "assets/animations": {
+      "entries": 10,
+      "rawBytes": 8472466,
+      "compressedBytes": 254320
+    },
+    "assets/blockstates": {
+      "entries": 103,
+      "rawBytes": 92659,
+      "compressedBytes": 13426
+    },
+    "assets/firecoil": {
+      "entries": 14,
+      "rawBytes": 56637,
+      "compressedBytes": 19634
+    },
+    "assets/font": {
+      "entries": 1,
+      "rawBytes": 760,
+      "compressedBytes": 395
+    },
+    "assets/formations": {
+      "entries": 3,
+      "rawBytes": 387738,
+      "compressedBytes": 69728
+    },
+    "assets/geo": {
+      "entries": 10,
+      "rawBytes": 5477651,
+      "compressedBytes": 332896
+    },
+    "assets/heavenly": {
+      "entries": 7,
+      "rawBytes": 24491,
+      "compressedBytes": 9810
+    },
+    "assets/item_text_catalog.json": {
+      "entries": 1,
+      "rawBytes": 31042,
+      "compressedBytes": 2311
+    },
+    "assets/lang": {
+      "entries": 4,
+      "rawBytes": 429003,
+      "compressedBytes": 98024
+    },
+    "assets/mesh": {
+      "entries": 6,
+      "rawBytes": 34036361,
+      "compressedBytes": 2967345
+    },
+    "assets/mindscape": {
+      "entries": 7,
+      "rawBytes": 17882,
+      "compressedBytes": 7392
+    },
+    "assets/models": {
+      "entries": 638,
+      "rawBytes": 25988890,
+      "compressedBytes": 3166119
+    },
+    "assets/particles": {
+      "entries": 52,
+      "rawBytes": 2659,
+      "compressedBytes": 2715
+    },
+    "assets/shaders": {
+      "entries": 131,
+      "rawBytes": 4484739,
+      "compressedBytes": 676203
+    },
+    "assets/sounds": {
+      "entries": 2,
+      "rawBytes": 72986,
+      "compressedBytes": 64431
+    },
+    "assets/sounds.json": {
+      "entries": 1,
+      "rawBytes": 145,
+      "compressedBytes": 92
+    },
+    "assets/textures": {
+      "entries": 1200,
+      "rawBytes": 74364160,
+      "compressedBytes": 70483514
+    },
+    "assets/tribulation": {
+      "entries": 13,
+      "rawBytes": 21215,
+      "compressedBytes": 8299
+    },
+    "assets/vfx": {
+      "entries": 1,
+      "rawBytes": 18647,
+      "compressedBytes": 2077
+    },
+    "assets/volume": {
+      "entries": 4,
+      "rawBytes": 20995,
+      "compressedBytes": 4561
+    },
+    "assets/weapon_flames": {
+      "entries": 16,
+      "rawBytes": 7352,
+      "compressedBytes": 3495
+    },
+    "classes": {
+      "entries": 1482,
+      "rawBytes": 9351932,
+      "compressedBytes": 3851337
+    },
+    "data": {
+      "entries": 643,
+      "rawBytes": 884176,
+      "compressedBytes": 238181
+    },
+    "metadata-and-nested-dependencies": {
+      "entries": 8,
+      "rawBytes": 6400,
+      "compressedBytes": 3550
+    },
+    "other-runtime-resources": {
+      "entries": 14,
+      "rawBytes": 5951736,
+      "compressedBytes": 5875682
+    }
+  },
+  "largestCompressedEntries": [
+    {
+      "path": "pack.png",
+      "rawBytes": 2761375,
+      "compressedBytes": 2749499
+    },
+    {
+      "path": "assets/wuxingxiantu/textures/block/cauldron/material_1.png",
+      "rawBytes": 2773465,
+      "compressedBytes": 2704943
+    },
+    {
+      "path": "logo_myriad_ascension.png",
+      "rawBytes": 2444961,
+      "compressedBytes": 2396044
+    },
+    {
+      "path": "assets/wuxingxiantu/textures/gui/reforge_gold/window.png",
+      "rawBytes": 2349958,
+      "compressedBytes": 2350678
+    },
+    {
+      "path": "assets/wuxingxiantu/textures/gui/inscription_gold/window.png",
+      "rawBytes": 2278667,
+      "compressedBytes": 2279362
+    },
+    {
+      "path": "assets/wuxingxiantu/textures/gui/wuxia/background/landscape.png",
+      "rawBytes": 2200514,
+      "compressedBytes": 2187261
+    },
+    {
+      "path": "assets/wuxingxiantu/textures/gui/research_v2/background.png",
+      "rawBytes": 2243003,
+      "compressedBytes": 2181536
+    },
+    {
+      "path": "assets/wuxingxiantu/textures/gui/refining/panel.png",
+      "rawBytes": 1678669,
+      "compressedBytes": 1679184
+    },
+    {
+      "path": "assets/wuxingxiantu/models/block/cauldron_structure.obj",
+      "rawBytes": 10056909,
+      "compressedBytes": 1676960
+    },
+    {
+      "path": "assets/wuxingxiantu/textures/gui/alchemy_concept/landscape.png",
+      "rawBytes": 1810768,
+      "compressedBytes": 1640935
+    },
+    {
+      "path": "assets/wuxingxiantu/textures/block/xuanling_anvil_adapted.png",
+      "rawBytes": 1541173,
+      "compressedBytes": 1375039
+    },
+    {
+      "path": "assets/wuxingxiantu/textures/entity/spirit_devourer/6.png",
+      "rawBytes": 1528587,
+      "compressedBytes": 1365899
+    },
+    {
+      "path": "assets/wuxingxiantu/textures/item/ming_jing.png",
+      "rawBytes": 1350694,
+      "compressedBytes": 1324890
+    },
+    {
+      "path": "assets/wuxingxiantu/textures/gui/equipment/frame.png",
+      "rawBytes": 1309464,
+      "compressedBytes": 1309864
+    },
+    {
+      "path": "assets/wuxingxiantu/textures/gui/equipment_workstation_skin.png",
+      "rawBytes": 1464542,
+      "compressedBytes": 1265769
+    },
+    {
+      "path": "assets/wuxingxiantu/textures/gui/boss/heart_demon_phase1_original.png",
+      "rawBytes": 1102497,
+      "compressedBytes": 1084989
+    },
+    {
+      "path": "assets/wuxingxiantu/textures/gui/wuxia/reference/background/main.png",
+      "rawBytes": 1064298,
+      "compressedBytes": 1064623
+    },
+    {
+      "path": "assets/wuxingxiantu/textures/gui/alchemy/background.png",
+      "rawBytes": 1065234,
+      "compressedBytes": 1061716
+    },
+    {
+      "path": "assets/wuxingxiantu/textures/entity/spirit_devourer/8.png",
+      "rawBytes": 1006196,
+      "compressedBytes": 1006403
+    },
+    {
+      "path": "assets/wuxingxiantu/mesh/item/xianxian_sword.json",
+      "rawBytes": 11348919,
+      "compressedBytes": 929562
+    },
+    {
+      "path": "assets/wuxingxiantu/textures/gui/boss/heart_demon_phase1_frame.png",
+      "rawBytes": 1022505,
+      "compressedBytes": 904564
+    },
+    {
+      "path": "assets/wuxingxiantu/textures/gui/boss/ermei_original.png",
+      "rawBytes": 911206,
+      "compressedBytes": 894910
+    },
+    {
+      "path": "assets/wuxingxiantu/textures/gui/wuxia/button/reference_atlas.png",
+      "rawBytes": 984515,
+      "compressedBytes": 853135
+    },
+    {
+      "path": "assets/wuxingxiantu/mesh/item/juexian_sword.json",
+      "rawBytes": 9701116,
+      "compressedBytes": 846107
+    },
+    {
+      "path": "assets/wuxingxiantu/textures/gui/boss/pengjiao_original.png",
+      "rawBytes": 839566,
+      "compressedBytes": 822357
+    }
+  ],
+  "exactResourceDuplicateGroups": [
+    {
+      "sha256": "02f7aede91dbd4c04a733eedb50f282953bf9aba7e06348370a318facd5afc00",
+      "rawBytesEach": 863418,
+      "paths": [
+        "assets/wuxingxiantu/textures/entity/spirit_devourer/0.png",
+        "assets/wuxingxiantu/textures/entity/spirit_devourer/1.png"
+      ]
+    },
+    {
+      "sha256": "5b8c21570933a0948f0f0c7609f42776f7483b0c0832b1c887bc16969082bff9",
+      "rawBytesEach": 4144,
+      "paths": [
+        "assets/wuxingxiantu/textures/block/exotic_fire_1.png",
+        "assets/wuxingxiantu/textures/block/exotic_fire_azure_wood_1.png",
+        "assets/wuxingxiantu/textures/block/exotic_fire_cobalt_sea_1.png",
+        "assets/wuxingxiantu/textures/block/exotic_fire_cold_bone_1.png",
+        "assets/wuxingxiantu/textures/block/exotic_fire_molten_gold_1.png",
+        "assets/wuxingxiantu/textures/block/exotic_fire_nether_void_1.png",
+        "assets/wuxingxiantu/textures/block/exotic_fire_nirvana_1.png",
+        "assets/wuxingxiantu/textures/block/exotic_fire_red_flow_1.png",
+        "assets/wuxingxiantu/textures/block/exotic_fire_sun_saint_1.png",
+        "assets/wuxingxiantu/textures/block/exotic_fire_violet_thunder_1.png"
+      ]
+    },
+    {
+      "sha256": "08ff695abb41e3d8d9c14e1c7afd0a2689741d728bbbed6061b0d41cfdeb58c6",
+      "rawBytesEach": 35796,
+      "paths": [
+        "assets/wuxingxiantu/textures/item/xuan_tie_jian.png",
+        "assets/wuxingxiantu/textures/item/xuan_tie_jian_atlas.png"
+      ]
+    },
+    {
+      "sha256": "3b100fe9f5a9b27785f9ef4fe512e861cfef6c6eab6ba28a960699c9ad0b012c",
+      "rawBytesEach": 3845,
+      "paths": [
+        "assets/wuxingxiantu/textures/block/exotic_fire_0.png",
+        "assets/wuxingxiantu/textures/block/exotic_fire_azure_wood_0.png",
+        "assets/wuxingxiantu/textures/block/exotic_fire_cobalt_sea_0.png",
+        "assets/wuxingxiantu/textures/block/exotic_fire_cold_bone_0.png",
+        "assets/wuxingxiantu/textures/block/exotic_fire_molten_gold_0.png",
+        "assets/wuxingxiantu/textures/block/exotic_fire_nether_void_0.png",
+        "assets/wuxingxiantu/textures/block/exotic_fire_nirvana_0.png",
+        "assets/wuxingxiantu/textures/block/exotic_fire_red_flow_0.png",
+        "assets/wuxingxiantu/textures/block/exotic_fire_sun_saint_0.png",
+        "assets/wuxingxiantu/textures/block/exotic_fire_violet_thunder_0.png"
+      ]
+    },
+    {
+      "sha256": "56533a4ba9a0bba5743d7d483401f1e28042f9083b24a3e8fed1a0b491b51674",
+      "rawBytesEach": 29915,
+      "paths": [
+        "assets/wuxingxiantu/textures/item/human_emperor_banner.png",
+        "assets/wuxingxiantu/textures/item/human_emperor_banner_atlas.png"
+      ]
+    },
+    {
+      "sha256": "221734961a0b8d38acb8f62be483ba34bb992e163cf1f7a6e6bfd407a84c9344",
+      "rawBytesEach": 6389,
+      "paths": [
+        "assets/wuxingxiantu/textures/block/refining_forge_core.png",
+        "assets/wuxingxiantu/textures/block/refining_forge_core_lit.png"
+      ]
+    },
+    {
+      "sha256": "408fcc9eddfe894c5fa2b5369953b1a84e631d421d00f39ea5d1783c851fa4b3",
+      "rawBytesEach": 4226,
+      "paths": [
+        "assets/wuxingxiantu/textures/item/talisman_purge.png",
+        "assets/wuxingxiantu/textures/mob_effect/talisman_purge.png"
+      ]
+    },
+    {
+      "sha256": "29753a1aaa45c1b3822cce7c8f6f3061823e195e6a618418f7f49ddc2dadb70d",
+      "rawBytesEach": 3776,
+      "paths": [
+        "assets/wuxingxiantu/textures/item/talisman_gather.png",
+        "assets/wuxingxiantu/textures/mob_effect/talisman_gathering.png"
+      ]
+    },
+    {
+      "sha256": "db0303823b41cb43594183ea28fd871b1e5fc2bf84864fb68b0fd7258c81b993",
+      "rawBytesEach": 3697,
+      "paths": [
+        "assets/wuxingxiantu/textures/item/talisman_thorn.png",
+        "assets/wuxingxiantu/textures/mob_effect/talisman_bind.png"
+      ]
+    },
+    {
+      "sha256": "8279ff05e22179534cc063f249e1d6453088a7b8a4d2ce1a2dc99c01beff3e9b",
+      "rawBytesEach": 1794,
+      "paths": [
+        "assets/wuxingxiantu/textures/block/glowing_blue_mushroom.png",
+        "assets/wuxingxiantu/textures/block/glowing_blue_mushroom_growing.png",
+        "assets/wuxingxiantu/textures/block/glowing_blue_mushroom_young.png"
+      ]
+    },
+    {
+      "sha256": "7f76148484bddc984777ef8b4f21e343babe7c327578dd5d7f18a2828d0481ef",
+      "rawBytesEach": 3422,
+      "paths": [
+        "assets/wuxingxiantu/firecoil/shaders/core/fire.fsh",
+        "assets/wuxingxiantu/shaders/core/firecoil_fire.fsh"
+      ]
+    },
+    {
+      "sha256": "cd910b7823b6c372647897a33ee7ea17bc165c196f390b3a13d211b58c1ae0bf",
+      "rawBytesEach": 38,
+      "paths": [
+        "assets/wuxingxiantu/textures/gui/alchemy_concept/bar_border.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/alchemy_concept/bar_danger.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/alchemy_concept/bar_gold.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/alchemy_concept/bar_spirit.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/alchemy_concept/bar_track.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/alchemy_concept/button.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/alchemy_concept/button_gold.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/alchemy_concept/button_selected.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/alchemy_concept/divider.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/alchemy_concept/formation.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/alchemy_concept/header_corner.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/alchemy_concept/header_flourish.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/alchemy_concept/header_shadow.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/alchemy_concept/inventory_slot.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/alchemy_concept/material_slot.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/alchemy_concept/panel.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/alchemy_concept/preview.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/alchemy_concept/progress_backing.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/alchemy_concept/section_shadow.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/refining/landscape.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/close_reference.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/navigation/hover_frame.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/navigation/normal_frame.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/navigation/selected_frame.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/outer_frame_v2/bl.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/outer_frame_v2/bottom.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/outer_frame_v2/br.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/outer_frame_v2/left.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/outer_frame_v2/right.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/outer_frame_v2/tl.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/outer_frame_v2/top.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/outer_frame_v2/tr.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/borders/gold_bl.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/borders/gold_bottom.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/borders/gold_br.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/borders/gold_left.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/borders/gold_right.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/borders/gold_tl.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/borders/gold_top.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/borders/gold_tr.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/borders/ink_bl.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/borders/ink_bottom.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/borders/ink_br.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/borders/ink_left.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/borders/ink_right.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/borders/ink_tl.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/borders/ink_top.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/borders/ink_tr.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/borders/rule_gold.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/borders/rule_gold_vertical.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/borders/rule_ink.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/scrollbar_reference.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/settings/slider_fill.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/settings/slider_track.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/armor.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/armor_gold.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/attack.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/attack_gold.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/bar_cultivation.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/bar_cultivation_track.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/bar_health.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/bar_health_track.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/bar_mana.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/bar_mana_track.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/cultivation.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/cultivation_gold.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/dao.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/dao_gold.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/health.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/health_gold.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/heart_method.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/heart_method_gold.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/mana.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/mana_gold.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/meridian.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/meridian_gold.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/physique.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/physique_gold.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/purity_gold.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/realm.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/realm_gold.png.mcmeta"
+      ]
+    },
+    {
+      "sha256": "64e15010cb12ca81c4e06288ca3a447758ec8f7cef2fd52786f8b8085e611013",
+      "rawBytesEach": 44,
+      "paths": [
+        "assets/wuxingxiantu/textures/gui/inscription_gold/background.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/book_slot.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/charge.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/close.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/confirm.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/confirm_fill.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/control.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/equipment_clean.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/equipment_panel.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/equipment_slot.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/guard.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/header.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/header_title.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/inventory_clean.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/inventory_panel.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/left_clean.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/left_panel.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/light.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/pity.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/preview_clean.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/preview_panel.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/progress.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/row.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/row_fill.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/row_selected.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/row_selected_fill.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/search.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/search_icon.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/sigil.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/slot.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/tough.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/inscription_gold/window.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/reforge_gold/alert.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/reforge_gold/confirm.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/reforge_gold/confirm_fill.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/reforge_gold/equipment_clean.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/reforge_gold/equipment_slot.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/reforge_gold/fire.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/reforge_gold/header.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/reforge_gold/header_title.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/reforge_gold/inventory_clean.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/reforge_gold/left_clean.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/reforge_gold/pity.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/reforge_gold/preview_clean.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/reforge_gold/protect.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/reforge_gold/ready.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/reforge_gold/risk.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/reforge_gold/row.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/reforge_gold/row_fill.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/reforge_gold/row_protect.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/reforge_gold/row_selected.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/reforge_gold/row_selected_fill.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/reforge_gold/slot.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/reforge_gold/stable.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/reforge_gold/tab.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/reforge_gold/tab_selected.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/reforge_gold/window.png.mcmeta"
+      ]
+    },
+    {
+      "sha256": "4e41d0e2392bdfb822acadbda684fd41f75a772b8e6da88f9b8bcaca8f9f4180",
+      "rawBytesEach": 2142,
+      "paths": [
+        "assets/wuxingxiantu/shaders/core/huahong_fire_accum.json",
+        "assets/wuxingxiantu/shaders/core/huahong_smoke_accum.json"
+      ]
+    },
+    {
+      "sha256": "30e0c33ed5f9cc3d7c3f642ec47d7dffed0e3f3c62bdbcde8a28f23614db45db",
+      "rawBytesEach": 1015,
+      "paths": [
+        "assets/wuxingxiantu/textures/entity/villager/profession/alchemist.png",
+        "assets/wuxingxiantu/textures/entity/villager/profession/spirit_cultivator.png",
+        "assets/wuxingxiantu/textures/entity/villager/profession/taoist.png"
+      ]
+    },
+    {
+      "sha256": "adc3eb23037f6e0fb32f69844b400202521e8637fdeb5e383848976b11125cf0",
+      "rawBytesEach": 1670,
+      "paths": [
+        "assets/wuxingxiantu/textures/gui/forged/search_icon.png",
+        "assets/wuxingxiantu/textures/gui/heavenly_v2/search_icon.png"
+      ]
+    },
+    {
+      "sha256": "b6121ca05ecb61b5da7d61ec0ff4b2c3b22d51a208fa80bba41be249216e76fb",
+      "rawBytesEach": 39,
+      "paths": [
+        "assets/wuxingxiantu/textures/gui/alchemy/background_clean.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/alchemy/formation_clean.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/refining/aura_icon.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/refining/button.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/refining/button_left.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/refining/button_right.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/refining/card.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/refining/close.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/refining/fire_icon.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/refining/info.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/refining/info_tall.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/refining/material_rule.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/refining/next.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/refining/output.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/refining/panel.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/refining/pedestal_icon.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/refining/previous.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/refining/separator.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/refining/time_icon.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/refining/title.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/navigation/center_rule.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/navigation/hover_background.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/navigation/icon_advancements.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/navigation/icon_arts.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/navigation/icon_inventory.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/navigation/icon_settings.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/navigation/icon_sword.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/navigation/icon_vision.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/navigation/normal_background.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/navigation/selected_background.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/navigation/separator.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/outer_frame/bl.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/outer_frame/bottom.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/outer_frame/br.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/outer_frame/diamond.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/outer_frame/left.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/outer_frame/right.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/outer_frame/tl.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/outer_frame/top.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/outer_frame/tr.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/purity.png.mcmeta"
+      ]
+    },
+    {
+      "sha256": "88d21710a9e615cb3c8398df793bc8cd7a73388e78c2e0e7415e3fe08dab4a89",
+      "rawBytesEach": 1506,
+      "paths": [
+        "assets/wuxingxiantu/textures/particle/exotic_fire_flame.png",
+        "assets/wuxingxiantu/textures/particle/heart_sword_spark.png"
+      ]
+    },
+    {
+      "sha256": "272995a11ec2aa23d61dc158149000eb2c953a40382a0d49752fe789e1060f31",
+      "rawBytesEach": 42,
+      "paths": [
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/background/header.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/background/main.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/background/navigation.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/background/overview.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/background/player.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/icons/navigation/advancements.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/icons/navigation/arts.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/icons/navigation/inventory.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/icons/navigation/settings.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/icons/navigation/sword.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/icons/navigation/vision.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/icons/summary/cultivation.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/icons/summary/dao_heart.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/icons/summary/domain.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/icons/summary/exotic_fire.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/icons/summary/heart_demon.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/icons/summary/heart_method.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/icons/summary/mana.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/icons/summary/physique.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/icons/summary/realm.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/icons/summary/tribulation.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/slot/boots.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/slot/chestplate.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/slot/dao_robe.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/slot/empty.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/slot/flying_sword.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/slot/helmet.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/slot/leggings.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/slot/vanilla_shield.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/root_exotic.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/root_thunder.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/roots/earth.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/roots/fire.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/roots/gold.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/roots/water.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/roots/wood.png.mcmeta"
+      ]
+    },
+    {
+      "sha256": "2352ef117d2bf2806a2d63325f911c65ce24c42bd58f1d2520912c0b7547aba7",
+      "rawBytesEach": 66,
+      "paths": [
+        "assets/wuxingxiantu/textures/gui/boss/bichen_hud_fill.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/boss/bichen_hud_frame.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/boss/ermei_hud_fill.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/boss/ermei_hud_frame.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/boss/heart_demon_phase1_hud_fill.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/boss/heart_demon_phase1_hud_frame.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/boss/heart_demon_phase2_hud_fill.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/boss/heart_demon_phase2_hud_frame.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/boss/muyan_hud_fill.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/boss/muyan_hud_frame.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/boss/pengjiao_hud_fill.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/boss/pengjiao_hud_frame.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/boss/pengju_hud_fill.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/boss/pengju_hud_frame.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/boss/pengzhi_hud_fill.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/boss/pengzhi_hud_frame.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/boss/shenyin_hud_fill.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/boss/shenyin_hud_frame.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/boss/shetao_hud_fill.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/boss/shetao_hud_frame.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/boss/yihuo_hud_fill.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/boss/yihuo_hud_frame.png.mcmeta"
+      ]
+    },
+    {
+      "sha256": "1e08f9769e3994d9b434a53d4c34b36bd4ca7bec82e6d58cc592ee55e370b503",
+      "rawBytesEach": 151,
+      "paths": [
+        "assets/wuxingxiantu/models/item/fire_seed_azure_wood.json",
+        "assets/wuxingxiantu/models/item/fire_seed_cobalt_sea.json",
+        "assets/wuxingxiantu/models/item/fire_seed_cold_ash.json",
+        "assets/wuxingxiantu/models/item/fire_seed_molten_gold.json",
+        "assets/wuxingxiantu/models/item/fire_seed_nether_void.json",
+        "assets/wuxingxiantu/models/item/fire_seed_nirvana.json",
+        "assets/wuxingxiantu/models/item/fire_seed_red_flow.json",
+        "assets/wuxingxiantu/models/item/fire_seed_sun_saint.json",
+        "assets/wuxingxiantu/models/item/fire_seed_violet_thunder.json"
+      ]
+    },
+    {
+      "sha256": "d22afa833e86fab4f4566943a0f5c24f4f37b9abd7ee552351c2d0916200d52e",
+      "rawBytesEach": 99,
+      "paths": [
+        "assets/wuxingxiantu/models/item/heart_method.json",
+        "assets/wuxingxiantu/models/item/heart_method_burning_heaven.json",
+        "assets/wuxingxiantu/models/item/heart_method_gathering.json",
+        "assets/wuxingxiantu/models/item/heart_method_nine_turns.json",
+        "assets/wuxingxiantu/models/item/heart_method_taixu.json",
+        "assets/wuxingxiantu/models/item/heart_method_thick_earth.json",
+        "assets/wuxingxiantu/models/item/heart_method_tiangang.json",
+        "assets/wuxingxiantu/models/item/heart_method_wanling.json",
+        "assets/wuxingxiantu/models/item/heart_method_xuanshui.json",
+        "assets/wuxingxiantu/models/item/heart_method_yuan_hun.json"
+      ]
+    },
+    {
+      "sha256": "2424ce55dc49a9133742e5466ff11b121cab303fea99dfa9ae469bc5263597ba",
+      "rawBytesEach": 751,
+      "paths": [
+        "assets/wuxingxiantu/textures/gui/heavenly_v2/previous.png",
+        "assets/wuxingxiantu/textures/gui/sense_heavenly_v1/previous.png"
+      ]
+    },
+    {
+      "sha256": "006dc081ef9fe9b2b68ea8d482babd82903d958491df8909c9b5de8a0fb2e85c",
+      "rawBytesEach": 748,
+      "paths": [
+        "assets/wuxingxiantu/textures/gui/heavenly_v2/next.png",
+        "assets/wuxingxiantu/textures/gui/sense_heavenly_v1/next.png"
+      ]
+    },
+    {
+      "sha256": "b8e35f41c9f19f42e20d879d2c1bcd54dbb4d0dd37d201937aafd8c42620acbc",
+      "rawBytesEach": 118,
+      "paths": [
+        "assets/wuxingxiantu/models/item/art_armor_break.json",
+        "assets/wuxingxiantu/models/item/art_golden_bell.json",
+        "assets/wuxingxiantu/models/item/art_ice_spike.json",
+        "assets/wuxingxiantu/models/item/art_spirit_gathering.json",
+        "assets/wuxingxiantu/models/item/art_sword_flight.json",
+        "assets/wuxingxiantu/models/item/art_sword_guard.json",
+        "assets/wuxingxiantu/models/item/art_sword_sweep.json"
+      ]
+    },
+    {
+      "sha256": "dcf565346dba4d42174c22519c953c975d10753a3bd9efe10092a55a8e289246",
+      "rawBytesEach": 343,
+      "paths": [
+        "assets/wuxingxiantu/textures/mob_effect/paralysis.png",
+        "assets/wuxingxiantu/textures/mob_effect/pill_tribulation.png",
+        "assets/wuxingxiantu/textures/mob_effect/thunder_domain.png"
+      ]
+    },
+    {
+      "sha256": "293be4d6e8d0f56697dea5d1baa9c7e7feb50a459e8f7c7f9f8a09ce3c46a9e5",
+      "rawBytesEach": 120,
+      "paths": [
+        "assets/wuxingxiantu/models/item/art_immobilize.json",
+        "assets/wuxingxiantu/models/item/art_light_body.json",
+        "assets/wuxingxiantu/models/item/art_renewal.json",
+        "assets/wuxingxiantu/models/item/art_spirit_shield.json",
+        "assets/wuxingxiantu/models/item/art_sword_aura.json",
+        "assets/wuxingxiantu/models/item/art_sword_pierce.json"
+      ]
+    },
+    {
+      "sha256": "4572284cac9a72a09692f4331b7bdf09ec1e588b9d735d43e0f43506ee1c0f0b",
+      "rawBytesEach": 581,
+      "paths": [
+        "data/wuxingxiantu/tags/blocks/spirit_plants.json",
+        "data/wuxingxiantu/tags/items/alchemy_herbs.json"
+      ]
+    },
+    {
+      "sha256": "3982a1bfd61918a8593c1830ac7e9311906a9ec96cece5a7357307dfbf165525",
+      "rawBytesEach": 526,
+      "paths": [
+        "assets/wuxingxiantu/textures/gui/talisman_v12/collapse_small.png",
+        "assets/wuxingxiantu/textures/gui/talisman_v12/collapse_small_hover.png"
+      ]
+    },
+    {
+      "sha256": "c5b4725c3de059269374359f2733d27876390d3eeb0dd37c7875605c6503389d",
+      "rawBytesEach": 260,
+      "paths": [
+        "assets/wuxingxiantu/shaders/core/carved_formation.vsh",
+        "assets/wuxingxiantu/shaders/core/sword_array_ground.vsh",
+        "assets/wuxingxiantu/shaders/core/sword_array_shield.vsh"
+      ]
+    },
+    {
+      "sha256": "43fbcc06b63b589f24e0fd65bb7180b0f8ccac166a9e4d5ca5132b35350f4776",
+      "rawBytesEach": 119,
+      "paths": [
+        "assets/wuxingxiantu/models/item/art_bloodlust.json",
+        "assets/wuxingxiantu/models/item/art_flame_wave.json",
+        "assets/wuxingxiantu/models/item/art_flash_step.json",
+        "assets/wuxingxiantu/models/item/art_purification.json",
+        "assets/wuxingxiantu/models/item/art_thunder.json"
+      ]
+    },
+    {
+      "sha256": "cc642e7ef8cee3897b393f24571c739257195cf961fa29db48b30197b2aa1849",
+      "rawBytesEach": 467,
+      "paths": [
+        "data/wuxingxiantu/loot_tables/blocks/carved_formation_eye.json",
+        "data/wuxingxiantu/loot_tables/blocks/formation_carving_core.json"
+      ]
+    },
+    {
+      "sha256": "1f4088868a2c3aa4d85298cdff0bd3cf5f9b1f788b67979bcf80e232c7ad7494",
+      "rawBytesEach": 48,
+      "paths": [
+        "assets/wuxingxiantu/models/item/bichen_spawn_egg.json",
+        "assets/wuxingxiantu/models/item/ermei_spawn_egg.json",
+        "assets/wuxingxiantu/models/item/heart_demon_spawn_egg.json",
+        "assets/wuxingxiantu/models/item/muyan_spawn_egg.json",
+        "assets/wuxingxiantu/models/item/pengjiao_spawn_egg.json",
+        "assets/wuxingxiantu/models/item/pengju_spawn_egg.json",
+        "assets/wuxingxiantu/models/item/pengzhi_spawn_egg.json",
+        "assets/wuxingxiantu/models/item/shenyin_spawn_egg.json",
+        "assets/wuxingxiantu/models/item/shetao_spawn_egg.json",
+        "assets/wuxingxiantu/models/item/yihuo_spawn_egg.json"
+      ]
+    },
+    {
+      "sha256": "125f94005365d58d1b2dee943d1c47dc8c0884aea3349e04cba1acc610415aa6",
+      "rawBytesEach": 399,
+      "paths": [
+        "assets/wuxingxiantu/textures/mob_effect/pill_gathering.png",
+        "assets/wuxingxiantu/textures/mob_effect/wood_domain.png"
+      ]
+    },
+    {
+      "sha256": "b7f92950aa6567194131b308b29d8ec42a9e1c873aae4c11bbc8b3b89b604da8",
+      "rawBytesEach": 131,
+      "paths": [
+        "assets/wuxingxiantu/models/item/alchemy_inheritance_earth.json",
+        "assets/wuxingxiantu/models/item/alchemy_inheritance_heaven.json",
+        "assets/wuxingxiantu/models/item/alchemy_inheritance_mystic.json",
+        "assets/wuxingxiantu/models/item/alchemy_inheritance_yellow.json"
+      ]
+    },
+    {
+      "sha256": "60de34a2a250ff67836e656861cbe053f09a2366d0384852d7f321d6cc63df87",
+      "rawBytesEach": 366,
+      "paths": [
+        "assets/wuxingxiantu/shaders/core/anvil_rune_emission.vsh",
+        "assets/wuxingxiantu/shaders/core/spirit_guard_shell.vsh"
+      ]
+    },
+    {
+      "sha256": "2506aa71f1d505c34faab5a74754a868e8fcd8d10311400c92cd23640552835d",
+      "rawBytesEach": 119,
+      "paths": [
+        "assets/wuxingxiantu/models/item/artifact_armor.json",
+        "assets/wuxingxiantu/models/item/artifact_boots.json",
+        "assets/wuxingxiantu/models/item/artifact_helmet.json",
+        "assets/wuxingxiantu/models/item/artifact_leggings.json"
+      ]
+    },
+    {
+      "sha256": "5f8eeb19bbc2d4c8750c00465fc82f126ef5faf05e69f8ce0c79f27ea4d4906e",
+      "rawBytesEach": 95,
+      "paths": [
+        "assets/wuxingxiantu/models/item/art_five_elements.json",
+        "assets/wuxingxiantu/models/item/art_human_harmony.json",
+        "assets/wuxingxiantu/models/item/art_immovable_mountain.json",
+        "assets/wuxingxiantu/models/item/art_myriad_swords.json"
+      ]
+    },
+    {
+      "sha256": "b3007c5d53250245a5ab770f4c31e2b8d9fa6bd3b8e63a4bd8079269e7a51f46",
+      "rawBytesEach": 48,
+      "paths": [
+        "assets/wuxingxiantu/models/item/inner_core_common.json",
+        "assets/wuxingxiantu/models/item/inner_core_high.json",
+        "assets/wuxingxiantu/models/item/inner_core_immortal.json",
+        "assets/wuxingxiantu/models/item/inner_core_low.json",
+        "assets/wuxingxiantu/models/item/inner_core_mid.json",
+        "assets/wuxingxiantu/models/item/inner_core_perfect.json"
+      ]
+    },
+    {
+      "sha256": "23530a1637e33ce97fa36ae462f1b63a0524162274950af3fb51294108c42949",
+      "rawBytesEach": 237,
+      "paths": [
+        "assets/wuxingxiantu/firecoil/shaders/core/fire.vsh",
+        "assets/wuxingxiantu/shaders/core/firecoil_fire.vsh"
+      ]
+    },
+    {
+      "sha256": "5ecd14569b77926061dae218b07af27a6d70787d6e92540574294a863796f896",
+      "rawBytesEach": 40,
+      "paths": [
+        "assets/wuxingxiantu/textures/gui/alchemy_concept/cloud_pair.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/alchemy_concept/header_ornaments.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/alchemy_concept/landscape.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/settings/slider_jade_thumb.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/settings/toggle_jade_v2.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/vision/components/domain.png.mcmeta"
+      ]
+    },
+    {
+      "sha256": "aafbc66d52c634656ffdaf55951b011892d1bb82bf79f2beb2ab298d18acbf23",
+      "rawBytesEach": 66,
+      "paths": [
+        "assets/wuxingxiantu/particles/exotic_fire_core.json",
+        "assets/wuxingxiantu/particles/exotic_fire_ember.json",
+        "assets/wuxingxiantu/particles/exotic_fire_flame.json",
+        "assets/wuxingxiantu/particles/exotic_fire_outer.json"
+      ]
+    },
+    {
+      "sha256": "260fd8528e7c66dcdc999217c0bc63d4a88229439f92cdeefb29838d4507f85f",
+      "rawBytesEach": 97,
+      "paths": [
+        "assets/wuxingxiantu/models/item/art_jiuxiao_sword_rain.json",
+        "assets/wuxingxiantu/models/item/art_sword_array.json",
+        "assets/wuxingxiantu/models/item/art_wanjian_guizong.json"
+      ]
+    },
+    {
+      "sha256": "5fe04171cf4207d53b98c8257b7599b968bb2f4dc54185dafef6012b7b9bfa2b",
+      "rawBytesEach": 189,
+      "paths": [
+        "data/wuxingxiantu/tags/worldgen/biome/highland_spirit_plants.json",
+        "data/wuxingxiantu/tags/worldgen/biome/vein_mending_vine_habitat.json"
+      ]
+    },
+    {
+      "sha256": "4f3c945eaca791d8d33b1ee67b4d74c0a90913b3f88492339aaf6860bab04194",
+      "rawBytesEach": 43,
+      "paths": [
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/frame/main.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/frame/navigation_selected.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/frame/overview.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/frame/player.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/wuxia/reference/frame/window.png.mcmeta"
+      ]
+    },
+    {
+      "sha256": "e8024fe4d12ee14c9695e9a1ae63e3f1a9ff9acccaedd4a0b378513b36c69e71",
+      "rawBytesEach": 56,
+      "paths": [
+        "data/minecraft/tags/damage_type/bypasses_effects.json",
+        "data/minecraft/tags/damage_type/bypasses_enchantments.json",
+        "data/minecraft/tags/damage_type/bypasses_resistance.json",
+        "data/minecraft/tags/damage_type/bypasses_shield.json"
+      ]
+    },
+    {
+      "sha256": "661ea0e0c5996e663d9996d05d16a20868a874ca91da25194ea9badb66e51208",
+      "rawBytesEach": 150,
+      "paths": [
+        "assets/wuxingxiantu/shaders/core/energy_blur.vsh",
+        "assets/wuxingxiantu/shaders/core/realm_meteor_bloom.vsh"
+      ]
+    },
+    {
+      "sha256": "6d660cc117756da9826a4b1dd92f3ea20ba876de795ee129b2f909b97bb050b3",
+      "rawBytesEach": 142,
+      "paths": [
+        "data/wuxingxiantu/tags/worldgen/biome/plant_habitats/herb_lieyang.json",
+        "data/wuxingxiantu/tags/worldgen/biome/plant_habitats/red_sun_grass.json"
+      ]
+    },
+    {
+      "sha256": "7bd896b1d4b50300dee3939b4c2e62d8559cc3c81ac93b8e686a15be79bc262e",
+      "rawBytesEach": 62,
+      "paths": [
+        "assets/wuxingxiantu/models/item/guiyuan_sword.json",
+        "assets/wuxingxiantu/models/item/tianque_sword.json",
+        "assets/wuxingxiantu/models/item/wuxiang_sword.json"
+      ]
+    },
+    {
+      "sha256": "13aaaa860b57b973bfca16d38d88c9d6e743b169188312e283b9d668f906b7ee",
+      "rawBytesEach": 57,
+      "paths": [
+        "data/minecraft/tags/damage_type/always_triggers_silverfish.json",
+        "data/minecraft/tags/damage_type/avoids_guardian_thorns.json",
+        "data/minecraft/tags/damage_type/witch_resistant_to.json"
+      ]
+    },
+    {
+      "sha256": "eeba66b27eb017ed5764359870229a89a232ec9409c90da45733a665715926cd",
+      "rawBytesEach": 54,
+      "paths": [
+        "data/minecraft/tags/blocks/logs_that_burn.json",
+        "data/minecraft/tags/items/logs.json",
+        "data/minecraft/tags/items/logs_that_burn.json"
+      ]
+    },
+    {
+      "sha256": "0d915a27d72161adfddb328cd5ad7327ca5c292180b5a8a3b46f165a9d257ff7",
+      "rawBytesEach": 99,
+      "paths": [
+        "assets/wuxingxiantu/models/item/golden_wound_pill.json",
+        "assets/wuxingxiantu/models/item/v5_pill.json"
+      ]
+    },
+    {
+      "sha256": "03972131149db9df6f8fac7e5314e98ae5b3033ee43dad428b6b8244d896226e",
+      "rawBytesEach": 49,
+      "paths": [
+        "assets/wuxingxiantu/particles/heart_flame.json",
+        "assets/wuxingxiantu/particles/heart_mote.json",
+        "assets/wuxingxiantu/particles/spirit_guard_glow.json"
+      ]
+    },
+    {
+      "sha256": "a4bafba3032910973c42143c669e7b5ccccbafbfa92f425b234c5bb1b6cdcee5",
+      "rawBytesEach": 88,
+      "paths": [
+        "assets/wuxingxiantu/models/block/human_emperor_banner_pole.json",
+        "assets/wuxingxiantu/models/block/human_emperor_banner_stand.json"
+      ]
+    },
+    {
+      "sha256": "1d7d435ef0697aa67ea6a9b2c4e556b120c825ab67d6de57f4e03329288861da",
+      "rawBytesEach": 87,
+      "paths": [
+        "data/wuxingxiantu/worldgen/configured_feature/fire_source_red_flow_nether.json",
+        "data/wuxingxiantu/worldgen/configured_feature/fire_source_red_flow_overworld.json"
+      ]
+    },
+    {
+      "sha256": "bda699bbdc2a63746b0d6af2bdc1e059a9f7548d6f41c880efc240cb2a27efe0",
+      "rawBytesEach": 63,
+      "paths": [
+        "assets/generated_mod/lang/en_us.json",
+        "assets/generated_mod/lang/zh_cn.json"
+      ]
+    },
+    {
+      "sha256": "9e3e392e451e893c3da4aec08eee63a7f3afb8c2f10e6f51ed4a99bc87c1259d",
+      "rawBytesEach": 56,
+      "paths": [
+        "assets/wuxingxiantu/models/block/glowing_blue_mushroom_low.json",
+        "assets/wuxingxiantu/models/block/glowing_blue_mushroom_mid.json"
+      ]
+    },
+    {
+      "sha256": "b2d38e71f8b7b3e3d37170b71df1bb85abc4132eb53fceb7d382287f96611fd8",
+      "rawBytesEach": 56,
+      "paths": [
+        "data/minecraft/tags/blocks/planks.json",
+        "data/minecraft/tags/items/planks.json"
+      ]
+    },
+    {
+      "sha256": "754272dac9040d7b6769a1e53011b64aee4cafa8d1d51750e6d3f62b4ca46d15",
+      "rawBytesEach": 55,
+      "paths": [
+        "assets/wuxingxiantu/models/item/black_boar_king_spawn_egg.json",
+        "assets/wuxingxiantu/models/item/black_boar_spawn_egg.json"
+      ]
+    },
+    {
+      "sha256": "e00e2dd9ab1a13d08d481b2c1643bb4ec63e9aaf5759a4257462a661f3c03d1d",
+      "rawBytesEach": 50,
+      "paths": [
+        "assets/wuxingxiantu/textures/entity/villager/profession/alchemist.png.mcmeta",
+        "assets/wuxingxiantu/textures/entity/villager/profession/spirit_cultivator.png.mcmeta"
+      ]
+    },
+    {
+      "sha256": "70c94936472c179af32903a26e9576e0e79c1f17574d236037cb239b259987e9",
+      "rawBytesEach": 41,
+      "paths": [
+        "assets/wuxingxiantu/textures/gui/creative/panel.png.mcmeta",
+        "assets/wuxingxiantu/textures/gui/creative/tabs.png.mcmeta"
+      ]
+    }
+  ],
+  "forbiddenSourceOrFixtureEntries": [],
+  "limits": "ZIP bytes are not heap, VRAM, load-time, or frame-time measurements. Equal resource bytes can serve distinct resource locations; do not delete automatically."
+}
