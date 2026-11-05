@@ -5,7 +5,6 @@ import cn.blockforge.generated.generatedmod.client.TrailShaderBridge;
 import cn.blockforge.generated.generatedmod.client.realmflight.MeteorBloomRenderer;
 import cn.blockforge.generated.generatedmod.network.packet.cultivation.FourArtsPacket;
 import cn.blockforge.generated.generatedmod.network.packet.cultivation.FourArtsPacket.Action;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.BufferUploader;
@@ -30,8 +29,6 @@ import net.minecraftforge.fml.common.Mod;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-import org.lwjgl.opengl.GL30;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -50,7 +47,6 @@ public final class FourArtsEffects {
     private static ClientLevel world;
     private static Frame pending;
     private static ShaderInstance shader;
-    private static int colorTexture,colorWidth,colorHeight;
     private static long drawnFrames;
     private static int drawnMaterials;
 
@@ -176,7 +172,7 @@ public final class FourArtsEffects {
                 if(sample!=null) sample=sample.inWorld(inverse,camera);
                 if(sample==null || sample.sites()[2].point().distanceToSqr(base)>9)
                     sample=FourArtsPose.fallback(player,base,partial);
-                if(now-state.renewal<32) FourArtsAnimation.renewal(geometry,sample,(now-state.renewal)/20,state.passiveRenewal);
+                if(now-state.renewal<32) FourArtsAnimation.renewal(geometry,sample,base,player.getBbHeight(),(now-state.renewal)/20,state.passiveRenewal);
                 if((state.bits&BLOOD_AURA)!=0) {
                     Vec3 hand=sample.hand();
                     if(mc.getCameraEntity()==player && mc.options.getCameraType().isFirstPerson()) {
@@ -193,7 +189,7 @@ public final class FourArtsEffects {
         if(mesh==null) return;
         if(!TrailShaderBridge.captureDepth()) { mesh.release(); return; }
         var clip=new Matrix4f(event.getProjectionMatrix()).mul(RenderSystem.getModelViewMatrix()).mul(scenePose);
-        pending=new Frame(mesh,clip,geometry.refracts,(float)((now%24000)/20),geometry.materials);
+        pending=new Frame(mesh,clip,(float)((now%24000)/20),geometry.materials);
     }
 
     @SubscribeEvent(priority=EventPriority.HIGH)
@@ -218,7 +214,6 @@ public final class FourArtsEffects {
         var target=Minecraft.getInstance().getMainRenderTarget();
         try(var saved=new MeteorBloomRenderer.State()) {
             target.bindWrite(true);
-            if(frame.refracts) copyScene(target.frameBufferId,target.viewWidth,target.viewHeight);
             RenderSystem.disableDepthTest();
             RenderSystem.depthMask(false);
             RenderSystem.disableCull();
@@ -226,30 +221,16 @@ public final class FourArtsEffects {
             RenderSystem.enableBlend();
             RenderSystem.blendFuncSeparate(GL11.GL_ONE,GL11.GL_ONE_MINUS_SRC_ALPHA,GL11.GL_ONE,GL11.GL_ONE_MINUS_SRC_ALPHA);
             shader.safeGetUniform("ClipMatrix").set(frame.clip);
+            if((frame.materials&(1<<FourArtsGeometry.RECOVERY))!=0)
+                shader.safeGetUniform("InverseClip").set(new Matrix4f(frame.clip).invert());
             shader.safeGetUniform("OutputSize").set((float)target.viewWidth,(float)target.viewHeight);
             shader.safeGetUniform("time").set(frame.time);
             RenderSystem.setShaderTexture(0,depth);
-            RenderSystem.setShaderTexture(1,colorTexture);
             RenderSystem.setShader(()->shader);
             BufferUploader.drawWithShader(frame.mesh);
             drawnFrames++;
             drawnMaterials=frame.materials;
         }
-    }
-
-    private static void copyScene(int framebuffer,int width,int height) {
-        if(colorTexture==0) colorTexture=GL11.glGenTextures();
-        GlStateManager._glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER,framebuffer);
-        RenderSystem.bindTexture(colorTexture);
-        if(width!=colorWidth || height!=colorHeight) {
-            GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D,0,GL11.GL_RGBA8,0,0,width,height,0);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,GL11.GL_TEXTURE_MIN_FILTER,GL11.GL_LINEAR);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,GL11.GL_TEXTURE_MAG_FILTER,GL11.GL_LINEAR);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,GL11.GL_TEXTURE_WRAP_S,GL12.GL_CLAMP_TO_EDGE);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,GL11.GL_TEXTURE_WRAP_T,GL12.GL_CLAMP_TO_EDGE);
-            colorWidth=width;
-            colorHeight=height;
-        } else GL11.glCopyTexSubImage2D(GL11.GL_TEXTURE_2D,0,0,0,0,0,width,height);
     }
 
     @SubscribeEvent
@@ -270,8 +251,6 @@ public final class FourArtsEffects {
 
     public static void release() {
         clearPending();
-        if(colorTexture!=0) RenderSystem.deleteTexture(colorTexture);
-        colorTexture=colorWidth=colorHeight=0;
     }
 
     @Mod.EventBusSubscriber(modid=GeneratedMod.MOD_ID,value=Dist.CLIENT,bus=Mod.EventBusSubscriber.Bus.MOD)
@@ -285,7 +264,7 @@ public final class FourArtsEffects {
 
     record WindPoint(long time,Vec3 point,Vec3 forward) {}
     private record Hit(long tick,Vec3 point,Vec3 direction,boolean passive) {}
-    private record Frame(BufferBuilder.RenderedBuffer mesh,Matrix4f clip,boolean refracts,float time,int materials) {}
+    private record Frame(BufferBuilder.RenderedBuffer mesh,Matrix4f clip,float time,int materials) {}
 
     private static final class State {
         int bits;

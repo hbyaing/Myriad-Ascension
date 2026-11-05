@@ -5,7 +5,8 @@ in vec3 color;
 flat in vec3 params;
 uniform float time;
 uniform sampler2D Sampler0;
-uniform sampler2D Sampler1;
+uniform mat4 InverseClip;
+in vec3 relativePosition;
 uniform vec2 OutputSize;
 out vec4 frag;
 
@@ -24,11 +25,25 @@ float noise(vec2 p) {
 
 void main() {
     vec2 sceneUv=gl_FragCoord.xy/OutputSize;
-    if(gl_FragCoord.z>texture(Sampler0,sceneUv).r+.000045) discard;
-    vec2 p = shapeUV;
-    float kind = params.x;
-    float strength = params.y;
-    float seed = params.z;
+    float worldDepth=texture(Sampler0,sceneUv).r;
+    vec2 p=shapeUV;
+    float kind=params.x;
+    float strength=params.y;
+    float seed=params.z;
+    if(kind>8.5) {
+        if(worldDepth>=.999999) discard;
+        vec4 position=InverseClip*vec4(sceneUv*2.-1.,worldDepth*2.-1.,1.);
+        if(abs(position.w)<.00001) discard;
+        vec3 delta=position.xyz/position.w-relativePosition;
+        float contact=1.-smoothstep(.023,.145,length(delta));
+        vec2 patch=vec2(p.x*2.-1.,p.y);
+        float fade=1.-smoothstep(.18,1.,length(patch));
+        float opacity=contact*fade*strength;
+        if(opacity<.004) discard;
+        frag=vec4(color*opacity*.95,opacity*.75);
+        return;
+    }
+    if(gl_FragCoord.z>worldDepth+.000045) discard;
     float alpha;
     float core;
     vec3 hue = color;
@@ -39,24 +54,22 @@ void main() {
         core = exp(-lateral*lateral*22.0)*along*flow;
         alpha = (0.37*core + 0.25*exp(-lateral*lateral*3.8))*along*flow;
     } else if (kind < 1.5) {
-        float along=p.x;
-        float width=mix(.85,.27,smoothstep(.25,.96,along));
-        float bend=.14*along*along;
-        vec2 v=vec2((p.y-bend)/width,(along-.45)/.50);
-        float r=length(v);
-        float aa=max(fwidth(r)*.72,.026);
-        float coverage=(1.-smoothstep(1.-aa,1.+aa,r))*strength;
-        float depth=sqrt(max(0.,1.-r*r));
-        float glint=gaussian((v.x+.28-.10*along)*7.3)*gaussian((along-.38)*3.9);
-        float lower=gaussian((v.x-.16)*3.1)*gaussian((along-.21)*7.0);
-        vec2 pixel=gl_FragCoord.xy-vec2(v.x*1.9,v.y*3.1)*depth;
-        pixel=clamp(pixel,vec2(.5),OutputSize-.5);
-        vec3 scene=texture(Sampler1,pixel/OutputSize).rgb;
-        vec3 water=mix(scene,scene*hue,.19);
-        water+=hue*(.046+.115*lower+.14*glint)*depth;
-        water=mix(water,vec3(.83,1.,.88),glint*.58);
-        frag=vec4(water*coverage,coverage);
-        return;
+        float u=p.x;
+        float spine=.17*sin(u*3.14159)-.07*u;
+        float side=p.y-spine;
+        float width=pow(max(0.,sin(u*3.14159)),.84)*(.83-.13*u);
+        width*=1.-.055*cos(u*55.);
+        float distanceToEdge=abs(side)-width;
+        float edgeAA=max(fwidth(distanceToEdge),.022);
+        float silhouette=(1.-smoothstep(-edgeAA,edgeAA,distanceToEdge))
+                *smoothstep(.015,.065,u)*(1.-smoothstep(.962,1.,u));
+        float centerVein=gaussian(side*23.)*smoothstep(.035,.23,u)*(1.-smoothstep(.80,.99,u));
+        float fork=abs(fract(u*5.6-abs(side)*.83)-.5);
+        float lateralVeins=gaussian(fork*18.)*smoothstep(.06,.19,abs(side))*(1.-smoothstep(.38,.83,abs(side)));
+        float fold=.70+.21*tanh(-side*7.)+.11*sin(u*5.1+seed);
+        alpha=silhouette*.94;
+        core=silhouette*(centerVein*.22+lateralVeins*.09);
+        hue=mix(hue*fold,vec3(.66,.87,.35),.54*centerVein+.32*lateralVeins);
     } else if (kind < 2.5) {
         vec2 v=vec2(p.x*2.-1.,p.y);
         float r=length(v), a=atan(v.y,v.x);
@@ -119,7 +132,7 @@ void main() {
         alpha=chip*(.78+.21*facet);
         core=chip*edge*(.28+.62*facet);
         hue=mix(vec3(.057,.013,.037),hue,clamp(facet*.39+edge*.46,0.,.94));
-    } else if(kind < 8.5) {
+    } else {
         float u=p.x, v=p.y;
         float coverage=smoothstep(0.,.14,u)*(1.-smoothstep(.70,1.,u));
         float skirt=gaussian((v+.17)*2.8);
@@ -128,15 +141,6 @@ void main() {
         float air=.77+.23*sin(u*7.4-time*3.8+seed);
         alpha=coverage*(.30*skirt+.25*lip+.19*fold)*(1.-smoothstep(.70,1.,abs(v)))*air;
         core=coverage*(lip*.46+fold*.27)*air;
-    } else {
-        vec2 v=vec2(p.x*2.-1.,p.y);
-        float a=atan(v.y,v.x), r=length(v);
-        float crest=.73+.021*cos(a*4.+seed);
-        float rim=gaussian((r-crest)*36.);
-        float inner=gaussian((r-crest+.074)*17.);
-        float shiver=.57+.43*pow(.5+.5*cos(a*2.+seed),2.);
-        core=rim*.47*shiver;
-        alpha=(rim*.48+inner*.13)*shiver*(1.-smoothstep(.83,1.,r));
     }
     alpha *= strength;
     vec3 light = mix(hue,vec3(1.0,0.98,0.90),clamp(core*0.62,0.0,0.81));

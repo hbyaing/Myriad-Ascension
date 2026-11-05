@@ -20,10 +20,6 @@ import org.joml.Vector3f;
 @Mod.EventBusSubscriber(modid=GeneratedMod.MOD_ID,value=Dist.CLIENT,bus=Mod.EventBusSubscriber.Bus.MOD)
 final class FourArtsPose extends RenderLayer<AbstractClientPlayer,PlayerModel<AbstractClientPlayer>> {
     record Site(Vec3 point,Vec3 across,Vec3 along,Vec3 normal) {
-        Vec3 offset(double x,double y,double z) {
-            return across.scale(x).add(along.scale(y)).add(normal.scale(z));
-        }
-
         Site inWorld(Matrix4f inverse,Vec3 camera) {
             return new Site(camera.add(vec(inverse.transformPosition(vector(point)))),
                     vec(inverse.transformDirection(vector(across))).normalize(),

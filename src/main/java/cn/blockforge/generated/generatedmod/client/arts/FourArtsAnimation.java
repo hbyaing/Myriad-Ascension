@@ -10,12 +10,9 @@ import static cn.blockforge.generated.generatedmod.client.arts.FourArtsGeometry.
 final class FourArtsAnimation {
     private static final double TURN=Math.PI*2;
     private static final Vec3 UP=new Vec3(0,1,0);
-    private static final int WIND=0x87EDFF, PALE_WIND=0xD1FFF7, SPRING=0x8FE2A8, IVORY=0xDEF2C4;
+    private static final int WIND=0x87EDFF, PALE_WIND=0xD1FFF7, RECOVERY_GREEN=0x79EF81;
     private static final int SPIRIT_BLUE=0x217AFF, SPIRIT_ICE=0x7DD4FF, CARMINE=0xFF1A38, RUBY=0xB00B2B;
-    private static final double[] DEW_TIMES={.52,.59,.67,.75,.82,.89,.95,1.02};
-    private static final double[] DEW_SIZES={.16,.18,.17,.19,.16,.17,.17,.15};
-    private static final double[][] DEW_OFFSETS={{-.32,.22,.29},{.35,.28,.25},{-.12,.18,.29},{.11,.29,.38},
-            {.30,.30,.29},{-.37,.26,.26},{-.28,.33,.38},{.24,.22,.31}};
+    private static final int[] LEAF_COLORS={0x499D36,0x78C44D,0x9ED56B,0x398B4B};
 
     private FourArtsAnimation() {}
 
@@ -67,35 +64,37 @@ final class FourArtsAnimation {
         }
     }
 
-    static void renewal(FourArtsGeometry fx,FourArtsPose.Sample sample,double time,boolean passive) {
-        double fall=passive?.30:.40, life=passive?.33:.49;
-        for(int i=0;i<DEW_TIMES.length;i++) {
-            double impact=passive?.24+(DEW_TIMES[i]-.52)*.60:DEW_TIMES[i];
-            double age=time-impact;
-            if(age < -fall || age>=life) continue;
+    static void renewal(FourArtsGeometry fx,FourArtsPose.Sample sample,Vec3 base,double height,double time,boolean passive) {
+        double lifetime=passive?.93:1.56;
+        if(time<0 || time>=lifetime) return;
+        double progress=time/lifetime;
+        double glow=pulse(progress,0,.29,1)*(passive?.40:.68);
+        for(int i=0;i<sample.sites().length;i++) {
             var site=sample.sites()[i];
-            double size=DEW_SIZES[i]*(passive?.61:.77);
-            if(age<0) {
-                double phase=1+age/fall;
-                double remaining=(1-phase*phase)*(passive?.76:1);
-                double[] from=DEW_OFFSETS[i];
-                Vec3 p=site.point().add(site.offset(from[0],from[1],from[2]).scale(remaining)).add(site.normal().scale(size*.43));
-                fx.stamp(p,size*(1.36+.54*phase),size*.80,SPRING,DEW,ease(0,.24,phase)*(passive?.83:.98)
-                        *(1-.27*ease(.87,1,phase)),i,-.30*Math.signum(from[0])*phase);
-                continue;
-            }
-            double contact=pulse(age,0,.051,life*.86);
-            double expansion=ease(0,life,age);
-            double radius=.031+expansion*(passive?.13:.19);
-            Vec3 ripple=site.point().add(site.normal().scale(.031));
-            fx.plane(ripple,site.along().scale(radius),site.across().scale(radius),IVORY,RIPPLE,
-                    (1-ease(.034,life,age))*(passive?.52:.74),i);
-            fx.stamp(ripple.add(site.normal().scale(.012)),.19,.17,IVORY,SPARK,contact*(passive?.22:.34),i,0);
-            if(!passive) for(int j=0;j<2;j++) {
-                double a=j*2.39996+i, spread=(.094+j*.04)*expansion;
-                Vec3 bead=ripple.add(site.offset(Math.cos(a)*spread,Math.sin(a)*spread,.033+expansion*.12));
-                fx.stamp(bead,.050+j*.010,.025+j*.007,SPRING,DEW,contact*.62,j,a);
-            }
+            double radius=(i==3||i==6)?.38:i==2?.23:.19;
+            fx.plane(site.point().add(site.normal().scale(.024)),site.along().scale(radius),
+                    site.across().scale(radius),RECOVERY_GREEN,RECOVERY,glow,i);
+        }
+
+        int leaves=passive?9:21;
+        double span=passive?.77:1;
+        for(int i=0;i<leaves;i++) {
+            double delay=.014*(i%7);
+            double age=(time-delay)/lifetime;
+            if(age<=0 || age>=1) continue;
+            double alpha=ease(0,.16,age)*(1-ease(.68,1,age))*(passive?.77:.97);
+            double angle=i*2.399963+age*(3.15+(i%4)*.26);
+            double radius=(.48+(i%6)*.075+.24*Math.sin(age*Math.PI))*span;
+            double y=(.12+(i%8)*.086+.30*age+.047*Math.sin(angle*2+i))*height;
+            Vec3 position=base.add(polar(radius,y,angle));
+            double heading=angle+.69+Math.sin(age*8+i)*.48;
+            double tilt=.76*Math.sin(age*9.4+i*1.75);
+            Vec3 along=UP.scale(Math.cos(tilt)).add(polar(Math.sin(tilt),0,heading));
+            Vec3 cross=polar(1,0,heading+Math.PI*.5);
+            double roll=.91*Math.sin(age*13.7+i*.83);
+            Vec3 across=cross.scale(Math.cos(roll)).add(along.cross(cross).scale(Math.sin(roll)));
+            double size=(.099+(i%5)*.016)*span;
+            fx.plane(position,along.scale(size),across.scale(size*.60),LEAF_COLORS[i%LEAF_COLORS.length],LEAF,alpha,i);
         }
     }
 

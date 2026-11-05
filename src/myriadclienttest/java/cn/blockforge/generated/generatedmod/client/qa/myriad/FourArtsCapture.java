@@ -214,11 +214,11 @@ public final class FourArtsCapture {
                 case 5 -> 1<<8;
                 default -> 1<<2;
             };
-            boolean actual=count>baseline && (drawMaterials()&wanted)!=0 && matchesMode(mc);
+            boolean actual=count>baseline && (drawMaterials()&wanted)==wanted && matchesMode(mc);
             if(actual && firstDrawTick<0) firstDrawTick=tick;
-            int capture=stage==1||stage==3?firstDrawTick+9:stage==5?firstDrawTick+5:LIMIT[stage];
+            int capture=stage==1?firstDrawTick+6:stage==3?firstDrawTick+9:stage==5?firstDrawTick+5:LIMIT[stage];
             if(!actual) return;
-            if(firstDrawTick<0 || tick<capture || stage==1 && tick<20) return;
+            if(firstDrawTick<0 || tick<capture) return;
             PointerSafety.verify();
             int glError=GL11.glGetError();
             if(glError!=0) throw new AssertionError("GL error "+glError+" during "+CASES[stage]);
