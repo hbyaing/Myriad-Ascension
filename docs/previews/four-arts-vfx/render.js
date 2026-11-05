@@ -44,6 +44,9 @@ void main(){
     float wake=exp(-tail*tail);
     float shimmer=.80+.20*cos(time*23.+y*31.);
     float opacity=recovery.w*(ridge*.29*shimmer+wake*.15);
+    if(mode>2.5) {
+      opacity=recovery.w*(.09+.44*exp(-pow((y-.61)*5.2,2.)))*(.75+.25*key);
+    }
     shaded=mix(shaded,mix(recoveryTint,vec3(.84,1.,1.),ridge*.25),opacity);
   }
   float fade=smoothstep(4.,12.,length(world.xz));
@@ -130,11 +133,13 @@ export function createRenderer(canvas, vs, fs) {
   const sky = program(gl,skyVertex,skyFragment,[],["daylight"]);
   const opaque = program(gl,solidVertex,solidFragment,[["position",3],["normal",3],["tint",3],["character",1]],
     ["camera","daylight","fog","recovery","recoveryTint","time"]);
-  const effect = program(gl,vs,fs,[["position",3],["uv",2],["tint",3],["style",3]],["camera","time"]);
+  const effect = program(gl,vs,fs,[["position",3],["uv",2],["tint",3],["style",3]],
+    ["camera","time","opaqueScene","sampleBounds","viewRight","viewUp","viewBack"]);
   const composite = program(gl,skyVertex,compositeFragment,[],["scene","emission","crop"]);
   const fbo = gl.createFramebuffer(), depth = gl.createRenderbuffer();
   const attachments = [gl.COLOR_ATTACHMENT0,gl.COLOR_ATTACHMENT1];
   const textures = attachments.map(()=>gl.createTexture());
+  const opaqueScene=gl.createTexture();
   let targetWidth=0, targetHeight=0;
   const rects=[];
   gl.blendFunc(gl.ONE,gl.ONE_MINUS_SRC_ALPHA);
@@ -143,14 +148,14 @@ export function createRenderer(canvas, vs, fs) {
     if(targetWidth===canvas.width && targetHeight===canvas.height) return;
     targetWidth=canvas.width;
     targetHeight=canvas.height;
-    textures.forEach((texture,i)=>{
+    [...textures,opaqueScene].forEach((texture,i)=>{
       gl.bindTexture(gl.TEXTURE_2D,texture);
       gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA8,targetWidth,targetHeight,0,gl.RGBA,gl.UNSIGNED_BYTE,null);
       gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
       gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
       gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
-      gl.framebufferTexture2D(gl.FRAMEBUFFER,attachments[i],gl.TEXTURE_2D,texture,0);
+      if(i<attachments.length) gl.framebufferTexture2D(gl.FRAMEBUFFER,attachments[i],gl.TEXTURE_2D,texture,0);
     });
     gl.bindRenderbuffer(gl.RENDERBUFFER,depth);
     gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT24,targetWidth,targetHeight);
@@ -196,11 +201,23 @@ export function createRenderer(canvas, vs, fs) {
       gl.uniform3fv(opaque.uniforms.recoveryTint,effects.recoveryTint);
       gl.uniform1f(opaque.uniforms.time,time);
       upload(opaque,solid);
+      const [x,y,w,h]=rect;
+      gl.activeTexture(gl.TEXTURE2);
+      gl.bindTexture(gl.TEXTURE_2D,opaqueScene);
+      if(effects.refractive) {
+        gl.readBuffer(gl.COLOR_ATTACHMENT0);
+        gl.copyTexSubImage2D(gl.TEXTURE_2D,0,x,y,x,y,w,h);
+      }
       gl.depthMask(false);
       gl.enable(gl.BLEND);
       bind(effect);
       gl.uniformMatrix4fv(effect.uniforms.camera,false,camera.matrix);
       gl.uniform1f(effect.uniforms.time,time);
+      gl.uniform1i(effect.uniforms.opaqueScene,2);
+      gl.uniform4f(effect.uniforms.sampleBounds,x+.5,y+.5,x+w-.5,y+h-.5);
+      gl.uniform3fv(effect.uniforms.viewRight,camera.right);
+      gl.uniform3fv(effect.uniforms.viewUp,camera.up);
+      gl.uniform3fv(effect.uniforms.viewBack,camera.back);
       upload(effect,effects.vertices);
       gl.depthMask(true);
     },
@@ -243,6 +260,34 @@ export function box(out, center, size, color, orient = identity, character = 0) 
 
 export function stage(attack=false) {
   const out = [];
+  if(attack==="ice") {
+    box(out,[0,-.20,.5],[32,.33,19],[.21,.33,.23]);
+    for(let i=-5;i<=5;i++) {
+      const rise=.21+.39*Math.pow(.5+.5*Math.sin(i*.91+1.2),2);
+      box(out,[i*2.25,rise*.5-.11,-7.5],[2.28,rise,3.05],[.19,.31,.26]);
+      box(out,[i*2.25,rise-.095,-8.27],[2.28,.08,1.57],[.26,.39,.31]);
+    }
+    for(const [x,z,h] of [[-7,-6.1,.92],[-4.5,-7.3,1.22],[3.5,-7.8,1.08],[7.1,-6.7,1.15]]) {
+      box(out,[x,.51,z],[.16,1.02,.16],[.23,.24,.18]);
+      box(out,[x,h+.22,z],[.97,.58,.93],[.23,.37,.26]);
+      box(out,[x-.15,h+.56,z-.07],[.73,.36,.71],[.29,.43,.29]);
+    }
+    for(let x=-8;x<=8;x++) for(let z=-5;z<=5;z++) {
+      const road=x<=-3 || (z===-3 && x<5);
+      const tint=((x*x*7+z*z*19+x*z*3)&7)*.009;
+      const color=road?[.36+tint,.40+tint,.47+tint]:[.21+tint,.34+tint,.23+tint*.65];
+      box(out,[x,-.046,z],[road?.975:1.01,.097,road?.97:1.01],color);
+      if(road) continue;
+      for(let i=0;i<5;i++) {
+        const a=Math.sin(x*2.7+z*3.5+i*14.3);
+        const b=Math.cos(x*6.4+z*2.1+i*19.2);
+        const moss=.018*((x+i*11-z*5)&7);
+        box(out,[x+a*.41,.004,z+b*.40],[.13+Math.abs(a)*.12,.004,.11+Math.abs(b)*.13],
+          [.18+moss,.31+moss,.21+moss*.62]);
+      }
+    }
+    return out;
+  }
   if(attack) {
     box(out,[0,-.20,0],[17,.32,14],[.19,.24,.25]);
     for(let x=-7;x<=7;x++) for(let z=-5;z<=5;z++) {
@@ -331,10 +376,11 @@ export function actor(out, root, stride, turn, hit, guard, armed, casting=false)
 export function effectMesh(camera) {
   const surfaces = [];
   let recovery=[0,0,0,0], recoveryTint=[0,0,0];
-  function face(corners, us, color, kind, strength, seed) {
+  let refractive=false;
+  function face(corners, us, color, kind, strength, seed, ys=[-1,1,1,-1]) {
     if (strength <= .004) return;
+    if(kind===13) refractive=true;
     const center = mul(corners.reduce(add),.25);
-    const ys = [-1,1,1,-1];
     const data = [];
     for (const i of quad) data.push(...corners[i],us[i],ys[i],...color,kind,strength,seed);
     surfaces.push({data,depth:dot(center,camera.back)});
@@ -376,21 +422,26 @@ export function effectMesh(camera) {
     face([[x-size,y,z-size],[x+size,y,z-size],[x+size,y,z+size],[x-size,y,z+size]],
       [0,0,1,1],color,4,strength,seed);
   }
-  function crystal(center,axis,length,radius,strength,seed) {
-    const side=norm(cross(axis,[0,1,0]));
+  function crystal(tip,axis,length,radius,strength,seed) {
+    if(strength<=.004) return;
+    const side=norm(cross(axis,Math.abs(axis[1])>.95?[0,0,1]:[0,1,0]));
     const up=cross(side,axis);
-    const front=add(center,mul(axis,length*.67));
-    const rear=add(center,mul(axis,-length*.38));
-    const base=add(center,mul(axis,-length*.12));
-    const collar=Array.from({length:5},(_,i)=>{
-      const angle=i*2*Math.PI/5+seed*.67;
-      return add(base,add(mul(side,radius*Math.cos(angle)),mul(up,radius*Math.sin(angle))));
-    });
-    const faces=[[.14,.56,.79],[.45,.88,.98],[.16,.45,.74],[.22,.68,.89],[.40,.78,.94]];
-    for(let i=0;i<collar.length;i++) {
-      const a=collar[i], b=collar[(i+1)%collar.length];
-      face([rear,rear,b,a],[0,0,.26,.26],faces[i],13,strength*.89,seed+i);
-      face([a,b,front,front],[.26,.26,1,1],faces[i],13,strength,seed+i);
+    const outline=[[1,.68],[.68,1],[-.68,1],[-1,.68],[-1,-.68],[-.68,-1],[.68,-1],[1,-.68]];
+    const profile=[[0,.19],[.035,.57],[.09,.72],[.10,.88],[.174,.91],[.187,1.08],[.265,1.08],[.303,1],[.994,.018],[1,0]];
+    const angle=.10+Math.sin(seed*8.13)*.24;
+    const rows=profile.map(([u,r],row)=>outline.map(([y,z],i)=>{
+      const lobe=row>=2&&row<=6?1+.08*Math.sin(i*2.7+seed):1;
+      const offset=radius*r*lobe;
+      const center=add(tip,mul(axis,-length*(1-u)));
+      return add(center,add(mul(up,offset*(y*Math.cos(angle)-z*Math.sin(angle))),
+        mul(side,offset*(z*Math.cos(angle)+y*Math.sin(angle)))));
+    }));
+    const faces=[[.19,.58,.92],[.48,.79,.99],[.63,.86,1],[.30,.69,.96],
+      [.12,.39,.73],[.17,.45,.83],[.25,.57,.91],[.39,.73,.99]];
+    for(let j=1;j<rows.length;j++) for(let i=0;i<outline.length;i++) {
+      const next=(i+1)%outline.length;
+      face([rows[j-1][i],rows[j-1][next],rows[j][next],rows[j][i]],
+        [profile[j-1][0],profile[j-1][0],profile[j][0],profile[j][0]],faces[i],13,strength,seed*9+i);
     }
   }
   return {
@@ -399,6 +450,6 @@ export function effectMesh(camera) {
       recovery=[mode,crest,bottom,strength];
       recoveryTint=tint;
     },
-    finish:()=>({recovery,recoveryTint,vertices:surfaces.sort((a,b)=>a.depth-b.depth).flatMap(s=>s.data)}),
+    finish:()=>({recovery,recoveryTint,refractive,vertices:surfaces.sort((a,b)=>a.depth-b.depth).flatMap(s=>s.data)}),
   };
 }

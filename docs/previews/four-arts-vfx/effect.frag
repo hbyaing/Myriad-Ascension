@@ -3,8 +3,12 @@ precision highp float;
 
 in vec2 shapeUV;
 in vec3 color;
+in vec3 world;
 flat in vec3 params;
 uniform float time;
+uniform sampler2D opaqueScene;
+uniform vec4 sampleBounds;
+uniform vec3 viewRight, viewUp, viewBack;
 layout(location=0) out vec4 frag;
 layout(location=1) out vec4 emissionLayer;
 
@@ -21,19 +25,128 @@ float noise(vec2 p) {
                mix(hash(i+vec2(0,1)),hash(i+1.0),f.x),f.y);
 }
 
+float fracture(vec2 p) {
+    vec2 cell=floor(p), f=fract(p);
+    vec2 best=vec2(8.);
+    for(int y=-1;y<=1;y++) for(int x=-1;x<=1;x++) {
+        vec2 d=vec2(x,y), key=cell+d;
+        vec2 jitter=vec2(hash(key),hash(key+vec2(18.3,-3.1)));
+        float r=length(d+.16+.68*jitter-f);
+        if(r<best.x) best=vec2(r,best.x);
+        else best.y=min(best.y,r);
+    }
+    return best.y-best.x;
+}
+
+vec3 sceneAt(vec2 pixel) {
+    return texture(opaqueScene,clamp(pixel,sampleBounds.xy,sampleBounds.zw)
+        /vec2(textureSize(opaqueScene,0))).rgb;
+}
+
 void main() {
     vec2 p = shapeUV;
     float kind = params.x;
     float strength = params.y;
     float seed = params.z;
+    if(kind>18.5) {
+        vec2 v=vec2(p.x*2.-1.,p.y);
+        vec2 pixel=floor(v*vec2(45.,14.)+seed*13.);
+        float fleck=smoothstep(.54,.87,hash(pixel));
+        float mist=gaussian(v.x*1.43)*gaussian(v.y*2.42);
+        float alpha=mist*strength*(.19+fleck*.67);
+        frag=vec4(mix(color,vec3(.68,.89,1.),fleck*.42)*alpha,alpha);
+        emissionLayer=vec4(color*fleck*alpha*.25,alpha);
+        return;
+    }
+    if(kind>17.5) {
+        vec2 v=vec2(p.x*2.-1.,p.y);
+        float radius=max(abs(v.x),abs(v.y));
+        float fill=1.-smoothstep(.81,.99,radius);
+        float bevel=gaussian((radius-.79)*16.);
+        float gleam=smoothstep(.02,.73,v.y-v.x*.34);
+        float alpha=strength*fill*(.30+.46*bevel+.23*gleam);
+        vec3 glint=mix(color,vec3(.89,.98,1.),bevel*.56+gleam*.20);
+        frag=vec4(glint*alpha,alpha);
+        emissionLayer=vec4(glint*alpha*.39,alpha);
+        return;
+    }
+    if(kind>16.5) {
+        vec2 v=vec2(p.x*2.-1.,p.y);
+        float box=max(abs(v.x),abs(v.y));
+        float outer=gaussian((box-.79)*48.);
+        float inner=gaussian((box-.67)*60.);
+        float corner=step(.54,min(abs(v.x),abs(v.y)));
+        float inlay=gaussian((abs(v.x)+abs(v.y)-.46)*46.);
+        float alpha=strength*(outer*.48+inner*.21+inlay*.25+outer*corner*.38);
+        frag=vec4(color*alpha,alpha);
+        emissionLayer=vec4(color*alpha*.41,alpha);
+        return;
+    }
+    if(kind>15.5) {
+        float u=p.x;
+        float curl=p.y+.24*sin(u*8.+seed);
+        float chip=fract(noise(floor(vec2(u,curl)*vec2(30.,14.)))*5.7);
+        float a=gaussian(curl*2.3)*smoothstep(0.,.14,u)*(1.-smoothstep(.72,1.,u));
+        float alpha=strength*a*(.33+.64*smoothstep(.17,.54,chip));
+        float seam=gaussian((curl+.17*sin(u*10.))*11.)*smoothstep(.30,.76,u);
+        frag=vec4((mix(color*.63,vec3(.40,.28,.31),chip*.44)+vec3(.13,.06,.09)*seam)*alpha,alpha);
+        emissionLayer=vec4(0.);
+        return;
+    }
+    if(kind>14.5) {
+        vec2 v=vec2(p.y,p.x*2.-1.);
+        float shape=max(abs(v.x),abs(v.y));
+        float corner=max(0.,abs(v.x)+abs(v.y)-1.58);
+        float paper=1.-smoothstep(.96,1.,shape+corner);
+        float frame=gaussian((shape+corner-.84)*38.);
+        float stem=gaussian((v.x+.09)*26.)*(1.-smoothstep(.52,.68,abs(v.y)));
+        float fork=gaussian((abs(v.x)-.33)*30.)*(1.-smoothstep(.19,.32,abs(v.y+.08)));
+        float teeth=gaussian((abs(v.y+.06)-.36)*42.)*(1.-smoothstep(.32,.45,abs(v.x)));
+        float seedMark=gaussian((v.x-.20*sin(seed*2.3))*29.)*gaussian((v.y-.47)*38.);
+        float glyph=clamp(stem+fork+teeth+seedMark,0.,1.);
+        float cap=gaussian((abs(v.y)-.72)*46.)*gaussian(v.x*4.);
+        float alpha=paper*strength*(.19+.46*frame+.75*glyph+.37*cap);
+        vec3 jade=mix(color,vec3(1.,.78,.44),cap*.80+frame*.14);
+        frag=vec4(jade*alpha,alpha);
+        emissionLayer=vec4(jade*alpha*(.20+.43*glyph),alpha);
+        return;
+    }
+    if(kind>13.5) {
+        float width=abs(p.y);
+        float envelope=smoothstep(0.,.44,p.x)*(1.-smoothstep(.94,1.02,p.x));
+        float field=noise(vec2(floor(p.x*85.),floor((p.y+1.)*9.))+vec2(seed,time*.8));
+        float beam=gaussian(width*3.4)*(.40+.60*field);
+        float blades=gaussian((width-.51)*21.)*(.42+.52*field);
+        float alpha=envelope*(beam*.47+blades*.42)*strength;
+        frag=vec4(color*alpha,alpha);
+        emissionLayer=vec4(color*alpha*.37,alpha);
+        return;
+    }
     if(kind>12.5) {
-        float vein=gaussian((p.y-.20*sin(p.x*17.+seed))*14.)*.27;
-        float facet=smoothstep(.67,1.,abs(p.y))*.33;
-        float striae=gaussian((fract(p.x*7.3+abs(p.y)*.16+seed*.37)-.5)*21.)*.18;
-        float alpha=strength*(.70+.17*facet);
-        vec3 ice=mix(color,vec3(.78,.96,1.),clamp(facet+vein+striae,0.,.72));
-        frag=vec4(ice*alpha,alpha);
-        emissionLayer=vec4(ice*(.27*vein+.12*facet)*strength,alpha);
+        vec3 n=normalize(cross(dFdx(world),dFdy(world)));
+        n*=dot(n,viewBack)<0.?-1.:1.;
+        vec2 faceCoord=vec2(p.x*6.1,p.y*1.37)+vec2(seed*.21,seed*.37);
+        float gap=fracture(faceCoord);
+        float crack=1.-smoothstep(.012,.036+fwidth(gap)*.58,gap);
+        crack*=.52+.48*noise(faceCoord*.72);
+        float frost=noise(floor(faceCoord*9.)*.58+seed);
+        float edge=pow(clamp(abs(p.y),0.,1.),24.);
+        float collar=(1.-smoothstep(.288,.340,p.x));
+        float shoulder=gaussian((p.x-.265)*123.)+gaussian((p.x-.174)*155.)*.64;
+        float point=smoothstep(.69,.998,p.x)*.55;
+        vec3 ray=refract(-viewBack,n,1./1.309);
+        vec2 bend=vec2(dot(ray,viewRight),dot(ray,viewUp))*(16.+19.*collar);
+        vec2 pixel=gl_FragCoord.xy;
+        vec3 backdrop=vec3(sceneAt(pixel+bend*.96).r,sceneAt(pixel+bend).g,sceneAt(pixel+bend*1.05).b);
+        float key=.58+.42*max(0.,dot(n,normalize(vec3(-.24,.86,.45))));
+        float rim=pow(1.-clamp(dot(n,viewBack),0.,1.),3.)*.35+edge*.43;
+        float front=gl_FrontFacing?1.:.32;
+        vec3 ice=mix(backdrop*vec3(.53,.77,1.13),color*key,.49+.19*collar+.14*frost);
+        ice=mix(ice,vec3(.54,.80,.98),collar*smoothstep(.37,.84,frost)*.53);
+        vec3 glint=vec3(.59,.90,1.)*(.30*crack+rim*.87+.46*shoulder+point*.58)*front;
+        float alpha=strength*(.70+.15*collar+.11*edge)*mix(.66,1.,front);
+        frag=vec4((ice+glint)*alpha,alpha);
+        emissionLayer=vec4(glint*strength*.44,alpha);
         return;
     }
     if(kind>11.5) {
@@ -60,17 +173,6 @@ void main() {
         vec3 silver=mix(color*.71,vec3(.92,.99,1.),ridge*.83);
         frag=vec4(silver*alpha+color*ridge*along*strength*.19,alpha);
         emissionLayer=vec4(color*ridge*along*strength*.29,alpha);
-        return;
-    }
-    if(kind>9.5 && kind<10.5) {
-        vec2 v=vec2(p.x*2.-1.,p.y);
-        float curl=v.x+.20*sin(v.y*3.5+seed);
-        float shape=gaussian(curl*2.5)*gaussian(v.y*1.65);
-        float grain=noise(v*5.3+vec2(seed*2.9,-time*.72));
-        float alpha=shape*mix(.40,1.,smoothstep(.24,.70,grain))*strength*.78
-                *(1.-smoothstep(.68,1.,max(abs(v.x),abs(v.y))));
-        frag=vec4(color*alpha,alpha);
-        emissionLayer=vec4(0.);
         return;
     }
     float alpha;
