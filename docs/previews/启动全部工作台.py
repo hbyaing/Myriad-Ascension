@@ -18,7 +18,7 @@ def main():
         spec=importlib.util.spec_from_file_location('existing_workbench_catalog',args.catalog)
         external=importlib.util.module_from_spec(spec);spec.loader.exec_module(external)
         entries=[(item[0],item) for item in external.ENTRIES]
-    entries += [('紫曜背轮 · 分层调色工作台','lucifer-workbench'),('储物袋 UI · 原版重置预览','bag-ui'),('阵法总工作台 · 全部预览','formations'),('阵法刻画核心 · 流程预览','formation-carving'),('炼丹重塑 · 年份与九品参数工作台','alchemy-rework')]
+    entries += [('紫曜背轮 · 分层调色工作台','lucifer-workbench'),('储物袋 UI · 原版重置预览','bag-ui'),('阵法总工作台 · 全部预览','formations'),('阵法刻画核心 · 流程预览','formation-carving'),('炼丹重塑 · 年份与九品参数工作台','alchemy-rework'),('灵石矿 · 贴图展示工作台','ore-gallery')]
     for i,(name,_) in enumerate(entries,1): print(f'{i}. {name}',flush=True)
     choice=args.selected or input('输入编号或名称：').strip()
     selected=int(choice)-1 if choice.isdecimal() else next((i for i,(name,_) in enumerate(entries) if choice in name),-1)
@@ -32,6 +32,12 @@ def main():
     elif not isinstance(item,str): server,url=external.create_server(item)
     else:
         class Handler(SimpleHTTPRequestHandler):
+            def translate_path(self, path):
+                if item == 'ore-gallery' and path in ('/spirit_vein_ore.png', '/spirit_ore.png'):
+                    textures = ROOT.parents[1] / 'src/main/resources/assets/wuxingxiantu/textures/block'
+                    return str(textures / path[1:])
+                return super().translate_path(path)
+
             def log_message(self,*args):pass
             def end_headers(self):
                 self.send_header('Cache-Control','no-store');super().end_headers()
