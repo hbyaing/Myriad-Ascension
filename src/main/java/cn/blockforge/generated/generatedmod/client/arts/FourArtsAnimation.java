@@ -80,7 +80,7 @@ final class FourArtsAnimation {
                 double remaining=(1-phase*phase)*(passive?.76:1);
                 double[] from=DEW_OFFSETS[i];
                 Vec3 p=site.point().add(site.offset(from[0],from[1],from[2]).scale(remaining)).add(site.normal().scale(size*.43));
-                fx.stamp(p,size*(1+.30*phase),size,SPRING,DEW,ease(0,.24,phase)*(passive?.83:.98)
+                fx.stamp(p,size*(1.36+.54*phase),size*.80,SPRING,DEW,ease(0,.24,phase)*(passive?.83:.98)
                         *(1-.27*ease(.87,1,phase)),i,-.30*Math.signum(from[0])*phase);
                 continue;
             }
@@ -94,7 +94,7 @@ final class FourArtsAnimation {
             if(!passive) for(int j=0;j<2;j++) {
                 double a=j*2.39996+i, spread=(.094+j*.04)*expansion;
                 Vec3 bead=ripple.add(site.offset(Math.cos(a)*spread,Math.sin(a)*spread,.033+expansion*.12));
-                fx.stamp(bead,.038+j*.009,.029+j*.009,SPRING,DEW,contact*.62,j,a);
+                fx.stamp(bead,.050+j*.010,.025+j*.007,SPRING,DEW,contact*.62,j,a);
             }
         }
     }

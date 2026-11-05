@@ -39,24 +39,23 @@ void main() {
         core = exp(-lateral*lateral*22.0)*along*flow;
         alpha = (0.37*core + 0.25*exp(-lateral*lateral*3.8))*along*flow;
     } else if (kind < 1.5) {
-        float height=p.x*2.-1.;
-        vec2 v=vec2(p.y/(.82-.14*smoothstep(-.19,.87,height)),height/.89);
+        float along=p.x;
+        float width=mix(.85,.27,smoothstep(.25,.96,along));
+        float bend=.14*along*along;
+        vec2 v=vec2((p.y-bend)/width,(along-.45)/.50);
         float r=length(v);
-        float aa=max(fwidth(r)*.70,.025);
-        float drop=1.-smoothstep(1.-aa,1.+aa,r);
+        float aa=max(fwidth(r)*.72,.026);
+        float coverage=(1.-smoothstep(1.-aa,1.+aa,r))*strength;
         float depth=sqrt(max(0.,1.-r*r));
-        float fresnel=pow(1.-depth,2.3);
-        float highlight=exp(-dot((v-vec2(-.37,.42))*vec2(7.,4.5),(v-vec2(-.37,.42))*vec2(7.,4.5)));
-        float reflectedArc=gaussian((r-.86)*13.)*smoothstep(.05,.96, dot(v,vec2(.54,-.84)));
-        vec2 pixel=gl_FragCoord.xy-v*mix(1.,4.2,depth);
+        float glint=gaussian((v.x+.28-.10*along)*7.3)*gaussian((along-.38)*3.9);
+        float lower=gaussian((v.x-.16)*3.1)*gaussian((along-.21)*7.0);
+        vec2 pixel=gl_FragCoord.xy-vec2(v.x*1.9,v.y*3.1)*depth;
         pixel=clamp(pixel,vec2(.5),OutputSize-.5);
         vec3 scene=texture(Sampler1,pixel/OutputSize).rgb;
-        vec3 glass=mix(scene,scene*hue,.22);
-        glass=mix(glass,hue,.18*fresnel+.58*reflectedArc);
-        glass=mix(glass,vec3(.84,1.,.88),highlight*.88);
-        glass+=hue*(.035+.08*fresnel+.055*reflectedArc);
-        float coverage=drop*strength;
-        frag=vec4(glass*coverage,coverage);
+        vec3 water=mix(scene,scene*hue,.19);
+        water+=hue*(.046+.115*lower+.14*glint)*depth;
+        water=mix(water,vec3(.83,1.,.88),glint*.58);
+        frag=vec4(water*coverage,coverage);
         return;
     } else if (kind < 2.5) {
         vec2 v=vec2(p.x*2.-1.,p.y);
