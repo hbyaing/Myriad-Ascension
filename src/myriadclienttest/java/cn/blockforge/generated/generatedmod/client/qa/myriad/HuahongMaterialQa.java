@@ -59,7 +59,7 @@ final class HuahongMaterialQa {
             GL33.glTexParameteri(GL33.GL_TEXTURE_2D,GL33.GL_TEXTURE_WRAP_S,GL33.GL_CLAMP_TO_EDGE);GL33.glTexParameteri(GL33.GL_TEXTURE_2D,GL33.GL_TEXTURE_WRAP_T,GL33.GL_CLAMP_TO_EDGE);
             GL33.glUniform1i(GL33.glGetUniformLocation(program,"SmokeAtlas"),0);
             double error=0;int comparisons=0;
-            for(int band:new int[]{6,8,10,12,14,16,18,20,22,24,26,28,30,34,36,38,42,44,46,48,50,52,54,56}){
+            for(int band:new int[]{6,8,10,12,14,16,18,20,22,24,26,28,30,34,36,38,42,44,46,48,50,52,54,56,58}){
                 float[] reference=render(program,band,47.25F,7.125F);
                 float low=Float.POSITIVE_INFINITY,high=0;for(float v:reference){low=Math.min(low,v);high=Math.max(high,v);}
                 if(high<.1||high-low<.01)throw new AssertionError("Material fixture produced no varying signal: "+band);
@@ -97,6 +97,12 @@ final class HuahongMaterialQa {
                 if(!Double.isFinite(variation)||low<=0||variation>.08)throw new AssertionError("Subpixel spine blinks: scale="+scale+" variation="+variation);
                 spineCoverage.add(Map.of("acrossScale",scale,"pixelPhases",32,"minEnergy",low,"maxEnergy",high,"relativeVariation",variation));
             }
+            float[] meteor=render(program,58,47.25F,7.125F);
+            double meteorTimeError=difference(meteor,render(program,58,47.25F,7.183F));
+            double meteorArcError=difference(meteor,render(program,58,63.37F,7.125F));
+            double meteorPeak=0;for(int i=0;i<meteor.length;i+=4)meteorPeak=Math.max(meteorPeak,meteor[i+2]*meteor[i+3]);
+            if(meteorTimeError>1e-6||meteorArcError>1e-6||meteorPeak<1.5)throw new AssertionError("Meteor primary modulates or loses HDR support");
+            var meteorBand=Map.of("passed",true,"band",58,"timeError",meteorTimeError,"arcError",meteorArcError,"peakPremultipliedRadiance",meteorPeak,"scope","Actual shipping GLSL: primary emission is broad and independent of time/arc; dynamic outer tongues verified separately in continuous flight.");
             Map<String,Object> temporalTransport=temporalTransport(program);
             Map<String,Object> smokeField=smokeField();
             Map<String,Object> boundedHalo=boundedHalo(program);
@@ -107,8 +113,8 @@ final class HuahongMaterialQa {
             result.put("noseBand",32);result.put("noseProbes",noseProbes);result.put("noseCenterAlpha",noseCenter[3]);result.put("noseMaxBoundaryAlpha",noseEdge);result.put("noseMaxTimeError",noseTimeError);result.put("noseProjection",noseProjection);
             result.put("subpixelSpineCoverage",spineCoverage);
             result.put("temporalTransport",temporalTransport);result.put("smokeField",smokeField);
-            result.put("fireIsolation",fireIsolation);result.put("boundedOrdinaryHalo",boundedHalo);result.put("boundedOrdinaryHaloPost",boundedHaloPost);
-            result.put("smokeAtlasSha256",HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(smokeBytes)));result.put("smokeAtlasDimensions",List.of(smokeWidth,smokeHeight));result.put("materialBands",List.of(6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,42,44,46,48,50,52,54,56));return result;
+            result.put("continuousMeteorBand",meteorBand);result.put("fireIsolation",fireIsolation);result.put("boundedOrdinaryHalo",boundedHalo);result.put("boundedOrdinaryHaloPost",boundedHaloPost);
+            result.put("smokeAtlasSha256",HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(smokeBytes)));result.put("smokeAtlasDimensions",List.of(smokeWidth,smokeHeight));result.put("materialBands",List.of(6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,42,44,46,48,50,52,54,56,58));return result;
         }finally{
             GL33.glBindFramebuffer(GL33.GL_DRAW_FRAMEBUFFER,drawBefore);GL33.glBindFramebuffer(GL33.GL_READ_FRAMEBUFFER,readBefore);
             GL33.glActiveTexture(GL33.GL_TEXTURE0);GL33.glBindTexture(GL33.GL_TEXTURE_2D,textureBefore);GL33.glActiveTexture(activeTextureBefore);GL33.glBindVertexArray(vaoBefore);GL33.glUseProgram(programBefore);GL33.glViewport(viewport[0],viewport[1],viewport[2],viewport[3]);

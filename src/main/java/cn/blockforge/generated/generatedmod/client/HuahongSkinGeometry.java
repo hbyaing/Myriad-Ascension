@@ -190,13 +190,13 @@ final class HuahongSkinGeometry {
             for(int i=0;i<=60;i++){
                 double q=i/60.0,window=Math.max(0,Math.sin(Math.PI*q)),reach=window*1.25*.21;
                 double angle=phase+q*2.6+Math.sin(q*7-time*1.3+k)*q*.22;
-                Frame f=axial((.17-q*span)*HuahongHeadBridge.BODY_SCALE);Vec3 transverse=f.side().scale(Math.cos(angle)).add(f.up().scale(Math.sin(angle)));
+                Frame f=axial(.17-q*span);Vec3 transverse=f.side().scale(Math.cos(angle)).add(f.up().scale(Math.sin(angle)));
                 rows.add(new Row(offset(f,Math.cos(angle)*reach,Math.sin(angle)*reach),-q*span+k*.83,
-                        .32*.75*Math.pow(window,.65)*(1-q*.65)*(.85+.15*Math.sin(q*11-time*.7+k)),
-                        strength*.34F*(float)(1-q),mix(0xff6535,0xfff1c8,Math.pow(1-q,4)*.8),transverse));
+                        .32*.21*Math.pow(window,.65)*(1-q*.65)*(.85+.15*Math.sin(q*11-time*.7+k)),
+                        strength*.26F*(float)(1-q),mix(0xff6535,0xfff1c8,Math.pow(1-q,4)*.8),transverse));
             }
             strip(rows,44);
-            // Eight broad birth-oriented world streams, not four thin generic tails.
+            // Eight fine outer streams retain world history around the continuous primary.
             var history=new ArrayList<Row>();
             for(int i=0;i<nodes.size();i++){
                 var n=nodes.get(i);double age=Math.max((now-n.tick())/20,(origin-n.arc())/(10.8*HuahongHeadBridge.BODY_SCALE)),left=Mth.clamp(1-age/2.9,0,1);if(age<0||left<=0)continue;
@@ -204,18 +204,12 @@ final class HuahongSkinGeometry {
                 double spread=open*1.25*.10*(1+age*.24);
                 Vec3 transverse=f.side().scale(Math.cos(phase)).add(f.up().scale(Math.sin(phase)));
                 history.add(new Row(offset(f,Math.cos(phase+curl)*spread,Math.sin(phase+curl)*spread),(n.arc()-origin)/HuahongHeadBridge.BODY_SCALE+k*.93,
-                        .32*.75*(.15+.85*Math.pow(left,1.2))*.8,(float)(strength*.24*Math.pow(left,2.1)*smooth(0,.45,origin-n.arc())),
+                        .32*.12*(.15+.85*Math.pow(left,1.2))*.8,(float)(strength*.10*Math.pow(left,2.1)*smooth(0,.45,origin-n.arc())),
                         mix(0xff6535,0xfff1c8,Math.exp(-age*2)*.5),transverse));
             }
             strip(history,44);
         }
-        var soft=new ArrayList<Row>();var hot=new ArrayList<Row>();
-        for(int i=0;i<=68;i++){
-            double q=i/68.0,w=Math.pow(Math.max(0,Math.sin(Math.PI*q)),.65)*Math.exp(-q*2.7);Frame f=axial((.26-q*length)*HuahongHeadBridge.BODY_SCALE);Frame hotFrame=axial(.26-q*length);
-            soft.add(new Row(f.p(),-q*length,w*.32*2.1,strength*.06F*(float)(1-q),0xff6535,null));
-            hot.add(new Row(hotFrame.p(),-q*length,w*.32*.19,strength*.68F*(float)(1-q),0xfff8e6,null));
-        }
-        strip(soft,54);strip(hot,22,true);
+        meteorLightBand();
         for(var b:timedBirths(.05,1.65)){
             double age=(now-b.tick())/20;if(age<=.035||rnd(b.cell())>8/14.0)continue;
             Vec3 side=side(b.direction()),up=side.cross(b.direction()).normalize();double angle=rnd(b.cell()+1)*Math.PI*2,drift=(.18+rnd(b.cell()+2)*.55)*1.25;
@@ -227,6 +221,31 @@ final class HuahongSkinGeometry {
             }
             strip(rows,56);
         }
+    }
+    /** One pointed, camera-facing light band owns nose and world history.
+     * A short crossed spindle followed by fading filaments made a bright ball
+     * and a thin dark tail. Only the remote end ages/tapers; surface motion
+     * belongs to the surrounding tongues, never to this primary emission. */
+    private void meteorLightBand(){
+        var core=new ArrayList<Row>();var halo=new ArrayList<Row>();
+        for(int i=0;i<nodes.size();i++){
+            var n=nodes.get(i);double d=origin-n.arc(),age=Math.max(0,(now-n.tick())/20);
+            double life=1-smooth(3.8,5.8,HuahongHeadBridge.luminousSupportAge(age,d));
+            double end=1-smooth(105,158,d);if(life<=0||end<=0)continue;
+            double width=.098*smooth(-.4,.35,d)*end;
+            float alpha=(float)(strength*life*end);
+            Frame f=at(i);
+            core.add(new Row(f.p(),n.arc()-origin,width,alpha*.95F,0xfff8f2,null));
+            halo.add(new Row(f.p(),n.arc()-origin,width*1.8,alpha*.32F,0xffb389,null));
+        }
+        Frame head=back(0);
+        for(int i=1;i<=12;i++){
+            double d=-.4*i/12,width=.098*smooth(-.4,.35,d);
+            Vec3 p=head.p().subtract(head.forward().scale(d));
+            core.add(new Row(p,-d,width,strength*.95F,0xfff8f2,null));
+            halo.add(new Row(p,-d,width*1.8,strength*.32F,0xffb389,null));
+        }
+        strip(halo,22);strip(core,58);
     }
     private void tornFlameV3(){
         final double time=now/20,spread=.95,speedStretch=.82+8.4*.038;

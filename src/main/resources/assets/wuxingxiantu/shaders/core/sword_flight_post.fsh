@@ -186,6 +186,8 @@ vec4 swordMaterial(){
             vec3 rgb=vertexColor.rgb*(.65+n*.25)+vec3(.20,.16,.07)*(fibers*.13+ridges*.12);
             return vec4(rgb,fringe*(.38+large*.50)*(.60+fibers*.22+ridges*.20)*(.82+.18*silk)*vertexColor.a);
         }
+        // Broad continuous meteor primary: no noise/time gating or crossed sheets.
+        if(band==58.0)return vec4(vertexColor.rgb*2.4,pixelFilteredEdge(across,.35)*vertexColor.a);
         if(band==22.0)return vec4(vertexColor.rgb*1.3,pixelFilteredEdge(across,1.7)*vertexColor.a);
         if(band==14.0||band==20.0){
             vec2 p=vec2(fract(arc),v)*2.0-1.0;
@@ -288,7 +290,7 @@ void main(){
     }
     if(EmissionPass>0.5){
         float band=floor((trailCoord.y+.001)*.5)*2.0;
-        float gain=(band==14.0||band==30.0||band==36.0||band==42.0||band==44.0||band==46.0||band==48.0||band==50.0||band==52.0||band==54.0||band==56.0)?0.0:band==44.0?.25:band==46.0?.20:band==48.0?.08:band==50.0?.12:band==52.0?.30:band==12.0?.14:band==24.0?.12:band==26.0?.22:band==28.0?.18:band==34.0?.30:band==32.0?.60:band==18.0?.08:band==22.0?.22:band==16.0?.40:band==8.0?.52:band==6.0?.62:1.0;
+        float gain=(band==14.0||band==30.0||band==36.0||band==58.0||band==42.0||band==44.0||band==46.0||band==48.0||band==50.0||band==52.0||band==54.0||band==56.0)?0.0:band==44.0?.25:band==46.0?.20:band==48.0?.08:band==50.0?.12:band==52.0?.30:band==12.0?.14:band==24.0?.12:band==26.0?.22:band==28.0?.18:band==34.0?.30:band==32.0?.60:band==18.0?.08:band==22.0?.22:band==16.0?.40:band==8.0?.52:band==6.0?.62:1.0;
         fragColor=vec4(material.rgb*material.a*gain,max(-viewPosition.z/128.0,0.0));
     }
 }
