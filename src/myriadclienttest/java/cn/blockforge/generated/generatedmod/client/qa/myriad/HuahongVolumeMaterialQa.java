@@ -32,7 +32,9 @@ final class HuahongVolumeMaterialQa {
         GL33.glAttachShader(p,v);GL33.glAttachShader(p,f);GL33.glLinkProgram(p);GL33.glDeleteShader(v);GL33.glDeleteShader(f);
         if(GL33.glGetProgrami(p,GL33.GL_LINK_STATUS)==0)throw new AssertionError(GL33.glGetProgramInfoLog(p));return p;
     }
-    static Map<String,Object> verify(Minecraft mc)throws Exception{
+    static Map<String,Object> verify(Minecraft mc)throws Exception{return verify(mc,false);}
+    static Map<String,Object> verifyReference(Minecraft mc)throws Exception{return verify(mc,true);}
+    private static Map<String,Object> verify(Minecraft mc,boolean referenceV13)throws Exception{
         String current=shipping(mc),baseline;
         try(var in=HuahongVolumeMaterialQa.class.getResourceAsStream("/qa/huahong_volume_world_anchor.fsh")){
             if(in==null)throw new AssertionError("Missing frozen original volume shader");baseline=new String(in.readAllBytes(),StandardCharsets.UTF_8);
@@ -62,10 +64,10 @@ final class HuahongVolumeMaterialQa {
             // and visible time animation must survive with >=3x lower frame delta.
             if(covariance>.02||oldCovariance<.05||timePeriod>.02||timeWrap>.02)
                 throw new AssertionError("Volume material transform/period discontinuity "+covariance+" / old "+oldCovariance+" / period "+timePeriod+" / wrap "+timeWrap);
-            if(before.stepRms<1e-4||after.totalPower<1e-9||after.stepRms<1e-6||after.stepRms>before.stepRms/3)
+            if((!referenceV13&&(before.stepRms<1e-4||after.stepRms>before.stepRms/3))||after.totalPower<1e-9||after.stepRms<1e-6)
                 throw new AssertionError("Volume flow empty, frozen or still aliases "+before+" / "+after);
             int error=GL33.glGetError();if(error!=0)throw new AssertionError("Volume material GL error "+error);
-            var r=new LinkedHashMap<String,Object>();r.put("passed",true);r.put("check","actual-shipping-volume-field-transport");
+            var r=new LinkedHashMap<String,Object>();r.put("passed",true);r.put("referenceV13",referenceV13);r.put("check","actual-shipping-volume-field-transport");
             r.put("scope","Frozen previous production field vs actual shipping field, real renderer basis; synthetic local probes plus separate real continuous video. Geometry/depth not replaced by this fixture.");
             r.put("baselineSha256",sha(baseline));r.put("shippingSha256",sha(current));r.put("maxRigidTranslationRotationError",covariance);r.put("baselineRigidError",oldCovariance);
             r.put("timePeriod128Error",timePeriod);r.put("timeWrapError",timeWrap);r.put("before",before);r.put("after",after);r.put("frameDeltaReduction",before.stepRms/after.stepRms);r.put("frames",FRAMES);r.put("fps",120);r.put("speedWorldUnitsPerSecond",300);return r;

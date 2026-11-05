@@ -1,5 +1,7 @@
 #version 150
-// Original three-dimensional path field, independent of the local reference shader.
+// LOCAL REFERENCE ADAPTATION: current minecraft-huahong meteor-volume.js V13.
+// User-supplied material provenance is retained in docs/testing/THREE_FORM_FIDELITY_20261105.md.
+// Local acceptance build only; do not include this adaptation in a public MIT release.
 uniform sampler2D Sampler0;
 uniform mat4 InverseWorldToClip;
 uniform vec2 OutputSize;
@@ -18,158 +20,202 @@ uniform vec4 ShapeProfile;
 in vec2 screenUv;
 out vec4 fragColor;
 
-float hashCell(vec3 cell){
-    cell=mod(cell,64.0);
-    return fract(sin(dot(cell,vec3(19.173,73.719,41.137)))*15731.743);
+
+
+// LOCAL USER-SUPPLIED Meteor Test111 adaptation; not for public MIT release.
+float hhSmooth(float a,float b,float x){float q=clamp((x-a)/(b-a),0.,1.);return q*q*(3.-2.*q);}
+// colors
+const vec3 C_BLACK   = vec3(0.);
+const vec3 C_WHITE   = vec3(1.);
+const vec3 C_BLUE    = vec3(.1, .6, 1.);
+const vec3 C_CYAN    = vec3(.4, .8, 1.);
+const vec3 C_PURPLE  = vec3(.6, .1, .9);
+const vec3 C_YELLOW  = vec3(1., .82, .2);
+const vec3 C_ORANGE  = vec3(1., .8, .4);
+const vec3 C_BG      = vec3(.2, .23, .33);
+const vec3 C_GRAY    = vec3(.5);
+
+// hh_palette constants
+const vec3 P_A = vec3(.5);
+const vec3 P_B = vec3(.5);
+const vec3 P_C = vec3(1.);
+const vec3 P_D = vec3(0., .33, .67);
+
+// ---------- noise ----------
+vec3 hh_hash33(vec3 p) {
+    p=mod(p,64.0);
+    p = vec3(
+        dot(p, vec3(127.1, 311.7,  74.7)),
+        dot(p, vec3(269.5, 183.3, 246.1)),
+        dot(p, vec3(113.5, 271.9, 124.6))
+    );
+    return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
 }
-float huahongValueNoise3(vec3 p){
-    vec3 cell=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);
-    float a=mix(hashCell(cell),hashCell(cell+vec3(1,0,0)),f.x);
-    float b=mix(hashCell(cell+vec3(0,1,0)),hashCell(cell+vec3(1,1,0)),f.x);
-    float c=mix(hashCell(cell+vec3(0,0,1)),hashCell(cell+vec3(1,0,1)),f.x);
-    float d=mix(hashCell(cell+vec3(0,1,1)),hashCell(cell+vec3(1,1,1)),f.x);
-    return mix(mix(a,b,f.y),mix(c,d,f.y),f.z);
+
+float hh_hash12(vec2 p) {
+    vec3 q = fract(vec3(p.xyx) * 0.1031);
+    q += dot(q, q.yzx + 33.33);
+    return fract((q.x + q.y) * q.z);
 }
-vec4 noiseGradient(vec3 p){
-    vec3 cell=floor(p),fraction=fract(p),f=fraction*fraction*(3.0-2.0*fraction);
-    vec3 derivative=6.0*fraction*(1.0-fraction);
-    float a=hashCell(cell),b=hashCell(cell+vec3(1,0,0));
-    float c=hashCell(cell+vec3(0,1,0)),d=hashCell(cell+vec3(1,1,0));
-    float e=hashCell(cell+vec3(0,0,1)),g=hashCell(cell+vec3(0,1,1));
-    float h=hashCell(cell+vec3(1,1,1)),j=hashCell(cell+vec3(1,0,1));
-    float low=mix(mix(a,b,f.x),mix(c,d,f.x),f.y),high=mix(mix(e,j,f.x),mix(g,h,f.x),f.y);
-    float dx=mix(mix(b-a,d-c,f.y),mix(j-e,h-g,f.y),f.z)*derivative.x;
-    float dy=mix(mix(c-a,d-b,f.x),mix(g-e,h-j,f.x),f.z)*derivative.y;
-    return vec4(mix(low,high,f.z),dx,dy,(high-low)*derivative.z);
+
+float hh_perlin3D(vec3 p) {
+    vec3 pi = floor(p), pf = p - pi,
+    w = pf*pf*(3. - 2.*pf);
+    vec2 e = vec2(1,0);
+
+    return mix(
+        mix(
+            mix(dot(hh_hash33(pi), pf),
+                dot(hh_hash33(pi + e.xyy), pf - e.xyy), w.x),
+            mix(dot(hh_hash33(pi + e.yxy), pf - e.yxy),
+                dot(hh_hash33(pi + e.xxy), pf - e.xxy), w.x),
+            w.y
+        ),
+        mix(
+            mix(dot(hh_hash33(pi + e.yyx), pf - e.yyx),
+                dot(hh_hash33(pi + e.xyx), pf - e.xyx), w.x),
+            mix(dot(hh_hash33(pi + e.yxx), pf - e.yxx),
+                dot(hh_hash33(pi + e.xxx), pf - e.xxx), w.x),
+            w.y
+        ),
+        w.z
+    );
 }
-float filteredNoise(vec3 p,float footprint){
-    return mix(huahongValueNoise3(p),.5,smoothstep(.25,.85,footprint));
+
+float hh_fbm3D(vec3 p) {
+    float v = 0., a = .5;
+    for (int i = 0; i < 3; i++) {
+        v += a * hh_perlin3D(p);
+        p *= 2.;
+        a *= .5;
+    }
+    return v*.5 + .5;
 }
-float clouds(vec3 p,float footprint){
-    return filteredNoise(p,footprint)*.57
-        +filteredNoise(p*2.0+vec3(13,7,21),footprint*2.0)*.28
-        +filteredNoise(p*4.0+vec3(5,29,11),footprint*4.0)*.15;
+
+float hh_renderMeteorLayer(vec2 uv, float timeOffset, float warpIntensity) {
+    uv *= vec2(8., 1.);
+    uv.y -= EffectTime*3. + timeOffset;
+
+    vec3 p = vec3(uv, EffectTime*2.5);
+    vec2 w = vec2(hh_fbm3D(p + 1.), hh_fbm3D(p - 1.)) - .5;
+    float n = hh_fbm3D(p + vec3(w * warpIntensity, 0.));
+
+    return clamp((n - .5)*3. + .35, 0., 1.);
 }
-vec3 reconstruct(vec2 uv,float depth){
-    vec4 p=InverseWorldToClip*vec4(uv*2.0-1.0,depth*2.0-1.0,1.0);
-    return p.xyz/p.w;
+
+// https://iquilezles.org/articles/palettes/
+vec3 hh_palette(float t) {
+    return P_A + P_B * cos(2. * 3.1415926535 * (P_C * t + P_D));
 }
+
+vec3 hh_renderLightning(vec2 uv, float timeOffset, vec3 glowColor) {
+    float turbulence = hh_fbm3D(vec3(uv.y * 2., 0., EffectTime * 5. + timeOffset));
+    float d = abs(uv.x + (turbulence - .5)*2.);
+
+    vec3 c = C_GRAY * (.002 / (d + 1e-3)) + glowColor * (.02 / (d + 1e-3));
+    return c * hhSmooth(1., .3, abs(uv.y));
+}
+
+
+
+
+vec3 reconstruct(vec2 uv,float depth){vec4 p=InverseWorldToClip*vec4(uv*2.-1.,depth*2.-1.,1.);return p.xyz/p.w;}
 vec2 rayBox(vec3 origin,vec3 direction){
-    vec3 safe=sign(direction)*max(abs(direction),vec3(.000001));
-    safe+=vec3(equal(safe,vec3(0)))*.000001;
-    vec3 a=(BoundsMin-origin)/safe,b=(BoundsMax-origin)/safe;
-    vec3 low=min(a,b),high=max(a,b);
-    return vec2(max(low.x,max(low.y,low.z)),min(high.x,min(high.y,high.z)));
+ vec3 safe=mix(vec3(-1.),vec3(1.),greaterThanEqual(direction,vec3(0.)))*max(abs(direction),vec3(.000001));
+ vec3 a=(BoundsMin-origin)/safe,b=(BoundsMax-origin)/safe,lo=min(a,b),hi=max(a,b);
+ return vec2(max(lo.x,max(lo.y,lo.z)),min(hi.x,min(hi.y,hi.z)));
 }
 vec4 field(vec3 p,vec3 ray,float stepLength,vec3 pixelX,vec3 pixelY){
-    float footprint=max(stepLength,max(length(pixelX),length(pixelY)));
-    float envelope=0.0,headCore=0.0;
-    for(int i=0;i<31;i++){
-        if(i>=PathCount-1)break;
-        vec3 a=PathPoints[i].xyz,b=PathPoints[i+1].xyz,delta=b-a;
-        float t=clamp(dot(p-a,delta)/max(dot(delta,delta),.000001),0.0,1.0);
-        vec3 q=a+delta*t;float squared=dot(p-q,p-q);
-        float candidateArc=mix(PathPoints[i].w,PathPoints[i+1].w,t);
-        float candidateAge=mix(PathAges[i],PathAges[i+1],t);
-        float candidateBehind=max(0.0,PathPoints[0].w-candidateArc);
-        float candidateTail=1.0-smoothstep(PathLength*.72,PathLength,candidateBehind);
-        float candidateLife=pow(max(0.0,1.0-candidateAge/ShapeProfile.y),1.4);
-        if(candidateTail*candidateLife<.001)continue;
-        float growth=clamp(max(candidateAge/ShapeProfile.y,candidateBehind/40.0),0.0,1.0);
-        float candidateRadius=.025+ShapeProfile.x*(.10+ShapeProfile.w*.012+pow(growth,.9)*ShapeProfile.z*3.9);
-        // Every segment contributes a continuous spherical support. The union
-        // stays continuous where nearest-segment ownership changes, including
-        // folded history. Never carry a winning segment's arc into the noise.
-        float support=exp(-squared/(candidateRadius*candidateRadius)*3.2)*candidateTail*candidateLife;
-        envelope=max(envelope,support);
-        float coreRadius=(.085+.018*min(candidateBehind,3.0))*(ShapeProfile.x/.52);
-        float core=exp(-squared/(coreRadius*coreRadius))
-            *exp(-candidateBehind*.65)*(1.0-smoothstep(3.0,6.0,candidateBehind));
-        headCore=max(headCore,core*candidateLife*candidateTail);
-    }
-    if(envelope<.0001&&headCore<.0001)return vec4(0);
-    vec3 advection=vec3(0,EffectTime*.5,0);
-    // A single rendered carrier frame transports material independently of
-    // flight speed/turning. The support above remains the real world history;
-    // no winning segment's discontinuous coordinates enter this field.
-    vec3 world=WorldToMaterial*(p-PathPoints[0].xyz)*.5;
-    mat3 materialToWorld=transpose(WorldToMaterial);
-    vec4 warpX=noiseGradient(world+advection),warpY=noiseGradient(world.yzx+advection+17.0),warpZ=noiseGradient(world.zxy+advection+31.0);
-    vec3 displacement=vec3(warpX.x,warpY.x,warpZ.x)-.5;
-    vec3 gradientX=materialToWorld*(warpX.yzw*.5),gradientY=materialToWorld*(warpY.yzw.zxy*.5),gradientZ=materialToWorld*(warpZ.yzw.yzx*.5);
-    float cloud=clouds(world+displacement*1.8-advection,footprint*.5);
-    float density=envelope*pow(smoothstep(.39,.67,cloud),2.2)*(.18+.82*Strength);
-    // Both constraints share the continuous local material field. Transform
-    // their gradients back to world space for ray/pixel footprint filtering.
-    vec3 veinDomain=world*.5+displacement*.18-advection;
-    vec4 first=noiseGradient(veinDomain),second=noiseGradient(world.yzx*.5+displacement*.2+vec3(7,19,29));
-    // Convolve narrow isosurfaces with the ray/pixel footprint. Preserve their
-    // integrated energy while widening sub-step features instead of selecting
-    // a single maximum hit, which creates bright rectangular sampling bands.
-    vec3 firstGradient=materialToWorld*(first.yzw*.25)+.18*(first.y*gradientX+first.z*gradientY+first.w*gradientZ);
-    vec3 secondGradient=materialToWorld*(second.yzw.zxy*.25)+.2*(second.y*gradientX+second.z*gradientY+second.w*gradientZ);
-    // Convert scalar offsets to orthogonal world distances. Fixed noise-value
-    // widths otherwise expand into luminous blobs near a noise stationary point.
-    float firstSlope=max(length(firstGradient),.0001),secondSlope=max(length(secondGradient),.0001);
-    vec3 normalX=firstGradient/firstSlope,secondNormal=secondGradient/secondSlope;
-    float correlation=clamp(dot(normalX,secondNormal),-.999,.999);
-    float sine=sqrt(max(.001,1.0-correlation*correlation));
-    vec3 normalY=(secondNormal-correlation*normalX)/sine;
-    vec2 rayChange=vec2(dot(normalX,ray),dot(normalY,ray))*stepLength;
-    vec2 xChange=vec2(dot(normalX,pixelX),dot(normalY,pixelX));
-    vec2 yChange=vec2(dot(normalX,pixelY),dot(normalY,pixelY));
-    const float veinRadius=.063;
-    // Keep the cross covariance: the ray footprint is a line, not a square.
-    // det compensation preserves energy in both transverse dimensions.
-    vec2 variance=vec2(veinRadius*veinRadius)+(rayChange*rayChange+xChange*xChange+yChange*yChange)/12.0;
-    float covariance=(rayChange.x*rayChange.y+xChange.x*xChange.y+yChange.x*yChange.y)/12.0;
-    float determinant=max(veinRadius*veinRadius*veinRadius*veinRadius,variance.x*variance.y-covariance*covariance);
-    float hue=huahongValueNoise3(world*.5+vec3(23,3,41));
-    float vein=0.0;vec3 veinLight=vec3(0);
-    for(int j=0;j<3;j++)for(int k=0;k<3;k++){
-        vec2 levels=vec2(.38)+vec2(float(j),float(k))*.12;
-        vec2 distanceToLine=vec2((first.x-levels.x)/firstSlope,(second.x-levels.y)/secondSlope);
-        distanceToLine.y=(distanceToLine.y-correlation*distanceToLine.x)/sine;
-        float squaredDistance=(variance.y*distanceToLine.x*distanceToLine.x
-            +variance.x*distanceToLine.y*distanceToLine.y-2.0*covariance*distanceToLine.x*distanceToLine.y)/determinant;
-        float line=exp(-.5*max(0.0,squaredDistance))*(veinRadius*veinRadius)/sqrt(determinant)*envelope
-            *smoothstep(.08,.30,sine);
-        float pink=mod(float(j+k),2.0)*(.75+.25*smoothstep(.40,.68,hue));
-        vec3 color=mix(vec3(.12,1.8,3.4),vec3(3.4,.15,1.9),pink);
-        vein+=line;veinLight+=color*line;
-    }
-    float sigma=density*.85+vein*2.0+headCore*.8;
-    float brightCloud=pow(smoothstep(.45,.72,cloud),3.0);
-    vec3 cloudColor=vec3(.18,.80,1.8)+vec3(.90,1.20,1.4)*brightCloud;
-    vec3 emission=cloudColor*density*1.6+veinLight*32.0+vec3(1.4,2.8,4.0)*headCore*5.0;
-    return vec4(emission/max(sigma,.00001),sigma);
+ float best=1e6,weightSum=0.,ageSum=0.,radiusSum=0.;vec3 deltaSum=vec3(0.);
+ for(int i=0;i<31;i++){
+  if(i>=PathCount-1)break;
+  vec3 a=PathPoints[i].xyz,b=PathPoints[i+1].xyz,d=b-a;
+  float len2=dot(d,d);if(len2<1e-8)continue;
+  float t=clamp(dot(p-a,d)/len2,0.,1.),behind=-mix(PathPoints[i].w,PathPoints[i+1].w,t);
+  float realAge=mix(PathAges[i],PathAges[i+1],t)/ShapeProfile.y;
+  float q=clamp(max(realAge,behind/PathLength),0.,1.);
+  float radius=.025+ShapeProfile.x*(.10+ShapeProfile.w*.012+pow(q,.9)*ShapeProfile.z*3.9);
+  vec3 delta=p-mix(a,b,t);float dist=length(delta)/radius;
+  best=min(best,dist);float w=exp(-dist*dist*8.)*sqrt(len2);
+  weightSum+=w;ageSum+=q*w;radiusSum+=radius*w;deltaSum+=delta*w;
+ }
+ if(best>1.08||weightSum<1e-10)return vec4(0.);
+ float age=ageSum/weightSum,radius=radiusSum/weightSum;
+ vec3 local=WorldToMaterial*(deltaSum/weightSum)/radius;
+ vec2 section=local.xy;
+ float angle=atan(section.y,section.x+1.e-7);
+ float radial=length(section);
+ vec2 uv=vec2(radial*.235,sqrt(max(.0001,age))*.94);
+ // Retain the supplied material's scale relationships. Angular offsets make the
+ // field vary through depth, rather than extruding an identical 2D image.
+ float phase=sin(angle*2.0+age*3.)*.16;
+ uv.x+=sin(3.14159265*(hh_perlin3D(vec3(uv*vec2(3.,2.)-vec2(0.,EffectTime*5.),1.3+phase))-.5-uv.y))*.025;
+ float maskNoise=hh_fbm3D(vec3(uv*vec2(30.,10.)-vec2(0.,EffectTime*4.),EffectTime*5.+phase));
+ float mask=hhSmooth(.25,0.,uv.x+(maskNoise-.5)*pow(uv.y,5.)*.1);
+ vec3 base=vec3(.4,.8,1.)*hh_renderMeteorLayer(uv,phase*3.,1.5);
+ vec2 colorUV=uv*vec2(15.,5.);colorUV.y-=EffectTime*4.;
+ float raw=hh_fbm3D(vec3(colorUV,EffectTime*3.+phase));
+ float sharp=clamp((raw-.5)*50.+.5,0.,1.);
+ vec3 neon=mix(vec3(.4,.8,1.),hh_palette(raw*2.-EffectTime),hhSmooth(.25,.55,sharp));
+ vec2 coreUV=uv*vec2(30.,10.);coreUV.y-=EffectTime*5.;
+ coreUV.x+=(maskNoise-.5)*pow(uv.y,10.)*5.;
+ vec3 pp=vec3(coreUV,EffectTime*4.+phase);
+ float rawCore=hh_fbm3D(pp+vec3(hh_fbm3D(pp)*2.5,0,0));
+ vec3 bright=vec3(2.)*hhSmooth(.55,.75,rawCore)+vec3(.4,.8,1.)*.5*hhSmooth(.3,.65,rawCore);
+ bright+=.5*hhSmooth(0.,.3,rawCore)*hhSmooth(.1,0.,uv.x)*hhSmooth(1.,0.,uv.y);
+ base*=clamp(vec3(.224,.557,1.)/vec3(.224,.557,1.),vec3(0.),vec3(3.));
+ bright*=clamp(vec3(.902,.984,1.)/vec3(.902,.984,1.),vec3(0.),vec3(3.));
+ vec3 emission=base*.8+neon*.2+bright;
+ // Color accents come from the same advected material field as the body.
+ // No independent sinusoidal paths or constant-width neon filaments.
+ float crease=pow(max(0.,1.-abs(rawCore-.53)*17.),2.);
+ float breakup=hhSmooth(.46,.64,raw)*hhSmooth(.35,.61,maskNoise);
+ vec3 creaseColor=mix(vec3(.18,.63,1.),hh_palette(raw*2.-EffectTime),.65);
+ emission+=creaseColor*crease*breakup*(.15+8.0*.025);
+ float edge=1.-smoothstep(.68,1.02,best+(maskNoise-.5)*age*.20);
+ float end=1.-smoothstep(.78,1.,age);
+ float intensity=max(emission.r,max(emission.g,emission.b));
+ float density=mask*edge*end*smoothstep(.12,.65,intensity)*(.28+.72*pow(radial,.7));
+ emission*=mask*edge*end*(.60+.65*.62);
+ return vec4(emission,density);
+
 }
+
 void main(){
-    vec2 uv=gl_FragCoord.xy/OutputSize;
-    vec3 nearPoint=reconstruct(uv,0.0),farPoint=reconstruct(uv,1.0);
-    vec3 ray=normalize(farPoint-nearPoint);
-    vec3 rayPixelX=dFdx(ray),rayPixelY=dFdy(ray);
-    vec2 limits=rayBox(nearPoint,ray);
-    float first=max(0.0,limits.x),last=limits.y;
-    float sceneDepth=texture(Sampler0,uv).r;
-    if(sceneDepth<.999999){vec3 scene=reconstruct(uv,sceneDepth);last=min(last,dot(scene-nearPoint,ray)-.015);}
-    if(last<=first)discard;
-    float stepLength=(last-first)/128.0,transmission=1.0;vec3 radiance=vec3(0);
-    for(int i=0;i<128;i++){
-        float distance=first+(float(i)+.5)*stepLength;
-        vec3 p=nearPoint+ray*distance;
-        vec4 sampleField=field(p,ray,stepLength,distance*rayPixelX,distance*rayPixelY);
-        float alpha=1.0-exp(-sampleField.a*stepLength);
-        radiance+=transmission*alpha*sampleField.rgb;
-        transmission*=1.0-alpha;
-        if(transmission<.015)break;
-    }
-    float alpha=clamp(1.0-transmission,0.0,.99);
-    if(alpha<.002)discard;
-    // This option owns its direct display conversion; it never enters the
-    // sword/realm bloom buffer or a shared filmic tone mapper.
-    vec3 display=vec3(1.0)-exp(-radiance*Exposure);
-    // The accumulated emission already includes density and transmittance;
-    // multiplying it by opacity again would erase thin luminous filaments.
-    fragColor=vec4(display,alpha);
+ vec2 uv=gl_FragCoord.xy/OutputSize;
+ vec3 nearPoint=reconstruct(uv,0.),farPoint=reconstruct(uv,1.),ray=normalize(farPoint-nearPoint);
+ vec2 limits=rayBox(nearPoint,ray);float first=max(0.,limits.x),last=limits.y;
+ float sceneDepth=texture(Sampler0,uv).r;
+ if(sceneDepth<.999999){vec3 scene=reconstruct(uv,sceneDepth);last=min(last,dot(scene-nearPoint,ray)-.015);}
+ // Tighten the proxy to conservative segment spheres. Keep all128 samples
+ // for occupied support instead of spending them across the whole box.
+ float occupiedNear=1e20,occupiedFar=-1e20;
+ for(int k=0;k<31;k++){
+  if(k>=PathCount-1)break;
+  vec3 a=PathPoints[k].xyz,b=PathPoints[k+1].xyz;
+  float qa=clamp(max(PathAges[k]/ShapeProfile.y,-PathPoints[k].w/PathLength),0.,1.);
+  float qb=clamp(max(PathAges[k+1]/ShapeProfile.y,-PathPoints[k+1].w/PathLength),0.,1.);
+  float radius=(.025+ShapeProfile.x*(.10+ShapeProfile.w*.012+pow(max(qa,qb),.9)*ShapeProfile.z*3.9))*1.08+length(b-a)*.5;
+  vec3 c=(a+b)*.5-nearPoint;float t=dot(c,ray),r2=radius*radius-dot(c,c)+t*t;
+  if(r2>=0.){float reach=sqrt(r2);occupiedNear=min(occupiedNear,t-reach);occupiedFar=max(occupiedFar,t+reach);}
+ }
+ first=max(first,occupiedNear);last=min(last,occupiedFar);
+ if(last<=first)discard;
+ float dt=(last-first)/128.,transmission=1.,peakWeight=0.;vec3 sum=vec3(0.),peakSum=vec3(0.);
+ for(int i=0;i<128;i++){
+  vec4 f=field(nearPoint+ray*(first+(float(i)+.5)*dt),ray,dt,vec3(0.),vec3(0.));
+  float opacity=1.-exp(-f.a*dt*.65),score=dot(f.rgb,vec3(.2126,.7152,.0722));
+  // Continuous bright-sample weighting retains V13 luminous ridges without a winner swap.
+  float w=pow(max(score,0.),8.);peakWeight+=w;peakSum+=w*f.rgb;
+  sum+=transmission*opacity*f.rgb;transmission*=1.-opacity;
+  if(transmission<.01)break;
+ }
+ float opacity=1.-transmission;if(opacity<.0003)discard;
+ vec3 mean=sum/max(.0001,opacity);
+ vec3 color=mix(mean,peakWeight>1e-12?peakSum/peakWeight:mean,.78);
+ // Source V13 direct conversion: no shared filmic map, gamma or extra Bloom.
+ // This form is luminous: do not turn a long axial optical path into a dark disk.
+ // Thin support fades continuously; dividing by an almost-zero opacity must
+ // not turn individual ray hits into full-strength concentric plates.
+ fragColor=vec4(color*Exposure*Strength*smoothstep(0.,.06,opacity),0.);
 }

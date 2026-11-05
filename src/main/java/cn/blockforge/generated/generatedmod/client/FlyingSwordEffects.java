@@ -142,7 +142,7 @@ public final class FlyingSwordEffects {
         syncTrailLevel(client.level);
         if(client.level==null||client.player==null||!FlyingSwordConfig.TRAILS.get()){TRAILS.clear();return;}
         if((TRAILS.isEmpty()&&!HuahongVisuals.hasTrails())||!TRAIL_CLOCK.initialized()||!SwordFlightTrailRenderer.ready())return;
-        postPath=usePostPath()||client.options.getCloudsType()!=net.minecraft.client.CloudStatus.OFF||HuahongVisuals.hasAbsorbingTrail();renderStage="AFTER_PARTICLES";
+        postPath=usePostPath()||client.options.getCloudsType()!=net.minecraft.client.CloudStatus.OFF||HuahongVisuals.hasAbsorbingTrail()||HuahongVisuals.hasFireTrail();renderStage="AFTER_PARTICLES";
         activeTrailRenderPath=postPath?"POST_SHADER_TRAIL_RENDER_PATH":"NORMAL_TRAIL_RENDER_PATH";
         activeRenderTarget=org.lwjgl.opengl.GL11.glGetInteger(org.lwjgl.opengl.GL30.GL_DRAW_FRAMEBUFFER_BINDING);
         view=new org.joml.Matrix4f(com.mojang.blaze3d.systems.RenderSystem.getModelViewMatrix());

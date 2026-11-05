@@ -136,6 +136,30 @@ vec4 swordMaterial(){
             vec3 rgb=vertexColor.rgb*(.70+.27*coarse+.26*fold)+vec3(.035,.065,.090)*fold;
             return vec4(rgb,pow(edge,.70)*torn*(.49+.31*fiber+.20*detail)*vertexColor.a);
         }
+        if(band==42.0){
+            vec2 p=vec2(fract(arc),v)*2.-1.;float r2=dot(p,p);
+            float crossGlow=exp(-abs(p.x)*65.-abs(p.y)*7.)+exp(-abs(p.y)*65.-abs(p.x)*7.);
+            vec3 c=vec3(.25,.68,1.)*(crossGlow*.8+exp(-r2*24.)*.14)+vec3(.8,.96,1.)*exp(-r2*155.)*3.;
+            return vec4(c*(vec3(.5)+vertexColor.rgb*.5),(1.-smoothstep(.75,1.,sqrt(r2)))*vertexColor.a);
+        }
+        if(band==44.0){
+            // Current meteor_flame V9: wide warped warm streams, not torn V3 fire.
+            float axis=arc+EffectTime*4.;vec2 st=vec2(axis*.8125,across*3.1);
+            float warp=layeredFlow(st*.5+vec2(EffectTime*.125,0),8.);
+            float density=layeredFlow(st+vec2(0,warp*1.8),16.);
+            float tongues=smoothstep(.22,.68,density+edge*.21);
+            float ridges=pow(.5+.5*sin(across*12.+warp*6.+flowAngle(arc,15.,30.)),3.);
+            return vec4(vertexColor.rgb*1.25*(.7+density*.55+ridges*.25),pow(edge,1.35)*tongues*(.50+.50*ridges)*vertexColor.a);
+        }
+        if(band==46.0||band==50.0){
+            // Current primary-forms.js V3 erosion, with its distinct HDR layers.
+            vec2 p=vec2(arc*3.-EffectTime*1.5,across*2.6),warp=warpFlow(p,64.)*1.4;
+            float density=layeredFlow(p+warp,64.);
+            float tex=detailMask(vec2(across*.48+.5,arc*.171875),warp.yx*.40+vec2(0.,.24),false);
+            float tear=smoothstep(.16,.62,density+.23*edge)*(.4+.85*tex);
+            return vec4(vertexColor.rgb*(band==50.0?1.85:1.8)*(.8+.8*density*density),pow(edge,.75)*tear*vertexColor.a);
+        }
+        if(band==48.0||band==52.0||band==54.0||band==56.0)return vec4(vertexColor.rgb*(band==52.0||band==56.0?2.8:1.3),pow(edge,1.7)*vertexColor.a);
         if(band==38.0){
             float stripe=sin(flowAngle(arc,36.0,32.0)+sin(flowAngle(arc,9.0,8.0)));
             return vec4(vertexColor.rgb,pow(edge,2.3)*(.61+.39*smoothstep(-.7,.8,stripe))*vertexColor.a);

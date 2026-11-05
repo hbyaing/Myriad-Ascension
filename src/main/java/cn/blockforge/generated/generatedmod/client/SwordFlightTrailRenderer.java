@@ -76,6 +76,10 @@ public final class SwordFlightTrailRenderer {
         int depth=TrailShaderBridge.capturedDepthTexture();
         if(mesh==null)return false;
         if(post==null||depth<0){mesh.release();status="Awaiting sword world depth";return false;}
+        if(HuahongVisuals.hasFireTrail()&&inverseDepth!=null){
+            boolean submitted=HuahongFireCompositor.draw(mesh,projection,inverseDepth,time);
+            if(submitted){postDraws++;status="Huahong fire / independent HDR filmic transfer";}return submitted;
+        }
         if(HuahongVisuals.absorbingThisFrame&&inverseDepth!=null){
             boolean submitted=HuahongSmokeCompositor.draw(mesh,projection,inverseDepth,time);
             if(submitted){postDraws++;status="Sword smoke / order-independent optical mixture";}

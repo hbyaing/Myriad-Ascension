@@ -59,7 +59,7 @@ final class HuahongMaterialQa {
             GL33.glTexParameteri(GL33.GL_TEXTURE_2D,GL33.GL_TEXTURE_WRAP_S,GL33.GL_CLAMP_TO_EDGE);GL33.glTexParameteri(GL33.GL_TEXTURE_2D,GL33.GL_TEXTURE_WRAP_T,GL33.GL_CLAMP_TO_EDGE);
             GL33.glUniform1i(GL33.glGetUniformLocation(program,"SmokeAtlas"),0);
             double error=0;int comparisons=0;
-            for(int band:new int[]{6,8,10,12,14,16,18,20,22,24,26,28,30,34,36,38}){
+            for(int band:new int[]{6,8,10,12,14,16,18,20,22,24,26,28,30,34,36,38,42,44,46,48,50,52,54,56}){
                 float[] reference=render(program,band,47.25F,7.125F);
                 float low=Float.POSITIVE_INFINITY,high=0;for(float v:reference){low=Math.min(low,v);high=Math.max(high,v);}
                 if(high<.1||high-low<.01)throw new AssertionError("Material fixture produced no varying signal: "+band);
@@ -101,13 +101,14 @@ final class HuahongMaterialQa {
             Map<String,Object> smokeField=smokeField();
             Map<String,Object> boundedHalo=boundedHalo(program);
             Map<String,Object> boundedHaloPost=boundedHaloPost(mc);
+            Map<String,Object> fireIsolation=fireIsolation(mc);
             int gl=GL33.glGetError();if(gl!=0)throw new AssertionError("Material fixture GL error "+gl);
             var result=new LinkedHashMap<String,Object>();result.put("check","shipping-glsl-periodicity");result.put("comparisons",comparisons);result.put("maxChannelError",error);result.put("passed",true);
             result.put("noseBand",32);result.put("noseProbes",noseProbes);result.put("noseCenterAlpha",noseCenter[3]);result.put("noseMaxBoundaryAlpha",noseEdge);result.put("noseMaxTimeError",noseTimeError);result.put("noseProjection",noseProjection);
             result.put("subpixelSpineCoverage",spineCoverage);
             result.put("temporalTransport",temporalTransport);result.put("smokeField",smokeField);
-            result.put("boundedOrdinaryHalo",boundedHalo);result.put("boundedOrdinaryHaloPost",boundedHaloPost);
-            result.put("smokeAtlasSha256",HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(smokeBytes)));result.put("smokeAtlasDimensions",List.of(smokeWidth,smokeHeight));result.put("materialBands",List.of(6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38));return result;
+            result.put("fireIsolation",fireIsolation);result.put("boundedOrdinaryHalo",boundedHalo);result.put("boundedOrdinaryHaloPost",boundedHaloPost);
+            result.put("smokeAtlasSha256",HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(smokeBytes)));result.put("smokeAtlasDimensions",List.of(smokeWidth,smokeHeight));result.put("materialBands",List.of(6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,42,44,46,48,50,52,54,56));return result;
         }finally{
             GL33.glBindFramebuffer(GL33.GL_DRAW_FRAMEBUFFER,drawBefore);GL33.glBindFramebuffer(GL33.GL_READ_FRAMEBUFFER,readBefore);
             GL33.glActiveTexture(GL33.GL_TEXTURE0);GL33.glBindTexture(GL33.GL_TEXTURE_2D,textureBefore);GL33.glActiveTexture(activeTextureBefore);GL33.glBindVertexArray(vaoBefore);GL33.glUseProgram(programBefore);GL33.glViewport(viewport[0],viewport[1],viewport[2],viewport[3]);
@@ -178,6 +179,34 @@ final class HuahongMaterialQa {
         }finally{
             GL33.glClearColor(clearColor[0],clearColor[1],clearColor[2],clearColor[3]);GL33.glUseProgram(beforeProgram);GL33.glBindTexture(GL33.GL_TEXTURE_2D,beforeTexture);if(depth!=0)GL33.glDeleteTextures(depth);if(p!=0)GL33.glDeleteProgram(p);if(v!=0)GL33.glDeleteShader(v);if(f!=0)GL33.glDeleteShader(f);
         }
+    }
+    private static Map<String,Object> fireIsolation(Minecraft mc)throws Exception{
+        String source;try(var in=mc.getResourceManager().getResource(new ResourceLocation("wuxingxiantu","shaders/core/sword_flight_post.fsh")).orElseThrow().open()){source=new String(in.readAllBytes(),StandardCharsets.UTF_8);}
+        int beforeProgram=GL33.glGetInteger(GL33.GL_CURRENT_PROGRAM),beforeTexture=GL33.glGetInteger(GL33.GL_TEXTURE_BINDING_2D);
+        int[] factors={GL33.glGetInteger(GL33.GL_BLEND_SRC_RGB),GL33.glGetInteger(GL33.GL_BLEND_DST_RGB),GL33.glGetInteger(GL33.GL_BLEND_SRC_ALPHA),GL33.glGetInteger(GL33.GL_BLEND_DST_ALPHA),GL33.glGetInteger(GL33.GL_BLEND_EQUATION_RGB),GL33.glGetInteger(GL33.GL_BLEND_EQUATION_ALPHA)};
+        boolean blend=GL33.glIsEnabled(GL33.GL_BLEND);float[] clear=new float[4];GL33.glGetFloatv(GL33.GL_COLOR_CLEAR_VALUE,clear);
+        int vertex=0,fragment=0,program=0,depth=0;
+        try{
+            vertex=shader(GL33.GL_VERTEX_SHADER,"#version 150\nuniform float ProbeBand;out vec2 trailCoord;out vec4 vertexColor;out vec3 viewPosition;void main(){vec2 p=vec2((gl_VertexID<<1)&2,gl_VertexID&2);trailCoord=vec2(47.25+p.x*15.25,ProbeBand+.02+p.y*.96);vertexColor=vec4(1.,.2,.08,.8);viewPosition=vec3(0,0,-4);gl_Position=vec4(p*2.-1.,0,1);}");
+            fragment=shader(GL33.GL_FRAGMENT_SHADER,source);program=GL33.glCreateProgram();GL33.glAttachShader(program,vertex);GL33.glAttachShader(program,fragment);GL33.glLinkProgram(program);
+            if(GL33.glGetProgrami(program,GL33.GL_LINK_STATUS)==0)throw new AssertionError(GL33.glGetProgramInfoLog(program));
+            depth=GL33.glGenTextures();GL33.glBindTexture(GL33.GL_TEXTURE_2D,depth);GL33.glTexImage2D(GL33.GL_TEXTURE_2D,0,GL33.GL_R32F,1,1,0,GL33.GL_RED,GL33.GL_FLOAT,new float[]{1});GL33.glTexParameteri(GL33.GL_TEXTURE_2D,GL33.GL_TEXTURE_MIN_FILTER,GL33.GL_NEAREST);GL33.glTexParameteri(GL33.GL_TEXTURE_2D,GL33.GL_TEXTURE_MAG_FILTER,GL33.GL_NEAREST);
+            GL33.glUseProgram(program);GL33.glUniform1i(GL33.glGetUniformLocation(program,"Sampler0"),0);GL33.glUniform2f(GL33.glGetUniformLocation(program,"OutputSize"),64,32);GL33.glUniform1f(GL33.glGetUniformLocation(program,"EffectTime"),7.125F);GL33.glUniform1f(GL33.glGetUniformLocation(program,"OpticalPass"),1);
+            GL33.glEnable(GL33.GL_BLEND);GL33.glBlendFunc(GL33.GL_ONE,GL33.GL_ONE);GL33.glClearColor(0,0,0,0);
+            double suppression=0,ordinaryEnergy=0,firePeak=0,linearity=0;
+            for(int pass:new int[]{1,2})for(int band:new int[]{36,44}){
+                GL33.glClear(GL33.GL_COLOR_BUFFER_BIT);GL33.glUniform1f(GL33.glGetUniformLocation(program,"FirePass"),pass);GL33.glUniform1f(GL33.glGetUniformLocation(program,"ProbeBand"),band);
+                GL33.glDrawArrays(GL33.GL_TRIANGLES,0,3);float[] one=new float[64*32*4];GL33.glReadPixels(0,0,64,32,GL33.GL_RGBA,GL33.GL_FLOAT,one);
+                for(int i=0;i<one.length;i++)if((pass==1&&band==44)||(pass==2&&band==36))suppression=Math.max(suppression,Math.abs(one[i]));
+                if(pass==1&&band==36)for(int i=0;i<one.length;i+=4)ordinaryEnergy+=one[i]+one[i+1]+one[i+2];
+                if(pass==2&&band==44){
+                    for(int i=0;i<9;i++)GL33.glDrawArrays(GL33.GL_TRIANGLES,0,3);float[] ten=new float[one.length];GL33.glReadPixels(0,0,64,32,GL33.GL_RGBA,GL33.GL_FLOAT,ten);
+                    for(int i=0;i<ten.length;i++){linearity=Math.max(linearity,Math.abs(ten[i]-one[i]*10));if(i%4!=3)firePeak=Math.max(firePeak,ten[i]);}
+                }
+            }
+            if(suppression>1e-7||ordinaryEnergy<1||firePeak<1||linearity>1e-4)throw new AssertionError("HDR fire/ordinary isolation failed "+suppression+" / "+ordinaryEnergy+" / "+firePeak+" / "+linearity);
+            return Map.of("passed",true,"maxSuppressedChannel",suppression,"ordinaryEnergyPreserved",ordinaryEnergy,"tenLayerHdrPeak",firePeak,"tenLayerLinearError",linearity,"scope","Actual complete shipping post GLSL: fire/nonfire filtering and additive float accumulation; real compositor transfer verified in separate native/Solas captures.");
+        }finally{GL33.glClearColor(clear[0],clear[1],clear[2],clear[3]);if(blend)GL33.glEnable(GL33.GL_BLEND);else GL33.glDisable(GL33.GL_BLEND);GL33.glBlendFuncSeparate(factors[0],factors[1],factors[2],factors[3]);GL33.glBlendEquationSeparate(factors[4],factors[5]);GL33.glUseProgram(beforeProgram);GL33.glBindTexture(GL33.GL_TEXTURE_2D,beforeTexture);if(depth!=0)GL33.glDeleteTextures(depth);if(program!=0)GL33.glDeleteProgram(program);if(vertex!=0)GL33.glDeleteShader(vertex);if(fragment!=0)GL33.glDeleteShader(fragment);}
     }
     private static Map<String,Object> temporalTransport(int program){
         final int frames=240;final double fps=120,speed=300;

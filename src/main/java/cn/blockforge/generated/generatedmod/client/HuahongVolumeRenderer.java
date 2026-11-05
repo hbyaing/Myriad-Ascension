@@ -28,13 +28,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-/** Original world-path density renderer. No reference/source shader is embedded.
- * A forty-block art window bounds this form; it is not a natural speed-times-life tail. */
+/** Current V13 material adapter over a continuous world-history coordinate field.
+ * A reference-proportioned art window bounds this form independently of gameplay speed. */
 @Mod.EventBusSubscriber(modid=GeneratedMod.MOD_ID,value=Dist.CLIENT,bus=Mod.EventBusSubscriber.Bus.MOD)
 public final class HuahongVolumeRenderer {
     private static final int POINTS=32,MAX_PACKETS=32;
     public static final float DEFAULT_WIDTH=(float)(.52*HuahongHeadBridge.BODY_SCALE),DEFAULT_LIFE=2.2F,DEFAULT_SPREAD=1.25F,DEFAULT_SHELL=3.5F;
-    private static final double PATH_LENGTH=40,RADIUS=4.8*HuahongHeadBridge.BODY_SCALE;
+    private static final double PATH_LENGTH=8.2*2.2*HuahongHeadBridge.BODY_SCALE,RADIUS=.025+DEFAULT_WIDTH*(.10+DEFAULT_SHELL*.012+DEFAULT_SPREAD*3.9);
     private static final ArrayList<Packet> PENDING=new ArrayList<>();
     private static final ArrayList<Trace> TRACE=new ArrayList<>();
     private static List<Trace> previousTrace=List.of();

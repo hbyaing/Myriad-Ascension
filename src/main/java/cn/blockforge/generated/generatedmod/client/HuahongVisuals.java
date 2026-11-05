@@ -41,6 +41,7 @@ public final class HuahongVisuals {
     private static final Map<ControlledSwordEntity,Trail> TRAILS=new IdentityHashMap<>();
     private static Object level;
     private static double corePixelScale;
+    private static org.joml.Matrix4f worldProjection=new org.joml.Matrix4f();
     private static boolean headLinked;
     public static int vertices;
     public static boolean absorbingThisFrame;
@@ -53,11 +54,13 @@ public final class HuahongVisuals {
             HuahongHeadBridge.attachmentWeight(0);HuahongSkinGeometry.linkCarriers();new MorphAlpha(null,0);headLinked=true;
         }
     }
+    public static boolean hasFireTrail(){return TRAILS.values().stream().anyMatch(t->t.skin==cn.blockforge.generated.generatedmod.yujian.HuahongSkin.FLAME||t.skin==cn.blockforge.generated.generatedmod.yujian.HuahongSkin.METEOR_FLAME);}
     public static boolean hasTrails(){return !TRAILS.isEmpty();}
     public static void coreProjection(org.joml.Matrix4f projection,int height){
         // Three pixels are raster support, not a larger physical nucleus.
         // Strip emitters conserve energy with physical/covered alpha; use the
         // captured world projection rather than mutable global GL projection.
+        worldProjection.set(projection);
         double y=Math.abs(projection.m11());
         corePixelScale=Double.isFinite(y)&&y>1e-6?3.0/(y*Math.max(1,height)):0;
     }
@@ -114,7 +117,7 @@ public final class HuahongVisuals {
                 // Freeze its last emitting material frame while time/life keep
                 // advancing, instead of spinning old veins with a returning rider.
                 if(active||trail.denseForward==null){trail.denseForward=forward;trail.denseSide=modelSide;}
-                var clip=new org.joml.Matrix4f(com.mojang.blaze3d.systems.RenderSystem.getProjectionMatrix())
+                var clip=new org.joml.Matrix4f(worldProjection)
                         .mul(com.mojang.blaze3d.systems.RenderSystem.getModelViewMatrix()).mul(pose.pose());
                 HuahongVolumeRenderer.queue(headNodes,eye,now,FlyingSwordEffects.morphWeight(frame.huahong()),clip,1,trail.denseForward,trail.denseSide);
             }
