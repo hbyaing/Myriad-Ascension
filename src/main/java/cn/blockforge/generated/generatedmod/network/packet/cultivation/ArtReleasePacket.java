@@ -5,6 +5,7 @@ import cn.blockforge.generated.generatedmod.ArtCatalog;
 import cn.blockforge.generated.generatedmod.items.HumanEmperorBannerItem;
 import cn.blockforge.generated.generatedmod.arts.ArtParticleLibrary;
 import cn.blockforge.generated.generatedmod.arts.FourArtsVisuals;
+import cn.blockforge.generated.generatedmod.arts.IceSpikeVolley;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -72,6 +73,7 @@ public record ArtReleasePacket(int slot) {
                     player.displayClientMessage(Component.translatable("message.wuxingxiantu.low_mana"), true);
                     return;
                 }
+                if (FourArtsVisuals.ICE.equals(art) && !IceSpikeVolley.canCast(player)) return;
                 net.minecraft.world.phys.Vec3 flashDestination=null;
                 if (art.equals("art_flash_step")) {
                     flashDestination=cn.blockforge.generated.generatedmod.arts.FlashStep.destination(player,effectPercent>=30?10:8);
@@ -145,7 +147,8 @@ public record ArtReleasePacket(int slot) {
                     target.setDeltaMovement(0.0D, target.getDeltaMovement().y, 0.0D);
                 }
             }
-            if (art.equals("art_sword_aura") || art.equals("art_ice_spike") || art.equals("art_armor_break")
+            if (art.equals(FourArtsVisuals.ICE)) IceSpikeVolley.cast(player, damage);
+            if (art.equals("art_sword_aura") || art.equals("art_armor_break")
                     || art.equals("art_flame_wave") || art.equals("art_thunder") || art.equals("art_myriad_swords")
                     || art.equals("art_five_elements")) {
                 ArtCatalog.AttackProfile profile = ArtCatalog.attackProfile(art);
@@ -190,10 +193,6 @@ public record ArtReleasePacket(int slot) {
                     var source=art.equals("art_thunder")?new net.minecraft.world.damagesource.DamageSource(level.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE).getHolderOrThrow(net.minecraft.world.damagesource.DamageTypes.LIGHTNING_BOLT),player):player.damageSources().magic();
                     boolean hit = target.hurt(source, art.equals("art_thunder")?damage*1.35F:damage);
                     if (hit && art.equals("art_flame_wave")) target.setSecondsOnFire(4);
-                    if (art.equals("art_ice_spike")) {
-                        target.addEffect(new net.minecraft.world.effect.MobEffectInstance(
-                                net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN, 60, 2));
-                    }
                     if (art.equals("art_armor_break")) {
                         target.addEffect(new net.minecraft.world.effect.MobEffectInstance(
                                 ModEffects.ARMOR_BREAK.get(), 100, 0, false, true, true));

@@ -48,7 +48,7 @@
   "art.wuxingxiantu.function.art_flash_step": "借空间灵力向视线方向闪身，并获得短暂迅捷。",
   "art.wuxingxiantu.function.art_golden_bell": "金钟护体，获得更强的吸收护盾。",
   "art.wuxingxiantu.function.art_human_harmony": "天人相合，短时间提升自身攻击威力。",
-  "art.wuxingxiantu.function.art_ice_spike": "凝结冰刺，对范围内敌对生物造成伤害并减速。",
+  "art.wuxingxiantu.function.art_ice_spike": "在周身凝结冰锥，自动追踪附近可见的敌对生物，命中时造成伤害并减速。",
   "art.wuxingxiantu.function.art_immobilize": "束缚自身周围3格内的敌人，短暂定身。",
   "art.wuxingxiantu.function.art_immovable_mountain": "山岳之势护体，获得强力吸收护盾。",
   "art.wuxingxiantu.function.art_light_body": "减轻身躯，短时间提升移动速度。",

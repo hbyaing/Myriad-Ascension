@@ -23,7 +23,7 @@ import java.util.List;
 @Mod.EventBusSubscriber(modid=GeneratedMod.MOD_ID)
 public final class FourArtsVisuals {
     public static final String LIGHT="art_light_body", RENEWAL="art_renewal", PURIFICATION="art_purification";
-    public static final String GATHER="art_spirit_gathering", BLOOD="art_bloodlust";
+    public static final String GATHER="art_spirit_gathering", BLOOD="art_bloodlust", ICE="art_ice_spike";
     public static final int WIND=1, PASSIVE_WIND=2, SPIRIT=4, BLOOD_AURA=8;
     private static final String LAST_STATE="FourArtsVisualState";
     private static final String ACTIVE_HEAL="FourArtsActiveHeal";
@@ -31,7 +31,7 @@ public final class FourArtsVisuals {
     private FourArtsVisuals() {}
 
     public static boolean replaces(String art) {
-        return LIGHT.equals(art)||RENEWAL.equals(art)||GATHER.equals(art)||BLOOD.equals(art)||PURIFICATION.equals(art);
+        return LIGHT.equals(art)||RENEWAL.equals(art)||GATHER.equals(art)||BLOOD.equals(art)||PURIFICATION.equals(art)||ICE.equals(art);
     }
 
     public static void renew(ServerPlayer player,float amount) {

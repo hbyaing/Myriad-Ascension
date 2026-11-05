@@ -5,6 +5,9 @@ import cn.blockforge.generated.generatedmod.client.TrailShaderBridge;
 import cn.blockforge.generated.generatedmod.client.realmflight.MeteorBloomRenderer;
 import cn.blockforge.generated.generatedmod.network.packet.cultivation.FourArtsPacket;
 import cn.blockforge.generated.generatedmod.network.packet.cultivation.FourArtsPacket.Action;
+import cn.blockforge.generated.generatedmod.network.packet.cultivation.IceSpikePacket;
+import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.BufferUploader;
@@ -29,6 +32,7 @@ import net.minecraftforge.fml.common.Mod;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -44,13 +48,23 @@ public final class FourArtsEffects {
     private static final BufferBuilder BUFFER=new BufferBuilder(65536);
     private static final Map<AbstractClientPlayer,State> STATES=new HashMap<>();
     private static final Map<AbstractClientPlayer,FourArtsPose.Sample> POSES=new HashMap<>();
+    private static final Map<IceCast,IceSpikeAnimation> ICE_CASTS=new HashMap<>();
     private static ClientLevel world;
     private static Frame pending;
     private static ShaderInstance shader;
     private static long drawnFrames;
     private static int drawnMaterials;
+    private static int sceneTexture,sceneWidth,sceneHeight;
 
     private FourArtsEffects() {}
+
+    public static void acceptIce(IceSpikePacket packet) {
+        var level=Minecraft.getInstance().level;
+        setWorld(level);
+        if(level==null || !(level.getEntity(packet.caster()) instanceof AbstractClientPlayer)) return;
+        ICE_CASTS.computeIfAbsent(new IceCast(packet.caster(),packet.started()),key->new IceSpikeAnimation())
+                .accept(level,packet,level.getGameTime());
+    }
 
     public static void accept(FourArtsPacket packet) {
         var level=Minecraft.getInstance().level;
@@ -97,6 +111,7 @@ public final class FourArtsEffects {
         setWorld(level);
         if(level==null) return;
         long now=level.getGameTime();
+        ICE_CASTS.values().removeIf(cast->cast.expired(now));
         var iterator=STATES.entrySet().iterator();
         while(iterator.hasNext()) {
             var entry=iterator.next();
@@ -149,7 +164,7 @@ public final class FourArtsEffects {
         if(event.getStage()!=RenderLevelStageEvent.Stage.AFTER_PARTICLES || TrailShaderBridge.shadowPass()) return;
         clearPending();
         var mc=Minecraft.getInstance();
-        if(mc.level==null || STATES.isEmpty() || shader==null) { POSES.clear(); return; }
+        if(mc.level==null || (STATES.isEmpty() && ICE_CASTS.isEmpty()) || shader==null) { POSES.clear(); return; }
         double now=mc.level.getGameTime()+event.getPartialTick();
         Vec3 camera=event.getCamera().getPosition();
         Vec3 right=FourArtsPose.vec(new Vector3f(1,0,0).rotate(event.getCamera().rotation()));
@@ -205,11 +220,12 @@ public final class FourArtsEffects {
             for(var hit:state.hits) FourArtsAnimation.bloodHit(geometry,hit.point,hit.direction,(now-hit.tick)/20,hit.passive);
         }
         POSES.clear();
+        for(var cast:ICE_CASTS.values()) cast.render(geometry,camera,now);
         var mesh=geometry.bake(BUFFER);
         if(mesh==null) return;
         if(!TrailShaderBridge.captureDepth()) { mesh.release(); return; }
         var clip=new Matrix4f(event.getProjectionMatrix()).mul(RenderSystem.getModelViewMatrix()).mul(scenePose);
-        pending=new Frame(mesh,clip,(float)((now%24000)/20),geometry.materials);
+        pending=new Frame(mesh,clip,(float)((now%24000)/20),geometry.materials,right,up);
     }
 
     @SubscribeEvent(priority=EventPriority.HIGH)
@@ -234,6 +250,8 @@ public final class FourArtsEffects {
         var target=Minecraft.getInstance().getMainRenderTarget();
         try(var saved=new MeteorBloomRenderer.State()) {
             target.bindWrite(true);
+            boolean crystal=(frame.materials&(1<<FourArtsGeometry.ICE_CRYSTAL))!=0;
+            if(crystal) captureScene(target);
             RenderSystem.disableDepthTest();
             RenderSystem.depthMask(false);
             RenderSystem.disableCull();
@@ -241,16 +259,37 @@ public final class FourArtsEffects {
             RenderSystem.enableBlend();
             RenderSystem.blendFuncSeparate(GL11.GL_ONE,GL11.GL_ONE_MINUS_SRC_ALPHA,GL11.GL_ONE,GL11.GL_ONE_MINUS_SRC_ALPHA);
             shader.safeGetUniform("ClipMatrix").set(frame.clip);
-            if((frame.materials&(1<<FourArtsGeometry.RECOVERY))!=0)
+            if((frame.materials&((1<<FourArtsGeometry.RECOVERY)|(1<<FourArtsGeometry.ICE_GROUND)|(1<<FourArtsGeometry.ICE_WAKE)))!=0)
                 shader.safeGetUniform("InverseClip").set(new Matrix4f(frame.clip).invert());
             shader.safeGetUniform("OutputSize").set((float)target.viewWidth,(float)target.viewHeight);
             shader.safeGetUniform("time").set(frame.time);
+            if(crystal) {
+                shader.safeGetUniform("ViewRight").set((float)frame.right.x,(float)frame.right.y,(float)frame.right.z);
+                shader.safeGetUniform("ViewUp").set((float)frame.up.x,(float)frame.up.y,(float)frame.up.z);
+            }
             RenderSystem.setShaderTexture(0,depth);
+            RenderSystem.setShaderTexture(1,crystal?sceneTexture:0);
             RenderSystem.setShader(()->shader);
             BufferUploader.drawWithShader(frame.mesh);
             drawnFrames++;
             drawnMaterials=frame.materials;
         }
+    }
+
+    private static void captureScene(RenderTarget target) {
+        // The saved GL state restores both framebuffer bindings and the scratch texture unit.
+        GlStateManager._glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER,target.frameBufferId);
+        if(sceneTexture==0) sceneTexture=GL11.glGenTextures();
+        RenderSystem.bindTexture(sceneTexture);
+        if(sceneWidth!=target.viewWidth || sceneHeight!=target.viewHeight) {
+            sceneWidth=target.viewWidth;
+            sceneHeight=target.viewHeight;
+            GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D,0,GL11.GL_RGBA8,0,0,sceneWidth,sceneHeight,0);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,GL11.GL_TEXTURE_MIN_FILTER,GL11.GL_LINEAR);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,GL11.GL_TEXTURE_MAG_FILTER,GL11.GL_LINEAR);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,GL11.GL_TEXTURE_WRAP_S,GL30.GL_CLAMP_TO_EDGE);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,GL11.GL_TEXTURE_WRAP_T,GL30.GL_CLAMP_TO_EDGE);
+        } else GL11.glCopyTexSubImage2D(GL11.GL_TEXTURE_2D,0,0,0,0,0,sceneWidth,sceneHeight);
     }
 
     @SubscribeEvent
@@ -261,6 +300,7 @@ public final class FourArtsEffects {
         world=level;
         STATES.clear();
         POSES.clear();
+        ICE_CASTS.clear();
         release();
     }
 
@@ -271,6 +311,8 @@ public final class FourArtsEffects {
 
     public static void release() {
         clearPending();
+        if(sceneTexture!=0) RenderSystem.deleteTexture(sceneTexture);
+        sceneTexture=sceneWidth=sceneHeight=0;
     }
 
     @Mod.EventBusSubscriber(modid=GeneratedMod.MOD_ID,value=Dist.CLIENT,bus=Mod.EventBusSubscriber.Bus.MOD)
@@ -284,7 +326,8 @@ public final class FourArtsEffects {
 
     record WindPoint(long time,Vec3 point,Vec3 forward) {}
     private record Hit(long tick,Vec3 point,Vec3 direction,boolean passive) {}
-    private record Frame(BufferBuilder.RenderedBuffer mesh,Matrix4f clip,float time,int materials) {}
+    private record IceCast(int player,long started) {}
+    private record Frame(BufferBuilder.RenderedBuffer mesh,Matrix4f clip,float time,int materials,Vec3 right,Vec3 up) {}
 
     private static final class State {
         int bits;

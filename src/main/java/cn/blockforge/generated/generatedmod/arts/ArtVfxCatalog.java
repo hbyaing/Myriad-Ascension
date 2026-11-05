@@ -13,7 +13,6 @@ public final class ArtVfxCatalog {
             case "art_spirit_shield" -> new Recipe("shield_hex", "meridian_knot", "spark_soft", 0xA7F0FF);
             case "art_immobilize" -> new Recipe("root_lattice", "chain_barb", "seal_glyph", 0xFFD167);
             case "art_golden_bell" -> new Recipe("bell_shell", "armor_scale", "coin_charm", 0xFFD167);
-            case "art_ice_spike" -> new Recipe("ice_lance", "frost_fern", "snow_crystal", 0x64CFEF);
             case "art_armor_break" -> new Recipe("pierce_diamond", "armor_scale", "sword_cross", 0xFFD167);
             case "art_flame_wave" -> new Recipe("fire_brush", "heat_wisp", "ember_fragment", 0xFF793D);
             case "art_flash_step" -> new Recipe("thought_rift", "feather_lift", "lens_crescent", 0xA88DFF);

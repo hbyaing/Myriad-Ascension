@@ -52,15 +52,18 @@ public final class FourArtsCapture {
     private static final Path OUT=Path.of(System.getProperty("wuxingxiantu.myriadCaptureOutput","captures"));
     private static final String[] CASES={"active-renewal","passive-renewal","active-spirit","passive-spirit",
             "active-wind","passive-slow-fall","active-blood-charge","active-blood-impact","passive-blood-impact",
-            "active-purification","clean-purification","passive-purification"};
+            "active-purification","clean-purification","passive-purification","ice-flight","ice-homing","ice-blocked"};
     private static final String[] ARTS={FourArtsVisuals.RENEWAL,FourArtsVisuals.RENEWAL,FourArtsVisuals.GATHER,
             FourArtsVisuals.GATHER,FourArtsVisuals.LIGHT,FourArtsVisuals.LIGHT,FourArtsVisuals.BLOOD,
             FourArtsVisuals.BLOOD,FourArtsVisuals.BLOOD,
-            FourArtsVisuals.PURIFICATION,FourArtsVisuals.PURIFICATION,FourArtsVisuals.PURIFICATION};
-    private static final int[] LIMIT={14,40,31,25,35,31,31,24,24,21,21,40};
+            FourArtsVisuals.PURIFICATION,FourArtsVisuals.PURIFICATION,FourArtsVisuals.PURIFICATION,
+            FourArtsVisuals.ICE,FourArtsVisuals.ICE,FourArtsVisuals.ICE};
+    private static final int[] LIMIT={14,40,31,25,35,31,31,24,24,21,21,40,29,82,88};
     private static final int LOTUS_BASE=1<<9|1<<11|1<<12|1<<15;
     private static final int LOTUS_ACTIVE=1<<13|1<<14|1<<17;
     private static final int LOTUS_STAINS=1<<10|1<<16;
+    private static final int ICE_FORMATION=1<<18|1<<19|1<<21|1<<22;
+    private static final int ICE_FLIGHT=1<<18|1<<20|1<<22|1<<23|1<<24;
     private static final List<Map<String,Object>> RESULTS=new ArrayList<>();
     private static final long START=System.nanoTime();
     private static boolean opened,ready,prepared,finished;
@@ -69,6 +72,9 @@ public final class FourArtsCapture {
     private static long baseline;
     private static Field draws,materials,states;
     private static int dummyId;
+    private static final List<Integer> iceTargets=new ArrayList<>();
+    private static boolean formationCaptured;
+    private static float iceDamage;
     private static Method cameraPosition;
 
     @SubscribeEvent
@@ -143,8 +149,13 @@ public final class FourArtsCapture {
                 return;
             }
             tick++;
-            if(tick==5&&(stage==0||stage==2||stage==4||stage==6||stage==7||stage==9||stage==10))
+            if((tick==5&&(stage==0||stage==2||stage==4||stage==6||stage==7||stage==9||stage==10||stage==12))
+                    ||(tick==50&&stage>=13))
                 Network.CHANNEL.sendToServer(new ArtReleasePacket(0));
+            if(stage==13 && tick==68) pending=mc.getSingleplayerServer().submit(()->{
+                var target=serverPlayer(mc).serverLevel().getEntity(iceTargets.get(1));
+                target.teleportTo(target.getX()+1.15,target.getY(),target.getZ()+.42);
+            });
             if(stage==4&&tick==9) mc.options.keyUp.setDown(true);
             if((stage==7||stage==8)&&tick==20) pending=mc.getSingleplayerServer().submit(()->hit(serverPlayer(mc)));
             if(tick>170) throw new AssertionError("No acceptable frame for "+CASES[stage]+" draws="+(drawCount()-baseline));
@@ -169,7 +180,7 @@ public final class FourArtsCapture {
         if(mode==1||mode==3||mode==5||mode==8||mode==11) data.wuxingxiantu$equipPassiveArt(0,ARTS[mode]);
         if(mode<=1||mode>=9) player.setHealth(Math.max(1,player.getMaxHealth()-9));
         else player.setHealth(player.getMaxHealth());
-        if(mode>=9) {
+        if(mode>=9 && mode<=11) {
             player.serverLevel().setDayTime(3600);
             for(var golem:player.serverLevel().getEntitiesOfClass(net.minecraft.world.entity.animal.IronGolem.class,
                     player.getBoundingBox().inflate(6))) golem.discard();
@@ -178,7 +189,37 @@ public final class FourArtsCapture {
         }
         player.setItemInHand(InteractionHand.MAIN_HAND,mode>=6&&mode<=8?new ItemStack(Items.IRON_SWORD):ItemStack.EMPTY);
         player.connection.teleport(.5,mode==5?220:200,.5,0,0);
+        if(mode>=12) configureIce(player,mode);
         GeneratedMod.sync(player);
+    }
+
+    private static void configureIce(ServerPlayer player,int mode) {
+        var level=player.serverLevel();
+        for(int id:iceTargets) if(level.getEntity(id)!=null) level.getEntity(id).discard();
+        iceTargets.clear();
+        for(int x=-4;x<=4;x++) for(int y=200;y<=204;y++)
+            level.setBlockAndUpdate(new BlockPos(x,y,4),mode==14?Blocks.STONE_BRICKS.defaultBlockState():Blocks.AIR.defaultBlockState());
+        level.setDayTime(4200);
+        var data=GeneratedMod.data(player);
+        iceDamage=cn.blockforge.generated.generatedmod.ArtCatalog.damageFor(FourArtsVisuals.ICE,
+                player.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE),
+                data.wuxingxiantu$getArtMastery(FourArtsVisuals.ICE),CultivationLogic.maxAura(data));
+        if(mode==13) {
+            spawnIceTarget(player,-4.5,-3.5);
+            spawnIceTarget(player,2.6,-5.3);
+        }
+        if(mode==14) spawnIceTarget(player,.5,6.5);
+    }
+
+    private static void spawnIceTarget(ServerPlayer player,double x,double z) {
+        var target=EntityType.HUSK.create(player.serverLevel());
+        target.setNoAi(true);
+        target.addTag("four_arts_qa_dummy");
+        target.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(1000);
+        target.setHealth(target.getMaxHealth());
+        target.setPos(x,200,z);
+        player.serverLevel().addFreshEntity(target);
+        iceTargets.add(target.getId());
     }
 
     private static void hit(ServerPlayer player) {
@@ -206,6 +247,10 @@ public final class FourArtsCapture {
             var p=Minecraft.getInstance().player;
             Vec3 target=p.position().add(0,stage>=9?1.48:1.03,stage==7||stage==8?.40:0);
             Vec3 origin=stage>=9?target.add(1.85,1.55,4.14):target.add(2.20,1.12,3.70);
+            if(stage>=12) {
+                target=p.position().add(-.38,1.02,stage==13?-2.6:2.3);
+                origin=target.add(stage==13?-7.9:-8.5,3.25,stage==13?-3.4:-2.2);
+            }
             Vec3 toward=target.subtract(origin);
             cameraPosition.invoke(event.getCamera(),origin);
             event.setYaw((float)Math.toDegrees(Math.atan2(-toward.x,toward.z)));
@@ -228,8 +273,18 @@ public final class FourArtsCapture {
                 case 9 -> LOTUS_BASE|LOTUS_ACTIVE|LOTUS_STAINS;
                 case 10 -> LOTUS_BASE|LOTUS_ACTIVE;
                 case 11 -> LOTUS_BASE;
+                case 12 -> ICE_FLIGHT;
+                case 13 -> 1<<18|1<<21|1<<22|1<<23|1<<6;
+                case 14 -> 1<<18|1<<21|1<<22|1<<23;
                 default -> 1<<2;
             };
+            if(stage==12 && !formationCaptured && tick>=15 && tick<=17 && count>baseline
+                    && (drawMaterials()&ICE_FORMATION)==ICE_FORMATION) {
+                try(var screenshot=Screenshot.takeScreenshot(mc.getMainRenderTarget())) {
+                    screenshot.writeToFile(OUT.resolve("ice-formation.png"));
+                }
+                formationCaptured=true;
+            }
             boolean actual=count>baseline && (drawMaterials()&wanted)==wanted && matchesMode(mc);
             if(actual && firstDrawTick<0) firstDrawTick=tick;
             int capture=stage==1?firstDrawTick+6:stage==3?firstDrawTick+9:stage==5?firstDrawTick+5
@@ -245,12 +300,17 @@ public final class FourArtsCapture {
                 throw new AssertionError("Legacy movement particles still enabled");
             if(stage==6 && (mc.player.getEffect(MobEffects.DAMAGE_BOOST)==null || mc.player.getEffect(MobEffects.DAMAGE_BOOST).isVisible()))
                 throw new AssertionError("Legacy damage boost particles still enabled");
-            if(stage>=9 && (!mc.player.hasEffect(MobEffects.DAMAGE_RESISTANCE)
+            if(stage>=9 && stage<=11 && (!mc.player.hasEffect(MobEffects.DAMAGE_RESISTANCE)
                     || mc.player.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)!=(stage==11)
                     || mc.player.getHealth()<=mc.player.getMaxHealth()-9
                     || (stage!=9 && (drawMaterials()&LOTUS_STAINS)!=0)
                     || (stage==11 && (drawMaterials()&LOTUS_ACTIVE)!=0)))
                 throw new AssertionError("Purification visual did not match the applied heal and cleanse");
+            if(stage==12 && !formationCaptured) throw new AssertionError("Missing ice formation frame");
+            if(stage>=13) {
+                boolean shouldHit=stage==13;
+                mc.getSingleplayerServer().submit(()->checkIceTargets(serverPlayer(mc),shouldHit)).join();
+            }
             try(var screenshot=Screenshot.takeScreenshot(mc.getMainRenderTarget())) {
                 screenshot.writeToFile(OUT.resolve(CASES[stage]+".png"));
             }
@@ -280,6 +340,7 @@ public final class FourArtsCapture {
     }
 
     private static boolean matchesMode(Minecraft mc) throws Exception {
+        if(stage>=12) return tick>=(stage==12?10:64);
         if(states==null) {
             states=FourArtsEffects.class.getDeclaredField("STATES");
             states.setAccessible(true);
@@ -303,6 +364,17 @@ public final class FourArtsCapture {
                     && (int)field(state,"removedEffects")==(stage==9?1:0);
             default -> false;
         };
+    }
+
+    private static void checkIceTargets(ServerPlayer player,boolean shouldHit) {
+        for(int id:iceTargets) {
+            if(!(player.serverLevel().getEntity(id) instanceof net.minecraft.world.entity.LivingEntity target))
+                throw new AssertionError("Missing ice target "+id);
+            float lost=target.getMaxHealth()-target.getHealth();
+            var slow=target.getEffect(MobEffects.MOVEMENT_SLOWDOWN);
+            if(shouldHit ? Math.abs(lost-iceDamage)>.05 || slow==null || slow.getAmplifier()!=2 : lost!=0 || slow!=null)
+                throw new AssertionError("Wrong ice impact for "+target.position()+", damage="+lost+", expected="+iceDamage+", slow="+slow);
+        }
     }
 
     private static Object field(Object target,String name) throws Exception {

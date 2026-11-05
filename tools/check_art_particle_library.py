@@ -13,14 +13,14 @@ shader_ids = dict(re.findall(r'\b([A-Z_]+)="(art_[^"]+)"', shader_source))
 replacement = re.search(r'boolean replaces\(String art\) \{(.*?)\}', shader_source, re.S)
 assert replacement, 'missing shader replacement routing'
 shader_arts = {shader_ids[name] for name in re.findall(r'([A-Z_]+)\.equals\(art\)', replacement[1])}
-assert len(shader_arts) == 5 and shader_arts <= set(ids), f'invalid shader art list: {shader_arts}'
+assert len(shader_arts) == 6 and shader_arts <= set(ids), f'invalid shader art list: {shader_arts}'
 assert not shader_arts & recipes, f'legacy recipes for shader arts: {shader_arts & recipes}'
 shader_dir = ROOT / 'src/main/resources/assets/wuxingxiantu/shaders/core'
 for suffix in ('json', 'vsh', 'fsh'):
     assert (shader_dir / f'four_arts.{suffix}').is_file(), f'missing shader asset: {suffix}'
 missing = sorted(set(ids) - recipes - shader_arts)
 assert not missing, f'missing V2 recipe: {missing}'
-for art in profiles:
+for art in profiles - shader_arts:
     assert f'case "{art}"' in vfx, f'missing VFX case: {art}'
 materials = set()
 for row in re.findall(r'new Recipe\("([^\"]+)",\s*"([^\"]+)",\s*"([^\"]+)"', vfx):

@@ -4,7 +4,8 @@ in vec2 shapeUV;
 in vec3 color;
 flat in vec3 params;
 uniform float time;
-uniform sampler2D Sampler0;
+uniform sampler2D Sampler0, Sampler1;
+uniform vec3 ViewRight, ViewUp;
 uniform mat4 InverseClip;
 in vec3 relativePosition;
 uniform vec2 OutputSize;
@@ -42,6 +43,30 @@ float glyph(vec2 g,float variation) {
     return clamp(rails+stem+mix(cut,block,variation)*.86,0.,1.);
 }
 
+float fracture(vec2 p) {
+    vec2 cell=floor(p), f=fract(p);
+    vec2 best=vec2(8.);
+    for(int y=-1;y<=1;y++) for(int x=-1;x<=1;x++) {
+        vec2 d=vec2(x,y), key=cell+d;
+        vec2 jitter=vec2(hash(key),hash(key+vec2(18.3,-3.1)));
+        float r=length(d+.16+.68*jitter-f);
+        if(r<best.x) best=vec2(r,best.x);
+        else best.y=min(best.y,r);
+    }
+    return best.y-best.x;
+}
+
+float mistNoise(vec3 p) {
+    vec3 i=floor(p), f=fract(p);
+    f=f*f*(3.-2.*f);
+    vec2 cell=i.xy+vec2(37.2,19.5)*i.z;
+    return mix(noise(cell+f.xy),noise(cell+vec2(37.2,19.5)+f.xy),f.z);
+}
+
+vec3 sceneAt(vec2 pixel) {
+    return texture(Sampler1, clamp(pixel, vec2(.5), OutputSize - .5) / OutputSize).rgb;
+}
+
 void main() {
     vec2 sceneUv=gl_FragCoord.xy/OutputSize;
     float worldDepth=texture(Sampler0,sceneUv).r;
@@ -69,7 +94,179 @@ void main() {
         frag=vec4(mix(color,vec3(.84,1.,1.),ridge*.25)*opacity,opacity);
         return;
     }
+    if(kind>23.5) {
+        // Integrate across one continuous cross section along the curved flight history.
+        float u=p.x, y=p.y;
+        float extent=sqrt(max(0.,1.-y*y));
+        float span=2.*extent/18.;
+        vec2 gradient=vec2(dFdx(p.y),dFdy(p.y));
+        vec3 transverse=(dFdx(relativePosition)*gradient.x+dFdy(relativePosition)*gradient.y)
+            /max(dot(gradient,gradient),1.e-8);
+        float radius=clamp(length(transverse),.12,.78);
+        float stop=1.;
+        if(worldDepth<.999999) {
+            vec4 surface=InverseClip*vec4(sceneUv*2.-1.,worldDepth*2.-1.,1.);
+            if(abs(surface.w)>.00001) {
+                vec3 delta=surface.xyz/surface.w-relativePosition;
+                stop=dot(delta,normalize(relativePosition))/radius;
+            }
+        }
+        float envelope=smoothstep(.008,.44,u)*(1.-smoothstep(.82,1.,u));
+        float transmission=1.;
+        vec3 scattering=vec3(0.);
+        float flow=u*2.5+time*1.15;
+        for(int i=0;i<18;i++) {
+            float z=-extent+(float(i)+.5)*span;
+            float bend=.21*sin(u*7.8+time*2.4+seed*.89+z*1.1);
+            vec3 q=vec3(flow,(y+bend)*3.9+seed*.81,z*2.25+seed*.37);
+            float roll=mistNoise(q);
+            float detail=mistNoise(q*vec3(2.4,2.8,2.1)+vec3(time*.76,-seed*.23,3.5));
+            float softness=(1.-smoothstep(.15,1.,y*y+z*z));
+            float cloud=smoothstep(.23,.77,roll*.69+detail*.31);
+            float core=gaussian((y+bend)*3.1)*gaussian(z*1.58);
+            float visible=smoothstep(z-span*.65,z+span*.65,stop);
+            float density=(cloud*.89+core*.20)*softness*envelope*visible;
+            float slice=1.-exp(-density*span*strength*1.65);
+            vec3 tint=mix(color*.66,vec3(.66,.89,1.),clamp(.30+.49*roll+.19*core,0.,1.));
+            scattering+=tint*slice*transmission;
+            transmission*=1.-slice;
+        }
+        frag=vec4(scattering*1.13,1.-transmission);
+        return;
+    }
+    // Evaluate frost against the captured terrain, including block and slab top heights.
+    if(kind>22.5) {
+        if(worldDepth>=.999999) discard;
+        vec4 surface=InverseClip*vec4(sceneUv*2.-1.,worldDepth*2.-1.,1.);
+        if(abs(surface.w)<.00001) discard;
+        vec3 point=surface.xyz/surface.w;
+        vec3 delta=point-relativePosition;
+        vec3 normal=cross(dFdx(point),dFdy(point));
+        float upward=abs(normal.y)/max(length(normal),1.e-7);
+        float contact=(1.-smoothstep(.036,.115,abs(delta.y)))
+            *(1.-smoothstep(.065,.18,length(delta.xz)))*smoothstep(.62,.91,upward);
+        vec2 v=vec2(p.x*2.-1.,p.y);
+        vec2 tile=(v+delta.xz*1.18)*4.6+vec2(seed*.31,seed*.73);
+        vec2 texel=floor(tile*8.)/8.;
+        float coarse=noise(texel*.87);
+        float powder=noise(texel*2.32+seed*.17);
+        float crystals=stroke(fracture(tile*1.6),.018);
+        float radius=length(v);
+        float border=1.-smoothstep(.29,1.05,radius+(coarse-.50)*.34);
+        float light=gaussian(radius*2.22)*.20;
+        float ice=border*smoothstep(.28,.79,coarse*.65+powder*.35);
+        float veins=ice*crystals*.39;
+        float opacity=contact*strength*(light+.50*ice+veins);
+        vec3 tint=mix(vec3(.25,.57,.90),vec3(.76,.93,1.),clamp(ice+veins,0.,1.));
+        frag=vec4(tint*opacity+vec3(.27,.66,1.)*light*contact*strength*.39,opacity);
+        return;
+    }
     if(gl_FragCoord.z>worldDepth+.000045) discard;
+    if(kind>21.5) {
+        vec2 v=vec2(p.y,p.x*2.-1.);
+        v=(floor(v*16.+.5))*.0625;
+        float r=length(v);
+        float a=(fract(atan(v.y,v.x+.00001)/1.04719755+.5)-.5)*1.04719755;
+        vec2 branch=vec2(cos(a),sin(a))*r;
+        float axis=1.-smoothstep(.048,.094,abs(branch.y));
+        axis*=1.-smoothstep(.75,.91,branch.x);
+        float arm=1.-smoothstep(.040,.082,abs(abs(branch.y)-.82*(branch.x-.42)));
+        arm*=smoothstep(.37,.47,branch.x)*(1.-smoothstep(.59,.70,branch.x));
+        float heart=1.-smoothstep(.12,.24,r);
+        float shape=max(max(axis*.94,arm*.87),heart);
+        float halo=gaussian(r*2.1)*.11;
+        float alpha=clamp((shape+halo)*strength,0.,1.);
+        vec3 light=mix(color,vec3(.90,.99,1.),max(heart,axis)*.71);
+        frag=vec4(light*alpha,alpha);
+        frag.rgb+=(light*alpha*(.48+.35*shape))*.37;
+        return;
+    }
+    if(kind>20.5) {
+        vec2 v=vec2(p.y,p.x*2.-1.);
+        float radius=dot(v,v);
+        if(radius>=1.) discard;
+        float extent=sqrt(1.-radius);
+        float stepSize=2.*extent/18.;
+        float transmission=1.;
+        vec3 scattering=vec3(0.);
+        for(int i=0;i<18;i++) {
+            float z=-extent+(float(i)+.5)*stepSize;
+            vec3 q=vec3(v.x,v.y,z);
+            vec3 flow=vec3(1.2*time,-.29*time,seed*.42);
+            vec3 domain=q*vec3(2.3,4.8,2.9)+flow;
+            domain.y+=.42*sin(q.x*3.3+q.z*2.8+seed+time*.63);
+            float low=mistNoise(domain+vec3(seed*.38,0.,0.));
+            float folds=mistNoise(domain*2.32+vec3(time*.65,-seed*.76,2.7));
+            float edge=1.-smoothstep(.17,1.,dot(q,q));
+            float density=edge*smoothstep(.24,.77,low*.67+folds*.33);
+            float slice=1.-exp(-density*stepSize*strength*1.65);
+            vec3 tint=mix(color*.48,vec3(.64,.84,1.),clamp(.27+.58*low-.13*q.y,0.,1.));
+            scattering+=tint*slice*transmission;
+            transmission*=1.-slice;
+        }
+        float alpha=1.-transmission;
+        frag=vec4(scattering,alpha);
+        frag.rgb+=(scattering*.28)*.37;
+        return;
+    }
+    if(kind>19.5) {
+        vec2 v=vec2(p.x*2.-1.,p.y);
+        float radius=max(abs(v.x),abs(v.y));
+        float bevel=gaussian((radius-.72)*18.);
+        float face=smoothstep(-.50,.62,v.x-v.y*.57);
+        float opacity=strength*(1.-smoothstep(.73,.97,radius))*(.26+.39*bevel+.32*face);
+        frag=vec4(mix(color*.58,vec3(.82,.96,1.),face*.54+bevel*.38)*opacity,opacity);
+        return;
+    }
+    if(kind>18.5) {
+        float width=abs(p.y);
+        float envelope=smoothstep(0.,.51,p.x)*(1.-smoothstep(.92,1.02,p.x));
+        float field=noise(vec2(floor(p.x*69.),floor((p.y+1.)*9.))+vec2(seed,time*.8));
+        float pulse=.72+.28*sin(p.x*47.-time*6.+seed);
+        float beam=gaussian(width*2.9)*(.39+.50*field);
+        float blades=gaussian((width-.46-.10*sin(p.x*6.1+seed))*23.)*(.29+.54*field);
+        float alpha=envelope*(beam*.39+blades*.44*pulse)*strength;
+        vec3 light=mix(color,vec3(.76,.93,1.),blades*.36);
+        frag=vec4(light*alpha,alpha);
+        frag.rgb+=(light*alpha*.44)*.37;
+        return;
+    }
+    if(kind>17.5) {
+        vec3 n=normalize(cross(dFdx(relativePosition),dFdy(relativePosition)));
+        vec3 viewBack=normalize(-relativePosition);
+        n*=dot(n,viewBack)<0.?-1.:1.;
+        vec2 faceCoord=vec2(p.x*5.4,p.y*1.10)+vec2(seed*.21,seed*.37);
+        float frost=noise(floor(faceCoord*12.)*.61+seed);
+        float grain=noise(floor(faceCoord*5.7)*.41+seed*.28);
+        float shoulder=1.-smoothstep(.16,.62,p.x);
+        float point=smoothstep(.64,.99,p.x);
+        float faceSeed=hash(vec2(seed,6.7));
+        float veinCenter=(p.x-.38)*(1.9+faceSeed*.61)-.20+(noise(faceCoord*1.7)-.5)*.27;
+        float veinGate=smoothstep(.12,.24,p.x)*(1.-smoothstep(.61,.83,p.x));
+        float fault=stroke(abs(p.y-veinCenter),.013)*veinGate*smoothstep(.33,.53,faceSeed);
+        float spur=stroke(abs(p.y-veinCenter+(p.x-.36)*2.45),.009)
+            *smoothstep(.24,.33,p.x)*(1.-smoothstep(.47,.55,p.x))*faceSeed;
+        float hairline=stroke(fracture(faceCoord),.007)*smoothstep(.53,.76,grain)*shoulder;
+        float crack=max(fault*.76,max(spur*.53,hairline*.42));
+        float edge=pow(clamp(abs(p.y),0.,1.),31.);
+        vec3 ray=refract(-viewBack,n,1./1.309);
+        vec2 bend=vec2(dot(ray,ViewRight),dot(ray,ViewUp))*(14.+19.*shoulder)*(1.+.14*frost);
+        vec2 pixel=gl_FragCoord.xy;
+        vec3 backdrop=vec3(sceneAt(pixel+bend*.96).r,sceneAt(pixel+bend).g,sceneAt(pixel+bend*1.05).b);
+        float key=.34+.66*max(0.,dot(n,normalize(vec3(-.27,.90,.40))));
+        float rim=pow(1.-clamp(dot(n,viewBack),0.,1.),3.)*.17+edge*.28;
+        float front=gl_FrontFacing?1.:.19;
+        float glaze=gaussian((p.y-.26+(p.x-.42)*.68)*2.64)
+            *smoothstep(.21,.46,p.x)*(.26+.74*smoothstep(.24,.79,grain));
+        vec3 ice=mix(backdrop*vec3(.37,.59,.98),color*(.75+.27*key),.60+.20*shoulder);
+        ice=mix(ice,vec3(.66,.82,.97),shoulder*smoothstep(.31,.84,frost)*(.26+.44*key));
+        ice=mix(ice,vec3(.67,.90,1.),glaze*(.43+.43*key));
+        vec3 glint=vec3(.69,.94,1.)*(.33*crack+rim+point*.62+glaze*.14)*front;
+        float alpha=strength*(.75+.16*shoulder+.05*edge)*mix(.54,1.,front);
+        frag=vec4((ice+glint)*alpha,alpha);
+        frag.rgb+=(glint*strength*.46)*.37;
+        return;
+    }
     if(kind>16.5) {
         vec2 v=vec2(p.x*2.-1.,p.y);
         float radius=max(abs(v.x),abs(v.y));

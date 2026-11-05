@@ -69,7 +69,7 @@ import cn.blockforge.generated.generatedmod.*;
 
 public final class NetworkChannel {
     // Flight snapshots now carry presentation state on their motion timestamp.
-    private static final String VERSION = "112";
+    private static final String VERSION = "113";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(GeneratedMod.MOD_ID, "main"), () -> VERSION, VERSION::equals, VERSION::equals);
     private static final java.util.Set<Integer> IDS=new java.util.HashSet<>();
@@ -202,6 +202,10 @@ public final class NetworkChannel {
                 cn.blockforge.generated.generatedmod.network.packet.cultivation.FourArtsPacket::encode,
                 cn.blockforge.generated.generatedmod.network.packet.cultivation.FourArtsPacket::decode,
                 cn.blockforge.generated.generatedmod.network.packet.cultivation.FourArtsPacket::handle);
+        s2c(98, cn.blockforge.generated.generatedmod.network.packet.cultivation.IceSpikePacket.class,
+                cn.blockforge.generated.generatedmod.network.packet.cultivation.IceSpikePacket::encode,
+                cn.blockforge.generated.generatedmod.network.packet.cultivation.IceSpikePacket::decode,
+                cn.blockforge.generated.generatedmod.network.packet.cultivation.IceSpikePacket::handle);
         s2c(94, cn.blockforge.generated.generatedmod.meditationqte.QteStatePacket.class, cn.blockforge.generated.generatedmod.meditationqte.QteStatePacket::encode, cn.blockforge.generated.generatedmod.meditationqte.QteStatePacket::new, cn.blockforge.generated.generatedmod.meditationqte.QteStatePacket::handle);
     }
     private static <T> void c2s(int id,Class<T> type,java.util.function.BiConsumer<T,net.minecraft.network.FriendlyByteBuf> encode,
