@@ -1,0 +1,10 @@
+{
+  "measured-batch/jdk.FileRead": {"events": 5561, "bytes": 282768, "totalNanos": 23799000, "maxNanos": 170800},
+  "measured-batch/jdk.FileWrite": {"events": 24, "bytes": 1094898, "totalNanos": 6753500, "maxNanos": 488100},
+  "other-batches/jdk.FileRead": {"events": 108128, "bytes": 4341300, "totalNanos": 886195600, "maxNanos": 25588100},
+  "other-journal/jdk.FileRead": {"events": 2779, "bytes": 2782, "totalNanos": 21433000, "maxNanos": 243100},
+  "other-journal/jdk.FileWrite": {"events": 3, "bytes": 85, "totalNanos": 535400, "maxNanos": 208000},
+  "player-files/jdk.FileRead": {"events": 9, "bytes": 2023, "totalNanos": 83500, "maxNanos": 19000},
+  "player-files/jdk.FileWrite": {"events": 5, "bytes": 2023, "totalNanos": 2126800, "maxNanos": 1949400},
+  "world-region/jdk.FileWrite": {"events": 1090, "bytes": 7868257, "totalNanos": 467676100, "maxNanos": 11419100}
+}

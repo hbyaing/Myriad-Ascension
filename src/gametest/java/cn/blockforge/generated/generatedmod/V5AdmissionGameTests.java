@@ -52,7 +52,7 @@ public final class V5AdmissionGameTests {
                 var result=f.furnace().tryStartV5Batch(f.player(),null);
                 h.assertTrue(result.needsRecovery()&&result.stage()==CommitStage.UNCONFIRMED&&result.batchId()!=null,
                         "Attempted journal operation was misreported as safe to retry");
-                h.assertTrue(before.equals(f.furnace().saveWithoutMetadata()),"Journal fault changed furnace inputs");
+                assertQuarantinedInputs(h,f,before,result);
             }finally{Files.delete(file);}
         }h.succeed();
     }
@@ -72,7 +72,7 @@ public final class V5AdmissionGameTests {
                         &&result.batchId()!=null,"Committed batch was misreported as an ordinary rejection");
                 var journal=new BatchJournal(f.player().server);
                 h.assertTrue(!journal.read(result.batchId()).isEmpty(),"Committed journal was lost");
-                h.assertTrue(before.equals(f.furnace().saveWithoutMetadata()),"Failed link published inventory early");
+                assertQuarantinedInputs(h,f,before,result);
             }finally{Files.delete(link);if(existed)Files.move(backup,link);}
             var journal=new BatchJournal(f.player().server);
             journal.link(h.getLevel(),f.pos(),result.batchId());f.furnace().restoreV5();
@@ -82,5 +82,18 @@ public final class V5AdmissionGameTests {
             f.furnace().restoreV5();
             h.assertTrue(restored.equals(f.furnace().v5ServerRecord()),"Recovery changed the batch twice");
         }h.succeed();
+    }
+    private static void assertQuarantinedInputs(GameTestHelper h,V5BatchGameTests.Fixture f,
+            net.minecraft.nbt.CompoundTag before,BatchStartResult original){
+        var saved=f.furnace().saveWithoutMetadata();
+        h.assertTrue(before.getList("Items",net.minecraft.nbt.Tag.TAG_COMPOUND).equals(saved.getList("Items",net.minecraft.nbt.Tag.TAG_COMPOUND))
+                &&before.getInt("SpiritFuel")==saved.getInt("SpiritFuel"),"Unpublished fault changed actual input inventory/fuel");
+        h.assertTrue(saved.hasUUID("V5Ref")&&saved.getUUID("V5Ref").equals(original.batchId()),"Original uncertain identity not retained");
+        h.assertTrue(f.furnace().tryStartV5Batch(f.player(),null).reason()==Reason.FURNACE_OCCUPIED,
+                "Unresolved admission allowed another batch from the same inputs");
+        f.furnace().load(saved);
+        h.assertTrue(f.furnace().tryStartV5Batch(f.player(),null).reason()==Reason.FURNACE_OCCUPIED
+                &&f.furnace().saveWithoutMetadata().getUUID("V5Ref").equals(original.batchId()),
+                "Block-entity reload lost admission quarantine/identity");
     }
 }

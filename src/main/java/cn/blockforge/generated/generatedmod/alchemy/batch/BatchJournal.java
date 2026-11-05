@@ -88,7 +88,9 @@ public final class BatchJournal {
     private CompoundTag readFile(Path path){
         if(!Files.exists(path))return new CompoundTag();
         try{if(Files.size(path)>MAX_BYTES)throw new IOException("Journal byte budget exceeded");
-            try(var input=new DataInputStream(Files.newInputStream(path))){var tag=NbtIo.read(input,new NbtAccounter(MAX_BYTES*4L));if(tag==null||input.read()!=-1)throw new IOException("Invalid/trailing journal data");return tag;}
+            // NBT reads many primitive fields; buffering avoids a filesystem read per
+            // byte/primitive while retaining the same byte budget and trailing-data check.
+            try(var input=new DataInputStream(new BufferedInputStream(Files.newInputStream(path)))){var tag=NbtIo.read(input,new NbtAccounter(MAX_BYTES*4L));if(tag==null||input.read()!=-1)throw new IOException("Invalid/trailing journal data");return tag;}
         }catch(IOException e){throw new IllegalStateException("Cannot read V5 journal "+path.getFileName(),e);}
     }
     private void writeFile(Path path,CompoundTag tag){

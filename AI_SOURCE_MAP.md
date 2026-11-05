@@ -24,7 +24,8 @@ Java 根目录：`src/main/java/cn/blockforge/generated/generatedmod/`。
 | 获取来源审计 | `AcquisitionCatalog`、`WuXingItemSources`；`acquisition/SourceEvidence`、`AcquisitionSourcesEvent`、`EvidenceTrade`；首批提供者 `SpiritTradeEvents`、`event/WorldEvents`、`event/ServerTickEvents`、`HeartSwordSystem` |
 | 灵修者空岛与道士职业 | `SpiritShrineManager`、`SpiritShrineLocations`、`TaoistEvents`；`data/wuxingxiantu/structures/spirit_shrine_island.nbt`；[职业修复](docs/audits/current/20261005_SHRINE_TAOIST_PROFESSION.md) |
 | 炼丹炼器持久任务 | `network/service/CraftingJobs`（位置主键、owner 索引、到期队列）、`AlchemyService`、`CraftingRecoveryCommands`、`AlchemyFurnaceBlockEntity`、`RefiningForgeBlockEntity` |
-| V5 炼丹批次与领取权威 | `AlchemyService.handleAlchemyPacket` → `AlchemyFurnaceBlockEntity.startV5Batch` → `alchemy/batch/V5Batch`、`BatchJournal`；领取 `BatchDelivery`；旧 `CraftingJobs` 与 V5 并存，不是 V5 的唯一记录 |
+| V5 炼丹批次与领取权威 | `AlchemyService.handleAlchemyPacket` → `AlchemyFurnaceBlockEntity.tryStartV5Batch` → `alchemy/batch/V5Batch`、`BatchJournal`；结果 `BatchStartResult` 区分资格/提交/恢复，旧 `startV5Batch` 保留 boolean 包装；领取 `BatchDelivery`；旧 `CraftingJobs` 与 V5 并存，不是 V5 的唯一记录 |
+| 局部架构验证与资源测量 | `tools/check_architecture_boundary.py` / Gradle `architectureBoundaryCheck`；`V5AdmissionGameTests`、`TargetEligibilityGameTests`、`ArchitectureIoGameTests`、`V5JournalReadGameTests`；`tools/ArchitectureIoSummary.java`、`architecture_jar_ledger.py`；[任务与证据](docs/development/architecture/TASKS.md)，不代表全仓架构已统一 |
 | V5 规则内核与恢复验证 | `alchemy/simulation/AlchemySimulation`、`SimulationRules`、`SimulationRuleLoader`、`SimulationSnapshotCodec`；测试 `src/gametest/java/cn/blockforge/generated/generatedmod/V5BatchGameTests.java`；模拟快照为服务端私有数据，不可直接作为客户端 DTO |
 | 服务端交互校验 | `network/service/CompassService`、`AlchemyService`、`TalismanService` |
 | 心剑与心铸 | `HeartSwordSystem`、`combat/HeartSwordCombatProfile`、`HeartForgeContracts`、`client/heartsword/` |

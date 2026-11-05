@@ -118,7 +118,12 @@ public final class AlchemyFurnaceBlockEntity extends BlockEntity implements Cont
             server.getChunkSource().save(true);
             return new BatchStartResult(Reason.STARTED,CommitStage.COMPLETED,batchId,"");
         }catch(RuntimeException e){
-            if(v5Ref!=null)v5Fault=true;
+            if(stage!=CommitStage.NOT_ATTEMPTED){
+                // Even an unconfirmed write may have reserved certification state or committed
+                // a batch. Reuse the existing private reference/quarantine; never admit another
+                // batch from the same inputs while the original operation is unresolved.
+                v5Ref=batchId;v5Fault=true;setChanged();
+            }else if(v5Ref!=null)v5Fault=true;
             com.mojang.logging.LogUtils.getLogger().warn("V5 start stopped: stage={}, batch={}",stage,batchId,e);
             return new BatchStartResult(stage==CommitStage.NOT_ATTEMPTED?Reason.PREPARATION_FAILED:Reason.RECOVERY_REQUIRED,
                     stage,batchId,java.util.Objects.toString(e.getMessage(),e.getClass().getSimpleName()));

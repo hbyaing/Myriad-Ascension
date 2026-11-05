@@ -21,6 +21,16 @@ specialistScripts.each { script ->
 }
 tasks.register('specialistChecks') { dependsOn(specialistScripts) }
 
+// One proven local boundary, not a global ban on cross-domain gameplay composition.
+tasks.register('architectureBoundaryCheck', Exec) {
+    def compiler = javaToolchains.compilerFor { languageVersion = JavaLanguageVersion.of(17) }
+    commandLine providers.gradleProperty('pythonExecutable').orElse('python').get(),
+            file('tools/check_architecture_boundary.py').absolutePath,
+            '--javac', compiler.get().executablePath.asFile.absolutePath
+    inputs.file('tools/check_architecture_boundary.py')
+    inputs.file('src/main/java/cn/blockforge/generated/generatedmod/alchemy/batch/BatchStartResult.java')
+}
+
 sourceSets {
     gameTest {
         java.setSrcDirs(['src/gametest/java'])
@@ -62,6 +72,7 @@ tasks.named('check') {
             'specialistChecks',
             'regressionTest',
             'balanceReport',
+            'architectureBoundaryCheck',
             'compileGameTestJava'
     )
 }
