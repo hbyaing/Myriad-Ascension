@@ -42,8 +42,10 @@ def ledger(jar):
         # Capture source identity, not a promise that every source/input was fully validated.
         head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
         status = subprocess.check_output(['git', 'status', '--porcelain'], cwd=ROOT, text=True)
-        fixture_root = ROOT / 'build/classes/java/gameTest'
-        fixture_names = {p.relative_to(fixture_root).as_posix() for p in fixture_root.rglob('*.class')}
+        fixture_names = set()
+        for source_set in ('gameTest', 'admissionExample', 'architectureClientTest'):
+            fixture_root = ROOT / 'build/classes/java' / source_set
+            fixture_names.update(p.relative_to(fixture_root).as_posix() for p in fixture_root.rglob('*.class'))
         forbidden = [e.filename for e in entries if
                      e.filename.startswith(('source-assets/', 'reference_assets/', 'software/bernie/'))
                      or '/qa/myriad/' in e.filename or e.filename.endswith('GameTests.class')
@@ -51,7 +53,7 @@ def ledger(jar):
         return {
             'schema': 1, 'jar': str(jar), 'sha256': hashlib.sha256(jar.read_bytes()).hexdigest(),
             'sourceHead': head, 'workingTreeDirty': bool(status.strip()),
-            'compiledGameTestClassNamesChecked': len(fixture_names),
+            'compiledNonProductionClassNamesChecked': len(fixture_names),
             'jarBytes': jar.stat().st_size, 'entries': len(entries),
             'rawBytes': sum(e.file_size for e in entries),
             'compressedPayloadBytes': sum(e.compress_size for e in entries),

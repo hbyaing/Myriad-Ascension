@@ -77,6 +77,28 @@ tasks.named('check') {
     )
 }
 
+// Optional second consumer, outside production sources/resources and ordinary launch commands.
+if (project.hasProperty('admissionExample')) {
+    sourceSets {
+        admissionExample {
+            java.setSrcDirs(['examples/admission-addon/src/main/java'])
+            resources.setSrcDirs(['examples/admission-addon/src/main/resources'])
+            compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+            runtimeClasspath += sourceSets.main.output + sourceSets.main.runtimeClasspath
+        }
+        gameTest {
+            java.srcDir 'examples/admission-addon/src/gametest/java'
+            compileClasspath += sourceSets.admissionExample.output
+            runtimeClasspath += sourceSets.admissionExample.output
+        }
+    }
+    tasks.register('admissionExampleJar', Jar) {
+        archiveBaseName = 'myriad-admission-example'
+        archiveVersion = '0.1'
+        from sourceSets.admissionExample.output
+    }
+}
+
 minecraft.runs {
     gameTestServer {
             if (project.hasProperty('infuserCompatibility')) {
@@ -96,6 +118,9 @@ minecraft.runs {
             wuxingxiantu {
                 source sourceSets.main
                 source sourceSets.gameTest
+            }
+            if (project.hasProperty('admissionExample')) {
+                myriad_admission_example { source sourceSets.admissionExample }
             }
         }
     }
