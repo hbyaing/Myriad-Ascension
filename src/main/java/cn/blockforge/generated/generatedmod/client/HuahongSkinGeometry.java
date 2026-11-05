@@ -235,15 +235,15 @@ final class HuahongSkinGeometry {
             double width=.098*smooth(-.4,.35,d)*end;
             float alpha=(float)(strength*life*end);
             Frame f=at(i);
-            core.add(new Row(f.p(),n.arc()-origin,width,alpha*.95F,0xfff8f2,null));
-            halo.add(new Row(f.p(),n.arc()-origin,width*1.8,alpha*.32F,0xffb389,null));
+            core.add(new Row(f.p(),n.arc()-origin,width*2.8,alpha*.95F,0xfff8f2,null));
+            halo.add(new Row(f.p(),n.arc()-origin,width*2.4,alpha*.12F,0xffb389,null));
         }
         Frame head=back(0);
         for(int i=1;i<=12;i++){
             double d=-.4*i/12,width=.098*smooth(-.4,.35,d);
             Vec3 p=head.p().subtract(head.forward().scale(d));
-            core.add(new Row(p,-d,width,strength*.95F,0xfff8f2,null));
-            halo.add(new Row(p,-d,width*1.8,strength*.32F,0xffb389,null));
+            core.add(new Row(p,-d,width*2.8,strength*.95F,0xfff8f2,null));
+            halo.add(new Row(p,-d,width*2.4,strength*.12F,0xffb389,null));
         }
         strip(halo,22);strip(core,58);
     }

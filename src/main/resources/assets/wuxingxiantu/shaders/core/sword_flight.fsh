@@ -178,8 +178,12 @@ vec4 swordMaterial(){
             vec3 rgb=vertexColor.rgb*(.65+n*.25)+vec3(.20,.16,.07)*(fibers*.13+ridges*.12);
             return vec4(rgb,fringe*(.38+large*.50)*(.60+fibers*.22+ridges*.20)*(.82+.18*silk)*vertexColor.a);
         }
-        // Broad continuous meteor primary: no noise/time gating or crossed sheets.
-        if(band==58.0)return vec4(vertexColor.rgb*2.4,pixelFilteredEdge(across,.35)*vertexColor.a);
+        // Wider finite support lets the light decay before the mesh ends.
+        // Retain the bright width without the old HDR-clipped flat slab.
+        if(band==58.0){
+            float halo=filteredSpine(across,.34)*(1.-smoothstep(.80,1.,abs(across)));
+            return vec4(vertexColor.rgb*.66,halo*vertexColor.a);
+        }
         if(band==22.0)return vec4(vertexColor.rgb*1.3,pixelFilteredEdge(across,1.7)*vertexColor.a);
         if(band==14.0||band==20.0){
             vec2 p=vec2(fract(arc),v)*2.0-1.0;

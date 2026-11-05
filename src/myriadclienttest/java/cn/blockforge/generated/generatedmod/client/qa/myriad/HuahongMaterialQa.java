@@ -101,8 +101,14 @@ final class HuahongMaterialQa {
             double meteorTimeError=difference(meteor,render(program,58,47.25F,7.183F));
             double meteorArcError=difference(meteor,render(program,58,63.37F,7.125F));
             double meteorPeak=0;for(int i=0;i<meteor.length;i+=4)meteorPeak=Math.max(meteorPeak,meteor[i+2]*meteor[i+3]);
-            if(meteorTimeError>1e-6||meteorArcError>1e-6||meteorPeak<1.5)throw new AssertionError("Meteor primary modulates or loses HDR support");
-            var meteorBand=Map.of("passed",true,"band",58,"timeError",meteorTimeError,"arcError",meteorArcError,"peakPremultipliedRadiance",meteorPeak,"scope","Actual shipping GLSL: primary emission is broad and independent of time/arc; dynamic outer tongues verified separately in continuous flight.");
+            double meteorEdge=Math.max(meteor[32*4+3],meteor[(31*64+32)*4+3]),meteorStep=0;
+            double meteorShoulder=meteor[(8*64+32)*4+3];
+            for(int y=1;y<32;y++)meteorStep=Math.max(meteorStep,Math.abs(meteor[(y*64+32)*4+3]-meteor[((y-1)*64+32)*4+3]));
+            // The old >1.5 peak forced a clipped slab. Check actual shoulders
+            // and finite boundaries; visible width is separately image-tested.
+            if(meteorTimeError>1e-6||meteorArcError>1e-6||meteorPeak<.45||meteorPeak>.55||meteorEdge>.002||meteorShoulder<.08||meteorShoulder>.3||meteorStep>.15)
+                throw new AssertionError("Meteor soft profile/transport failure: "+meteorPeak+" / "+meteorEdge+" / "+meteorShoulder+" / "+meteorStep);
+            var meteorBand=Map.of("passed",true,"band",58,"timeError",meteorTimeError,"arcError",meteorArcError,"peakPremultipliedRadiance",meteorPeak,"maxTransverseAlphaStep",meteorStep,"maxBoundaryAlpha",meteorEdge,"shoulderAlpha",meteorShoulder,"scope","Actual shipping GLSL: soft Gaussian shoulders and finite boundary; constant time/arc emission. Final visible width and outer flow checked separately in flight.");
             Map<String,Object> temporalTransport=temporalTransport(program);
             Map<String,Object> smokeField=smokeField();
             Map<String,Object> boundedHalo=boundedHalo(program);
