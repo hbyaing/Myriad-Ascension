@@ -14,7 +14,7 @@ final class FourArtsGeometry {
     static final int LINE=0, LEAF=1, INK=2, SPARK=3, SIGIL=4, GAUZE=5, CORE=6, SHARD=7, AIR=8, RECOVERY=9;
     static final int ASH=10, LOTUS=11, LOTUS_FIELD=12, LIGHT_SHAFT=13, SCRIPT_BAND=14, GOLD_PETAL=15, ASH_CHIP=16, GOLD_MOTE=17;
     static final int ICE_CRYSTAL=18, ICE_RIBBON=19, ICE_GRAIN=20, ICE_FOG=21, ICE_SNOW=22, ICE_GROUND=23, ICE_WAKE=24;
-    static final int FLAME_CREST=25, FLAME_SHEET=26, FLAME_SMOKE=27, FLAME_SPARK=28, FLAME_TONGUE=29, FLAME_GROUND=30;
+    static final int FLAME_VOLUME=25, FLAME_SMOKE=27, FLAME_SPARK=28, FLAME_TONGUE=29, FLAME_GROUND=30;
     static final int RISE=0, LOTUS_LIGHT=3;
     private final Vec3 camera, right, up;
     private final List<Quad> quads=new ArrayList<>();

@@ -65,7 +65,7 @@ public final class FourArtsCapture {
     private static final int ICE_FORMATION=1<<18|1<<19|1<<21|1<<22;
     private static final int ICE_FLIGHT=1<<18|1<<20|1<<22|1<<23|1<<24;
     private static final int FLAME_GATHER=1<<6|1<<28|1<<29;
-    private static final int FLAME_TRAVEL=1<<25|1<<26|1<<27|1<<28|1<<30;
+    private static final int FLAME_TRAVEL=1<<25|1<<27|1<<28|1<<30;
     private static final List<Map<String,Object>> RESULTS=new ArrayList<>();
     private static final long START=System.nanoTime();
     private static boolean opened,ready,prepared,finished;
@@ -79,6 +79,7 @@ public final class FourArtsCapture {
     private static boolean formationCaptured;
     private static boolean flameGatherCaptured;
     private static boolean flameCrestCaptured;
+    private static boolean flameImpactCaptured;
     private static float iceDamage;
     private static Method cameraPosition;
 
@@ -265,7 +266,7 @@ public final class FourArtsCapture {
             }
             if(stage==15) {
                 target=p.position().add(-.15,.82,2.7);
-                origin=target.add(-8.75,5.75,1.55);
+                origin=tick>=73 && tick<=82?target.add(-5.75,4.8,6.1):target.add(-8.75,5.75,1.55);
             }
             Vec3 toward=target.subtract(origin);
             cameraPosition.invoke(event.getCamera(),origin);
@@ -316,7 +317,9 @@ public final class FourArtsCapture {
                 }
                 flameCrestCaptured=true;
             }
-            boolean actual=count>baseline && (drawMaterials()&wanted)==wanted && matchesMode(mc);
+            int drawn=drawMaterials();
+            if(stage==15 && flameImpactCaptured) wanted=1<<30;
+            boolean actual=count>baseline && (drawn&wanted)==wanted && matchesMode(mc);
             if(actual && firstDrawTick<0) firstDrawTick=tick;
             int capture=stage==1?firstDrawTick+6:stage==3?firstDrawTick+9:stage==5?firstDrawTick+5
                     :stage==11?firstDrawTick+3:LIMIT[stage];
@@ -344,14 +347,22 @@ public final class FourArtsCapture {
             }
             if(stage==15) {
                 if(!flameGatherCaptured || !flameCrestCaptured) throw new AssertionError("Missing flame gathering or crest frame");
-                mc.getSingleplayerServer().submit(()->checkFlameTargets(serverPlayer(mc),true)).join();
-                for(int id:flameTargets.subList(0,2)) {
-                    var target=mc.level.getEntity(id);
-                    if(target==null || !target.isOnFire()) throw new AssertionError("Vanilla fire flag did not reach client");
+                if(!flameImpactCaptured) {
+                    mc.getSingleplayerServer().submit(()->checkFlameTargets(serverPlayer(mc),true)).join();
+                    for(int id:flameTargets.subList(0,2)) {
+                        var target=mc.level.getEntity(id);
+                        if(target==null || !target.isOnFire()) throw new AssertionError("Vanilla fire flag did not reach client");
+                    }
+                    try(var screenshot=Screenshot.takeScreenshot(mc.getMainRenderTarget())) {
+                        screenshot.writeToFile(OUT.resolve("flame-wave.png"));
+                    }
+                    flameImpactCaptured=true;
+                    return;
                 }
+                if(tick<101 || (drawn&(1<<25))!=0) return;
             }
             try(var screenshot=Screenshot.takeScreenshot(mc.getMainRenderTarget())) {
-                screenshot.writeToFile(OUT.resolve(CASES[stage]+".png"));
+                screenshot.writeToFile(OUT.resolve(stage==15?"flame-ground.png":CASES[stage]+".png"));
             }
             RESULTS.add(Map.of("case",CASES[stage],"drawnFrames",count-baseline,"glError",glError,"firstDraw",firstDrawTick,"screenshotTick",tick));
             if(++stage==CASES.length) {

@@ -17,14 +17,9 @@ import static cn.blockforge.generated.generatedmod.arts.FlameWave.RANGE;
 import static cn.blockforge.generated.generatedmod.client.arts.FourArtsGeometry.*;
 
 final class FlameWaveAnimation {
-    static final int LIFETIME = 60;
-    private static final int COPPER=0xFF6E18, VERMILION=0xF5360A, GOLD=0xFFB03D, ASH_TINT=0x4D2E26;
+    static final int LIFETIME = 80;
+    private static final int COPPER=0xFF6E18, GOLD=0xFFB03D, ASH_TINT=0x4D2E26;
     private static final int FLOOR_ANGLES=26, FLOOR_RINGS=14;
-    private static final double[][] PROFILE = {
-            {0,.025},{-.023,.12},{-.055,.23},{-.10,.35},{-.14,.46},{-.17,.57},{-.17,.66},
-            {-.143,.78},{-.08,.87},{-.01,.955},{.075,1},{.172,.982},
-            {.26,.93},{.34,.865},{.39,.77},{.40,.68},{.38,.59}
-    };
     final long tick;
     final Vec3 origin;
     private final Vec3 forward, side;
@@ -47,11 +42,19 @@ final class FlameWaveAnimation {
 
     void render(FourArtsGeometry fx,Vec3 hand,double age) {
         if(hand!=null) ignition(fx,hand,age);
-        if(age<=FlameWave.RELEASE || age>=2.98) return;
+        if(age<=FlameWave.RELEASE || age>=3.98) return;
         double front=FlameWave.front(age);
         ground(fx,age,front);
-        crest(fx,age,front);
         remnants(fx,age);
+    }
+
+    FlameWaveVolume.Sample volume(Vec3 camera,double age) {
+        double strength=ease(.36,.57,age)*(1-ease(1.14,1.54,age));
+        if(strength<=.004) return null;
+        double front=FlameWave.front(age);
+        float[] heights=new float[8];
+        for(int i=0;i<heights.length;i++) heights[i]=(float)floorHeight(front-.26,angle(i/7.0));
+        return new FlameWaveVolume.Sample(origin.subtract(camera),forward,(float)age,(float)front,(float)strength,heights);
     }
 
     private static void ignition(FourArtsGeometry fx,Vec3 hand,double age) {
@@ -77,50 +80,6 @@ final class FlameWaveAnimation {
         }
     }
 
-    private void crest(FourArtsGeometry fx,double age,double front) {
-        double strength=ease(.36,.57,age)*(1-ease(1.14,1.54,age));
-        if(strength<=.004) return;
-        double settle=.26*ease(4.40,RANGE,front);
-        int sections=88;
-        for(int layer=0;layer<3;layer++) {
-            Vec3[] previous=null;
-            int tint=layer==0?COPPER:VERMILION;
-            double opacity=strength*(layer==0?.94:layer==1?.54:.29);
-            for(int i=0;i<=sections;i++) {
-                double u=i/(double)sections, a=angle(u);
-                double taper=Math.pow(Math.sin(Math.PI*u),.53);
-                double rolls=.56+.43*Math.pow(.5+.5*Math.sin(u*32-age*7.8+layer*.79),1.65);
-                double scallops=.83+.17*Math.sin(u*63+Math.sin(u*17)*1.6+age*12+layer*.64);
-                double rise=(.62+1.66*rolls*scallops)*taper*ease(.24,2.38,front)*(1-.17*layer);
-                double ripples=.13*Math.sin(u*33+age*8)+.07*Math.sin(u*72-age*11);
-                double r=Mth.clamp(front-settle-layer*(.27+.061*front)+ripples*taper,.03,RANGE-.035);
-                double height=floorHeight(r,a);
-                Vec3[] current=new Vec3[PROFILE.length];
-                for(int j=0;j<PROFILE.length;j++) {
-                    double offset=PROFILE[j][0]*rise, room=RANGE-r;
-                    double curled=offset<=0?r+offset:r+room*(1-Math.exp(-offset/room));
-                    current[j]=point(curled,height+.026+rise*PROFILE[j][1],a);
-                    if(previous==null || j==0) continue;
-                    double low=(j-1)*2.0/(PROFILE.length-1)-1, high=j*2.0/(PROFILE.length-1)-1;
-                    fx.quad(previous[j-1],previous[j],current[j],current[j-1],(i-1)/(double)sections,u,
-                            low,high,tint,FLAME_CREST,opacity,layer*9);
-                }
-                previous=current;
-            }
-        }
-        Vec3 previousInner=null,previousOuter=null;
-        for(int i=0;i<=sections;i++) {
-            double u=i/(double)sections,a=angle(u);
-            double radius=Math.max(.06,front+.07*Math.sin(u*50+age*9));
-            double inner=Math.max(.03,radius-1.53),outer=Math.min(RANGE,radius+.09);
-            Vec3 from=point(inner,floorHeight(inner,a)+.038,a);
-            Vec3 to=point(outer,floorHeight(outer,a)+.064,a);
-            if(i>0) fx.quad(previousInner,previousOuter,to,from,(i-1)/(double)sections,u,GOLD,FLAME_SHEET,strength*.80,5);
-            previousInner=from;
-            previousOuter=to;
-        }
-    }
-
     private void ground(FourArtsGeometry fx,double age,double front) {
         for(int a=0;a<FLOOR_ANGLES;a++) for(int r=0;r<FLOOR_RINGS;r++) {
             double floorY=floor[a][r];
@@ -130,7 +89,7 @@ final class FlameWaveAnimation {
             double u=a/(double)FLOOR_ANGLES,v=(a+1)/(double)FLOOR_ANGLES;
             double left=angle(u),right=angle(v),height=floorY+.025;
             fx.quad(point(inner,height,left),point(outer,height,left),point(outer,height,right),point(inner,height,right),
-                    u,v,2*inner/RANGE-1,2*outer/RANGE-1,GOLD,FLAME_GROUND,age/3,0);
+                    u,v,2*inner/RANGE-1,2*outer/RANGE-1,GOLD,FLAME_GROUND,age/4,0);
         }
     }
 

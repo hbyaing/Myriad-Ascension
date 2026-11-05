@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static cn.blockforge.generated.generatedmod.arts.FourArtsVisuals.*;
@@ -181,6 +182,7 @@ public final class FourArtsEffects {
         Vec3 right=FourArtsPose.vec(new Vector3f(1,0,0).rotate(event.getCamera().rotation()));
         Vec3 up=FourArtsPose.vec(new Vector3f(0,1,0).rotate(event.getCamera().rotation()));
         var geometry=new FourArtsGeometry(camera,right,up);
+        List<FlameWaveVolume.Sample> flameVolumes=new ArrayList<>();
         var scenePose=new Matrix4f(event.getPoseStack().last().pose());
         var inverse=new Matrix4f(scenePose).invert();
         float partial=event.getPartialTick();
@@ -232,18 +234,24 @@ public final class FourArtsEffects {
             }
             if((state.bits&BLOOD_AURA)!=0) FourArtsAnimation.bloodCharge(geometry,hand,(now-state.blood)/20);
             for(var cast:state.flames) {
-                if(cast.origin.distanceToSqr(camera)<=RANGE_SQUARED)
-                    cast.render(geometry,cast==newestFlame?hand:null,(now-cast.tick)/20);
+                if(cast.origin.distanceToSqr(camera)>RANGE_SQUARED) continue;
+                double age=(now-cast.tick)/20;
+                cast.render(geometry,cast==newestFlame?hand:null,age);
+                var volume=cast.volume(camera,age);
+                if(volume!=null) flameVolumes.add(volume);
             }
             for(var hit:state.hits) FourArtsAnimation.bloodHit(geometry,hit.point,hit.direction,(now-hit.tick)/20,hit.passive);
         }
         POSES.clear();
         for(var cast:ICE_CASTS.values()) cast.render(geometry,camera,now);
         var mesh=geometry.bake(BUFFER);
-        if(mesh==null) return;
-        if(!TrailShaderBridge.captureDepth()) { mesh.release(); return; }
+        if(mesh==null && flameVolumes.isEmpty()) return;
+        if(!TrailShaderBridge.captureDepth()) {
+            if(mesh!=null) mesh.release();
+            return;
+        }
         var clip=new Matrix4f(event.getProjectionMatrix()).mul(RenderSystem.getModelViewMatrix()).mul(scenePose);
-        pending=new Frame(mesh,clip,(float)((now%24000)/20),geometry.materials,right,up);
+        pending=new Frame(mesh,clip,(float)((now%24000)/20),geometry.materials,right,up,flameVolumes);
     }
 
     @SubscribeEvent(priority=EventPriority.HIGH)
@@ -264,7 +272,10 @@ public final class FourArtsEffects {
         Frame frame=pending;
         pending=null;
         int depth=TrailShaderBridge.capturedDepthTexture();
-        if(depth<0 || shader==null) { frame.mesh.release(); return; }
+        if(depth<0 || shader==null) {
+            if(frame.mesh!=null) frame.mesh.release();
+            return;
+        }
         var target=Minecraft.getInstance().getMainRenderTarget();
         try(var saved=new MeteorBloomRenderer.State()) {
             target.bindWrite(true);
@@ -276,10 +287,11 @@ public final class FourArtsEffects {
             RenderSystem.disableScissor();
             RenderSystem.enableBlend();
             RenderSystem.blendFuncSeparate(GL11.GL_ONE,GL11.GL_ONE_MINUS_SRC_ALPHA,GL11.GL_ONE,GL11.GL_ONE_MINUS_SRC_ALPHA);
+            Matrix4f inverseClip=new Matrix4f(frame.clip).invert();
             shader.safeGetUniform("ClipMatrix").set(frame.clip);
             if((frame.materials&((1<<FourArtsGeometry.RECOVERY)|(1<<FourArtsGeometry.ICE_GROUND)
                     |(1<<FourArtsGeometry.ICE_WAKE)|(1<<FourArtsGeometry.FLAME_GROUND)))!=0)
-                shader.safeGetUniform("InverseClip").set(new Matrix4f(frame.clip).invert());
+                shader.safeGetUniform("InverseClip").set(inverseClip);
             shader.safeGetUniform("OutputSize").set((float)target.viewWidth,(float)target.viewHeight);
             shader.safeGetUniform("time").set(frame.time);
             if(crystal) {
@@ -289,9 +301,10 @@ public final class FourArtsEffects {
             RenderSystem.setShaderTexture(0,depth);
             RenderSystem.setShaderTexture(1,crystal?sceneTexture:0);
             RenderSystem.setShader(()->shader);
-            BufferUploader.drawWithShader(frame.mesh);
+            if(frame.mesh!=null) BufferUploader.drawWithShader(frame.mesh);
+            boolean volume=FlameWaveVolume.draw(frame.flameVolumes,inverseClip,target.viewWidth,target.viewHeight);
             drawnFrames++;
-            drawnMaterials=frame.materials;
+            drawnMaterials=frame.materials|(volume?1<<FourArtsGeometry.FLAME_VOLUME:0);
         }
     }
 
@@ -324,7 +337,7 @@ public final class FourArtsEffects {
     }
 
     private static void clearPending() {
-        if(pending!=null) pending.mesh.release();
+        if(pending!=null && pending.mesh!=null) pending.mesh.release();
         pending=null;
     }
 
@@ -340,13 +353,16 @@ public final class FourArtsEffects {
         public static void register(RegisterShadersEvent event) throws IOException {
             event.registerShader(new ShaderInstance(event.getResourceProvider(),
                     new ResourceLocation(GeneratedMod.MOD_ID,"four_arts"),DefaultVertexFormat.POSITION_TEX_COLOR),s->shader=s);
+            event.registerShader(new ShaderInstance(event.getResourceProvider(),
+                    new ResourceLocation(GeneratedMod.MOD_ID,"flame_wave_volume"),DefaultVertexFormat.POSITION),s->FlameWaveVolume.shader=s);
         }
     }
 
     record WindPoint(long time,Vec3 point,Vec3 forward) {}
     private record Hit(long tick,Vec3 point,Vec3 direction,boolean passive) {}
     private record IceCast(int player,long started) {}
-    private record Frame(BufferBuilder.RenderedBuffer mesh,Matrix4f clip,float time,int materials,Vec3 right,Vec3 up) {}
+    private record Frame(BufferBuilder.RenderedBuffer mesh,Matrix4f clip,float time,int materials,Vec3 right,Vec3 up,
+                         List<FlameWaveVolume.Sample> flameVolumes) {}
 
     private static final class State {
         int bits;
