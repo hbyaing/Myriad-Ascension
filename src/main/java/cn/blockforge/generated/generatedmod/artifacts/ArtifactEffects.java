@@ -17,6 +17,7 @@ import java.util.*;
 
 @Mod.EventBusSubscriber(modid=GeneratedMod.MOD_ID)
 public final class ArtifactEffects {
+    /** Artifact procs add exclusions to sword eligibility; do not feed these back into sword damage. */
     public static boolean target(ServerPlayer player,LivingEntity target){return YujianController.canTarget(player,target)
             &&!target.isSpectator()&&!HumanEmperorBannerItem.isServant(target)
             &&!(target instanceof OwnableEntity ownable&&ownable.getOwnerUUID()!=null)

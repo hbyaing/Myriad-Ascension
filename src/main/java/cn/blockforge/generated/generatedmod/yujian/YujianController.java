@@ -153,6 +153,7 @@ public final class YujianController {
         if(spawned)existing.forEach(Entity::discard);
         return spawned;
     }
+    /** Sword eligibility, also reused as the base of artifact procs. Extra artifact exclusions stay with that consumer. */
     public static boolean canTarget(ServerPlayer p,LivingEntity e){return e!=p&&e.isAlive()&&!e.isAlliedTo(p)&&!(e instanceof net.minecraft.world.entity.TamableAnimal pet&&p.getUUID().equals(pet.getOwnerUUID()))&&(!(e instanceof Player other)||p.canHarmPlayer(other))&&p.hasLineOfSight(e);}
     private static void beginSummon(ServerPlayer p){
         if(!canCast(p,FLIGHT))return;
