@@ -73,7 +73,15 @@ final class HuahongMaterialQa {
                 for(int i=1;i<=240;i++){float[] next=render(program,38,47.25F,7.125F+i/120F);maxStep=Math.max(maxStep,difference(old,next));motion=Math.max(motion,difference(first,next));old=next;}
                 double wrap=difference(render(program,38,47.25F,127.9999F),render(program,38,47.25F,.0001F));
                 if(motion<.001||maxStep>.04||wrap>.001)throw new AssertionError("Fan ridge loop frozen/discontinuous: "+motion+" / "+maxStep+" / "+wrap);
-                return Map.of("passed",true,"check","shipping-material-periodicity-and-new-fan-ridge-animation","comparisons",comparisons,"maxChannelPeriodError",error,"fanRidge120FpsMaxStep",maxStep,"fanRidgeTwoSecondMotion",motion,"fanRidge128SecondWrapDifference",wrap,"scope","Native/post shared shipping functions, all existing bands plus38; tests periodicity and new fan ridge motion only. Legacy smoke-field probes are separate.");
+                double gauzeMotion=0;
+                float[] gauzeStart=render(program,28,-16,7.125F);
+                float[] gauzeLater=render(program,28,-16,8.125F);
+                for(int i=3;i<gauzeStart.length;i+=4)gauzeMotion=Math.max(gauzeMotion,Math.abs(gauzeLater[i]-gauzeStart[i]));
+                double gauzeTransport=difference(gauzeLater,render(program,28,-12,7.125F));
+                if(gauzeMotion<.08||gauzeTransport>.002)throw new AssertionError("Fan primary gauze failed visible advection: "+gauzeMotion+" / "+gauzeTransport);
+                return Map.of("passed",true,"comparisons",comparisons,"maxChannelPeriodError",error,
+                        "fanRidge120FpsMaxStep",maxStep,"fanRidgeTwoSecondMotion",motion,"fanRidge128SecondWrapDifference",wrap,
+                        "gauzeAlphaChangeOneSecond",gauzeMotion,"gauze4BlockAdvectionError",gauzeTransport);
             }
             float[] noseCenter=probe(program,.5F,.5F,7.125F);difference(noseCenter,noseCenter);
             if(noseCenter[3]<.1F)throw new AssertionError("Band32 nucleus has no center coverage");

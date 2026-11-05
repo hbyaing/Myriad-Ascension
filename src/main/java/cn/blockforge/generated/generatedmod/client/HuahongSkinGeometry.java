@@ -19,7 +19,7 @@ final class HuahongSkinGeometry {
     static void linkCarriers(){
         // Define these data carriers before cold world generation is competing
         // with first-use class loading. This performs no geometry or GPU work.
-        for(Class<?> type:new Class<?>[]{Row.class,Birth.class,Cloud.class,HuahongFlowField.Smoke.class,HuahongFlowField.WorldParcel.class}){
+        for(Class<?> type:new Class<?>[]{Row.class,Birth.class,Cloud.class,HuahongFlowField.Smoke.class,HuahongFlowField.Parcel.class}){
             try{Class.forName(type.getName(),true,type.getClassLoader());}
             catch(ClassNotFoundException impossible){throw new IllegalStateException(impossible);}
         }
@@ -357,7 +357,7 @@ final class HuahongSkinGeometry {
         }
         strip(haze,10,true);strip(hot,22,true);
     }
-    private static final double FAN_OPENING_SPEED=11.5,FAN_LIFETIME=2.4,FAN_FLOW_SPEED=.5;
+    private static final double FAN_OPENING_SPEED=11.5,FAN_LIFETIME=2.4,FAN_FLOW_SPEED=4;
     private record FanPoint(Vec3 p,Vec3 normal,double alpha,double phase){}
     private List<FanSample> fanSamples(){
         if(canonical.size()<2)return List.of();
@@ -388,13 +388,13 @@ final class HuahongSkinGeometry {
         Frame basis=h.frame();
         Vec3 f=basis.forward(),s=basis.side(),up=basis.up();
         double lateral=(.014+1.6*(.26+rank*1.45)*open)*(1+.08*Math.sin(flow*.27+phase)*open);
-        double wave=(Math.sin(flow*.21+phase)*.36+Math.sin(flow*.48+phase*1.7)*.055)*open;
+        double wave=(Math.sin(flow*.36+phase)*.44+Math.sin(flow*.48+phase*1.7)*.055)*open;
         double half=(.045+.43*(.50+.60*(1-rank)))*smooth(0,.21,age)*Math.pow(v,.65)*(1+.20*Math.sin(flow*.32+phase));
         // Separate birth-anchored azimuths form an open spatial fan. Previously
         // every centre used the same .79/.61 diagonal, so all films shared a plane.
         double azimuth=.15+(j-1)*.78+(sign<0?Math.PI:0);
         Vec3 radial=s.scale(Math.cos(azimuth)).add(up.scale(Math.sin(azimuth))),around=f.cross(radial).normalize();
-        double roll=.25+sign*.32+Math.sin(flow*.20+phase)*.45+age*.24;
+        double roll=.25+sign*.32+Math.sin(flow*.31+phase)*.45+age*.24;
         Vec3 across=radial.scale(Math.cos(roll)).add(around.scale(Math.sin(roll))),normal=f.cross(across).normalize();
         double curlGain=.80+.42*Math.sin(flow*.35+phase);
         double curl=half*(u*u-.27)*curlGain;
@@ -464,6 +464,7 @@ final class HuahongSkinGeometry {
                 Frame f=back(behind);
                 double envelope=parcel.alpha()*smooth(17,7,behind)
                         *smooth(behind-.7,behind+.7,recorded);
+                if(envelope<=0)continue;
                 double rear=smooth(12,24,behind);
                 Vec3 p=offset(f,parcel.side(),parcel.up());
                 double radius=parcel.radius(),seed=Math.floorMod(parcel.id(),64);
@@ -474,22 +475,6 @@ final class HuahongSkinGeometry {
                         (float)(strength*envelope*(1-.35*rear)*parcel.crimson()*(.08+.095*nose)),0xce252f,20));
             }
         }
-        // The near body settles into a real world-emitted wake. Old dark/red
-        // parcels diffuse from their birth positions instead of turning with
-        // the current head. Both retain live density animation and soft aging.
-        for(var b:HuahongFlowField.worldParcels(canonical,now)){
-            Vec3 p=new Vec3(b.x(),b.y(),b.z());float a=(float)(strength*b.alpha());
-            // Neighboring coverage samples share the same material during
-            // their emission interval, regardless of blocks flown per tick.
-            int seed=Math.floorMod((long)Math.floor(b.birthTick()/8),64);
-            clouds.add(new Cloud(p,seed,b.radius(),a,0x060101,30));
-            float crimson=(float)(b.crimson()*smooth(.20,.55,b.crimson()));
-            if(crimson>0)clouds.add(new Cloud(p,(seed+19)%64,b.radius()*.48,a*crimson*.24F,0xce252f,20));
-        }
-        // The head is broad dark smoke with a small red fracture, never a white
-        // nucleus. These layers disappear with the local transformation fade.
-        // No static eight-card head shell: successive soft time births fill the
-        // nose while older parcels roll, grow and travel visibly down the wake.
         // Several depth slices give packets actual spatial thickness and
         // intersect world depth independently; this is layered smoke, not a
         // claim of ray-marched density or a fluid solver.

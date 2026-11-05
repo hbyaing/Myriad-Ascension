@@ -6,34 +6,6 @@ public final class HuahongFlowField {
     private static final double TAU=Math.PI*2;
     public record Smoke(double side,double up,double radius,double crimson){}
     public record Parcel(long id,double age,double behind,double side,double up,double radius,double alpha,double crimson){}
-    public record WorldParcel(long id,double birthTick,double age,double behind,double x,double y,double z,double radius,double alpha,double crimson){}
-    /** Old smoke keeps its emission position. Neither current yaw nor a moving
-     * head-local curve is an input to its drift, so turns cannot rotate the wake. */
-    public static java.util.List<WorldParcel> worldParcels(java.util.List<SwordFlightTrailHistory.Node> path,double now){
-        var result=new java.util.ArrayList<WorldParcel>();if(path.size()<2)return result;
-        double spacing=.55,tailLength=44,tailFadeStart=26;
-        double head=path.get(path.size()-1).arc(),start=Math.max(path.get(0).arc(),head-tailLength);int cursor=0;
-        for(long id=(long)Math.ceil(start/spacing);id*spacing<=head;id++){
-            double arc=id*spacing;while(cursor<path.size()-2&&path.get(cursor+1).arc()<arc)cursor++;
-            var a=path.get(cursor);var b=path.get(cursor+1);double span=b.arc()-a.arc();if(span<1e-9)continue;
-            double t=Math.max(0,Math.min(1,(arc-a.arc())/span)),born=a.tick()+(b.tick()-a.tick())*t,age=(now-born)/20,behind=head-arc;
-            if(age<0||age>=1.8)continue;
-            double join=smooth((behind-7)/10),end=1-smooth((behind-tailFadeStart)/(tailLength-tailFadeStart)),life=1-smooth((age-1.2)/.6);
-            double alpha=.18*join*end*life*Math.exp(-age/1.45);if(alpha<.0005)continue;
-            // The distance lattice supplies coverage. A coherent birth-time
-            // profile supplies motion, so faster travel cannot sweep past a
-            // new random radius, roll and crimson pulse every .55 blocks.
-            double birthSeconds=born/20;
-            double seed=.5+.5*Math.sin(birthSeconds*2.3);
-            double phase=birthSeconds*1.35+age*2.35,scatter=.08+.20*smooth(age/.6);
-            var p=a.point().lerp(b.point(),t);double dx=b.point().x()-a.point().x(),dy=b.point().y()-a.point().y(),dz=b.point().z()-a.point().z(),length=Math.sqrt(dx*dx+dy*dy+dz*dz);
-            double drift=length>1e-8?-.8*age/length:0;
-            double radius=(.42+.16*seed)*(1+.54*smooth(behind/60));
-            result.add(new WorldParcel(id,born,age,behind,p.x()+dx*drift+Math.cos(phase)*scatter,p.y()+dy*drift+Math.sin(phase*1.31)*scatter+age*.12,p.z()+dz*drift+Math.sin(phase)*scatter,radius,alpha,
-                    Math.exp(-age*.6)*(.54+.29*Math.sin(phase+.5*Math.sin(birthSeconds*1.9)))));
-        }
-        return result;
-    }
     /** Time births advect down the attached wake; travel speed never rerolls their identities. */
     public static java.util.List<Parcel> parcels(double tick){
         double seconds=tick/20,interval=.08,life=3.2;long last=(long)Math.floor(seconds/interval);

@@ -169,15 +169,15 @@ vec4 swordMaterial(){
         }
         if(band==48.0||band==52.0||band==54.0||band==56.0)return vec4(vertexColor.rgb*(band==52.0||band==56.0?2.8:1.3),pow(edge,1.7)*vertexColor.a);
         if(band==38.0){
-            float flow=arc+EffectTime*.5;
+            float flow=arc+EffectTime*4.0;
             float stripe=sin(flowAngle(flow,20.0,0.0)+sin(flowAngle(flow,4.0,0.0)));
             return vec4(vertexColor.rgb,pow(edge,2.3)*(.78+.22*smoothstep(-.7,.8,stripe))*vertexColor.a);
         }
         if(band==28.0){
             // V7 open silk: broad density patches and curled ragged edges.
-            // All layers translate down the head-relative arc at .5 blocks/s.
-            // A 128-second clock wrap shifts the field by exactly 64 blocks.
-            float flow=arc+EffectTime*.5;
+            // All layers translate down the head-relative arc at 4 blocks/s.
+            // A 128-second clock wrap shifts the field by exactly 512 blocks.
+            float flow=arc+EffectTime*4.0;
             vec2 p=vec2(flow*.125,across*2.2);
             vec2 warp=warpFlow(p,8.0);
             float n=layeredFlow(p+warp*.82,8.0);
