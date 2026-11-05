@@ -90,6 +90,7 @@ canvas.addEventListener("webglcontextrestored",()=>start());
 const stageMesh = stage();
 const attackStageMesh = stage(true);
 const iceStageMesh = stage("ice");
+const lotusStageMesh = stage("lotus");
 const boxes = new ResizeObserver(()=>{dirty=true;});
 boxes.observe(gallery);
 
@@ -122,10 +123,12 @@ function draw() {
     const strikeRoom = art===3 ? state.hit*(passive?.17:.50) : 0;
     const draft=art>=5;
     const ice=art===5;
+    const lotus=art===4;
     const camera = ice?cameraFor(orbit.yaw-.19,orbit.pitch+.10,orbit.half*2.54,w/h,[.08,1.28,0]):
       draft?cameraFor(orbit.yaw-.14,orbit.pitch+.23,orbit.half*2.90,w/h,[.05,.43,0]):
+      lotus?cameraFor(orbit.yaw,orbit.pitch+.016,orbit.half*(passive?1.25:1.49),w/h,[0,passive?1.10:1.53,0]):
       cameraFor(orbit.yaw,orbit.pitch,orbit.half,w/h,[state.root[0]*.90-tailRoom+strikeRoom,1.03+state.root[1]*.76,0]);
-    const scene = (ice?iceStageMesh:draft?attackStageMesh:stageMesh).slice();
+    const scene = (ice?iceStageMesh:draft?attackStageMesh:lotus?lotusStageMesh:stageMesh).slice();
     box(scene,[state.root[0],.004,state.root[2]],[.51,.005,.34],[.132,.20,.19]);
     if(draft) for(const target of attackTargets(art)) {
       const feet=add(state.root,target);
@@ -139,7 +142,7 @@ function draw() {
     const fx = effectMesh(camera);
     const description = drawArt(fx,art,passive,state,time,pose);
     if(phase.textContent!==description) phase.textContent=description;
-    renderer.draw([x,y,w,h],camera,scene,fx.finish(),time,ice?(day?1:.62):Number(day));
+    renderer.draw([x,y,w,h],camera,scene,fx.finish(),time,ice?(day?1:.62):lotus?(day?1:.77):Number(day),lotus);
   }
   renderer.finish();
   dirty=false;

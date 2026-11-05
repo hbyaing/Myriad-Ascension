@@ -1,8 +1,8 @@
-import {add,clamp,cross,ease,mix,mul,norm,polar,pulse,turn,wave} from "./math.js";
+import {add,clamp,ease,mix,mul,norm,polar,pulse,turn,wave} from "./math.js";
 
-const up=[0,1,0], forward=[1,0,0];
+const forward=[1,0,0];
 const ice=[.32,.76,1], frost=[.67,.91,1];
-const jade=[.70,.98,.88], ivory=[.97,.94,.79], gold=[1,.76,.39];
+const ivory=[1,.92,.69], gold=[1,.70,.28], sun=[1,.81,.47], stain=[.28,.086,.30];
 const sequence=(count,fn)=>Array.from({length:count},(_,i)=>fn(i/(count-1)));
 export const iceTargets=[[7.52,0,.14],[7.0,0,1.75]];
 const volley=[
@@ -75,72 +75,113 @@ export function iceSpike(fx,root,t) {
   return time<.36?"起诀 · 冰锥凝结":time<1.10?"齐射 · 七枚冰锥穿行":time<1.73?"命中 · 碎冰与霜斑":"等待施术";
 }
 
-function talisman(fx,point,angle,tilt,halfHeight,halfWidth,color,strength,seed) {
-  const along=norm(add(up,polar(tilt,0,angle)));
-  const across=norm(cross(along,polar(1,0,angle)));
-  fx.plane(point,mul(along,halfHeight),mul(across,halfWidth),color,15,strength,seed);
+
+function lotus(fx,root,radius,angle,strength) {
+  fx.plane(add(root,[0,.029,0]),polar(radius,0,angle),polar(radius,0,angle+Math.PI*.5),sun,17,strength,0);
+}
+
+function spiral(fx,root,time,strength) {
+  if(strength<=.004) return;
+  const rise=ease(.18,.78,time);
+  const end=.13+.87*rise;
+  const span=1.83*turn;
+  const phase=-1.37+time*1.06;
+  function point(u,y) {
+    const radius=1.11+.25*Math.sin(Math.PI*u)-.16*u;
+    return add(root,polar(radius,y+.13+u*3.40,phase+u*span));
+  }
+  for(let i=0;i<108;i++) {
+    const u=i/108, v=(i+1)/108;
+    const half=.086+.022*Math.sin(Math.PI*u);
+    fx.face([point(u*end,-half),point(u*end,half),point(v*end,half),point(v*end,-half)],
+      [u,u,v,v],ivory,21,strength,0);
+  }
+}
+
+function lightPillars(fx,root,time,strength) {
+  const height=3.85*(.39+.61*ease(.05,.54,time));
+  for(let i=0;i<24;i++) {
+    const angle=i*2.399963;
+    const radius=.22+.90*((i*.381966)%1);
+    const center=add(root,polar(radius,height*.5,angle));
+    const width=.105+.091*((i*.627)%1);
+    fx.plane(center,[0,height*(.46+.05*Math.sin(i)),0],
+      polar(width,0,angle+Math.PI*.5),i%3===0?gold:sun,20,strength*(i%4===0?.76:.52),angle);
+  }
+}
+
+function purgedStains(fx,root,time) {
+  for(let i=0;i<6;i++) {
+    const start=.29+i*.075;
+    const age=(time-start)/.95;
+    if(age<=0 || age>=1) continue;
+    const alpha=pulse(age,0,.31,.87);
+    const peel=ease(0,.74,age);
+    const angle=i*turn/6+age*.56;
+    const base=.25+(i%3)*.36;
+    const path=u=>{
+      const curl=Math.sin(Math.PI*u);
+      const radial=.25+(.68+.26*curl)*peel*u;
+      const y=base+.79*u+.59*peel+.15*curl;
+      return add(root,polar(radial,y,angle+u*1.10));
+    };
+    fx.ribbon(sequence(27,path),.15+(i%3)*.034,stain,alpha*.90,i,16);
+    for(let j=0;j<10;j++) {
+      const u=(j+.5)/10;
+      const ash=add(path(u),polar(.042+.16*age,.13*Math.sin(i*12.7+j*2.1),i*2.2+j*2.399963));
+      const size=.024+.039*(.5+.5*Math.sin(j*2.36+i));
+      fx.stamp(ash,size,size,[.36,.15,.34],23,alpha*(.71+.23*Math.sin(j+i)),j+i*10,j*.6);
+    }
+  }
 }
 
 export function purification(fx,root,t,passive) {
-  const time=passive?wave(t,2.68,.19):wave(t,3.77,0);
+  const time=passive?wave(t,2.68,.37):wave(t,3.83,0);
   if(passive) {
-    const strength=pulse(time,.025,.21,.70);
+    const strength=pulse(time,.025,.19,.88);
     if(strength<=.004) return "等待恢复事件";
-    const upstroke=ease(.02,.64,time);
-    fx.heal(3,0,root[1],strength*.51,ivory);
-    for(const side of [-1,1]) {
-      const a=side*1.45;
-      talisman(fx,add(root,[side*(.44+.10*upstroke),1.10+.48*upstroke,.15]),a,
-        side*.22,.18,.072,jade,strength*.66,side);
+    const swell=ease(.02,.70,time);
+    fx.heal(3,0,root[1],strength*.50,ivory);
+    fx.groundLight(root,1.10,strength*.24);
+    lotus(fx,root,.91+.25*swell,.22+swell*.13,strength*.58);
+    fx.stamp(add(root,[.10,1.26+.12*swell,.35]),.44,.42,ivory,15,strength*.88,0);
+    for(let i=0;i<5;i++) {
+      const p=add(root,polar(.41+.24*swell,.48+i*.21+.52*swell,i*2.399963+time*1.2));
+      fx.stamp(p,.087,.055,sun,22,strength*.69,i,i*1.17);
     }
-    return "回元 · 双印轻明";
+    return "回元 · 莲光初绽";
   }
-  if(time>1.78) return "等待施术";
-  const cleared=t<3.77;
-  const rise=ease(.02,.38,time), fold=ease(.96,1.50,time);
-  const orbit=pulse(time,.03,.34,1.45);
-  const flash=pulse(time,.46,.72,1.13);
-  const ward=pulse(time,.37,.68,1.47);
-  fx.heal(3,0,root[1],ward*.55,ivory);
-  for(let i=0;i<4;i++) {
-    const angle=.55+i*turn/4+rise*.54+fold*.21;
-    const radius=mix(.38,.83,rise)*(1-.24*fold);
-    const y=mix(.57,1.26,rise)-fold*.45+(i%2)*.23;
-    const seal=add(root,polar(radius,y,angle));
-    talisman(fx,seal,angle+(i%2===0?.39:-.42),.42*(1-rise)-.45*fold,.30+.087*rise,.145+.038*rise,
-      i%2===0?ivory:jade,orbit*.79+flash*.21,i);
-    const bond=pulse(time,.17,.46,.95);
-    fx.ribbon(sequence(17,u=>{
-      const corner=Math.sin(Math.PI*u);
-      return add(root,polar(radius+.10*corner,y-.34-.17*corner,angle+u*1.32));
-    }),.021,gold,bond*.56,i,11);
-    if(!cleared) continue;
-    for(let band=0;band<2;band++) {
-      const timeLag=i*.039+band*.10;
-      const peel=ease(.22+timeLag,.76+timeLag,time);
-      const intensity=pulse(time,.19+timeLag,.52+timeLag,.94+timeLag);
-      const pull=angle-.59*(1-peel);
-      fx.ribbon(sequence(25,u=>{
-        const span=Math.sin(Math.PI*u);
-        const r=mix(.25,radius+.10*span,u*peel);
-        const a=pull+(.79-.43*peel)*u;
-        const h=mix(.42+(i%3)*.32+band*.51,y,u)+.22*span;
-        return add(root,polar(r,h,a));
-      }),.14+.057*band,[.24,.16,.25],intensity,i*3+band,16);
-    }
-    for(let j=0;j<5;j++) {
-      const age=(time-.58-i*.037-j*.031)/.64;
-      if(age<=0 || age>=1) continue;
-      const f=pulse(age,0,.19,1);
-      const offset=polar(age*(.26+j*.081),.16*age-.36*age*age,angle+j*.91);
-      const point=add(seal,offset);
-      const size=.032+(j%3)*.023;
-      fx.stamp(point,size,size,j%3===0?gold:ivory,18,f*.90,i*6+j,angle+age*1.8);
-    }
+  if(time>2.04) return "等待施术";
+  const cleared=t<3.83;
+  const cast=pulse(time,.025,.59,1.97);
+  const brightness=cleared?1:.86;
+  const waveFront=ease(.02,.49,time);
+  const ward=pulse(time,.17,.58,1.57);
+  const halo=pulse(time,.09,.61,1.79);
+  const bloom=pulse(time,.25,.66,1.40);
+  fx.heal(3,0,root[1],ward*.68,ivory);
+  fx.groundLight(root,2.22,cast*.69*brightness);
+  lotus(fx,root,.56+1.52*waveFront,.07+time*.17,cast*brightness);
+  lightPillars(fx,root,time,ward*brightness);
+  spiral(fx,root,time,halo*brightness);
+  fx.stamp(add(root,[.13,1.30,.37]),.61,.56,ivory,15,bloom*brightness,0);
+  for(let i=0;i<11;i++) {
+    const delay=.17+(i%5)*.088;
+    const age=(time-delay)/(1.12+(i%3)*.12);
+    if(age<=0 || age>=1) continue;
+    const phase=i*2.399963+age*1.86;
+    const size=.14+(i%5)*.023;
+    const p=add(root,polar(1.08+age*.54+(i%3)*.12,.30+(i%5)*.36+age*1.68,phase));
+    fx.stamp(p,size*1.48,size*.78,i%3===0?ivory:sun,22,pulse(age,0,.29,1)*.95,i,phase+.38*Math.sin(age*9+i));
   }
-  const ground=pulse(time,.84,1.10,1.74);
-  const scale=.53+.70*ease(.84,1.58,time);
-  const a=.23+fold*.31;
-  fx.plane(add(root,[0,.038,0]),polar(scale,0,a),polar(scale,0,a+Math.PI/2),gold,17,ground*.83,0);
-  return time<.38?"起诀 · 四方立印":time<1.02?(cleared?"剥浊 · 污痕离身":"合印 · 玉光入体"):"收势 · 地印散去";
+  for(let i=0;i<36;i++) {
+    const age=(time-.11-(i%12)*.061)/1.24;
+    if(age<=0 || age>=1) continue;
+    const angle=i*2.399963+age*.91;
+    const point=add(root,polar(.34+(i%7)*.18+age*.24,.17+(i%11)*.179+age*1.13,angle));
+    const size=.021+(i%6)*.009;
+    fx.stamp(point,size,size,i%4===0?gold:ivory,18,pulse(age,0,.26,1)*.94,i,Math.sin(i)*.40);
+  }
+  if(cleared) purgedStains(fx,root,time);
+  return time<.31?"起势 · 莲阵展开":time<1.29?(cleared?"净化 · 符光升腾，浊气剥离":"祈复 · 符光升腾"):"收势 · 金光入莲";
 }

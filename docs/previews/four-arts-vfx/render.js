@@ -27,6 +27,7 @@ uniform float daylight;
 uniform vec3 fog;
 uniform vec4 recovery;
 uniform vec3 recoveryTint;
+uniform vec4 groundLight;
 uniform float time;
 layout(location=0) out vec4 frag;
 layout(location=1) out vec4 glow;
@@ -49,6 +50,12 @@ void main(){
     }
     shaded=mix(shaded,mix(recoveryTint,vec3(.84,1.,1.),ridge*.25),opacity);
   }
+  if(groundLight.w>0.) {
+    float r=length(world.xz-groundLight.xy)/groundLight.z;
+    float bounce=groundLight.w*exp(-r*r*2.85)*(.45+.55*max(0.,surface.y));
+    bounce*=actorSurface>.5?.31:1.-smoothstep(.09,.65,world.y);
+    shaded+=vec3(.29,.185,.063)*bounce;
+  }
   float fade=smoothstep(4.,12.,length(world.xz));
   frag=vec4(mix(shaded,fog,fade),1.);
   glow=vec4(0.);
@@ -64,6 +71,7 @@ const skyFragment = `#version 300 es
 precision mediump float;
 in vec2 uv;
 uniform float daylight;
+uniform float outdoor;
 out vec4 frag;
 void main(){
   vec3 low=mix(vec3(.11,.18,.18),vec3(.48,.59,.58),daylight);
@@ -72,6 +80,17 @@ void main(){
   color+=vec3(.055,.095,.080)*(1.-smoothstep(.0,.87,distance(uv,vec2(.49,.57))));
   float ridge=.42+sin(uv.x*9.+.5)*.05+sin(uv.x*18.)*.019;
   color=mix(color,low*.57,.5*(1.-smoothstep(ridge-.012,ridge+.009,uv.y)));
+  if(outdoor>.5) {
+    color=mix(vec3(.51,.59,.64),vec3(.19,.34,.60),smoothstep(.02,.99,uv.y));
+    for(int i=0;i<5;i++) {
+      float x=float(i)*.237+.02;
+      vec2 p=uv-vec2(x,.79+sin(x*21.)*.075);
+      float cloud=step(abs(p.x),.073)*step(abs(p.y),.009)
+        +step(abs(p.x+.03),.032)*step(abs(p.y-.011),.008);
+      color=mix(color,vec3(.77,.72,.72),clamp(cloud,0.,1.)*.54);
+    }
+    color*=.73+.27*daylight;
+  }
   frag=vec4(color,1.);
 }`;
 const compositeFragment = `#version 300 es
@@ -130,9 +149,9 @@ function program(gl, vs, fs, attributes, uniformNames) {
 export function createRenderer(canvas, vs, fs) {
   const gl = canvas.getContext("webgl2", {alpha:true, antialias:true});
   if (!gl) throw Error("此浏览器未提供 WebGL 2。");
-  const sky = program(gl,skyVertex,skyFragment,[],["daylight"]);
+  const sky = program(gl,skyVertex,skyFragment,[],["daylight","outdoor"]);
   const opaque = program(gl,solidVertex,solidFragment,[["position",3],["normal",3],["tint",3],["character",1]],
-    ["camera","daylight","fog","recovery","recoveryTint","time"]);
+    ["camera","daylight","fog","recovery","recoveryTint","groundLight","time"]);
   const effect = program(gl,vs,fs,[["position",3],["uv",2],["tint",3],["style",3]],
     ["camera","time","opaqueScene","sampleBounds","viewRight","viewUp","viewBack"]);
   const composite = program(gl,skyVertex,compositeFragment,[],["scene","emission","crop"]);
@@ -181,7 +200,7 @@ export function createRenderer(canvas, vs, fs) {
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       gl.enable(gl.SCISSOR_TEST);
     },
-    draw(rect, camera, solid, effects, time, day) {
+    draw(rect, camera, solid, effects, time, day, outdoor=false) {
       rects.push(rect);
       gl.viewport(...rect);
       gl.scissor(...rect);
@@ -190,15 +209,17 @@ export function createRenderer(canvas, vs, fs) {
       gl.disable(gl.BLEND);
       bind(sky);
       gl.uniform1f(sky.uniforms.daylight,day);
+      gl.uniform1f(sky.uniforms.outdoor,Number(outdoor));
       gl.drawArrays(gl.TRIANGLES,0,3);
       gl.enable(gl.DEPTH_TEST);
       gl.drawBuffers(attachments);
       bind(opaque);
       gl.uniformMatrix4fv(opaque.uniforms.camera,false,camera.matrix);
       gl.uniform1f(opaque.uniforms.daylight,day);
-      gl.uniform3fv(opaque.uniforms.fog,day ? [.30,.41,.40] : [.078,.133,.139]);
+      gl.uniform3fv(opaque.uniforms.fog,outdoor?[.36,.49,.53]:day?[.30,.41,.40]:[.078,.133,.139]);
       gl.uniform4fv(opaque.uniforms.recovery,effects.recovery);
       gl.uniform3fv(opaque.uniforms.recoveryTint,effects.recoveryTint);
+      gl.uniform4fv(opaque.uniforms.groundLight,effects.groundLight);
       gl.uniform1f(opaque.uniforms.time,time);
       upload(opaque,solid);
       const [x,y,w,h]=rect;
@@ -260,7 +281,7 @@ export function box(out, center, size, color, orient = identity, character = 0) 
 
 export function stage(attack=false) {
   const out = [];
-  if(attack==="ice") {
+  if(attack==="ice" || attack==="lotus") {
     box(out,[0,-.20,.5],[32,.33,19],[.21,.33,.23]);
     for(let i=-5;i<=5;i++) {
       const rise=.21+.39*Math.pow(.5+.5*Math.sin(i*.91+1.2),2);
@@ -273,7 +294,7 @@ export function stage(attack=false) {
       box(out,[x-.15,h+.56,z-.07],[.73,.36,.71],[.29,.43,.29]);
     }
     for(let x=-8;x<=8;x++) for(let z=-5;z<=5;z++) {
-      const road=x<=-3 || (z===-3 && x<5);
+      const road=attack==="ice"?x<=-3 || (z===-3 && x<5):Math.abs(x)<=2 && z>=-2 && z<=2;
       const tint=((x*x*7+z*z*19+x*z*3)&7)*.009;
       const color=road?[.36+tint,.40+tint,.47+tint]:[.21+tint,.34+tint,.23+tint*.65];
       box(out,[x,-.046,z],[road?.975:1.01,.097,road?.97:1.01],color);
@@ -376,6 +397,7 @@ export function actor(out, root, stride, turn, hit, guard, armed, casting=false)
 export function effectMesh(camera) {
   const surfaces = [];
   let recovery=[0,0,0,0], recoveryTint=[0,0,0];
+  let groundLight=[0,0,1,0];
   let refractive=false;
   function face(corners, us, color, kind, strength, seed, ys=[-1,1,1,-1]) {
     if (strength <= .004) return;
@@ -450,6 +472,7 @@ export function effectMesh(camera) {
       recovery=[mode,crest,bottom,strength];
       recoveryTint=tint;
     },
-    finish:()=>({recovery,recoveryTint,refractive,vertices:surfaces.sort((a,b)=>a.depth-b.depth).flatMap(s=>s.data)}),
+    groundLight:(root,radius,strength)=>{groundLight=[root[0],root[2],radius,strength];},
+    finish:()=>({recovery,recoveryTint,groundLight,refractive,vertices:surfaces.sort((a,b)=>a.depth-b.depth).flatMap(s=>s.data)}),
   };
 }

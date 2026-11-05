@@ -43,7 +43,7 @@ export function performance(art,passive,t) {
   const speed = art===0 ? Math.abs(windRoot(t+.03,passive)[0]-root[0])/.03 :
     art===2 ? Math.abs(breathRoot(t+.03)[0]-root[0])/.03 : 0;
   const hit = art===3 ? Math.max(...attackTimes.map(at => pulse(t,at-.34,at,at+.37))) : 0;
-  const ward=art===4?pulse(wave(t,passive?2.68:3.77,passive?.19:0),.02,.42,1.09):0;
+  const ward=art===4?pulse(wave(t,passive?2.68:3.83,passive?.37:0),.04,.59,1.43):0;
   const guard = art===3 ? hit : art===1 ? (passive ? .14 : pulse(t,0,.48,1.25)) : art===2 ? .38 : ward;
   return {
     root, speed, hit, guard,

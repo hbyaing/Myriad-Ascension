@@ -43,11 +43,82 @@ vec3 sceneAt(vec2 pixel) {
         /vec2(textureSize(opaqueScene,0))).rgb;
 }
 
+float stroke(float distanceToLine,float width) {
+    return 1.-smoothstep(width,width+max(fwidth(distanceToLine)*.80,.002),distanceToLine);
+}
+
+float petal(vec2 p,float height,float width) {
+    float u=clamp(p.y/height,0.,1.);
+    float edge=abs(p.x)-width*pow(max(0.,sin(u*3.141593)),.83);
+    float gate=smoothstep(0.,.052,u)*(1.-smoothstep(.978,1.,u));
+    return gate*(stroke(abs(edge),.011)+.14*(1.-smoothstep(-.014,.015,edge)));
+}
+
+float glyph(vec2 g,float variation) {
+    float stem=stroke(abs(g.x+mix(-.26,.24,variation)),.052)*step(abs(g.y),.64);
+    float rails=stroke(abs(abs(g.y)-.45),.045)*step(abs(g.x),.53);
+    float cut=stroke(abs(g.y+.03),.045)*step(abs(g.x-.11),.36);
+    float block=stroke(abs(max(abs(g.x-.21),abs(g.y+.12))-.22),.041);
+    return clamp(rails+stem+mix(cut,block,variation)*.86,0.,1.);
+}
+
 void main() {
     vec2 p = shapeUV;
     float kind = params.x;
     float strength = params.y;
     float seed = params.z;
+    if(kind>22.5) {
+        vec2 v=vec2(p.x*2.-1.,p.y);
+        float cell=max(abs(v.x),abs(v.y));
+        float grain=hash(floor((v+1.)*4.)+seed*4.);
+        float a=(1.-smoothstep(.87,.99,cell))*strength*(.48+.50*grain);
+        frag=vec4(color*a,a);
+        emissionLayer=vec4(0.);
+        return;
+    }
+    if(kind>21.5) {
+        float u=p.x;
+        float spine=p.y-.24*sin(u*3.14159);
+        float width=.62*pow(max(0.,sin(u*3.14159)),.91);
+        float rim=stroke(abs(abs(spine)-width),.035);
+        float vein=gaussian(spine*13.)*.39;
+        float fill=(1.-smoothstep(-.013,.034,abs(spine)-width))*.30;
+        float shape=(rim*.70+vein+fill)*smoothstep(.015,.11,u)*(1.-smoothstep(.91,1.,u));
+        float alpha=clamp(shape*strength,0.,1.);
+        vec3 light=mix(color,vec3(1.,.98,.85),rim*.73);
+        frag=vec4(light*alpha,alpha);
+        emissionLayer=vec4(light*alpha*.67,alpha);
+        return;
+    }
+    if(kind>20.5) {
+        float u=p.x;
+        float side=abs(p.y);
+        float envelope=smoothstep(0.,.050,u)*(1.-smoothstep(.91,1.,u));
+        float trim=stroke(abs(side-.79),.045);
+        float inner=stroke(abs(side-.65),.019)*.34;
+        float tick=u*36.-time*.53+seed*.41;
+        float runes=glyph(vec2((fract(tick)-.5)*2.,p.y),mod(floor(tick),2.));
+        float foil=(1.-smoothstep(.74,.95,side))*(.12+.085*sin(u*15.-time*2.6));
+        float tangent=abs(dot(normalize(world.xz),normalize(viewBack.xz)));
+        float facing=.57+.43*smoothstep(0.,.43,tangent);
+        float alpha=clamp(strength*envelope*facing*(trim*.91+inner+runes*.75+foil),0.,.94);
+        vec3 light=mix(color,vec3(1.,.98,.83),max(trim,runes)*.84);
+        frag=vec4(light*alpha,alpha);
+        emissionLayer=vec4(light*alpha*(.27+.55*max(trim,runes)),alpha);
+        return;
+    }
+    if(kind>19.5) {
+        float h=p.x;
+        float side=p.y;
+        float weight=mix(.21,1.24,.5-.5*dot(vec2(cos(seed),sin(seed)),viewBack.xz));
+        float fade=smoothstep(0.,.10,h)*(1.-smoothstep(.71,1.,h));
+        float face=(1.-smoothstep(.42,1.,abs(side)))*.76+gaussian((side+.45)*16.)*.29;
+        float detail=.71+.29*noise(vec2(floor(side*8.)+seed,h*1.5+time*.32));
+        float alpha=fade*face*detail*strength*weight*.25;
+        frag=vec4(color*alpha,alpha);
+        emissionLayer=vec4(color*alpha*.52,alpha);
+        return;
+    }
     if(kind>18.5) {
         vec2 v=vec2(p.x*2.-1.,p.y);
         vec2 pixel=floor(v*vec2(45.,14.)+seed*13.);
@@ -72,14 +143,27 @@ void main() {
     }
     if(kind>16.5) {
         vec2 v=vec2(p.x*2.-1.,p.y);
-        float box=max(abs(v.x),abs(v.y));
-        float outer=gaussian((box-.79)*48.);
-        float inner=gaussian((box-.67)*60.);
-        float corner=step(.54,min(abs(v.x),abs(v.y)));
-        float inlay=gaussian((abs(v.x)+abs(v.y)-.46)*46.);
-        float alpha=strength*(outer*.48+inner*.21+inlay*.25+outer*corner*.38);
-        frag=vec4(color*alpha,alpha);
-        emissionLayer=vec4(color*alpha*.41,alpha);
+        float r=length(v), a=atan(v.y,v.x);
+        float a8=(fract(a/6.283185*8.+.5)-.5)*.785398;
+        float b8=(fract(a/6.283185*8.)-.5)*.785398;
+        float lotus=petal(vec2(r*sin(a8),r*cos(a8)-.061),.54,.104);
+        float innerPetal=petal(vec2(r*sin(b8),r*cos(b8)-.046),.396,.091);
+        float rings=stroke(abs(r-.805),.008)*.89+stroke(abs(r-.620),.005)*.56
+            +stroke(abs(r-.903),.003)*.32+stroke(abs(r-.075),.006)*.52;
+        float tile=a/6.283185*16.+.5;
+        float mark=glyph(vec2((fract(tile)-.5)*2.36,(r-.715)*13.),mod(floor(tile),2.));
+        float pin=stroke(abs(r*sin(b8)),.007)*smoothstep(.78,.82,r)*(1.-smoothstep(.925,.945,r));
+        float cardinal=(fract(a/6.283185*4.+.5)-.5)*1.570796;
+        vec2 seal=vec2(r*sin(cardinal),r*cos(cardinal)-.805);
+        float knot=stroke(abs(abs(seal.x)+abs(seal.y)-.043),.006);
+        knot+=stroke(abs(seal.x),.006)*step(abs(seal.y),.089);
+        knot+=stroke(abs(seal.y),.006)*step(abs(seal.x),.064);
+        float mist=gaussian((r-.81)*11.)*.13+gaussian(r*3.)*.11;
+        float lines=max(max(lotus*.90,innerPetal*.63),max(rings,mark*.76+pin*.53+knot*.83));
+        float alpha=clamp(strength*(lines+mist),0.,.95);
+        vec3 light=mix(color,vec3(1.,.98,.83),clamp(lines,0.,1.)*.83);
+        frag=vec4(light*alpha,alpha);
+        emissionLayer=vec4(light*alpha*(.39+.28*lines),alpha);
         return;
     }
     if(kind>15.5) {
@@ -87,28 +171,25 @@ void main() {
         float curl=p.y+.24*sin(u*8.+seed);
         float chip=fract(noise(floor(vec2(u,curl)*vec2(30.,14.)))*5.7);
         float a=gaussian(curl*2.3)*smoothstep(0.,.14,u)*(1.-smoothstep(.72,1.,u));
-        float alpha=strength*a*(.33+.64*smoothstep(.17,.54,chip));
+        float alpha=strength*a*(.30+.66*smoothstep(.17,.54,chip));
         float seam=gaussian((curl+.17*sin(u*10.))*11.)*smoothstep(.30,.76,u);
-        frag=vec4((mix(color*.63,vec3(.40,.28,.31),chip*.44)+vec3(.13,.06,.09)*seam)*alpha,alpha);
+        frag=vec4((mix(color*.61,vec3(.47,.23,.43),chip*.47)+vec3(.12,.056,.14)*seam)*alpha,alpha);
         emissionLayer=vec4(0.);
         return;
     }
     if(kind>14.5) {
-        vec2 v=vec2(p.y,p.x*2.-1.);
-        float shape=max(abs(v.x),abs(v.y));
-        float corner=max(0.,abs(v.x)+abs(v.y)-1.58);
-        float paper=1.-smoothstep(.96,1.,shape+corner);
-        float frame=gaussian((shape+corner-.84)*38.);
-        float stem=gaussian((v.x+.09)*26.)*(1.-smoothstep(.52,.68,abs(v.y)));
-        float fork=gaussian((abs(v.x)-.33)*30.)*(1.-smoothstep(.19,.32,abs(v.y+.08)));
-        float teeth=gaussian((abs(v.y+.06)-.36)*42.)*(1.-smoothstep(.32,.45,abs(v.x)));
-        float seedMark=gaussian((v.x-.20*sin(seed*2.3))*29.)*gaussian((v.y-.47)*38.);
-        float glyph=clamp(stem+fork+teeth+seedMark,0.,1.);
-        float cap=gaussian((abs(v.y)-.72)*46.)*gaussian(v.x*4.);
-        float alpha=paper*strength*(.19+.46*frame+.75*glyph+.37*cap);
-        vec3 jade=mix(color,vec3(1.,.78,.44),cap*.80+frame*.14);
-        frag=vec4(jade*alpha,alpha);
-        emissionLayer=vec4(jade*alpha*(.20+.43*glyph),alpha);
+        vec2 v=vec2(p.y,p.x*2.-.37);
+        float bloom=0.;
+        for(int i=-3;i<=3;i++) {
+            float angle=float(i)*.329;
+            vec2 q=vec2(dot(v,vec2(cos(angle),-sin(angle))),dot(v,vec2(sin(angle),cos(angle))));
+            bloom=max(bloom,petal(q,1.15-abs(float(i))*.135,.184-abs(float(i))*.013));
+        }
+        float cup=gaussian((length(vec2(v.x,v.y*2.9))-.58)*26.)*step(v.y,0.);
+        float alpha=clamp(strength*(bloom*.96+cup*.59+gaussian(length(v-vec2(0.,.35))*2.6)*.18),0.,.95);
+        vec3 light=mix(color,vec3(1.,1.,.91),clamp(bloom,0.,1.)*.84);
+        frag=vec4(light*alpha,alpha);
+        emissionLayer=vec4(light*alpha*.77,alpha);
         return;
     }
     if(kind>13.5) {
