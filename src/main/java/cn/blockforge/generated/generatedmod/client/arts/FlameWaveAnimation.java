@@ -78,14 +78,14 @@ final class FlameWaveAnimation {
     }
 
     private void crest(FourArtsGeometry fx,double age,double front) {
-        double strength=ease(.36,.57,age)*(1-ease(1.00,1.49,age));
+        double strength=ease(.36,.57,age)*(1-ease(1.14,1.54,age));
         if(strength<=.004) return;
         double settle=.26*ease(4.40,RANGE,front);
         int sections=88;
         for(int layer=0;layer<3;layer++) {
             Vec3[] previous=null;
             int tint=layer==0?COPPER:VERMILION;
-            double opacity=strength*(layer==0?.92:layer==1?.62:.36);
+            double opacity=strength*(layer==0?.94:layer==1?.54:.29);
             for(int i=0;i<=sections;i++) {
                 double u=i/(double)sections, a=angle(u);
                 double taper=Math.pow(Math.sin(Math.PI*u),.53);

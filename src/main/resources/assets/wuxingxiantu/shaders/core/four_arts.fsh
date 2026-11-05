@@ -193,7 +193,7 @@ void main() {
         float cinder=smoothstep(.71,.91,hash(cell))*smoothstep(.48,.79,grain*.68+.32*splatter);
         float shine=scorched*cinder*(1.-smoothstep(.28,1.25,elapsed))*(.67+.33*sin(time*9.+splatter*13.));
         float opacity=floorMask*scorched*smoothstep(.29,.79,grain)*.25;
-        vec3 light=vec3(1.,.38,.068)*(shine*.68+bounce*(.37+.28*grain));
+        vec3 light=vec3(1.,.38,.068)*(shine*.68+bounce*(.46+.34*grain));
         frag=vec4(light*floorMask,opacity);
         return;
     }
@@ -254,8 +254,9 @@ void main() {
         float flow=noise(vec2(x*42.+seed,y*3.-time*4.));
         float cracks=noise(vec2(x*95.,y*6.+time*2.));
         float heat=.34+.44*y+.31*flow;
-        float alpha=end*strength*smoothstep(.04,.73,y)*(1.-smoothstep(.84,1.,y))
-            *(.39+.61*smoothstep(.22,.76,flow+.24*cracks));
+        float root=smoothstep(.05,.72,y)*(1.-smoothstep(.84,1.,y));
+        float density=.46+.74*smoothstep(.22,.76,flow+.24*cracks);
+        float alpha=end*root*(1.-exp(-2.48*strength*density));
         vec3 light=fireColor(heat);
         frag=vec4(light*alpha,alpha);
         frag.rgb+=(light*alpha*(.52+.41*y))*.38;
@@ -279,10 +280,11 @@ void main() {
         float root=gaussian((h-.15-.13*fold)*6.2);
         float curl=gaussian((h-.68-.09*fold)*10.0)*smoothstep(.17,.87,knots);
         float heat=.22+.42*root+.28*streak+.25*curl+.19*grains+.28*filament-.18*h;
-        float alpha=gate*strength*(.24+.48*smoothstep(.18,.73,turbulence)+.31*root+.15*curl+.21*filament);
+        float density=.58+.73*smoothstep(.18,.73,turbulence)+.42*root+.19*curl+.26*filament;
+        float alpha=gate*(1.-exp(-2.82*strength*density));
         vec3 light=fireColor(heat)*mix(color*.75+vec3(.29),vec3(1.),root*.72);
         frag=vec4(light*alpha,alpha);
-        frag.rgb+=(light*alpha*(.30+.64*heat))*.38;
+        frag.rgb+=(light*alpha*(.21+.43*heat)+vec3(1.,.39,.067)*alpha*filament*.30)*.34;
         return;
     }
 

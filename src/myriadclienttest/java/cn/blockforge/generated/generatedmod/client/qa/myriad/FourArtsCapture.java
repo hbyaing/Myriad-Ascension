@@ -78,6 +78,7 @@ public final class FourArtsCapture {
     private static final List<Integer> flameTargets=new ArrayList<>();
     private static boolean formationCaptured;
     private static boolean flameGatherCaptured;
+    private static boolean flameCrestCaptured;
     private static float iceDamage;
     private static Method cameraPosition;
 
@@ -308,6 +309,13 @@ public final class FourArtsCapture {
                 }
                 flameGatherCaptured=true;
             }
+            if(stage==15 && !flameCrestCaptured && tick>=69 && tick<=72 && count>baseline
+                    && (drawMaterials()&FLAME_TRAVEL)==FLAME_TRAVEL) {
+                try(var screenshot=Screenshot.takeScreenshot(mc.getMainRenderTarget())) {
+                    screenshot.writeToFile(OUT.resolve("flame-crest.png"));
+                }
+                flameCrestCaptured=true;
+            }
             boolean actual=count>baseline && (drawMaterials()&wanted)==wanted && matchesMode(mc);
             if(actual && firstDrawTick<0) firstDrawTick=tick;
             int capture=stage==1?firstDrawTick+6:stage==3?firstDrawTick+9:stage==5?firstDrawTick+5
@@ -335,7 +343,7 @@ public final class FourArtsCapture {
                 mc.getSingleplayerServer().submit(()->checkIceTargets(serverPlayer(mc),shouldHit)).join();
             }
             if(stage==15) {
-                if(!flameGatherCaptured) throw new AssertionError("Missing flame gathering frame");
+                if(!flameGatherCaptured || !flameCrestCaptured) throw new AssertionError("Missing flame gathering or crest frame");
                 mc.getSingleplayerServer().submit(()->checkFlameTargets(serverPlayer(mc),true)).join();
                 for(int id:flameTargets.subList(0,2)) {
                     var target=mc.level.getEntity(id);
