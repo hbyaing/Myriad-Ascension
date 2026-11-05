@@ -169,27 +169,33 @@ vec4 swordMaterial(){
         }
         if(band==48.0||band==52.0||band==54.0||band==56.0)return vec4(vertexColor.rgb*(band==52.0||band==56.0?2.8:1.3),pow(edge,1.7)*vertexColor.a);
         if(band==38.0){
-            float flow=arc+EffectTime*4.0;
+            float flow=arc+EffectTime*12.0;
             float stripe=sin(flowAngle(flow,20.0,0.0)+sin(flowAngle(flow,4.0,0.0)));
             return vec4(vertexColor.rgb,pow(edge,2.3)*(.78+.22*smoothstep(-.7,.8,stripe))*vertexColor.a);
         }
         if(band==28.0){
             // V7 open silk: broad density patches and curled ragged edges.
-            // All layers translate down the head-relative arc at 4 blocks/s.
-            // A 128-second clock wrap shifts the field by exactly 512 blocks.
-            float flow=arc+EffectTime*4.0;
-            vec2 p=vec2(flow*.125,across*2.2);
-            vec2 warp=warpFlow(p,8.0);
-            float n=layeredFlow(p+warp*.82,8.0);
-            float large=layeredFlow(vec2(flow*.0625,across*.90)+warp*.35,4.0);
+            // All layers translate down the head-relative arc at 12 blocks/s.
+            // A 128-second clock wrap shifts the field by exactly 1536 blocks.
+            float flow=arc+EffectTime*12.0;
+            vec2 p=vec2(flow*.25,across*2.2);
+            vec2 warp=warpFlow(p,64.0);
+            float n=layeredFlow(p+warp*.82,64.0);
+            float large=layeredFlow(vec2(flow*.125,across*.90)+warp*.35,32.0);
             float ragged=abs(across)+(.07+.11*(1.0-edge))*sin(flowAngle(flow,24.0,0.0)+n*4.0);
             float fringe=(1.0-smoothstep(.59,.99,ragged))*smoothstep(.15,.59,large+edge*.29);
-            float fibers=pow(smoothstep(.30,.79,layeredFlow(vec2(flow*.03125,across*8.0+n*.9)+warp*.35,2.0)),2.8);
+            float fibers=pow(smoothstep(.30,.79,layeredFlow(vec2(flow*.0625,across*8.0+n*.9)+warp*.35,16.0)),2.8);
             float ridges=pow(max(0.0,1.0-abs(n-.49)*7.0),4.0);
             vec2 silkUv=vec2(across*.43,.42*sin(flowAngle(flow,32.0,0.0)))+.5+warp*.10;
             float silk=texture(SmokeAtlas,vec2(.75,0.0)+silkUv*vec2(.25,.5)).a;
+            // The broad fold carries the sheen through the translucent film,
+            // so its motion remains visible even where the fine ridges are small.
+            float fold=pow(.5+.5*sin(flowAngle(flow,20.0,0.0)+across*1.1+warp.y*.7),3.0);
+            float sheen=fold*pow(edge,.7)*(.48+.52*large);
             vec3 rgb=vertexColor.rgb*(.65+n*.25)+vec3(.20,.16,.07)*(fibers*.13+ridges*.12);
-            return vec4(rgb*1.45,fringe*(.38+large*.50)*(.60+fibers*.22+ridges*.20)*(.82+.18*silk)*vertexColor.a);
+            rgb+=vec3(.64,.44,.19)*sheen;
+            float density=fringe*(.38+large*.50)*(.60+fibers*.22+ridges*.20)*(.82+.18*silk);
+            return vec4(rgb*1.45,density*(.78+.85*sheen)*vertexColor.a);
         }
         // Wider finite support lets the light decay before the mesh ends.
         // Retain the bright width without the old HDR-clipped flat slab.

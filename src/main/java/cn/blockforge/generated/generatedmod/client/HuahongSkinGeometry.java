@@ -357,7 +357,7 @@ final class HuahongSkinGeometry {
         }
         strip(haze,10,true);strip(hot,22,true);
     }
-    private static final double FAN_OPENING_SPEED=11.5,FAN_LIFETIME=2.4,FAN_FLOW_SPEED=4;
+    private static final double FAN_OPENING_SPEED=11.5,FAN_LIFETIME=2.4,FAN_FLOW_SPEED=12;
     private record FanPoint(Vec3 p,Vec3 normal,double alpha,double phase){}
     private List<FanSample> fanSamples(){
         if(canonical.size()<2)return List.of();
@@ -388,19 +388,20 @@ final class HuahongSkinGeometry {
         Frame basis=h.frame();
         Vec3 f=basis.forward(),s=basis.side(),up=basis.up();
         double lateral=(.014+1.6*(.26+rank*1.45)*open)*(1+.08*Math.sin(flow*.27+phase)*open);
-        double wave=(Math.sin(flow*.36+phase)*.44+Math.sin(flow*.48+phase*1.7)*.055)*open;
-        double half=(.045+.43*(.50+.60*(1-rank)))*smooth(0,.21,age)*Math.pow(v,.65)*(1+.20*Math.sin(flow*.32+phase));
+        double fold=Math.sin(flow*.34+phase);
+        double wave=(fold*.64+Math.sin(flow*.53+phase*1.7)*.10)*open;
+        double half=(.045+.43*(.50+.60*(1-rank)))*smooth(0,.21,age)*Math.pow(v,.65)*(1+.26*fold);
         // Separate birth-anchored azimuths form an open spatial fan. Previously
         // every centre used the same .79/.61 diagonal, so all films shared a plane.
         double azimuth=.15+(j-1)*.78+(sign<0?Math.PI:0);
         Vec3 radial=s.scale(Math.cos(azimuth)).add(up.scale(Math.sin(azimuth))),around=f.cross(radial).normalize();
-        double roll=.25+sign*.32+Math.sin(flow*.31+phase)*.45+age*.24;
+        double roll=.25+sign*.32+Math.sin(flow*.34+phase+.8)*.52+age*.24;
         Vec3 across=radial.scale(Math.cos(roll)).add(around.scale(Math.sin(roll))),normal=f.cross(across).normalize();
         double curlGain=.80+.42*Math.sin(flow*.35+phase);
         double curl=half*(u*u-.27)*curlGain;
         double wrinkle=(.015*Math.sin(flow*.92+u*2.5+phase)+.012*Math.sin(flow*.65-u*3.2+phase*.6))*open;
         Vec3 p=basis.p().add(f.scale((.12*Math.exp(-age*7)-half*.22*(1-u*u)*open)*HuahongHeadBridge.BODY_SCALE))
-                .add(radial.scale(lateral*HuahongHeadBridge.BODY_SCALE)).add(around.scale(wave*.55*HuahongHeadBridge.BODY_SCALE))
+                .add(radial.scale(lateral*HuahongHeadBridge.BODY_SCALE)).add(around.scale(wave*.78*HuahongHeadBridge.BODY_SCALE))
                 .add(up.scale(-age*.06*HuahongHeadBridge.BODY_SCALE))
                 .add(across.scale(half*u*HuahongHeadBridge.BODY_SCALE)).add(normal.scale((curl+wrinkle)*HuahongHeadBridge.BODY_SCALE));
         Vec3 du=across.scale(half).add(normal.scale(2*half*u*curlGain)).add(f.scale(half*.44*u*open));

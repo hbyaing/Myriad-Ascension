@@ -77,11 +77,11 @@ final class HuahongMaterialQa {
                 float[] gauzeStart=render(program,28,-16,7.125F);
                 float[] gauzeLater=render(program,28,-16,8.125F);
                 for(int i=3;i<gauzeStart.length;i+=4)gauzeMotion=Math.max(gauzeMotion,Math.abs(gauzeLater[i]-gauzeStart[i]));
-                double gauzeTransport=difference(gauzeLater,render(program,28,-12,7.125F));
+                double gauzeTransport=difference(gauzeLater,render(program,28,-4,7.125F));
                 if(gauzeMotion<.08||gauzeTransport>.002)throw new AssertionError("Fan primary gauze failed visible advection: "+gauzeMotion+" / "+gauzeTransport);
                 return Map.of("passed",true,"comparisons",comparisons,"maxChannelPeriodError",error,
                         "fanRidge120FpsMaxStep",maxStep,"fanRidgeTwoSecondMotion",motion,"fanRidge128SecondWrapDifference",wrap,
-                        "gauzeAlphaChangeOneSecond",gauzeMotion,"gauze4BlockAdvectionError",gauzeTransport);
+                        "gauzeAlphaChangeOneSecond",gauzeMotion,"gauze12BlockAdvectionError",gauzeTransport);
             }
             float[] noseCenter=probe(program,.5F,.5F,7.125F);difference(noseCenter,noseCenter);
             if(noseCenter[3]<.1F)throw new AssertionError("Band32 nucleus has no center coverage");
