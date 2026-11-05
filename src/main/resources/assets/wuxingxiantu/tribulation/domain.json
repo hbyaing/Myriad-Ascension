@@ -21,7 +21,7 @@
   "throttle": 0.25,
   "orbitExtendSpeed": 20,
   "currentWidth": 0.007,
-  "glowWidth": 0.34,
+  "glowWidth": 0.28,
   "coreGain": 3.8,
   "glowGain": 1.5,
   "gradientRatio": 48,

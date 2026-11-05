@@ -6,6 +6,7 @@ uniform float Gain;
 uniform float RoundJoint;
 uniform float Core;
 uniform float Vivid;
+uniform float TranslucentHalo;
 uniform sampler2D DepthSnapshot;
 uniform float LateDepthEnabled;
 uniform vec2 OutputSize;
@@ -15,6 +16,14 @@ void main(){
  float coverage=RoundJoint>0.5?roundCoverage:uv.x;
  float d=RoundJoint>0.5?length(vec2(uv.x/max(roundCoverage,1e-20),uv.y)):abs(uv.y*2.0-1.0);
  if(d>=1.0)discard;
+ if(TranslucentHalo>.5){
+  float sleeve=1.0-smoothstep(0.32,0.70,d);
+  float fringe=1.0-smoothstep(0.50,1.0,d);
+  float opacity=(1.0-exp(-Gain))*0.82;
+  float a=vertexColor.a*coverage*opacity*(0.80*sleeve+0.20*fringe);
+  fragColor=vec4(vertexColor.rgb*a,a);
+  return;
+ }
  float falloff=Core>.5?1.0-smoothstep(0.15,0.75,d):max(0.0,exp(-8.0*d*d)-exp(-8.0));
  if(Core>.5 && Vivid>.5){
   float peak=max(vertexColor.r,max(vertexColor.g,vertexColor.b));

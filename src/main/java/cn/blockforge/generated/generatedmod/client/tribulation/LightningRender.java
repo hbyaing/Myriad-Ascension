@@ -70,6 +70,9 @@ public final class LightningRender extends RenderType {
         }
     }
     static void drawOrbit(List<OrbitField.Segment> list,LightningRecipe r,PoseStack pose,Vec3 camera) {
+        drawOrbit(list,r,pose,camera,null);
+    }
+    static void drawOrbit(List<OrbitField.Segment> list,LightningRecipe r,PoseStack pose,Vec3 camera,List<Runnable> deferredCores) {
         if(shader==null||vividShader==null||list.isEmpty())return;
         CoverageView view=coverageView(pose);
         Map<Long,List<Node>> paths=new LinkedHashMap<>();
@@ -79,11 +82,7 @@ public final class LightningRender extends RenderType {
             if(seg.a().distanceToSqr(seg.b())>1e-12)nodes.add(new Node(seg.b(),seg.width(),seg.alongB(),seg.alpha()));
         }
         double baseWidth=r.mode.equals("orbit")?r.currentWidth:r.strikeWidth;
-        halos(paths.values(),r,baseWidth,pose,camera,view);
-        if(cores(paths.values(),r,pose,camera,view))return;
-        material(r,false);
-        for(var path:paths.values())ribbon(path,2,pose,camera,false,r,view);
-        BUFFER.endBatch(type(false,r));
+        drawLayers(paths.values(),r,baseWidth,pose,camera,view,deferredCores);
     }
     /** Wide soft sky illumination shares the stroke halo's depth and shader-pack path. */
     static void drawSkyGlow(Vec3 start,Vec3 end,double brightness,PoseStack pose,Vec3 camera) {
@@ -96,6 +95,9 @@ public final class LightningRender extends RenderType {
         LightningHalo.draw(List.of(path),r,view.projection(),pose.last().pose(),view.width(),view.height());
     }
     static void drawBolt(BoltGeometry bolt,LightningRecipe r,double ticks,PoseStack pose,Vec3 camera) {
+        drawBolt(bolt,r,ticks,pose,camera,null);
+    }
+    static void drawBolt(BoltGeometry bolt,LightningRecipe r,double ticks,PoseStack pose,Vec3 camera,List<Runnable> deferredCores) {
         if(shader==null||vividShader==null)return;
         LightningEnvelope env=new LightningEnvelope(r);
         double power=env.brightness(ticks),progress=env.propagation(ticks);
@@ -112,10 +114,20 @@ public final class LightningRender extends RenderType {
             nodes.add(new Node(end,seg.widthA()+(seg.widthB()-seg.widthA())*f,
                 seg.alongA()+(seg.alongB()-seg.alongA())*f,power*seg.intensity()));
         }
-        halos(paths.values(),r,Math.max(.004,r.strikeWidth),pose,camera,view);
-        if(cores(paths.values(),r,pose,camera,view))return;
+        drawLayers(paths.values(),r,Math.max(.004,r.strikeWidth),pose,camera,view,deferredCores);
+    }
+    private static void drawLayers(java.util.Collection<List<Node>> paths,LightningRecipe r,double baseWidth,
+                                   PoseStack pose,Vec3 camera,CoverageView view,List<Runnable> deferredCores) {
+        if(paths.isEmpty())return;
+        boolean translucentHalo=deferredCores!=null;
+        halos(paths,r,baseWidth,pose,camera,view,translucentHalo);
+        if(translucentHalo)deferredCores.add(()->drawCores(paths,r,pose,camera,view));
+        else drawCores(paths,r,pose,camera,view);
+    }
+    private static void drawCores(java.util.Collection<List<Node>> paths,LightningRecipe r,PoseStack pose,Vec3 camera,CoverageView view) {
+        if(cores(paths,r,pose,camera,view))return;
         material(r,false);
-        for(var path:paths.values())ribbon(path,2,pose,camera,false,r,view);
+        for(var path:paths)ribbon(path,2,pose,camera,false,r,view);
         BUFFER.endBatch(type(false,r));
     }
     private static boolean cores(java.util.Collection<List<Node>> paths,LightningRecipe r,PoseStack pose,Vec3 camera,CoverageView view){
@@ -125,12 +137,12 @@ public final class LightningRender extends RenderType {
         for(var path:paths)strokes.add(path.stream().map(node->new HaloGeometry.Point(node.p().subtract(camera),node.width()*2,node.along(),node.alpha())).toList());
         return LightningHalo.drawCore(strokes,r,view.projection(),pose.last().pose(),view.width(),view.height());
     }
-    private static void halos(java.util.Collection<List<Node>> paths,LightningRecipe r,double baseWidth,PoseStack pose,Vec3 camera,CoverageView view){
+    private static void halos(java.util.Collection<List<Node>> paths,LightningRecipe r,double baseWidth,PoseStack pose,Vec3 camera,CoverageView view,boolean translucent){
         if(r.glowGain<=0)return;
         double scale=LightningAppearance.ribbonScale(r,true,baseWidth);
         List<List<HaloGeometry.Point>> strokes=new ArrayList<>();
         for(var path:paths)strokes.add(path.stream().map(node->new HaloGeometry.Point(node.p().subtract(camera),node.width()*scale,node.along(),node.alpha())).toList());
-        LightningHalo.draw(strokes,r,view.projection(),pose.last().pose(),view.width(),view.height());
+        LightningHalo.draw(strokes,r,view.projection(),pose.last().pose(),view.width(),view.height(),translucent);
     }
     private static void ribbon(List<Node> path,double scale,PoseStack pose,Vec3 cam,boolean halo,LightningRecipe r,CoverageView view) {
         if(path.size()<2)return;

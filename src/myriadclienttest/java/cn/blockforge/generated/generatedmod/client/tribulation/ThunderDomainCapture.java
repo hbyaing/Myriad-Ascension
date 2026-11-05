@@ -46,7 +46,7 @@ public final class ThunderDomainCapture {
             if((System.nanoTime()-START)/1e9>360)throw new AssertionError("Thunder domain QA timeout");
             if(!opened&&mc.player!=null)throw new AssertionError("Refuses existing world");
             if(!opened&&mc.getOverlay()==null&&(mc.screen instanceof net.minecraft.client.gui.screens.TitleScreen||mc.screen instanceof net.minecraft.client.gui.screens.AccessibilityOnboardingScreen)){
-                opened=true;mc.getWindow().setWindowed(1280,900);mc.options.renderDistance().set(2);mc.options.simulationDistance().set(5);mc.options.framerateLimit().set(40);mc.options.hideGui=true;
+                opened=true;mc.getWindow().setWindowed(1280,900);mc.options.renderDistance().set(5);mc.options.simulationDistance().set(5);mc.options.framerateLimit().set(40);mc.options.hideGui=true;
                 mc.getTutorial().setStep(net.minecraft.client.tutorial.TutorialSteps.NONE);
                 var rules=new GameRules();rules.getRule(GameRules.RULE_DOMOBSPAWNING).set(false,null);rules.getRule(GameRules.RULE_RANDOMTICKING).set(0,null);rules.getRule(GameRules.RULE_DAYLIGHT).set(false,null);
                 mc.createWorldOpenFlows().createFreshLevel("thunder-domain-qa-"+System.currentTimeMillis(),new LevelSettings("Thunder domain projection QA",GameType.CREATIVE,false,net.minecraft.world.Difficulty.NORMAL,true,rules,WorldDataConfiguration.DEFAULT),new WorldOptions(7217,false,false),net.minecraft.world.level.levelgen.presets.WorldPresets::createNormalWorldDimensions);
@@ -60,7 +60,7 @@ public final class ThunderDomainCapture {
                     var p=server.getPlayerList().getPlayer(id);var level=p.serverLevel();
                     if(scene==0)for(int x=-16;x<=16;x++)for(int z=-16;z<=16;z++)level.setBlock(new BlockPos(x,159,z),net.minecraft.world.level.block.Blocks.STONE.defaultBlockState(),2);
                     level.setDayTime(scene==2||scene==3?18000:6000);level.setWeatherParameters(12000,0,false,false);
-                    p.teleportTo(level,scene==1?28:scene==2?-25:0,178,scene==0?40:scene==1?28:32,scene==1?135:scene==2?-142:180,scene==2?8:0);
+                    p.teleportTo(level,scene==1?33:scene==2?-25:0,178,scene==0?40:scene==1?33:35,scene==1?135:scene==2?-144:180,scene==2?8:0);
                     p.setInvulnerable(true);p.getAbilities().flying=true;p.getAbilities().mayfly=true;p.onUpdateAbilities();
                 });return;
             }
