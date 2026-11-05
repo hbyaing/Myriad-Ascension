@@ -23,6 +23,25 @@ float noise(vec2 p) {
                mix(hash(i+vec2(0,1)),hash(i+1.0),f.x),f.y);
 }
 
+float stroke(float distanceToLine,float width) {
+    return 1.-smoothstep(width,width+max(fwidth(distanceToLine)*.80,.002),distanceToLine);
+}
+
+float petal(vec2 p,float height,float width) {
+    float u=clamp(p.y/height,0.,1.);
+    float edge=abs(p.x)-width*pow(max(0.,sin(u*3.141593)),.83);
+    float gate=smoothstep(0.,.052,u)*(1.-smoothstep(.978,1.,u));
+    return gate*(stroke(abs(edge),.011)+.14*(1.-smoothstep(-.014,.015,edge)));
+}
+
+float glyph(vec2 g,float variation) {
+    float stem=stroke(abs(g.x+mix(-.26,.24,variation)),.052)*step(abs(g.y),.64);
+    float rails=stroke(abs(abs(g.y)-.45),.045)*step(abs(g.x),.53);
+    float cut=stroke(abs(g.y+.03),.045)*step(abs(g.x-.11),.36);
+    float block=stroke(abs(max(abs(g.x-.21),abs(g.y+.12))-.22),.041);
+    return clamp(rails+stem+mix(cut,block,variation)*.86,0.,1.);
+}
+
 void main() {
     vec2 sceneUv=gl_FragCoord.xy/OutputSize;
     float worldDepth=texture(Sampler0,sceneUv).r;
@@ -36,35 +55,135 @@ void main() {
         if(abs(position.w)<.00001) discard;
         vec3 delta=position.xyz/position.w-relativePosition;
         float contact=1.-smoothstep(.032,.099,length(delta));
-        float offset=(seed>1.5?abs(p.x-.60):p.x)-p.y;
-        float ridge=gaussian(offset*(seed>1.5?22.:28.));
-        float wake=gaussian((offset+(seed==1.?-.037:.037))*10.);
+        float offset=p.x-p.y;
+        float ridge=gaussian(offset*28.);
+        float wake=gaussian((offset+.037)*10.);
         float shimmer=.80+.20*cos(time*23.+p.x*31.);
         float opacity=contact*strength*(ridge*.29*shimmer+wake*.15);
+        if(seed>2.5) {
+            opacity=contact*strength*(.09+.44*gaussian((p.x-.61)*5.2))*.86;
+            frag=vec4(color*opacity,opacity);
+            return;
+        }
         if(opacity<.004) discard;
         frag=vec4(mix(color,vec3(.84,1.,1.),ridge*.25)*opacity,opacity);
         return;
     }
     if(gl_FragCoord.z>worldDepth+.000045) discard;
+    if(kind>16.5) {
+        vec2 v=vec2(p.x*2.-1.,p.y);
+        float radius=max(abs(v.x),abs(v.y));
+        float fill=1.-smoothstep(.81,.99,radius);
+        float bevel=gaussian((radius-.79)*16.);
+        float gleam=smoothstep(.02,.73,v.y-v.x*.34);
+        float alpha=strength*fill*(.30+.46*bevel+.23*gleam);
+        vec3 glint=mix(color,vec3(.89,.98,1.),bevel*.56+gleam*.20);
+        frag=vec4(glint*alpha,alpha);
+        frag.rgb+=(glint*alpha*.39)*.43;
+        return;
+    }
+    if(kind>15.5) {
+        vec2 v=vec2(p.x*2.-1.,p.y);
+        float cell=max(abs(v.x),abs(v.y));
+        float grain=hash(floor((v+1.)*4.)+seed*4.);
+        float a=(1.-smoothstep(.87,.99,cell))*strength*(.48+.50*grain);
+        frag=vec4(color*a,a);
+        return;
+    }
+    if(kind>14.5) {
+        float u=p.x;
+        float spine=p.y-.24*sin(u*3.14159);
+        float width=.62*pow(max(0.,sin(u*3.14159)),.91);
+        float rim=stroke(abs(abs(spine)-width),.035);
+        float vein=gaussian(spine*13.)*.39;
+        float fill=(1.-smoothstep(-.013,.034,abs(spine)-width))*.30;
+        float shape=(rim*.70+vein+fill)*smoothstep(.015,.11,u)*(1.-smoothstep(.91,1.,u));
+        float alpha=clamp(shape*strength,0.,1.);
+        vec3 light=mix(color,vec3(1.,.98,.85),rim*.73);
+        frag=vec4(light*alpha,alpha);
+        frag.rgb+=(light*alpha*.67)*.43;
+        return;
+    }
+    if(kind>13.5) {
+        float u=p.x;
+        float side=abs(p.y);
+        float envelope=smoothstep(0.,.050,u)*(1.-smoothstep(.91,1.,u));
+        float trim=stroke(abs(side-.79),.045);
+        float inner=stroke(abs(side-.65),.019)*.34;
+        float tick=u*36.-time*.53+seed*.41;
+        float runes=glyph(vec2((fract(tick)-.5)*2.,p.y),mod(floor(tick),2.));
+        float foil=(1.-smoothstep(.74,.95,side))*(.12+.085*sin(u*15.-time*2.6));
+        vec3 faceNormal=normalize(cross(dFdx(relativePosition),dFdy(relativePosition)));
+        float tangent=abs(dot(faceNormal,normalize(relativePosition)));
+        float facing=.57+.43*smoothstep(0.,.43,tangent);
+        float alpha=clamp(strength*envelope*facing*(trim*.91+inner+runes*.75+foil),0.,.94);
+        vec3 light=mix(color,vec3(1.,.98,.83),max(trim,runes)*.84);
+        frag=vec4(light*alpha,alpha);
+        frag.rgb+=(light*alpha*(.27+.55*max(trim,runes)))*.43;
+        return;
+    }
+    if(kind>12.5) {
+        float h=p.x;
+        float side=p.y;
+        float angle=seed*.19634954;
+        vec2 eye=-relativePosition.xz/max(length(relativePosition.xz),.06);
+        float weight=mix(.21,1.24,.5-.5*dot(vec2(cos(angle),sin(angle)),eye));
+        float fade=smoothstep(0.,.10,h)*(1.-smoothstep(.71,1.,h));
+        float face=(1.-smoothstep(.42,1.,abs(side)))*.76+gaussian((side+.45)*16.)*.29;
+        float detail=.71+.29*noise(vec2(floor(side*8.)+seed,h*1.5+time*.32));
+        float alpha=fade*face*detail*strength*weight*.25;
+        frag=vec4(color*alpha,alpha);
+        frag.rgb+=(color*alpha*.52)*.43;
+        return;
+    }
+    if(kind>11.5) {
+        vec2 v=vec2(p.x*2.-1.,p.y);
+        float r=length(v), a=atan(v.y,v.x);
+        float a8=(fract(a/6.283185*8.+.5)-.5)*.785398;
+        float b8=(fract(a/6.283185*8.)-.5)*.785398;
+        float lotus=petal(vec2(r*sin(a8),r*cos(a8)-.061),.54,.104);
+        float innerPetal=petal(vec2(r*sin(b8),r*cos(b8)-.046),.396,.091);
+        float rings=stroke(abs(r-.805),.008)*.89+stroke(abs(r-.620),.005)*.56
+            +stroke(abs(r-.903),.003)*.32+stroke(abs(r-.075),.006)*.52;
+        float tile=a/6.283185*16.+.5;
+        float mark=glyph(vec2((fract(tile)-.5)*2.36,(r-.715)*13.),mod(floor(tile),2.));
+        float pin=stroke(abs(r*sin(b8)),.007)*smoothstep(.78,.82,r)*(1.-smoothstep(.925,.945,r));
+        float cardinal=(fract(a/6.283185*4.+.5)-.5)*1.570796;
+        vec2 seal=vec2(r*sin(cardinal),r*cos(cardinal)-.805);
+        float knot=stroke(abs(abs(seal.x)+abs(seal.y)-.043),.006);
+        knot+=stroke(abs(seal.x),.006)*step(abs(seal.y),.089);
+        knot+=stroke(abs(seal.y),.006)*step(abs(seal.x),.064);
+        float mist=gaussian((r-.81)*11.)*.13+gaussian(r*2.35)*.17;
+        float lines=max(max(lotus*.90,innerPetal*.63),max(rings,mark*.76+pin*.53+knot*.83));
+        float alpha=clamp(strength*(lines+mist),0.,.95);
+        vec3 light=mix(color,vec3(1.,.98,.83),clamp(lines,0.,1.)*.83);
+        frag=vec4(light*alpha,alpha);
+        frag.rgb+=(light*alpha*(.39+.28*lines))*.43;
+        return;
+    }
     if(kind>10.5) {
-        float along=smoothstep(0.,.13,p.x)*(1.-smoothstep(.83,1.,p.x));
-        float fold=p.y-.21*sin(p.x*6.3+seed*.8);
-        float ridge=gaussian(fold*10.);
-        float silk=gaussian(fold*2.8)*(.24+.21*sin(p.x*15.+seed));
-        float filament=gaussian((fold-.34)*7.)*.20;
-        float alpha=along*(ridge*.72+silk+filament)*strength;
-        vec3 silver=mix(color*.71,vec3(.92,.99,1.),ridge*.83);
-        frag=vec4(silver*alpha+color*ridge*along*strength*.19,alpha);
+        vec2 v=vec2(p.y,p.x*2.-.37);
+        float bloom=0.;
+        for(int i=-3;i<=3;i++) {
+            float angle=float(i)*.329;
+            vec2 q=vec2(dot(v,vec2(cos(angle),-sin(angle))),dot(v,vec2(sin(angle),cos(angle))));
+            bloom=max(bloom,petal(q,1.15-abs(float(i))*.135,.184-abs(float(i))*.013));
+        }
+        float cup=gaussian((length(vec2(v.x,v.y*2.9))-.58)*26.)*step(v.y,0.);
+        float alpha=clamp(strength*(bloom*.96+cup*.59+gaussian(length(v-vec2(0.,.35))*2.6)*.18),0.,.95);
+        vec3 light=mix(color,vec3(1.,1.,.91),clamp(bloom,0.,1.)*.84);
+        frag=vec4(light*alpha,alpha);
+        frag.rgb+=(light*alpha*.77)*.43;
         return;
     }
     if(kind>9.5) {
-        vec2 v=vec2(p.x*2.-1.,p.y);
-        float curl=v.x+.20*sin(v.y*3.5+seed);
-        float shape=gaussian(curl*2.5)*gaussian(v.y*1.65);
-        float grain=noise(v*5.3+vec2(seed*2.9,-time*.72));
-        float alpha=shape*mix(.40,1.,smoothstep(.24,.70,grain))*strength*.78
-                *(1.-smoothstep(.68,1.,max(abs(v.x),abs(v.y))));
-        frag=vec4(color*alpha,alpha);
+        float u=p.x;
+        float curl=p.y+.24*sin(u*8.+seed);
+        float chip=fract(noise(floor(vec2(u,curl)*vec2(30.,14.)))*5.7);
+        float a=gaussian(curl*2.3)*smoothstep(0.,.14,u)*(1.-smoothstep(.72,1.,u));
+        float alpha=strength*a*(.30+.66*smoothstep(.17,.54,chip));
+        float seam=gaussian((curl+.17*sin(u*10.))*11.)*smoothstep(.30,.76,u);
+        frag=vec4((mix(color*.61,vec3(.47,.23,.43),chip*.47)+vec3(.12,.056,.14)*seam)*alpha,alpha);
         return;
     }
     float alpha;

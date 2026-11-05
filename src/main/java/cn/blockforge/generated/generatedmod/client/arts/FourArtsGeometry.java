@@ -11,9 +11,9 @@ import java.util.Comparator;
 import java.util.List;
 
 final class FourArtsGeometry {
-    static final int LINE=0, LEAF=1, INK=2, SPARK=3, SIGIL=4, GAUZE=5, CORE=6, SHARD=7, AIR=8, RECOVERY=9, ASH=10;
-    static final int SILVER=11;
-    static final int RISE=0, WASH=1, CHEST=2;
+    static final int LINE=0, LEAF=1, INK=2, SPARK=3, SIGIL=4, GAUZE=5, CORE=6, SHARD=7, AIR=8, RECOVERY=9;
+    static final int ASH=10, LOTUS=11, LOTUS_FIELD=12, LIGHT_SHAFT=13, SCRIPT_BAND=14, GOLD_PETAL=15, ASH_CHIP=16, GOLD_MOTE=17;
+    static final int RISE=0, LOTUS_LIGHT=3;
     private final Vec3 camera, right, up;
     private final List<Quad> quads=new ArrayList<>();
     private final List<Surface> surfaces=new ArrayList<>();
@@ -69,7 +69,7 @@ final class FourArtsGeometry {
         }
     }
 
-    private void quad(Vec3 a,Vec3 b,Vec3 c,Vec3 d,double u,double v,int rgb,int kind,double strength,int seed) {
+    void quad(Vec3 a,Vec3 b,Vec3 c,Vec3 d,double u,double v,int rgb,int kind,double strength,int seed) {
         if(strength<=.004) return;
         materials|=1<<kind;
         quads.add(new Quad(a,b,c,d,(float)u,(float)v,rgb,kind,

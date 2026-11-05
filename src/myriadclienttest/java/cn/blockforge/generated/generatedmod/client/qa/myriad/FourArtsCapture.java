@@ -57,7 +57,10 @@ public final class FourArtsCapture {
             FourArtsVisuals.GATHER,FourArtsVisuals.LIGHT,FourArtsVisuals.LIGHT,FourArtsVisuals.BLOOD,
             FourArtsVisuals.BLOOD,FourArtsVisuals.BLOOD,
             FourArtsVisuals.PURIFICATION,FourArtsVisuals.PURIFICATION,FourArtsVisuals.PURIFICATION};
-    private static final int[] LIMIT={14,40,31,25,35,31,31,24,24,17,14,40};
+    private static final int[] LIMIT={14,40,31,25,35,31,31,24,24,21,21,40};
+    private static final int LOTUS_BASE=1<<9|1<<11|1<<12|1<<15;
+    private static final int LOTUS_ACTIVE=1<<13|1<<14|1<<17;
+    private static final int LOTUS_STAINS=1<<10|1<<16;
     private static final List<Map<String,Object>> RESULTS=new ArrayList<>();
     private static final long START=System.nanoTime();
     private static boolean opened,ready,prepared,finished;
@@ -134,6 +137,7 @@ public final class FourArtsCapture {
                 prepared=true;tick=0;firstDrawTick=-1;baseline=drawCount();
                 mc.setScreen(null);
                 mc.options.keyUp.setDown(false);
+                if(stage>=9) mc.options.fov().set(58);
                 int mode=stage;
                 pending=mc.getSingleplayerServer().submit(()->configure(serverPlayer(mc),mode));
                 return;
@@ -166,6 +170,9 @@ public final class FourArtsCapture {
         if(mode<=1||mode>=9) player.setHealth(Math.max(1,player.getMaxHealth()-9));
         else player.setHealth(player.getMaxHealth());
         if(mode>=9) {
+            player.serverLevel().setDayTime(3600);
+            for(var golem:player.serverLevel().getEntitiesOfClass(net.minecraft.world.entity.animal.IronGolem.class,
+                    player.getBoundingBox().inflate(6))) golem.discard();
             if(mode!=10) player.addEffect(new net.minecraft.world.effect.MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN,1000,0,false,false));
             player.addEffect(new net.minecraft.world.effect.MobEffectInstance(MobEffects.DAMAGE_RESISTANCE,1000,0,false,false));
         }
@@ -197,8 +204,8 @@ public final class FourArtsCapture {
                 cameraPosition.setAccessible(true);
             }
             var p=Minecraft.getInstance().player;
-            Vec3 target=p.position().add(0,1.03,stage==7||stage==8?.40:0);
-            Vec3 origin=target.add(2.20,1.12,3.70);
+            Vec3 target=p.position().add(0,stage>=9?1.48:1.03,stage==7||stage==8?.40:0);
+            Vec3 origin=stage>=9?target.add(1.85,1.55,4.14):target.add(2.20,1.12,3.70);
             Vec3 toward=target.subtract(origin);
             cameraPosition.invoke(event.getCamera(),origin);
             event.setYaw((float)Math.toDegrees(Math.atan2(-toward.x,toward.z)));
@@ -218,8 +225,9 @@ public final class FourArtsCapture {
                 case 2,3 -> 1<<6;
                 case 4 -> 1<<5;
                 case 5 -> 1<<8;
-                case 9 -> 1<<9|1<<10;
-                case 10,11 -> 1<<9;
+                case 9 -> LOTUS_BASE|LOTUS_ACTIVE|LOTUS_STAINS;
+                case 10 -> LOTUS_BASE|LOTUS_ACTIVE;
+                case 11 -> LOTUS_BASE;
                 default -> 1<<2;
             };
             boolean actual=count>baseline && (drawMaterials()&wanted)==wanted && matchesMode(mc);
@@ -240,7 +248,8 @@ public final class FourArtsCapture {
             if(stage>=9 && (!mc.player.hasEffect(MobEffects.DAMAGE_RESISTANCE)
                     || mc.player.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)!=(stage==11)
                     || mc.player.getHealth()<=mc.player.getMaxHealth()-9
-                    || (stage!=9 && (drawMaterials()&(1<<10))!=0)))
+                    || (stage!=9 && (drawMaterials()&LOTUS_STAINS)!=0)
+                    || (stage==11 && (drawMaterials()&LOTUS_ACTIVE)!=0)))
                 throw new AssertionError("Purification visual did not match the applied heal and cleanse");
             try(var screenshot=Screenshot.takeScreenshot(mc.getMainRenderTarget())) {
                 screenshot.writeToFile(OUT.resolve(CASES[stage]+".png"));
@@ -289,7 +298,7 @@ public final class FourArtsCapture {
                 var hit=((java.util.ArrayDeque<?>)field(state,"hits")).peekLast();
                 yield hit!=null && (boolean)field(hit,"passive")==(stage==8);
             }
-            case 9,10,11 -> mc.level.getGameTime()-(long)field(state,"purification")<20
+            case 9,10,11 -> mc.level.getGameTime()-(long)field(state,"purification")<32
                     && (boolean)field(state,"passivePurification")==(stage==11)
                     && (int)field(state,"removedEffects")==(stage==9?1:0);
             default -> false;

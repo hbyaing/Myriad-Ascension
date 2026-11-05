@@ -105,7 +105,7 @@ public final class FourArtsEffects {
             state.hits.removeIf(hit->now-hit.tick>=14);
             if(now-state.lastState>27) state.bits=0;
             if(player.isRemoved() || !player.isAlive() || player.isSpectator() ||
-                    state.bits==0&&now-state.renewal>32&&now-state.purification>30&&now-state.gatherPulse>20&&state.hits.isEmpty()) {
+                    state.bits==0&&now-state.renewal>32&&now-state.purification>42&&now-state.gatherPulse>20&&state.hits.isEmpty()) {
                 iterator.remove();
                 continue;
             }
@@ -139,7 +139,7 @@ public final class FourArtsEffects {
         var state=STATES.get(player);
         long now=player.level().getGameTime();
         return state!=null && (now-state.renewal<(state.passiveRenewal?16:32)
-                || now-state.purification<(state.passivePurification?12:20));
+                || now-state.purification<(state.passivePurification?18:32));
     }
 
     static void pose(AbstractClientPlayer player,FourArtsPose.Sample pose) { POSES.put(player,pose); }
@@ -187,9 +187,11 @@ public final class FourArtsEffects {
                 FourArtsAnimation.renewal(geometry,base,player.getBbHeight(),age,state.passiveRenewal);
                 FourArtsAnimation.renewalSurface(geometry,surface,age,state.passiveRenewal);
             }
-            if(now-state.purification<30)
-                FourArtsAnimation.purification(geometry,surface,base,player.getBbHeight(),(now-state.purification)/20,
-                        state.passivePurification,state.removedEffects);
+            if(now-state.purification<(state.passivePurification?18:42)) {
+                Vec3 chest=sample==null || sample.chest()==null?null:FourArtsPose.Sample.inWorld(sample.chest(),inverse,camera);
+                FourArtsAnimation.purification(geometry,surface,base,chest,player.getBbHeight(),(now-state.purification)/20,
+                        state.passivePurification,state.removedEffects>0);
+            }
             if((state.bits&BLOOD_AURA)!=0) {
                 Vec3 hand=sample==null?FourArtsPose.fallbackHand(player,base,partial)
                         :FourArtsPose.Sample.inWorld(sample.hand(),inverse,camera);

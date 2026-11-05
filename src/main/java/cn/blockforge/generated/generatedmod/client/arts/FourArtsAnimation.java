@@ -10,8 +10,9 @@ import static cn.blockforge.generated.generatedmod.client.arts.FourArtsGeometry.
 final class FourArtsAnimation {
     private static final double TURN=Math.PI*2;
     private static final Vec3 UP=new Vec3(0,1,0);
-    private static final int WIND=0x87EDFF, PALE_WIND=0xD1FFF7, RECOVERY_CYAN=0x56EEDB, PURIFY_SILVER=0xE0F5FF;
+    private static final int WIND=0x87EDFF, PALE_WIND=0xD1FFF7, RECOVERY_CYAN=0x56EEDB;
     private static final int SPIRIT_BLUE=0x217AFF, SPIRIT_ICE=0x7DD4FF, CARMINE=0xFF1A38, RUBY=0xB00B2B;
+    private static final int IVORY=0xFFEBB0, GOLD=0xFFB347, SUN=0xFFCF78, STAIN=0x47164D;
     private static final int[] LEAF_COLORS={0x499D36,0x78C44D,0x9ED56B,0x398B4B};
 
     private FourArtsAnimation() {}
@@ -97,60 +98,112 @@ final class FourArtsAnimation {
         fx.surface(surface,-.09+pass*1.25,RISE,RECOVERY_CYAN,pulse*(passive?.73:age<1?.91:.68));
     }
 
-    static void purification(FourArtsGeometry fx,List<Vec3> surface,Vec3 base,double height,double time,boolean passive,int removed) {
-        double pass=time/(passive?.57:.98);
-        double intensity=removed>0?1:.78;
-        if(pass>=0 && pass<1) {
-            double pulse=ease(0,.10,pass)*(1-ease(.82,1,pass));
-            fx.surface(surface,passive?pass*.64:1.10-pass*1.28,passive?CHEST:WASH,PURIFY_SILVER,
-                    pulse*(passive?.64:.98*intensity));
-        }
+    static void purification(FourArtsGeometry fx,List<Vec3> surface,Vec3 base,Vec3 chest,double height,
+                             double time,boolean passive,boolean cleared) {
+        if(time<0 || time>=2.04) return;
+        double scale=Mth.clamp(height/2.075,.73,1.16);
         if(passive) {
-            double strength=pulse(time,0,.14,.59);
+            double strength=pulse(time,.025,.19,.88);
             if(strength<=.004) return;
-            double lift=ease(0,.59,time);
-            for(int i=0;i<2;i++) {
-                double start=i*Math.PI+.38+lift*.76;
-                fx.ribbon(curve(22,u->base.add(polar(.30+.16*Math.sin(Math.PI*u)+.15*lift,
-                                height*(.55+.20*u-.10*lift),start+u*1.96))),
-                        .055,PURIFY_SILVER,SILVER,strength*.65,i);
+            double rise=ease(.02,.70,time);
+            fx.surface(surface,0,LOTUS_LIGHT,IVORY,strength*.50);
+            lotusField(fx,base,.91+.25*rise,.22+rise*.13,strength*.58);
+            if(chest!=null) fx.stamp(chest.add(0,.12*rise*scale,0),.44,.42,IVORY,LOTUS,strength*.88,0,0);
+            for(int i=0;i<5;i++) {
+                var point=base.add(polar(.41+.24*rise,(.48+i*.21+.52*rise)*scale,i*2.399963+time*1.2));
+                fx.stamp(point,.087,.055,SUN,GOLD_PETAL,strength*.69,i,i*1.17);
             }
             return;
         }
 
-        double sweep=ease(.09,.91,time);
-        double haloStrength=pulse(time,0,.22,1.02)*intensity;
-        double radius=.44+.24*Math.sin(sweep*Math.PI);
-        double center=height*(1.10-1.065*sweep);
-        for(int i=0;i<4;i++) {
-            double start=i*TURN/4+time*.87;
-            fx.ribbon(curve(24,u->base.add(polar(radius+.035*Math.sin(u*Math.PI),
-                            center+height*.12*Math.sin(u*Math.PI),start+u*1.37))),
-                    .081,PURIFY_SILVER,SILVER,haloStrength,i);
-            Vec3 tip=base.add(polar(radius,center+height*.12,start+.69));
-            fx.stamp(tip,.20,.14,PURIFY_SILVER,SHARD,haloStrength*.72,i,start*.27);
-        }
-        double release=ease(.72,1.39,time);
-        double ringStrength=pulse(time,.72,.91,1.43)*intensity;
-        for(int i=0;i<4;i++) {
-            double start=i*TURN/4+.25+release*.18;
-            fx.ribbon(curve(18,u->base.add(polar(.48+.88*release,.032+.10*Math.sin(u*Math.PI)*(1-release),
-                            start+u*1.40))),
-                    .057,PURIFY_SILVER,SILVER,ringStrength*.80,i);
-        }
-        if(removed==0) return;
-        for(int i=0;i<removed*3+8;i++) {
-            double y=.19+(i%7)*.115;
-            double age=(time-(1.10-y)*.765)/.65;
+        double brightness=cleared?1:.86;
+        double cast=pulse(time,.025,.59,1.97)*brightness;
+        double ward=pulse(time,.17,.58,1.57);
+        double bloom=pulse(time,.25,.66,1.40)*brightness;
+        fx.surface(surface,0,LOTUS_LIGHT,IVORY,ward*.68);
+        lotusField(fx,base,.56+1.52*ease(.02,.49,time),.07+time*.17,cast);
+        purificationPillars(fx,base,scale,time,ward*brightness);
+        purificationSpiral(fx,base,scale,time,pulse(time,.09,.61,1.79)*brightness);
+        if(chest!=null) fx.stamp(chest,.61,.56,IVORY,LOTUS,bloom,0,0);
+        for(int i=0;i<11;i++) {
+            double age=(time-.17-(i%5)*.088)/(1.12+(i%3)*.12);
             if(age<=0 || age>=1) continue;
-            double angle=i*2.399963+age*.94;
-            double spread=.32+.055*(i%3)+.78*age;
-            Vec3 point=base.add(polar(spread,y*height+.16*age-.30*age*age,angle));
-            double ash=pulse(age,0,.19,.73);
-            double scale=.136+(i%4)*.034;
-            fx.stamp(point,scale*(1+.96*age),scale*.73,0x202C39,ASH,ash,i,angle+age*1.2);
-            double glint=pulse(age,.29,.56,1);
-            fx.stamp(point,.102,.076,PURIFY_SILVER,SPARK,glint*.88,i,0);
+            double phase=i*2.399963+age*1.86;
+            double size=.14+(i%5)*.023;
+            var point=base.add(polar(1.08+age*.54+(i%3)*.12,(.30+(i%5)*.36+age*1.68)*scale,phase));
+            fx.stamp(point,size*1.48,size*.78,i%3==0?IVORY:SUN,GOLD_PETAL,pulse(age,0,.29,1)*.95,i,
+                    phase+.38*Math.sin(age*9+i));
+        }
+        for(int i=0;i<36;i++) {
+            double age=(time-.11-(i%12)*.061)/1.24;
+            if(age<=0 || age>=1) continue;
+            double angle=i*2.399963+age*.91;
+            var point=base.add(polar(.34+(i%7)*.18+age*.24,(.17+(i%11)*.179+age*1.13)*scale,angle));
+            double size=.021+(i%6)*.009;
+            fx.stamp(point,size,size,i%4==0?GOLD:IVORY,GOLD_MOTE,pulse(age,0,.26,1)*.94,i,Math.sin(i)*.40);
+        }
+        if(cleared) purifiedStains(fx,base,scale,time);
+    }
+
+    private static void lotusField(FourArtsGeometry fx,Vec3 base,double radius,double angle,double strength) {
+        fx.plane(base.add(0,.029,0),polar(radius,0,angle),polar(radius,0,angle+Math.PI*.5),
+                SUN,LOTUS_FIELD,strength,0);
+    }
+
+    private static void purificationPillars(FourArtsGeometry fx,Vec3 base,double scale,double time,double strength) {
+        if(strength<=.004) return;
+        double height=3.85*scale*(.39+.61*ease(.05,.54,time));
+        for(int i=0;i<24;i++) {
+            double angle=i*2.399963;
+            double radius=.22+.90*fract(i*.381966);
+            Vec3 center=base.add(polar(radius,height*.5,angle));
+            double width=.105+.091*fract(i*.627);
+            int bearing=(int)Math.round(angle*32/TURN);
+            fx.plane(center,UP.scale(height*(.46+.05*Math.sin(i))),polar(width,0,angle+Math.PI*.5),
+                    i%3==0?GOLD:SUN,LIGHT_SHAFT,strength*(i%4==0?.76:.52),bearing);
+        }
+    }
+
+    private static void purificationSpiral(FourArtsGeometry fx,Vec3 base,double scale,double time,double strength) {
+        if(strength<=.004) return;
+        double end=.13+.87*ease(.18,.78,time);
+        double phase=-1.37+time*1.06;
+        Vec3 previous=base.add(polar(1.11,.13*scale,phase));
+        double previousHalf=.086*scale;
+        for(int i=1;i<=108;i++) {
+            double u=i/108.0;
+            double p=u*end;
+            double radius=1.11+.25*Math.sin(Math.PI*p)-.16*p;
+            var point=base.add(polar(radius,(.13+p*3.40)*scale,phase+p*1.83*TURN));
+            double half=(.086+.022*Math.sin(Math.PI*u))*scale;
+            fx.quad(previous.add(0,-previousHalf,0),previous.add(0,previousHalf,0),
+                    point.add(0,half,0),point.add(0,-half,0),(i-1)/108.0,u,IVORY,SCRIPT_BAND,strength,0);
+            previous=point;
+            previousHalf=half;
+        }
+    }
+
+    private static void purifiedStains(FourArtsGeometry fx,Vec3 base,double scale,double time) {
+        for(int i=0;i<6;i++) {
+            double age=(time-.29-i*.075)/.95;
+            if(age<=0 || age>=1) continue;
+            double alpha=pulse(age,0,.31,.87);
+            double peel=ease(0,.74,age);
+            double angle=i*TURN/6+age*.56;
+            double startHeight=.25+(i%3)*.36;
+            DoubleFunction<Vec3> path=u->{
+                double curl=Math.sin(Math.PI*u);
+                double radius=.25+(.68+.26*curl)*peel*u;
+                double y=(startHeight+.79*u+.59*peel+.15*curl)*scale;
+                return base.add(polar(radius,y,angle+u*1.10));
+            };
+            fx.ribbon(curve(27,path),.15+(i%3)*.034,STAIN,ASH,alpha*.90,i);
+            for(int j=0;j<10;j++) {
+                double u=(j+.5)/10;
+                Vec3 point=path.apply(u).add(polar(.042+.16*age,.13*Math.sin(i*12.7+j*2.1),i*2.2+j*2.399963));
+                double size=.024+.039*(.5+.5*Math.sin(j*2.36+i));
+                fx.stamp(point,size,size,0x5C2657,ASH_CHIP,alpha*(.71+.23*Math.sin(j+i)),j+i*10,j*.6);
+            }
         }
     }
 

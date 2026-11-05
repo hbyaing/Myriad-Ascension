@@ -22,7 +22,7 @@ import java.util.List;
 
 @Mod.EventBusSubscriber(modid=GeneratedMod.MOD_ID,value=Dist.CLIENT,bus=Mod.EventBusSubscriber.Bus.MOD)
 final class FourArtsPose extends RenderLayer<AbstractClientPlayer,PlayerModel<AbstractClientPlayer>> {
-    record Sample(Vec3 hand,List<Vec3> surface) {
+    record Sample(Vec3 hand,Vec3 chest,List<Vec3> surface) {
         static Vec3 inWorld(Vec3 point,Matrix4f inverse,Vec3 camera) {
             return camera.add(vec(inverse.transformPosition(new Vector3f((float)point.x,(float)point.y,(float)point.z))));
         }
@@ -48,14 +48,19 @@ final class FourArtsPose extends RenderLayer<AbstractClientPlayer,PlayerModel<Ab
         arm.translateAndRotate(pose);
         Vec3 hand=vec(pose.last().pose().transformPosition(new Vector3f(0,.53f,(float)-reach)));
         pose.popPose();
+        Vec3 chest=null;
         List<Vec3> surface=List.of();
         if(FourArtsEffects.needsSurface(player) && !player.isInvisible()) {
+            pose.pushPose();
+            model.body.translateAndRotate(pose);
+            chest=vec(pose.last().pose().transformPosition(new Vector3f(.08f,.33f,-.31f)));
+            pose.popPose();
             var positions=new SurfaceVertices();
             for(ModelPart part:List.of(model.head,model.body,model.leftArm,model.rightArm,model.leftLeg,model.rightLeg))
                 part.render(pose,positions,light,0);
             surface=positions.points;
         }
-        FourArtsEffects.pose(player,new Sample(hand,surface));
+        FourArtsEffects.pose(player,new Sample(hand,chest,surface));
     }
 
     static Vec3 fallbackHand(AbstractClientPlayer player,Vec3 base,float partial) {
