@@ -377,7 +377,9 @@ export function actor(out, root, stride, turn, hit, guard, armed, casting=false)
   for (const side of [-1,1]) {
     body([side*.094,1.688,.197],[.049,.027,.015],[.14,.22,.23]);
     limb([side*.147,.825,0],.745,.21,side*stride,-side*.025,false);
-    limb(armAnchor(side),armLength,.176,armSwing(side,stride,hit,guard),armSpread(side,hit,guard),true);
+    const swing=casting==="ice"?(side===1?1.46*hit:.24*guard):armSwing(side,stride,hit,guard);
+    const spread=casting==="ice"?side*(.10+.16*guard):armSpread(side,hit,guard);
+    limb(armAnchor(side),armLength,.176,swing,spread,true);
   }
   function limb(anchor,length,width,swing,spread,arm) {
     const {orient,point}=limbFrame(root,yaw,anchor,swing,spread);
@@ -444,26 +446,33 @@ export function effectMesh(camera) {
     face([[x-size,y,z-size],[x+size,y,z-size],[x+size,y,z+size],[x-size,y,z+size]],
       [0,0,1,1],color,4,strength,seed);
   }
-  function crystal(tip,axis,length,radius,strength,seed) {
+  function crystal(tip,axis,length,radius,strength,seed,fragment=false) {
     if(strength<=.004) return;
     const side=norm(cross(axis,Math.abs(axis[1])>.95?[0,0,1]:[0,1,0]));
     const up=cross(side,axis);
-    const outline=[[1,.68],[.68,1],[-.68,1],[-1,.68],[-1,-.68],[-.68,-1],[.68,-1],[1,-.68]];
-    const profile=[[0,.19],[.035,.57],[.09,.72],[.10,.88],[.174,.91],[.187,1.08],[.265,1.08],[.303,1],[.994,.018],[1,0]];
-    const angle=.10+Math.sin(seed*8.13)*.24;
+    const outline=[[1,.54],[.57,1],[-.64,1],[-1,.61],[-1,-.63],[-.61,-1],[.69,-1],[1,-.57]];
+    const profile=fragment?[[0,.10],[.12,.73],[.31,1],[.53,.71],[1,0]]
+      :[[0,.27],[.022,.61],[.07,.64],[.084,.81],[.136,.84],[.153,1.05],[.216,1.10],
+        [.245,1.01],[.265,1.17],[.311,1.07],[.337,.99],[.58,.57],[.83,.21],[1,0]];
+    const angle=.13+Math.sin(seed*8.13)*(fragment?.71:.25);
     const rows=profile.map(([u,r],row)=>outline.map(([y,z],i)=>{
-      const lobe=row>=2&&row<=6?1+.08*Math.sin(i*2.7+seed):1;
+      const lobe=row>=2&&row<=9?1+.10*Math.sin(i*2.7+seed):1;
       const offset=radius*r*lobe;
-      const center=add(tip,mul(axis,-length*(1-u)));
+      const center=add(add(tip,mul(axis,-length*(1-u))),mul(up,radius*.16*Math.sin(u*4.1)));
       return add(center,add(mul(up,offset*(y*Math.cos(angle)-z*Math.sin(angle))),
         mul(side,offset*(z*Math.cos(angle)+y*Math.sin(angle)))));
     }));
-    const faces=[[.19,.58,.92],[.48,.79,.99],[.63,.86,1],[.30,.69,.96],
-      [.12,.39,.73],[.17,.45,.83],[.25,.57,.91],[.39,.73,.99]];
+    const faces=[[.13,.47,.86],[.37,.72,.97],[.64,.85,1],[.25,.61,.94],
+      [.085,.26,.59],[.11,.33,.69],[.20,.48,.84],[.37,.69,.98]];
     for(let j=1;j<rows.length;j++) for(let i=0;i<outline.length;i++) {
       const next=(i+1)%outline.length;
       face([rows[j-1][i],rows[j-1][next],rows[j][next],rows[j][i]],
         [profile[j-1][0],profile[j-1][0],profile[j][0],profile[j][0]],faces[i],13,strength,seed*9+i);
+    }
+    const heel=add(tip,mul(axis,-length));
+    for(let i=0;i<outline.length;i++) {
+      const next=(i+1)%outline.length;
+      face([heel,rows[0][next],rows[0][i],heel],[0,.038,.038,0],faces[i],13,strength*.86,seed*9+i);
     }
   }
   return {

@@ -35,7 +35,11 @@ function breathRoot(t) {
 const attackTimes = [2.18,4.08,6.02];
 export function performance(art,passive,t) {
   if(art>=5) {
-    const time=art===5?wave(t,3.9,0)-.21:attackTime(t);
+    const time=art===5?wave(t,3.9,0):attackTime(t);
+    if(art===5) {
+      const cast=ease(.08,.32,time)*(1-ease(.76,1.15,time));
+      return {root:[-3.6,0,0],speed:0,stride:0,yaw:Math.PI/2,guard:pulse(time,.02,.26,.65),hit:cast};
+    }
     return {root:[-3.6,0,0],speed:0,stride:0,yaw:Math.PI/2,
       guard:pulse(time,0,.15,.40),hit:pulse(time,.07,.24,.58)};
   }

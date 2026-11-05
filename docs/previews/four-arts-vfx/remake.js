@@ -1,27 +1,35 @@
 import {add,clamp,ease,mix,mul,norm,polar,pulse,turn,wave} from "./math.js";
 
-const forward=[1,0,0];
 const ice=[.32,.76,1], frost=[.67,.91,1];
 const ivory=[1,.92,.69], gold=[1,.70,.28], sun=[1,.81,.47], stain=[.28,.086,.30];
 const sequence=(count,fn)=>Array.from({length:count},(_,i)=>fn(i/(count-1)));
 export const iceTargets=[[7.52,0,.14],[7.0,0,1.75]];
 const volley=[
-  [0,.17,1.55,0,3.37,.39],
-  [.06,-.67,2.36,.67,2.27,.275],
-  [.09,.56,2.32,.04,2.08,.248],
-  [.035,-.64,.67,.50,2.28,.260],
-  [.10,.82,.76,.77,2.03,.235],
-  [.13,-.24,3.45,1.15,1.89,.213],
-  [.20,.84,.28,1.27,1.61,.199],
+  [0,.17,1.49,0,3.61,.40],
+  [.065,-.55,2.36,.52,2.42,.285],
+  [.108,.53,2.37,.02,2.26,.257],
+  [.035,-.63,.63,.42,2.34,.255],
+  [.12,.70,.84,.79,2.14,.232],
+  [.115,-.24,3.42,1.06,1.94,.209],
+  [.192,.70,.25,1.15,1.66,.184],
 ];
+const iceImpact=.37+.66*(iceTargets[0][0]-.88)/7.25;
+
+function iceFlight(raw,side,height,lag) {
+  return [Math.min(8,.88+(7.25-lag)*clamp(raw)),
+    mix(1.08,height,ease(-.23,.53,raw)),side*ease(-.18,.49,raw)];
+}
 
 export function iceSpike(fx,root,t) {
   const time=wave(t,3.9,0);
-  const seal=pulse(time,.015,.24,.94);
+  const seal=pulse(time,.015,.25,.82);
+  const sealRadius=.24+.32*ease(.02,.27,time);
+  const castCenter=add(root,[.75,1.13,0]);
+  fx.plane(castCenter,[0,sealRadius,0],[0,0,sealRadius],ice,25,seal*.89,0);
   for(let i=0;i<4;i++) {
-    const angle=i*turn/4+time*1.25;
-    fx.ribbon(sequence(16,u=>add(root,[.70,.99+.48*Math.cos(angle+u*1.32),.48*Math.sin(angle+u*1.32)])),
-      .039,frost,seal*.79,i,11);
+    const angle=i*turn/4+time*1.45;
+    const point=add(castCenter,[.10,sealRadius*.89*Math.cos(angle),sealRadius*.89*Math.sin(angle)]);
+    fx.stamp(point,.072,.050,frost,18,seal*.88,i,angle);
   }
   for(const [i,[delay,side,height,back,length,width]] of volley.entries()) {
     const launch=.37+delay;
@@ -30,49 +38,64 @@ export function iceSpike(fx,root,t) {
     const travel=clamp(raw);
     const appear=ease(-.37,-.04,raw);
     const visibility=appear*(1-ease(.88,1.11,raw));
-    const x=Math.max(.51,Math.min(8, .88+(7.25-back)*travel));
-    const y=mix(.98,height,ease(-.25,.49,raw));
-    const z=side*ease(-.22,.39,raw);
-    const tip=add(root,[x,y,z]);
-    const size=(.23+.77*ease(-.27,.31,raw))*length;
+    const [x,y,z]=iceFlight(raw,side,height,back);
+    const contact=i===0?1-ease(iceImpact,iceImpact+.083,time):1;
+    const cluster=1-ease(-.12,.19,raw);
+    const leading=i===0?Math.min(x,iceTargets[0][0]):x;
+    const tip=add(root,[leading+cluster*(i%3)*.10,y+cluster*(height-.99)*.13,z+cluster*side*.19]);
+    const size=Math.min((.15+.85*ease(.01,.32,raw))*length,leading-.61);
     const axis=norm([1,.022*(height-1),side*.046]);
-    fx.crystal(tip,axis,size,width*(.39+.61*appear),visibility,i);
+    fx.crystal(tip,axis,size,width*(.29+.71*ease(-.05,.26,raw)),visibility*contact,i);
     if(raw<=.015) continue;
     const rear=Math.max(.24,x-size*.89);
-    const tail=Math.max(.50,rear-(1.25+2.67*travel));
     const lengthFade=ease(.015,.33,raw);
+    const rearPhase=clamp((rear-.88)/(7.25-back));
+    const tailPhase=Math.max(0,rearPhase-.53);
+    const trailPoint=u=>{
+      const phase=mix(tailPhase,rearPhase,u);
+      const pos=iceFlight(phase,side,height,back);
+      return [mix(pos[0],rear+.14,ease(.74,1,u)),
+        mix(pos[1],y,ease(.38,1,u)),mix(pos[2],z,ease(.38,1,u))];
+    };
     for(let j=0;j<3;j++) {
       const shift=(j-1)*width*.77;
-      const tint=j===1?frost:ice;
-      fx.ribbon(sequence(20,u=>add(root,[mix(tail,rear+.17,u),
-        mix(.99,y,u)+shift*(.33+.67*u)+.025*Math.sin(u*7+i),
-        mix(0,z,u)+shift*.27])),width*(j===1?.88:.34),tint,visibility*lengthFade*(j===1?.94:.64),i*4+j,14);
+      fx.ribbon(sequence(25,u=>{
+        const point=trailPoint(u);
+        return add(root,add(point,[0,shift*(.22+.78*u)+.048*Math.sin(u*10+i+j),shift*.28]));
+      }),width*(j===1?.66:.33),j===1?frost:ice,visibility*lengthFade*(j===1?.91:.70),i*4+j,14);
     }
-    for(let j=0;j<7;j++) {
-      const fraction=(j+.38)/7;
+    for(let j=0;j<9;j++) {
+      const fraction=(j+.43)/9;
       const seed=i*13+j;
-      const radius=.08+.18*fraction;
-      const point=add(root,[mix(rear,tail,fraction),mix(y,.99,fraction)+Math.sin(seed*2.1)*radius,
-        mix(z,0,fraction)+Math.cos(seed*2.3)*radius]);
-      const chip=.028+.070*Math.pow(.5+.5*Math.cos(seed*2.29),2);
-      fx.stamp(point,chip,chip,frost,18,visibility*lengthFade*(1-fraction*.6),seed,seed*.27+time*.9);
+      const radius=.08+.26*fraction;
+      const point=add(root,add(trailPoint(1-fraction),[0,Math.sin(seed*2.1)*radius,Math.cos(seed*2.3)*radius]));
+      const chip=.026+.083*Math.pow(.5+.5*Math.cos(seed*2.29),3);
+      fx.stamp(point,chip,chip,frost,18,visibility*lengthFade*(1-fraction*.54),seed,seed*.27+time*.9);
     }
+    const wake=add(root,trailPoint(.56));
+    fx.stamp(wake,.32+travel*.30,1.12+travel*.32,ice,26,visibility*lengthFade*.29,i,.08*(i-3));
     const ground=add(root,[Math.max(.32,x-size*.48),.027,z*.84]);
     fx.plane(ground,[Math.min(2.3,x*.45),0,0],[0,0,.26+width*.38],ice,19,visibility*lengthFade*.52,i);
   }
-  const impactAge=time-.94;
-  const impact=pulse(impactAge,0,.10,.78);
+  const impactAge=time-iceImpact;
+  const impact=pulse(impactAge,0,.09,.84);
   if(impact>.004) {
     const point=add(root,iceTargets[0]);
-    fx.plane(add(point,[0,.043,0]),[1.02,0,0],[0,0,.75],ice,19,impact*.89,7);
-    for(let i=0;i<17;i++) {
-      const a=i*2.399963, fall=ease(0,.70,impactAge);
-      const axis=norm(polar(.73,.40,a));
-      const tip=add(point,polar(.19+(.28+(i%5)*.085)*fall,.43+(i%6)*.135+Math.sin(fall*Math.PI)*.57,a));
-      fx.crystal(tip,axis,.19+(i%4)*.083,.034+(i%3)*.018,impact*.82,i);
+    const grow=ease(0,.25,impactAge);
+    fx.plane(add(point,[0,.043,0]),[.49+.85*grow,0,0],[0,0,.34+.60*grow],ice,24,impact*.91,7);
+    fx.stamp(add(point,[0,1.27,0]),1.14,1.22,frost,6,pulse(impactAge,0,.043,.27)*.88,0,0);
+    fx.stamp(add(point,[.15,.98+.38*grow,0]),.89+grow*.61,1.44+grow*.61,ice,26,impact*.50,8,-.19);
+    for(let i=0;i<21;i++) {
+      const angle=i*2.399963;
+      const scatter=1-Math.pow(1-clamp(impactAge/.64),3);
+      const radial=(.30+(i%7)*.109)*scatter;
+      const y=1.18+(i%5)*.083+Math.sin(Math.PI*scatter)*(.26+(i%6)*.105)-.68*scatter*scatter;
+      const axis=norm(polar(.76,.53*Math.cos(scatter*2.7+i*.41),angle+scatter*.86));
+      const tip=add(add(point,[.47*scatter,y,0]),polar(radial,0,angle));
+      fx.crystal(tip,axis,.11+(i%4)*.083,.029+(i%3)*.021,impact*.89,i,true);
     }
   }
-  return time<.36?"起诀 · 冰锥凝结":time<1.10?"齐射 · 七枚冰锥穿行":time<1.73?"命中 · 碎冰与霜斑":"等待施术";
+  return time<.36?"起诀 · 结晶引锋":time<iceImpact?"齐射 · 主锥领锋":time<iceImpact+.84?"命中 · 冰体碎裂，霜纹铺开":"等待施术";
 }
 
 
