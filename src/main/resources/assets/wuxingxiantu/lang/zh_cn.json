@@ -2137,11 +2137,11 @@
   "message.wuxingxiantu.vein_not_found": "附近已生成区域内未发现灵脉；罗盘不会加载未知区块。",
   "message.wuxingxiantu.vein_found": "发现规模 %s 灵脉：%s，%s，%s；当前位置灵气浓度 %s",
   "item.wuxingxiantu.spirit_stone_middle": "中品灵石",
-  "block.wuxingxiantu.spirit_vein_ore_middle": "中品灵脉矿石",
+  "block.wuxingxiantu.spirit_vein_ore_middle": "中品灵石矿石",
   "item.wuxingxiantu.spirit_stone_superior": "上品灵石",
-  "block.wuxingxiantu.spirit_vein_ore_superior": "上品灵脉矿石",
+  "block.wuxingxiantu.spirit_vein_ore_superior": "上品灵石矿石",
   "item.wuxingxiantu.spirit_stone_exquisite": "极品灵石",
-  "block.wuxingxiantu.spirit_vein_ore_exquisite": "极品灵脉矿石",
+  "block.wuxingxiantu.spirit_vein_ore_exquisite": "极品灵石矿石",
   "item.wuxingxiantu.herb_juling": "聚灵草",
   "block.wuxingxiantu.herb_juling": "聚灵草",
   "tooltip.wuxingxiantu.hint.herb_juling": "林地栽培；保留物种药性，灵地可延长药龄。",
@@ -2483,5 +2483,6 @@
   "message.wuxingxiantu.compendium_research_next": "下一步：到丹道研析台「丹方」页研习传承。反推需要理解配伍、火候并积累实际炼制；重复读书不增加实践。",
   "message.wuxingxiantu.compendium_admin_only": "这本完整典籍仅限创造模式或管理员使用。",
   "tooltip.wuxingxiantu.compendium_use": "手持对空气右键研读；已掌握时不消耗。反推前置需另行研习。",
-  "message.wuxingxiantu.alchemy_introduction_unlocked": "已开启丹道。丹道入门不附赠丹方，官方丹方后续独立获取。"
+  "message.wuxingxiantu.alchemy_introduction_unlocked": "已开启丹道。丹道入门不附赠丹方，官方丹方后续独立获取。",
+  "block.wuxingxiantu.spirit_vein_ore_low": "下品灵石矿石"
 }

@@ -41,14 +41,10 @@ public final class WuXingJeiPlugin implements IModPlugin {
     }
     public void onRuntimeAvailable(IJeiRuntime value){
         runtime=value;var manager=value.getIngredientManager();
-        var hidden=manager.getAllIngredients(VanillaTypes.ITEM_STACK).stream().filter(stack->PillData.read(stack)!=null||isCore(stack)||legacyOre(stack)).toList();
+        var hidden=manager.getAllIngredients(VanillaTypes.ITEM_STACK).stream().filter(stack->PillData.read(stack)!=null||isCore(stack)).toList();
         value.getIngredientVisibility().hideIngredients(VanillaTypes.ITEM_STACK,hidden,List.of(UidContext.Ingredient));
     }
     public void onRuntimeUnavailable(){runtime=null;}
-    private static boolean legacyOre(ItemStack stack){
-        var id=net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem());
-        return id.getNamespace().equals("wuxingxiantu")&&Set.of("spirit_vein_ore_middle","spirit_vein_ore_superior","spirit_vein_ore_exquisite").contains(id.getPath());
-    }
     public static boolean isCore(ItemStack stack){for(var core:WuXingItems.INNER_CORES)if(stack.is(core.get()))return true;return false;}
     public static final class Helper implements IIngredientHelper<CatalogIngredient>{
         public IIngredientType<CatalogIngredient> getIngredientType(){return TYPE;}

@@ -21,7 +21,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "wuxingxiantu:spirit_vein_ore"
+          "name": "wuxingxiantu:spirit_vein_ore_superior"
         }
       ]
     },
@@ -48,23 +48,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "wuxingxiantu:spirit_stone",
-          "weight": 60
-        },
-        {
-          "type": "minecraft:item",
-          "name": "wuxingxiantu:spirit_stone_middle",
-          "weight": 25
-        },
-        {
-          "type": "minecraft:item",
-          "name": "wuxingxiantu:spirit_stone_superior",
-          "weight": 10
-        },
-        {
-          "type": "minecraft:item",
-          "name": "wuxingxiantu:spirit_stone_exquisite",
-          "weight": 5
+          "name": "wuxingxiantu:spirit_stone_superior"
         }
       ],
       "functions": [
