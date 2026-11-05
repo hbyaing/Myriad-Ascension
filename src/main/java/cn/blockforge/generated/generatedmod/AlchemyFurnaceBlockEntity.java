@@ -16,6 +16,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import cn.blockforge.generated.generatedmod.alchemy.batch.BatchStartResult;
+import cn.blockforge.generated.generatedmod.alchemy.batch.BatchStartResult.CommitStage;
+import cn.blockforge.generated.generatedmod.alchemy.batch.BatchStartResult.Reason;
 
 /**
  * 炼丹炉的动态状态载体：同步炼制状态，成型外观由独立炉体模型呈现。
@@ -74,26 +77,52 @@ public final class AlchemyFurnaceBlockEntity extends BlockEntity implements Cont
     }
     public boolean startV5Batch(net.minecraft.server.level.ServerPlayer player){return startV5Batch(player,null);}
     public boolean startV5Batch(net.minecraft.server.level.ServerPlayer player,AlchemyRecipe recipe){
-        if(!(level instanceof ServerLevel server)||inventoryLocked()||hasResult()||!stillValid(player)||!player.isAlive()||player.isSpectator()
-                ||v5DeviceWear>=1000||!AlchemyFurnaceBlock.isFormed(getBlockState())||!ProgressionGate.canUseAlchemyFurnace(player,tier())||!ignited()
-                ||!ProgressionGate.canUseFire(player,ignitionTier())||!cn.blockforge.generated.generatedmod.alchemy.FormulaKnowledge.unlocked(player)
-                ||Network.hasAlchemyJob(level,worldPosition)||Network.isAlchemyBusy(player))return false;
+        var result=tryStartV5Batch(player,recipe);
+        cn.blockforge.generated.generatedmod.network.service.AlchemyService.reportAlchemyStart(player,result);
+        return result.started();
+    }
+    /** Server-thread operation. Callers must query/repair the original batch on recovery, not resubmit it. */
+    public BatchStartResult tryStartV5Batch(net.minecraft.server.level.ServerPlayer player,AlchemyRecipe recipe){
+        if(!(level instanceof ServerLevel server))return BatchStartResult.rejected(Reason.SERVER_REQUIRED);
+        if(inventoryLocked()||hasResult())return BatchStartResult.rejected(Reason.FURNACE_OCCUPIED);
+        if(!stillValid(player)||!player.isAlive()||player.isSpectator())return BatchStartResult.rejected(Reason.INVALID_PLAYER);
+        if(v5DeviceWear>=1000)return BatchStartResult.rejected(Reason.DEVICE_WORN);
+        if(!AlchemyFurnaceBlock.isFormed(getBlockState()))return BatchStartResult.rejected(Reason.STRUCTURE_INCOMPLETE);
+        if(!ProgressionGate.canUseAlchemyFurnace(player,tier()))return BatchStartResult.rejected(Reason.FURNACE_REALM_REQUIRED);
+        if(!ignited())return BatchStartResult.rejected(Reason.FIRE_REQUIRED);
+        if(!ProgressionGate.canUseFire(player,ignitionTier()))return BatchStartResult.rejected(Reason.FIRE_REALM_REQUIRED);
+        if(!cn.blockforge.generated.generatedmod.alchemy.FormulaKnowledge.unlocked(player))return BatchStartResult.rejected(Reason.KNOWLEDGE_REQUIRED);
+        CommitStage stage=CommitStage.NOT_ATTEMPTED;
+        java.util.UUID batchId=null;
         try{
+            if(Network.hasAlchemyJob(level,worldPosition))return BatchStartResult.rejected(Reason.LEGACY_JOB_PENDING);
+            if(Network.isAlchemyBusy(player))return BatchStartResult.rejected(Reason.PLAYER_BUSY);
             net.minecraft.nbt.CompoundTag doc;
             if(recipe==null)doc=cn.blockforge.generated.generatedmod.alchemy.batch.V5Batch.prepare(this,player);
             else{
-                if(recipe.furnaceTier()>tier()||!ProgressionGate.isAtLeastRealm(player,recipe.minimumRealm())||!recipe.acceptsFire(ignitionTier())||!cn.blockforge.generated.generatedmod.alchemy.FormulaKnowledge.knows(player,recipe.formulaId()))return false;
+                if(recipe.furnaceTier()>tier())return BatchStartResult.rejected(Reason.RECIPE_TIER_REQUIRED);
+                if(!ProgressionGate.isAtLeastRealm(player,recipe.minimumRealm()))return BatchStartResult.rejected(Reason.RECIPE_REALM_REQUIRED);
+                if(!recipe.acceptsFire(ignitionTier()))return BatchStartResult.rejected(Reason.RECIPE_FIRE_REQUIRED);
+                if(!cn.blockforge.generated.generatedmod.alchemy.FormulaKnowledge.knows(player,recipe.formulaId()))return BatchStartResult.rejected(Reason.RECIPE_KNOWLEDGE_REQUIRED);
                 var materialSlots=new net.minecraft.world.SimpleContainer(8);for(int i=0;i<8;i++)materialSlots.setItem(i,items.get(i).copy());
-                int[] used=cn.blockforge.generated.generatedmod.alchemy.HeavenlyFurnace.allocationV5(recipe,materialSlots);if(used==null)return false;
+                int[] used=cn.blockforge.generated.generatedmod.alchemy.HeavenlyFurnace.allocationV5(recipe,materialSlots);if(used==null)return BatchStartResult.rejected(Reason.MATERIALS_REQUIRED);
                 used=cn.blockforge.generated.generatedmod.alchemy.auxiliary.AuxiliaryAlchemy.allocate(materialSlots,used).counts();
                 doc=cn.blockforge.generated.generatedmod.alchemy.batch.V5Batch.prepare(this,player,used,"ordinary_formula",recipe.getId().toString());
             }
             var journal=new cn.blockforge.generated.generatedmod.alchemy.batch.BatchJournal(server.getServer());
-            journal.write(doc);journal.link(server,worldPosition,doc.getUUID("Id"));applyV5(doc);nextV5Tick=level.getGameTime()+20;sync();
+            batchId=doc.getUUID("Id");stage=CommitStage.UNCONFIRMED;
+            journal.write(doc);stage=CommitStage.JOURNAL_CONFIRMED;
+            journal.link(server,worldPosition,batchId);applyV5(doc);stage=CommitStage.WORLD_APPLIED;
+            nextV5Tick=level.getGameTime()+20;sync();
             // Make the removal of original ingredients durable before the batch can progress or be claimed.
             server.getChunkSource().save(true);
-            player.displayClientMessage(net.minecraft.network.chat.Component.literal("V5批次已托管：材料与炉内灵力已锁定，按真实材料反应结算，完成后领取成丹或副产物。"),true);return true;
-        }catch(RuntimeException e){if(v5Ref!=null)v5Fault=true;player.displayClientMessage(net.minecraft.network.chat.Component.literal(v5Ref!=null?"批次已托管但保存确认失败，已暂停，材料保留。":"未能开炉："+e.getMessage()),true);com.mojang.logging.LogUtils.getLogger().warn("V5 start rejected or retained for recovery",e);return false;}
+            return new BatchStartResult(Reason.STARTED,CommitStage.COMPLETED,batchId,"");
+        }catch(RuntimeException e){
+            if(v5Ref!=null)v5Fault=true;
+            com.mojang.logging.LogUtils.getLogger().warn("V5 start stopped: stage={}, batch={}",stage,batchId,e);
+            return new BatchStartResult(stage==CommitStage.NOT_ATTEMPTED?Reason.PREPARATION_FAILED:Reason.RECOVERY_REQUIRED,
+                    stage,batchId,java.util.Objects.toString(e.getMessage(),e.getClass().getSimpleName()));
+        }
     }
     private void tickV5(){
         if(!(level instanceof ServerLevel server)||v5Fault)return;

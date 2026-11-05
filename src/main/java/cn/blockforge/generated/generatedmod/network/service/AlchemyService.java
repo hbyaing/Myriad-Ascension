@@ -18,6 +18,7 @@ import static cn.blockforge.generated.generatedmod.Network.*;
 import cn.blockforge.generated.generatedmod.network.packet.alchemy.AlchemyPacket;
 import cn.blockforge.generated.generatedmod.network.packet.alchemy.RefiningPacket;
 import cn.blockforge.generated.generatedmod.network.packet.alchemy.CollectRefiningPacket;
+import cn.blockforge.generated.generatedmod.alchemy.batch.BatchStartResult;
 
 
 public final class AlchemyService {
@@ -69,10 +70,10 @@ public final class AlchemyService {
                 }
                 boolean free = cn.blockforge.generated.generatedmod.alchemy.FreeAlchemy.ID.equals(packet.recipeId());
                 if(free!=menu.freeMode())return;
-                if(free){furnaceEntity.startV5Batch(player);return;}
+                if(free){reportAlchemyStart(player,furnaceEntity.tryStartV5Batch(player,null));return;}
                 AlchemyRecipe recipe=level.getRecipeManager().getAllRecipesFor(ModRecipes.ALCHEMY_TYPE.get()).stream()
                         .filter(candidate->candidate.getId().equals(packet.recipeId())).findFirst().orElse(null);
-                if(recipe!=null)furnaceEntity.startV5Batch(player,recipe);
+                if(recipe!=null)reportAlchemyStart(player,furnaceEntity.tryStartV5Batch(player,recipe));
 
             });
             context.setPacketHandled(true);
@@ -214,6 +215,20 @@ public final class AlchemyService {
             });
             context.setPacketHandled(true);
         }
+
+    /** Notification happens after admission. Failure to show a message cannot undo its result. */
+    public static void reportAlchemyStart(ServerPlayer player,BatchStartResult result) {
+        Component message;
+        if(result.needsRecovery()){
+            message=Component.translatable("message.wuxingxiantu.alchemy_start_recovery",result.batchId().toString());
+        }else if(result.reason()==BatchStartResult.Reason.PREPARATION_FAILED){
+            message=Component.literal("未能开炉："+result.detail());
+        }else{
+            message=Component.translatable("message.wuxingxiantu.alchemy_start_"+result.reason().name().toLowerCase(java.util.Locale.ROOT));
+        }
+        try{player.displayClientMessage(message,true);}
+        catch(RuntimeException error){com.mojang.logging.LogUtils.getLogger().warn("V5 admission feedback failed: reason={}, batch={}",result.reason(),result.batchId(),error);}
+    }
 
     public static void tickAlchemy(net.minecraft.server.MinecraftServer server) {
         var jobs=CraftingJobs.get(server);long now=server.overworld().getGameTime();
