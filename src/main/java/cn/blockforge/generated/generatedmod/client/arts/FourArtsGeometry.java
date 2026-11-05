@@ -12,6 +12,7 @@ import java.util.List;
 
 final class FourArtsGeometry {
     static final int LINE=0, LEAF=1, INK=2, SPARK=3, SIGIL=4, GAUZE=5, CORE=6, SHARD=7, AIR=8, RECOVERY=9, ASH=10;
+    static final int SILVER=11;
     static final int RISE=0, WASH=1, CHEST=2;
     private final Vec3 camera, right, up;
     private final List<Quad> quads=new ArrayList<>();

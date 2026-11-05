@@ -1,6 +1,6 @@
-import {cameraFor,clamp} from "./math.js";
+import {add,cameraFor,clamp} from "./math.js";
 import {actor,box,createRenderer,effectMesh,stage} from "./render.js";
-import {drawArt,performance as choreography} from "./arts.js";
+import {attackTargets,drawArt,performance as choreography} from "./arts.js";
 
 const duration = 8;
 const get = id => document.getElementById(id);
@@ -45,11 +45,12 @@ get("reset").addEventListener("click",()=>{Object.assign(orbit,defaults);dirty=t
 function focus(pick) {
   get("focus").value=pick;
   const single=pick!=="all";
+  const draft=pick==="design";
   gallery.classList.toggle("focus",single);
-  get("view-caption").textContent=single?"单术 / 主动与被动":"五术 / 十组演出";
-  get("layout-note").textContent=single?"左侧为主动施术，右侧为被动触发。":"上排为主动施术，下排为被动触发。";
+  get("view-caption").textContent=draft?"攻击术法 / 主动演出草案":single?"单术 / 主动与被动":"五术 / 十组演出";
+  get("layout-note").textContent=draft?"木桩用于区分范围内外的命中反馈。":single?"左侧为主动施术，右侧为被动触发。":"上排为主动施术，下排为被动触发。";
   for(const [i,article] of [...gallery.querySelectorAll("article")].entries()){
-    article.hidden=single && Number(pick)!==i;
+    article.hidden=article.hasAttribute("data-draft")?!draft:draft || single && Number(pick)!==i;
   }
   dirty=true;
 }
@@ -87,6 +88,7 @@ canvas.addEventListener("webglcontextlost",e=>{
 });
 canvas.addEventListener("webglcontextrestored",()=>start());
 const stageMesh = stage();
+const attackStageMesh = stage(true);
 const boxes = new ResizeObserver(()=>{dirty=true;});
 boxes.observe(gallery);
 
@@ -96,7 +98,7 @@ if(selectedTime!==null && selectedTime.trim()!=="" && Number.isFinite(Number(sel
   playback(false);
   seek(Number(selectedTime));
 }
-if(["0","1","2","3","4"].includes(params.get("art"))) focus(params.get("art"));
+if(["0","1","2","3","4","design"].includes(params.get("art"))) focus(params.get("art"));
 
 function draw() {
   const root = gallery.getBoundingClientRect();
@@ -117,12 +119,20 @@ function draw() {
     const state = choreography(art,passive,time);
     const tailRoom = art===0 ? Math.min(.86,state.speed*.74)*(passive?.67:1) : 0;
     const strikeRoom = art===3 ? state.hit*(passive?.17:.50) : 0;
-    const camera = cameraFor(orbit.yaw,orbit.pitch,orbit.half,w/h,
-      [state.root[0]*.90-tailRoom+strikeRoom,1.03+state.root[1]*.76,0]);
-    const scene = stageMesh.slice();
+    const draft=art>=5;
+    const camera = draft?cameraFor(orbit.yaw-.14,orbit.pitch+.23,orbit.half*2.90,w/h,[.05,.43,0]):
+      cameraFor(orbit.yaw,orbit.pitch,orbit.half,w/h,[state.root[0]*.90-tailRoom+strikeRoom,1.03+state.root[1]*.76,0]);
+    const scene = (draft?attackStageMesh:stageMesh).slice();
     box(scene,[state.root[0],.004,state.root[2]],[.51,.005,.34],[.132,.20,.19]);
+    if(draft) for(const target of attackTargets(art)) {
+      const feet=add(state.root,target);
+      box(scene,add(feet,[0,.07,0]),[.64,.14,.58],[.23,.21,.18]);
+      box(scene,add(feet,[0,.56,0]),[.30,.95,.26],[.37,.28,.20]);
+      box(scene,add(feet,[0,1.10,0]),[.53,.50,.37],[.50,.37,.23]);
+      box(scene,add(feet,[.155,1.10,0]),[.25,.26,.40],[.28,.22,.17]);
+    }
     const armed=art===3 && !passive && time>=.04 && time<7.55;
-    const pose = actor(scene,state.root,state.stride,state.yaw,state.hit,state.guard,armed);
+    const pose = actor(scene,state.root,state.stride,state.yaw,state.hit,state.guard,armed,draft);
     const fx = effectMesh(camera);
     const description = drawArt(fx,art,passive,state,time,pose);
     if(phase.textContent!==description) phase.textContent=description;

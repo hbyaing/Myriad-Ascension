@@ -8,6 +8,22 @@ const spiritBlue = [.13,.48,1], spiritIce = [.49,.83,1];
 const carmine = [1,.10,.22], ruby = [.69,.045,.17];
 const recoveryCyan = [86/255,238/255,219/255], purifySilver = [224/255,245/255,1];
 const sequence = (count,fn) => Array.from({length:count},(_,i) => fn(i/(count-1),i));
+const iceBlue=[.31,.79,1], iceWhite=[.76,.96,1], ember=[1,.43,.10], coal=[.83,.17,.065];
+const forward=[1,0,0];
+const attacks={
+  5:{range:8,width:1.8,targets:[[5.6,0,.24],[6.8,0,1.65]]},
+  6:{range:6.5,angle:108*Math.PI/360,targets:[[3.4,0,-2.6],[4.8,0,.42],[3.35,0,2.95],[1.4,0,3.25]]},
+};
+const attackTime=t=>wave(t,3.6,0);
+const iceDistance=t=>8*clamp((t-.17)/.37);
+const flameDistance=t=>6.5*ease(.15,.83,t);
+
+export function attackTargets(art) { return attacks[art]?.targets??[]; }
+function inAttack(art,[x,,z]) {
+  const attack=attacks[art];
+  return art===5 ? x<=attack.range && Math.abs(z)<=attack.width*.5
+    : Math.hypot(x,z)<=attack.range && Math.abs(Math.atan2(z,x))<=attack.angle;
+}
 
 function windRoot(t, passive) {
   const distance = passive ? 2.75 : 3.50;
@@ -21,6 +37,11 @@ function breathRoot(t) {
 }
 const attackTimes = [2.18,4.08,6.02];
 export function performance(art,passive,t) {
+  if(art>=5) {
+    const time=attackTime(t);
+    return {root:[-3.6,0,0],speed:0,stride:0,yaw:Math.PI/2,
+      guard:pulse(time,0,.15,.40),hit:pulse(time,.07,.24,.58)};
+  }
   const root = art===0 ? windRoot(t,passive) : art===2 ? breathRoot(t) : [0,0,0];
   const speed = art===0 ? Math.abs(windRoot(t+.03,passive)[0]-root[0])/.03 :
     art===2 ? Math.abs(breathRoot(t+.03)[0]-root[0])/.03 : 0;
@@ -133,25 +154,138 @@ function renewal(fx,root,t,passive) {
 function purification(fx,root,t,passive) {
   const time=passive?wave(t,2.45,0):t%3.65;
   const removed=!passive && t<3.65?3:0;
+  const intensity=removed>0?1:.78;
+  const height=2.075;
   const pass=time/(passive?.57:.98);
   if(pass<1) {
-    const glow=ease(0,.10,pass)*(1-ease(.82,1,pass))*(passive?.56:removed>0?.92:.70);
+    const glow=ease(0,.10,pass)*(1-ease(.82,1,pass))*(passive?.64:.98*intensity);
     fx.heal(passive?2:1,passive?pass*.64:1.10-pass*1.28,root[1],glow,purifySilver);
+  }
+  if(passive) {
+    const strength=pulse(time,0,.14,.59);
+    const lift=ease(0,.59,time);
+    for(let i=0;i<2;i++) {
+      const start=i*Math.PI+.38+lift*.76;
+      fx.ribbon(sequence(22,u=>add(root,polar(.30+.16*Math.sin(Math.PI*u)+.15*lift,
+        height*(.55+.20*u-.10*lift),start+u*1.96))),.055,purifySilver,strength*.65,i,11);
+    }
+    return strength>.01?"回血 · 双弧护心":"等待恢复事件";
+  }
+  const sweep=ease(.09,.91,time);
+  const halo=pulse(time,0,.22,1.02)*intensity;
+  const radius=.44+.24*Math.sin(sweep*Math.PI);
+  const center=height*(1.10-1.065*sweep);
+  const release=ease(.72,1.39,time);
+  const ring=pulse(time,.72,.91,1.43)*intensity;
+  for(let i=0;i<4;i++) {
+    const start=i*turn/4+time*.87;
+    fx.ribbon(sequence(24,u=>add(root,polar(radius+.035*Math.sin(u*Math.PI),
+      center+height*.12*Math.sin(u*Math.PI),start+u*1.37))),.081,purifySilver,halo,i,11);
+    fx.stamp(add(root,polar(radius,center+height*.12,start+.69)),.20,.14,purifySilver,7,halo*.72,i,start*.27);
+    const foot=i*turn/4+.25+release*.18;
+    fx.ribbon(sequence(18,u=>add(root,polar(.48+.88*release,.032+.10*Math.sin(u*Math.PI)*(1-release),
+      foot+u*1.40))),.057,purifySilver,ring*.80,i,11);
   }
   if(removed>0) for(let i=0;i<removed*3+8;i++) {
     const y=.19+(i%7)*.115;
-    const age=(time-(1.10-y)*.765)/.58;
+    const age=(time-(1.10-y)*.765)/.65;
     if(age<=0 || age>=1) continue;
-    const angle=i*2.399963+age*.44;
-    const radius=.29+.055*(i%3)+.66*age;
-    const point=add(root,polar(radius,y*2.075+.10*age-.22*age*age,angle));
+    const angle=i*2.399963+age*.94;
+    const spread=.32+.055*(i%3)+.78*age;
+    const point=add(root,polar(spread,y*height+.16*age-.30*age*age,angle));
     const scale=.136+(i%4)*.034;
-    fx.stamp(point,scale*(1+.55*age),scale*.62,[52/255,69/255,80/255],10,pulse(age,0,.19,.73)*.92,i,angle+age*1.2);
-    fx.stamp(point,.064,.056,purifySilver,3,pulse(age,.29,.56,1)*.86,i,0);
+    fx.stamp(point,scale*(1+.96*age),scale*.73,[32/255,44/255,57/255],10,pulse(age,0,.19,.73),i,angle+age*1.2);
+    fx.stamp(point,.102,.076,purifySilver,3,pulse(age,.29,.56,1)*.88,i,0);
   }
-  if(passive) return pass<1?"回血 · 银光由胸口散开":"等待恢复事件";
-  if(time>1.34) return "等待施术";
-  return removed>0?"驱除负面 · 灰墨剥离":"无负面状态 · 银光扫身";
+  if(time>1.43) return "等待施术";
+  if(time<.29) return "起势 · 银冠聚合";
+  if(time>.79) return "收势 · 薄环荡开";
+  return removed>0?"净除 · 灰墨剥离":"银冠下扫 · 无负面状态";
+}
+
+function iceSpike(fx,root,t) {
+  const time=attackTime(t);
+  const distance=iceDistance(time);
+  const guide=pulse(time,0,.18,.72);
+  for(const side of [-1,1]) {
+    const edge=side*attacks[5].width*.5;
+    fx.ribbon(sequence(34,u=>add(root,[u*8,.026,edge])),.030,iceBlue,guide*.41,side,11);
+  }
+  const gather=pulse(time,0,.13,.25);
+  fx.crystal(add(root,[.48,1.0,0]),forward,.39+.49*gather,.12+.11*gather,gather,1);
+  const flight=ease(.16,.24,time)*(1-ease(.48,.61,time));
+  if(flight>.004) {
+    const lead=add(root,[distance,.85,.0]);
+    const length=Math.min(1.84,distance+.32);
+    fx.crystal(add(lead,[-length*.67,0,0]),forward,length,.25,flight,1);
+    for(let i=0;i<3;i++) {
+      const sign=i%2===0?1:-1;
+      const end=Math.max(0,distance-.35-i*.26);
+      const tail=Math.max(0,end-2.40-i*.26);
+      if(end<.01) continue;
+      fx.crystal(add(root,[end-.34,.61+i*.16,sign*(.30+i*.105)]),forward,.52,.068,flight*.64,i+2);
+      fx.ribbon(sequence(26,u=>add(root,[mix(tail,end,u),.54+i*.18+.13*u,sign*(.20+i*.10)*u])),
+        i===0?.108:.052,i===0?iceWhite:iceBlue,flight*.85,i,11);
+    }
+  }
+  for(const target of attackTargets(5)) {
+    if(!inAttack(5,target)) continue;
+    const hitTime=.17+.37*target[0]/8;
+    const frost=pulse(time,hitTime,hitTime+.055,hitTime+.75);
+    if(frost<=.004) continue;
+    const age=clamp((time-hitTime)/.59);
+    const point=add(root,target);
+    fx.ground(add(point,[0,.038,0]),.62+.31*age,iceBlue,frost*.62,6);
+    for(let i=0;i<10;i++) {
+      const angle=i*2.399963;
+      const chip=add(point,polar(.19+(.24+(i%3)*.12)*age,.40+(i%4)*.19+.40*age,angle));
+      fx.crystal(chip,norm(polar(.5,.28,angle)),.32+(i%3)*.065,.059,frost*.86,i);
+    }
+  }
+  return time<.17?"凝冰 · 冰锥成形":time<.54?"贯穿 · 8 格直线":time<1.20?"命中结霜 · 减速反馈":"等待施术";
+}
+
+function flameWave(fx,root,t) {
+  const time=attackTime(t);
+  const radius=flameDistance(time);
+  const flame=pulse(time,.10,.37,1.03);
+  const edge=attacks[6].angle;
+  const ignition=pulse(time,0,.12,.24);
+  fx.stamp(add(root,[.48,.85,0]),.46,.52,ember,6,ignition*.86,2);
+  for(let layer=0;layer<2;layer++) {
+    const r=Math.max(.18,radius-layer*.31);
+    const crest=sequence(43,u=>{
+      const angle=mix(-edge,edge,u);
+      const push=r*(.986+.014*Math.sin(17*angle+time*9));
+      const taper=.52+.48*Math.sin(u*Math.PI);
+      const y=(.65+.54*Math.pow(.5+.5*Math.sin(u*38+time*9+layer),2))*taper;
+      return [add(root,polar(push,.033,angle)),add(root,polar(push-.15,y,angle))];
+    });
+    for(let i=1;i<crest.length;i++){
+      const [a,b]=crest[i-1], [c,d]=crest[i];
+      const u=(i-1)/(crest.length-1), v=i/(crest.length-1);
+      fx.face([a,b,d,c],[u,u,v,v],layer===0?ember:coal,12,flame*(layer===0?.97:.76),layer*5);
+    }
+    fx.ribbon(sequence(43,u=>add(root,polar(r,.045,mix(-edge,edge,u)))),
+      .065,layer===0?ember:coal,flame*.87,layer,11);
+  }
+  for(let i=0;i<24;i++) {
+    const age=clamp((time-.16-(i%6)*.042)/.85);
+    const angle=mix(-edge,edge,(i*0.618034)%1);
+    const r=Math.max(.06,radius-age*(.48+(i%4)*.33));
+    const point=add(root,polar(r,.12+age*(.48+(i%7)*.16),angle));
+    fx.stamp(point,.12,.073,ember,7,pulse(age,.01,.23,1)*flame,i,angle);
+  }
+  for(const target of attackTargets(6)) {
+    if(!inAttack(6,target) || radius<Math.hypot(target[0],target[2])) continue;
+    const burn=ease(.34,.47,time)*(1-ease(.95,1.87,time));
+    const point=add(root,target);
+    for(let i=0;i<3;i++) {
+      const angle=i*turn/3+time*2;
+      fx.stamp(add(point,polar(.27,.49+i*.21,angle)),.48,.34,i===1?ember:coal,6,burn*.68,i,angle*.16);
+    }
+  }
+  return time<.15?"起火 · 火核压低":time<.86?"推浪 · 108° 扇面":time<1.87?"命中引燃 · 余烬散去":"等待施术";
 }
 
 function gathering(fx,root,t,passive) {
@@ -256,5 +390,7 @@ export function drawArt(fx,art,passive,state,t,pose) {
     case 2: return gathering(fx,state.root,t,passive);
     case 3: return bloodlust(fx,t,passive,pose);
     case 4: return purification(fx,state.root,t,passive);
+    case 5: return iceSpike(fx,state.root,t);
+    case 6: return flameWave(fx,state.root,t);
   }
 }

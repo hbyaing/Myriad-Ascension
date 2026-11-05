@@ -99,24 +99,58 @@ final class FourArtsAnimation {
 
     static void purification(FourArtsGeometry fx,List<Vec3> surface,Vec3 base,double height,double time,boolean passive,int removed) {
         double pass=time/(passive?.57:.98);
+        double intensity=removed>0?1:.78;
         if(pass>=0 && pass<1) {
             double pulse=ease(0,.10,pass)*(1-ease(.82,1,pass));
             fx.surface(surface,passive?pass*.64:1.10-pass*1.28,passive?CHEST:WASH,PURIFY_SILVER,
-                    pulse*(passive?.56:removed>0?.92:.70));
+                    pulse*(passive?.64:.98*intensity));
+        }
+        if(passive) {
+            double strength=pulse(time,0,.14,.59);
+            if(strength<=.004) return;
+            double lift=ease(0,.59,time);
+            for(int i=0;i<2;i++) {
+                double start=i*Math.PI+.38+lift*.76;
+                fx.ribbon(curve(22,u->base.add(polar(.30+.16*Math.sin(Math.PI*u)+.15*lift,
+                                height*(.55+.20*u-.10*lift),start+u*1.96))),
+                        .055,PURIFY_SILVER,SILVER,strength*.65,i);
+            }
+            return;
+        }
+
+        double sweep=ease(.09,.91,time);
+        double haloStrength=pulse(time,0,.22,1.02)*intensity;
+        double radius=.44+.24*Math.sin(sweep*Math.PI);
+        double center=height*(1.10-1.065*sweep);
+        for(int i=0;i<4;i++) {
+            double start=i*TURN/4+time*.87;
+            fx.ribbon(curve(24,u->base.add(polar(radius+.035*Math.sin(u*Math.PI),
+                            center+height*.12*Math.sin(u*Math.PI),start+u*1.37))),
+                    .081,PURIFY_SILVER,SILVER,haloStrength,i);
+            Vec3 tip=base.add(polar(radius,center+height*.12,start+.69));
+            fx.stamp(tip,.20,.14,PURIFY_SILVER,SHARD,haloStrength*.72,i,start*.27);
+        }
+        double release=ease(.72,1.39,time);
+        double ringStrength=pulse(time,.72,.91,1.43)*intensity;
+        for(int i=0;i<4;i++) {
+            double start=i*TURN/4+.25+release*.18;
+            fx.ribbon(curve(18,u->base.add(polar(.48+.88*release,.032+.10*Math.sin(u*Math.PI)*(1-release),
+                            start+u*1.40))),
+                    .057,PURIFY_SILVER,SILVER,ringStrength*.80,i);
         }
         if(removed==0) return;
         for(int i=0;i<removed*3+8;i++) {
             double y=.19+(i%7)*.115;
-            double age=(time-(1.10-y)*.765)/.58;
+            double age=(time-(1.10-y)*.765)/.65;
             if(age<=0 || age>=1) continue;
-            double angle=i*2.399963+age*.44;
-            double radius=.29+.055*(i%3)+.66*age;
-            Vec3 point=base.add(polar(radius,y*height+.10*age-.22*age*age,angle));
+            double angle=i*2.399963+age*.94;
+            double spread=.32+.055*(i%3)+.78*age;
+            Vec3 point=base.add(polar(spread,y*height+.16*age-.30*age*age,angle));
             double ash=pulse(age,0,.19,.73);
             double scale=.136+(i%4)*.034;
-            fx.stamp(point,scale*(1+.55*age),scale*.62,0x344550,ASH,ash*.92,i,angle+age*1.2);
+            fx.stamp(point,scale*(1+.96*age),scale*.73,0x202C39,ASH,ash,i,angle+age*1.2);
             double glint=pulse(age,.29,.56,1);
-            fx.stamp(point,.064,.056,PURIFY_SILVER,SPARK,glint*.86,i,0);
+            fx.stamp(point,.102,.076,PURIFY_SILVER,SPARK,glint*.88,i,0);
         }
     }
 

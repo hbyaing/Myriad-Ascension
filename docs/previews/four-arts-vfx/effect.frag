@@ -26,7 +26,43 @@ void main() {
     float kind = params.x;
     float strength = params.y;
     float seed = params.z;
-    if(kind>9.5) {
+    if(kind>12.5) {
+        float vein=gaussian((p.y-.20*sin(p.x*17.+seed))*14.)*.27;
+        float facet=smoothstep(.67,1.,abs(p.y))*.33;
+        float striae=gaussian((fract(p.x*7.3+abs(p.y)*.16+seed*.37)-.5)*21.)*.18;
+        float alpha=strength*(.70+.17*facet);
+        vec3 ice=mix(color,vec3(.78,.96,1.),clamp(facet+vein+striae,0.,.72));
+        frag=vec4(ice*alpha,alpha);
+        emissionLayer=vec4(ice*(.27*vein+.12*facet)*strength,alpha);
+        return;
+    }
+    if(kind>11.5) {
+        float y=p.y*.5+.5;
+        float end=smoothstep(0.,.06,p.x)*(1.-smoothstep(.94,1.,p.x));
+        float flicker=noise(vec2(p.x*48.+seed,y*4.-time*6.));
+        float crest=.43+.48*noise(vec2(p.x*38.+time*2.8,seed+y*1.4));
+        float body=(1.-smoothstep(crest-.17,crest+.04,y))*smoothstep(0.,.13,y);
+        float fold=gaussian((y-(.22+.12*flicker))*9.);
+        float hot=clamp(fold*(.55+.45*flicker)+.24*flicker,0.,1.);
+        float alpha=end*strength*body*(.43+.49*flicker+.21*fold);
+        vec3 flame=mix(color,vec3(1.,.85,.37),hot);
+        frag=vec4(flame*alpha+flame*alpha*hot*.14,alpha);
+        emissionLayer=vec4(flame*alpha*(.34+.33*hot),alpha);
+        return;
+    }
+    if(kind>10.5 && kind<11.5) {
+        float along=smoothstep(0.,.13,p.x)*(1.-smoothstep(.83,1.,p.x));
+        float fold=p.y-.21*sin(p.x*6.3+seed*.8);
+        float ridge=gaussian(fold*10.);
+        float silk=gaussian(fold*2.8)*(.24+.21*sin(p.x*15.+seed));
+        float filament=gaussian((fold-.34)*7.)*.20;
+        float alpha=along*(ridge*.72+silk+filament)*strength;
+        vec3 silver=mix(color*.71,vec3(.92,.99,1.),ridge*.83);
+        frag=vec4(silver*alpha+color*ridge*along*strength*.19,alpha);
+        emissionLayer=vec4(color*ridge*along*strength*.29,alpha);
+        return;
+    }
+    if(kind>9.5 && kind<10.5) {
         vec2 v=vec2(p.x*2.-1.,p.y);
         float curl=v.x+.20*sin(v.y*3.5+seed);
         float shape=gaussian(curl*2.5)*gaussian(v.y*1.65);

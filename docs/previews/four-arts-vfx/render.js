@@ -241,8 +241,16 @@ export function box(out, center, size, color, orient = identity, character = 0) 
   }
 }
 
-export function stage() {
+export function stage(attack=false) {
   const out = [];
+  if(attack) {
+    box(out,[0,-.20,0],[17,.32,14],[.19,.24,.25]);
+    for(let x=-7;x<=7;x++) for(let z=-5;z<=5;z++) {
+      const tint=((x*x*7+z*z*19+x*z*3)&7)*.005;
+      box(out,[x,-.045,z],[.977,.095,.977],[.24+tint,.29+tint,.30+tint]);
+    }
+    return out;
+  }
   box(out,[0,-.20,1.34],[21,.32,10.8],[.19,.24,.25]);
   for(let x=-4;x<=4;x++) for(let z=-2;z<=3;z++) {
     const ink = ((x*x*7 + z*z*19 + x*z*3)&7)*.008;
@@ -283,7 +291,7 @@ export function weaponTip({root,yaw,stride,hit,guard}) {
   const arm=limbFrame(root,yawRotation(yaw),armAnchor(1),armSwing(1,stride,hit,guard),armSpread(1,hit,guard));
   return {center:arm.point(swordEnd), forward:arm.orient([0,0,1]), side:arm.orient([1,0,0])};
 }
-export function actor(out, root, stride, turn, hit, guard, armed) {
+export function actor(out, root, stride, turn, hit, guard, armed, casting=false) {
   const yaw=yawRotation(turn);
   const body = (center,size,color) => box(out,add(root,yaw(center)),size,color,yaw,1);
   body([0,1.12,0],[.54,.63,.30],cloth);
@@ -311,7 +319,7 @@ export function actor(out, root, stride, turn, hit, guard, armed) {
     box(out,point([0,-length*.77,0]),[width*1.07,.082,width*1.08],arm?jade:cloth,orient,1);
     box(out,point([0,-length*.99,arm?0:.041]),[width*.85,.132,width*(arm?.86:1.39)],arm?skin:hair,orient,1);
     if(arm && anchor[0]>0) hand=point([.018,-length*.97,.105]);
-    if(arm && anchor[0]>0 && (armed || hit>.09)) {
+    if(arm && anchor[0]>0 && !casting && (armed || hit>.09)) {
       box(out,point([.02,-length*1.05,.15]),[.21,.059,.063],gold,orient,1);
       box(out,point([.02,-length*1.05,.44]),[.102,.038,.56],[.57,.68,.71],orient,1);
       blade=point(swordEnd);
@@ -368,8 +376,25 @@ export function effectMesh(camera) {
     face([[x-size,y,z-size],[x+size,y,z-size],[x+size,y,z+size],[x-size,y,z+size]],
       [0,0,1,1],color,4,strength,seed);
   }
+  function crystal(center,axis,length,radius,strength,seed) {
+    const side=norm(cross(axis,[0,1,0]));
+    const up=cross(side,axis);
+    const front=add(center,mul(axis,length*.67));
+    const rear=add(center,mul(axis,-length*.38));
+    const base=add(center,mul(axis,-length*.12));
+    const collar=Array.from({length:5},(_,i)=>{
+      const angle=i*2*Math.PI/5+seed*.67;
+      return add(base,add(mul(side,radius*Math.cos(angle)),mul(up,radius*Math.sin(angle))));
+    });
+    const faces=[[.14,.56,.79],[.45,.88,.98],[.16,.45,.74],[.22,.68,.89],[.40,.78,.94]];
+    for(let i=0;i<collar.length;i++) {
+      const a=collar[i], b=collar[(i+1)%collar.length];
+      face([rear,rear,b,a],[0,0,.26,.26],faces[i],13,strength*.89,seed+i);
+      face([a,b,front,front],[.26,.26,1,1],faces[i],13,strength,seed+i);
+    }
+  }
   return {
-    stamp,ribbon,ground,plane,
+    stamp,ribbon,ground,plane,crystal,face,
     heal:(mode,crest,bottom,strength,tint)=>{
       recovery=[mode,crest,bottom,strength];
       recoveryTint=tint;

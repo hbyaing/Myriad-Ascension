@@ -16,7 +16,7 @@
     <button id="restart" type="button">重播</button>
     <label class="timeline"><span>进度</span><input id="time" type="range" min="0" max="8" step="0.01" value="0" aria-label="同步演出时间"><output id="clock" for="time">0.00 / 8 秒</output></label>
     <label class="rate">速度 <select id="speed"><option value=".5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option></select></label>
-    <label class="rate">画面 <select id="focus"><option value="all">五术并排</option><option value="0">细看轻身</option><option value="1">细看回春</option><option value="2">细看聚灵</option><option value="3">细看嗜血</option><option value="4">细看净化</option></select></label>
+    <label class="rate">画面 <select id="focus"><option value="all">五术并排</option><option value="0">细看轻身</option><option value="1">细看回春</option><option value="2">细看聚灵</option><option value="3">细看嗜血</option><option value="4">细看净化</option><option value="design">冰锥与烈焰草案</option></select></label>
     <button id="light" type="button" aria-pressed="false">亮景</button>
     <button id="reset" type="button">重置视角</button>
   </section>
@@ -47,6 +47,11 @@
       <h2><span>05</span>净化术<small>涤浊</small></h2>
       <div class="view" data-art="4" data-passive="0" aria-label="净化术主动预览"><div class="tag">主动 <span>回血 · 驱除负面</span></div><div class="phase"></div></div>
       <div class="view" data-art="4" data-passive="1" aria-label="净化术被动预览"><div class="tag">被动 <span>生命恢复</span></div><div class="phase"></div></div>
+    </article>
+    <article data-draft hidden style="--accent:#d5edff">
+      <h2><span>06 / 07</span>冰锥术与烈焰波<small>主动演出草案</small></h2>
+      <div class="view" data-art="5" data-passive="0" aria-label="冰锥术主动设计预览"><div class="tag">冰锥术 <span>8 格直线 · 宽 1.8 格</span></div><div class="phase"></div></div>
+      <div class="view" data-art="6" data-passive="0" aria-label="烈焰波主动设计预览"><div class="tag">烈焰波 <span>6.5 格扇面 · 108°</span></div><div class="phase"></div></div>
     </article>
   </section>
   <p class="note"><span id="layout-note">上排为主动施术，下排为被动触发。</span>统一 8 秒循环用于对照起势、触发和收尾，触发节奏由工作台模拟。</p>

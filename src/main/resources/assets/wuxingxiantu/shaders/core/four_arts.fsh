@@ -46,6 +46,17 @@ void main() {
         return;
     }
     if(gl_FragCoord.z>worldDepth+.000045) discard;
+    if(kind>10.5) {
+        float along=smoothstep(0.,.13,p.x)*(1.-smoothstep(.83,1.,p.x));
+        float fold=p.y-.21*sin(p.x*6.3+seed*.8);
+        float ridge=gaussian(fold*10.);
+        float silk=gaussian(fold*2.8)*(.24+.21*sin(p.x*15.+seed));
+        float filament=gaussian((fold-.34)*7.)*.20;
+        float alpha=along*(ridge*.72+silk+filament)*strength;
+        vec3 silver=mix(color*.71,vec3(.92,.99,1.),ridge*.83);
+        frag=vec4(silver*alpha+color*ridge*along*strength*.19,alpha);
+        return;
+    }
     if(kind>9.5) {
         vec2 v=vec2(p.x*2.-1.,p.y);
         float curl=v.x+.20*sin(v.y*3.5+seed);
