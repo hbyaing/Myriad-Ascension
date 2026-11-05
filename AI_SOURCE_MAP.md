@@ -1,5 +1,7 @@
 # 源码导航
 
+持续架构优化：[工程入口与五步路线](docs/development/architecture/README.md)、[可接手任务](docs/development/architecture/TASKS.md)。架构思路仅供参考，其他功能可继续独立开发；涉及共享规则、状态或协议时核对任务影响。
+
 当前状态唯一入口：[CURRENT_STATUS.md](CURRENT_STATUS.md)。最新工作区清理与恢复方法：[docs/cleanup/20261004-workspace-cleanup.md](docs/cleanup/20261004-workspace-cleanup.md)。历史记录：[docs/archive/repair-history-20260927-pre-balance.md](docs/archive/repair-history-20260927-pre-balance.md)。本文件仅列入口。
 
 平台：Minecraft 1.20.1 / Forge 47.4.10 / Java 17 / GeckoLib 4.8.4。
