@@ -10,7 +10,7 @@ import static cn.blockforge.generated.generatedmod.client.arts.FourArtsGeometry.
 final class FourArtsAnimation {
     private static final double TURN=Math.PI*2;
     private static final Vec3 UP=new Vec3(0,1,0);
-    private static final int WIND=0x87EDFF, PALE_WIND=0xD1FFF7, RECOVERY_GREEN=0x79EF81;
+    private static final int WIND=0x87EDFF, PALE_WIND=0xD1FFF7, RECOVERY_CYAN=0x56EEDB, PURIFY_SILVER=0xE0F5FF;
     private static final int SPIRIT_BLUE=0x217AFF, SPIRIT_ICE=0x7DD4FF, CARMINE=0xFF1A38, RUBY=0xB00B2B;
     private static final int[] LEAF_COLORS={0x499D36,0x78C44D,0x9ED56B,0x398B4B};
 
@@ -64,18 +64,9 @@ final class FourArtsAnimation {
         }
     }
 
-    static void renewal(FourArtsGeometry fx,FourArtsPose.Sample sample,Vec3 base,double height,double time,boolean passive) {
+    static void renewal(FourArtsGeometry fx,Vec3 base,double height,double time,boolean passive) {
         double lifetime=passive?.93:1.56;
         if(time<0 || time>=lifetime) return;
-        double progress=time/lifetime;
-        double glow=pulse(progress,0,.29,1)*(passive?.40:.68);
-        for(int i=0;i<sample.sites().length;i++) {
-            var site=sample.sites()[i];
-            double radius=(i==3||i==6)?.38:i==2?.23:.19;
-            fx.plane(site.point().add(site.normal().scale(.024)),site.along().scale(radius),
-                    site.across().scale(radius),RECOVERY_GREEN,RECOVERY,glow,i);
-        }
-
         int leaves=passive?9:21;
         double span=passive?.77:1;
         for(int i=0;i<leaves;i++) {
@@ -95,6 +86,37 @@ final class FourArtsAnimation {
             Vec3 across=cross.scale(Math.cos(roll)).add(along.cross(cross).scale(Math.sin(roll)));
             double size=(.099+(i%5)*.016)*span;
             fx.plane(position,along.scale(size),across.scale(size*.60),LEAF_COLORS[i%LEAF_COLORS.length],LEAF,alpha,i);
+        }
+    }
+
+    static void renewalSurface(FourArtsGeometry fx,List<Vec3> surface,double time,boolean passive) {
+        double age=time/.78;
+        if(age<0 || age>=(passive?1:2)) return;
+        double pass=fract(age);
+        double pulse=ease(0,.08,pass)*(1-ease(.84,1,pass));
+        fx.surface(surface,-.09+pass*1.25,RISE,RECOVERY_CYAN,pulse*(passive?.73:age<1?.91:.68));
+    }
+
+    static void purification(FourArtsGeometry fx,List<Vec3> surface,Vec3 base,double height,double time,boolean passive,int removed) {
+        double pass=time/(passive?.57:.98);
+        if(pass>=0 && pass<1) {
+            double pulse=ease(0,.10,pass)*(1-ease(.82,1,pass));
+            fx.surface(surface,passive?pass*.64:1.10-pass*1.28,passive?CHEST:WASH,PURIFY_SILVER,
+                    pulse*(passive?.56:removed>0?.92:.70));
+        }
+        if(removed==0) return;
+        for(int i=0;i<removed*3+8;i++) {
+            double y=.19+(i%7)*.115;
+            double age=(time-(1.10-y)*.765)/.58;
+            if(age<=0 || age>=1) continue;
+            double angle=i*2.399963+age*.44;
+            double radius=.29+.055*(i%3)+.66*age;
+            Vec3 point=base.add(polar(radius,y*height+.10*age-.22*age*age,angle));
+            double ash=pulse(age,0,.19,.73);
+            double scale=.136+(i%4)*.034;
+            fx.stamp(point,scale*(1+.55*age),scale*.62,0x344550,ASH,ash*.92,i,angle+age*1.2);
+            double glint=pulse(age,.29,.56,1);
+            fx.stamp(point,.064,.056,PURIFY_SILVER,SPARK,glint*.86,i,0);
         }
     }
 

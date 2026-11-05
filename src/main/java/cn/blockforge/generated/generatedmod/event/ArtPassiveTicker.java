@@ -27,16 +27,12 @@ public final class ArtPassiveTicker {
             CultivationData data = GeneratedMod.data(player);
             if (data == null || !data.wuxingxiantu$getActiveDivineArt().isBlank()) continue;
             String[] passiveArts=data.wuxingxiantu$getPassiveArts();
-            boolean renewal=Arrays.asList(passiveArts).contains(FourArtsVisuals.RENEWAL);
             int level = 1;
             for (String art : passiveArts) {
                 if (!ArtCatalog.isPassiveCompatible(art)) continue;
                 int mastery = data.wuxingxiantu$getArtMastery(art);
                 level = Math.max(level, ArtCatalog.masteryLevel(mastery));
                 switch (art) {
-                    case "art_purification" -> {
-                        if(!renewal) effect(player,MobEffects.REGENERATION,45,Math.min(1,level/3));
-                    }
                     case "art_spirit_shield" -> {
                         // Refreshing absorption replenishes its hearts. Let a finite
                         // shield finish instead of refilling it once per second.
@@ -78,12 +74,13 @@ public final class ArtPassiveTicker {
         CultivationData data=GeneratedMod.data(player);
         if(data==null || !data.wuxingxiantu$getActiveDivineArt().isBlank()) return;
         String[] slots=data.wuxingxiantu$getPassiveArts();
-        if(!Arrays.asList(slots).contains(FourArtsVisuals.RENEWAL)) return;
+        var equipped=Arrays.asList(slots);
+        if(!equipped.contains(FourArtsVisuals.RENEWAL) && !equipped.contains(FourArtsVisuals.PURIFICATION)) return;
         int level=1, amplifier=0;
         for(String art:slots) {
             if(!ArtCatalog.isPassiveCompatible(art)) continue;
             level=Math.max(level,ArtCatalog.masteryLevel(data.wuxingxiantu$getArtMastery(art)));
-            if(FourArtsVisuals.RENEWAL.equals(art) || "art_purification".equals(art))
+            if(FourArtsVisuals.RENEWAL.equals(art) || FourArtsVisuals.PURIFICATION.equals(art))
                 amplifier=Math.max(amplifier,Math.min(1,level/3));
         }
         // Vanilla regeneration heals at a duration multiple of its interval.

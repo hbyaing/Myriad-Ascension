@@ -100,18 +100,10 @@ public record ArtReleasePacket(int slot) {
             float damage = ArtCatalog.damageFor(art, playerAttack, mastery, CultivationLogic.maxAura(GeneratedMod.data(player)));
             if (art.equals("art_flame_wave")) damage *= cn.blockforge.generated.generatedmod.balance.HeartMethodBalance.fireDamageMultiplier(
                     cn.blockforge.generated.generatedmod.ProgressionGate.effectiveHeartMethod(player,GeneratedMod.data(player)));
-            if (art.equals("art_renewal") || art.equals("art_purification")) {
+            if (art.equals(FourArtsVisuals.RENEWAL) || art.equals(FourArtsVisuals.PURIFICATION)) {
                 float healing=ArtCatalog.currentHealing(art, mastery);
                 if (art.equals(FourArtsVisuals.RENEWAL)) FourArtsVisuals.renew(player,healing);
-                else player.heal(healing);
-                if (art.equals("art_purification")) {
-                    // Copy first: removing effects mutates the live collection.
-                    for (var effect : java.util.List.copyOf(player.getActiveEffects())) {
-                        if (effect.getEffect().getCategory() == net.minecraft.world.effect.MobEffectCategory.HARMFUL) {
-                            player.removeEffect(effect.getEffect());
-                        }
-                    }
-                }
+                else FourArtsVisuals.purify(player,healing);
             }
             if (art.equals("art_spirit_shield") || art.equals("art_golden_bell") || art.equals("art_immovable_mountain")) {
                 int duration = ArtCatalog.shieldDurationTicks(art, mastery);

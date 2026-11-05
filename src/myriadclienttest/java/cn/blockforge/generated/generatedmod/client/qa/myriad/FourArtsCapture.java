@@ -51,11 +51,13 @@ public final class FourArtsCapture {
     private static final boolean ENABLED=Boolean.getBoolean("wuxingxiantu.fourArtsCapture");
     private static final Path OUT=Path.of(System.getProperty("wuxingxiantu.myriadCaptureOutput","captures"));
     private static final String[] CASES={"active-renewal","passive-renewal","active-spirit","passive-spirit",
-            "active-wind","passive-slow-fall","active-blood-charge","active-blood-impact","passive-blood-impact"};
+            "active-wind","passive-slow-fall","active-blood-charge","active-blood-impact","passive-blood-impact",
+            "active-purification","clean-purification","passive-purification"};
     private static final String[] ARTS={FourArtsVisuals.RENEWAL,FourArtsVisuals.RENEWAL,FourArtsVisuals.GATHER,
             FourArtsVisuals.GATHER,FourArtsVisuals.LIGHT,FourArtsVisuals.LIGHT,FourArtsVisuals.BLOOD,
-            FourArtsVisuals.BLOOD,FourArtsVisuals.BLOOD};
-    private static final int[] LIMIT={19,40,31,25,35,31,31,24,24};
+            FourArtsVisuals.BLOOD,FourArtsVisuals.BLOOD,
+            FourArtsVisuals.PURIFICATION,FourArtsVisuals.PURIFICATION,FourArtsVisuals.PURIFICATION};
+    private static final int[] LIMIT={14,40,31,25,35,31,31,24,24,17,14,40};
     private static final List<Map<String,Object>> RESULTS=new ArrayList<>();
     private static final long START=System.nanoTime();
     private static boolean opened,ready,prepared,finished;
@@ -137,7 +139,7 @@ public final class FourArtsCapture {
                 return;
             }
             tick++;
-            if(tick==5&&(stage==0||stage==2||stage==4||stage==6||stage==7))
+            if(tick==5&&(stage==0||stage==2||stage==4||stage==6||stage==7||stage==9||stage==10))
                 Network.CHANNEL.sendToServer(new ArtReleasePacket(0));
             if(stage==4&&tick==9) mc.options.keyUp.setDown(true);
             if((stage==7||stage==8)&&tick==20) pending=mc.getSingleplayerServer().submit(()->hit(serverPlayer(mc)));
@@ -160,10 +162,14 @@ public final class FourArtsCapture {
         data.wuxingxiantu$clearPassiveArt(0);
         player.removeAllEffects();
         for(String art:ARTS) player.getPersistentData().remove("FourArtsVisualUntil."+art);
-        if(mode==1||mode==3||mode==5||mode==8) data.wuxingxiantu$equipPassiveArt(0,ARTS[mode]);
-        if(mode<=1) player.setHealth(Math.max(1,player.getMaxHealth()-9));
+        if(mode==1||mode==3||mode==5||mode==8||mode==11) data.wuxingxiantu$equipPassiveArt(0,ARTS[mode]);
+        if(mode<=1||mode>=9) player.setHealth(Math.max(1,player.getMaxHealth()-9));
         else player.setHealth(player.getMaxHealth());
-        player.setItemInHand(InteractionHand.MAIN_HAND,mode>=6?new ItemStack(Items.IRON_SWORD):ItemStack.EMPTY);
+        if(mode>=9) {
+            if(mode!=10) player.addEffect(new net.minecraft.world.effect.MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN,1000,0,false,false));
+            player.addEffect(new net.minecraft.world.effect.MobEffectInstance(MobEffects.DAMAGE_RESISTANCE,1000,0,false,false));
+        }
+        player.setItemInHand(InteractionHand.MAIN_HAND,mode>=6&&mode<=8?new ItemStack(Items.IRON_SWORD):ItemStack.EMPTY);
         player.connection.teleport(.5,mode==5?220:200,.5,0,0);
         GeneratedMod.sync(player);
     }
@@ -191,7 +197,7 @@ public final class FourArtsCapture {
                 cameraPosition.setAccessible(true);
             }
             var p=Minecraft.getInstance().player;
-            Vec3 target=p.position().add(0,1.03,stage>=7?.40:0);
+            Vec3 target=p.position().add(0,1.03,stage==7||stage==8?.40:0);
             Vec3 origin=target.add(2.20,1.12,3.70);
             Vec3 toward=target.subtract(origin);
             cameraPosition.invoke(event.getCamera(),origin);
@@ -212,11 +218,14 @@ public final class FourArtsCapture {
                 case 2,3 -> 1<<6;
                 case 4 -> 1<<5;
                 case 5 -> 1<<8;
+                case 9 -> 1<<9|1<<10;
+                case 10,11 -> 1<<9;
                 default -> 1<<2;
             };
             boolean actual=count>baseline && (drawMaterials()&wanted)==wanted && matchesMode(mc);
             if(actual && firstDrawTick<0) firstDrawTick=tick;
-            int capture=stage==1?firstDrawTick+6:stage==3?firstDrawTick+9:stage==5?firstDrawTick+5:LIMIT[stage];
+            int capture=stage==1?firstDrawTick+6:stage==3?firstDrawTick+9:stage==5?firstDrawTick+5
+                    :stage==11?firstDrawTick+3:LIMIT[stage];
             if(!actual) return;
             if(firstDrawTick<0 || tick<capture) return;
             PointerSafety.verify();
@@ -228,6 +237,11 @@ public final class FourArtsCapture {
                 throw new AssertionError("Legacy movement particles still enabled");
             if(stage==6 && (mc.player.getEffect(MobEffects.DAMAGE_BOOST)==null || mc.player.getEffect(MobEffects.DAMAGE_BOOST).isVisible()))
                 throw new AssertionError("Legacy damage boost particles still enabled");
+            if(stage>=9 && (!mc.player.hasEffect(MobEffects.DAMAGE_RESISTANCE)
+                    || mc.player.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)!=(stage==11)
+                    || mc.player.getHealth()<=mc.player.getMaxHealth()-9
+                    || (stage!=9 && (drawMaterials()&(1<<10))!=0)))
+                throw new AssertionError("Purification visual did not match the applied heal and cleanse");
             try(var screenshot=Screenshot.takeScreenshot(mc.getMainRenderTarget())) {
                 screenshot.writeToFile(OUT.resolve(CASES[stage]+".png"));
             }
@@ -275,6 +289,9 @@ public final class FourArtsCapture {
                 var hit=((java.util.ArrayDeque<?>)field(state,"hits")).peekLast();
                 yield hit!=null && (boolean)field(hit,"passive")==(stage==8);
             }
+            case 9,10,11 -> mc.level.getGameTime()-(long)field(state,"purification")<20
+                    && (boolean)field(state,"passivePurification")==(stage==11)
+                    && (int)field(state,"removedEffects")==(stage==9?1:0);
             default -> false;
         };
     }

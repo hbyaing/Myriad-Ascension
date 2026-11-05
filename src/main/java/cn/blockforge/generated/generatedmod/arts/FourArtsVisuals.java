@@ -9,6 +9,7 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
@@ -17,10 +18,11 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
+import java.util.List;
 
 @Mod.EventBusSubscriber(modid=GeneratedMod.MOD_ID)
 public final class FourArtsVisuals {
-    public static final String LIGHT="art_light_body", RENEWAL="art_renewal";
+    public static final String LIGHT="art_light_body", RENEWAL="art_renewal", PURIFICATION="art_purification";
     public static final String GATHER="art_spirit_gathering", BLOOD="art_bloodlust";
     public static final int WIND=1, PASSIVE_WIND=2, SPIRIT=4, BLOOD_AURA=8;
     private static final String LAST_STATE="FourArtsVisualState";
@@ -29,10 +31,25 @@ public final class FourArtsVisuals {
     private FourArtsVisuals() {}
 
     public static boolean replaces(String art) {
-        return LIGHT.equals(art)||RENEWAL.equals(art)||GATHER.equals(art)||BLOOD.equals(art);
+        return LIGHT.equals(art)||RENEWAL.equals(art)||GATHER.equals(art)||BLOOD.equals(art)||PURIFICATION.equals(art);
     }
 
     public static void renew(ServerPlayer player,float amount) {
+        activeHeal(player,amount);
+        send(player,Action.RENEWAL,0,Vec3.ZERO);
+    }
+
+    public static void purify(ServerPlayer player,float amount) {
+        activeHeal(player,amount);
+        int removed=0;
+        for(var effect:List.copyOf(player.getActiveEffects())) {
+            if(effect.getEffect().getCategory()==MobEffectCategory.HARMFUL && player.removeEffect(effect.getEffect()))
+                removed++;
+        }
+        send(player,Action.PURIFICATION,Math.min(removed,4),Vec3.ZERO);
+    }
+
+    private static void activeHeal(ServerPlayer player,float amount) {
         var tag=player.getPersistentData();
         tag.putBoolean(ACTIVE_HEAL,true);
         try {
@@ -40,7 +57,6 @@ public final class FourArtsVisuals {
         } finally {
             tag.remove(ACTIVE_HEAL);
         }
-        send(player,Action.RENEWAL,0,Vec3.ZERO);
     }
 
     public static void cast(ServerPlayer player,String art,int ticks) {
@@ -92,8 +108,9 @@ public final class FourArtsVisuals {
     public static void healed(LivingHealEvent event) {
         if(event.getEntity() instanceof ServerPlayer player && event.getAmount()>0
                 && player.getHealth()<player.getMaxHealth() && player.hasEffect(MobEffects.REGENERATION)
-                && passive(player,RENEWAL) && !player.getPersistentData().getBoolean(ACTIVE_HEAL)) {
-            send(player,Action.PASSIVE_RENEWAL,0,Vec3.ZERO);
+                && !player.getPersistentData().getBoolean(ACTIVE_HEAL)) {
+            if(passive(player,RENEWAL)) send(player,Action.PASSIVE_RENEWAL,0,Vec3.ZERO);
+            else if(passive(player,PURIFICATION)) send(player,Action.PASSIVE_PURIFICATION,0,Vec3.ZERO);
         }
     }
 

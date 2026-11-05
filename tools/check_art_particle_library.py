@@ -9,8 +9,11 @@ ids = re.findall(r'new Entry\("(art_[^"]+)",', catalog)
 recipes = set(re.findall(r'case "(art_[^"]+)" -> new Recipe', vfx))
 profiles = set(re.findall(r'case "(art_[^"]+)" -> new AttackProfile', catalog))
 shader_source = (ROOT / 'src/main/java/cn/blockforge/generated/generatedmod/arts/FourArtsVisuals.java').read_text('utf-8-sig')
-shader_arts = set(re.findall(r'\b(?:LIGHT|RENEWAL|GATHER|BLOOD)="(art_[^"]+)"', shader_source))
-assert len(shader_arts) == 4 and shader_arts <= set(ids), f'invalid shader art list: {shader_arts}'
+shader_ids = dict(re.findall(r'\b([A-Z_]+)="(art_[^"]+)"', shader_source))
+replacement = re.search(r'boolean replaces\(String art\) \{(.*?)\}', shader_source, re.S)
+assert replacement, 'missing shader replacement routing'
+shader_arts = {shader_ids[name] for name in re.findall(r'([A-Z_]+)\.equals\(art\)', replacement[1])}
+assert len(shader_arts) == 5 and shader_arts <= set(ids), f'invalid shader art list: {shader_arts}'
 assert not shader_arts & recipes, f'legacy recipes for shader arts: {shader_arts & recipes}'
 shader_dir = ROOT / 'src/main/resources/assets/wuxingxiantu/shaders/core'
 for suffix in ('json', 'vsh', 'fsh'):

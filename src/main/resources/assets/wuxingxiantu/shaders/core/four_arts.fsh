@@ -30,20 +30,32 @@ void main() {
     float kind=params.x;
     float strength=params.y;
     float seed=params.z;
-    if(kind>8.5) {
-        if(worldDepth>=.999999) discard;
+    if(kind>8.5 && kind<9.5) {
+        if(!gl_FrontFacing || worldDepth>=.999999) discard;
         vec4 position=InverseClip*vec4(sceneUv*2.-1.,worldDepth*2.-1.,1.);
         if(abs(position.w)<.00001) discard;
         vec3 delta=position.xyz/position.w-relativePosition;
-        float contact=1.-smoothstep(.023,.145,length(delta));
-        vec2 patch=vec2(p.x*2.-1.,p.y);
-        float fade=1.-smoothstep(.18,1.,length(patch));
-        float opacity=contact*fade*strength;
+        float contact=1.-smoothstep(.032,.099,length(delta));
+        float offset=(seed>1.5?abs(p.x-.60):p.x)-p.y;
+        float ridge=gaussian(offset*(seed>1.5?22.:28.));
+        float wake=gaussian((offset+(seed==1.?-.037:.037))*10.);
+        float shimmer=.80+.20*cos(time*23.+p.x*31.);
+        float opacity=contact*strength*(ridge*.29*shimmer+wake*.15);
         if(opacity<.004) discard;
-        frag=vec4(color*opacity*.95,opacity*.75);
+        frag=vec4(mix(color,vec3(.84,1.,1.),ridge*.25)*opacity,opacity);
         return;
     }
     if(gl_FragCoord.z>worldDepth+.000045) discard;
+    if(kind>9.5) {
+        vec2 v=vec2(p.x*2.-1.,p.y);
+        float curl=v.x+.20*sin(v.y*3.5+seed);
+        float shape=gaussian(curl*2.5)*gaussian(v.y*1.65);
+        float grain=noise(v*5.3+vec2(seed*2.9,-time*.72));
+        float alpha=shape*mix(.40,1.,smoothstep(.24,.70,grain))*strength*.78
+                *(1.-smoothstep(.68,1.,max(abs(v.x),abs(v.y))));
+        frag=vec4(color*alpha,alpha);
+        return;
+    }
     float alpha;
     float core;
     vec3 hue = color;

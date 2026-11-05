@@ -8,7 +8,7 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
 public record FourArtsPacket(int playerId, Action action, int state, Vec3 position) {
-    public enum Action { STATE, RENEWAL, PASSIVE_RENEWAL, GATHER_PULSE, BLOOD_HIT, PASSIVE_BLOOD_HIT }
+    public enum Action { STATE, RENEWAL, PASSIVE_RENEWAL, GATHER_PULSE, BLOOD_HIT, PASSIVE_BLOOD_HIT, PURIFICATION, PASSIVE_PURIFICATION }
 
     public void encode(FriendlyByteBuf buf) {
         buf.writeVarInt(playerId);

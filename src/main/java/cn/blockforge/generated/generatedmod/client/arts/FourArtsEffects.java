@@ -73,6 +73,11 @@ public final class FourArtsEffects {
                 state.renewal=tick;
                 state.passiveRenewal=packet.action()==Action.PASSIVE_RENEWAL;
             }
+            case PURIFICATION, PASSIVE_PURIFICATION -> {
+                state.purification=tick;
+                state.passivePurification=packet.action()==Action.PASSIVE_PURIFICATION;
+                state.removedEffects=state.passivePurification?0:Math.min(4,packet.state());
+            }
             case GATHER_PULSE -> state.gatherPulse=tick;
             case BLOOD_HIT, PASSIVE_BLOOD_HIT -> {
                 Vec3 p=packet.position();
@@ -100,7 +105,7 @@ public final class FourArtsEffects {
             state.hits.removeIf(hit->now-hit.tick>=14);
             if(now-state.lastState>27) state.bits=0;
             if(player.isRemoved() || !player.isAlive() || player.isSpectator() ||
-                    state.bits==0&&now-state.renewal>32&&now-state.gatherPulse>20&&state.hits.isEmpty()) {
+                    state.bits==0&&now-state.renewal>32&&now-state.purification>30&&now-state.gatherPulse>20&&state.hits.isEmpty()) {
                 iterator.remove();
                 continue;
             }
@@ -126,8 +131,15 @@ public final class FourArtsEffects {
 
     static boolean needsPose(AbstractClientPlayer player) {
         var state=STATES.get(player);
-        return state!=null && ((state.bits&BLOOD_AURA)!=0 || player.level().getGameTime()-state.renewal<32)
+        return state!=null && ((state.bits&BLOOD_AURA)!=0 || needsSurface(player))
                 && !TrailShaderBridge.shadowPass();
+    }
+
+    static boolean needsSurface(AbstractClientPlayer player) {
+        var state=STATES.get(player);
+        long now=player.level().getGameTime();
+        return state!=null && (now-state.renewal<(state.passiveRenewal?16:32)
+                || now-state.purification<(state.passivePurification?12:20));
     }
 
     static void pose(AbstractClientPlayer player,FourArtsPose.Sample pose) { POSES.put(player,pose); }
@@ -167,20 +179,26 @@ public final class FourArtsEffects {
             if((state.bits&SPIRIT)!=0) FourArtsAnimation.gathering(geometry,base,(now-state.spirit)/20,false);
             if(now-state.gatherPulse<20 && (state.bits&SPIRIT)==0)
                 FourArtsAnimation.gathering(geometry,base,(now-state.gatherPulse)/20,true);
-            if(now-state.renewal<32 || (state.bits&BLOOD_AURA)!=0) {
-                var sample=POSES.get(player);
-                if(sample!=null) sample=sample.inWorld(inverse,camera);
-                if(sample==null || sample.sites()[2].point().distanceToSqr(base)>9)
-                    sample=FourArtsPose.fallback(player,base,partial);
-                if(now-state.renewal<32) FourArtsAnimation.renewal(geometry,sample,base,player.getBbHeight(),(now-state.renewal)/20,state.passiveRenewal);
-                if((state.bits&BLOOD_AURA)!=0) {
-                    Vec3 hand=sample.hand();
-                    if(mc.getCameraEntity()==player && mc.options.getCameraType().isFirstPerson()) {
-                        double sign=player.getMainArm()==HumanoidArm.RIGHT?1:-1;
-                        hand=camera.add(player.getViewVector(partial).scale(.87)).add(right.scale(sign*.36)).subtract(up.scale(.44));
-                    }
-                    FourArtsAnimation.bloodCharge(geometry,hand,(now-state.blood)/20);
+            var sample=POSES.get(player);
+            var surface=sample==null?java.util.List.<Vec3>of()
+                    :sample.surface().stream().map(point->FourArtsPose.Sample.inWorld(point,inverse,camera)).toList();
+            if(now-state.renewal<32) {
+                double age=(now-state.renewal)/20;
+                FourArtsAnimation.renewal(geometry,base,player.getBbHeight(),age,state.passiveRenewal);
+                FourArtsAnimation.renewalSurface(geometry,surface,age,state.passiveRenewal);
+            }
+            if(now-state.purification<30)
+                FourArtsAnimation.purification(geometry,surface,base,player.getBbHeight(),(now-state.purification)/20,
+                        state.passivePurification,state.removedEffects);
+            if((state.bits&BLOOD_AURA)!=0) {
+                Vec3 hand=sample==null?FourArtsPose.fallbackHand(player,base,partial)
+                        :FourArtsPose.Sample.inWorld(sample.hand(),inverse,camera);
+                if(hand.distanceToSqr(base)>9) hand=FourArtsPose.fallbackHand(player,base,partial);
+                if(mc.getCameraEntity()==player && mc.options.getCameraType().isFirstPerson()) {
+                    double sign=player.getMainArm()==HumanoidArm.RIGHT?1:-1;
+                    hand=camera.add(player.getViewVector(partial).scale(.87)).add(right.scale(sign*.36)).subtract(up.scale(.44));
                 }
+                FourArtsAnimation.bloodCharge(geometry,hand,(now-state.blood)/20);
             }
             for(var hit:state.hits) FourArtsAnimation.bloodHit(geometry,hit.point,hit.direction,(now-hit.tick)/20,hit.passive);
         }
@@ -269,8 +287,9 @@ public final class FourArtsEffects {
     private static final class State {
         int bits;
         long lastState,wind,spirit,blood;
-        long renewal=Long.MIN_VALUE/2,gatherPulse=Long.MIN_VALUE/2;
-        boolean passiveRenewal;
+        long renewal=Long.MIN_VALUE/2,purification=Long.MIN_VALUE/2,gatherPulse=Long.MIN_VALUE/2;
+        boolean passiveRenewal,passivePurification;
+        int removedEffects;
         final ArrayDeque<WindPoint> history=new ArrayDeque<>();
         final ArrayDeque<Hit> hits=new ArrayDeque<>();
     }
