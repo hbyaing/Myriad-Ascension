@@ -73,7 +73,7 @@ public final class ModTabs {
                 ||item instanceof cn.blockforge.generated.generatedmod.items.HumanEmperorBannerItem) return Category.REFINING;
         if(java.util.Set.of("meditation_cushion","spirit_cushion","meditation_platform","spirit_platform","spirit_bath","insight","aura_crystal","experience_crystal","hualing_pei","cave_token").contains(id)) return Category.CULTIVATION;
         if(id.startsWith("spirit_stone")||id.startsWith("spirit_vein_ore")||id.startsWith("spirit_coal")
-                ||id.startsWith("eternal_spirit_coal")||id.equals("spirit_ore")||id.equals("dark_iron_block")
+                ||id.startsWith("eternal_spirit_coal")||id.equals("spirit_ore")||id.equals("dark_iron_block")||id.equals("thunderstruck_wood")
                 ||java.util.Set.of("raw_dark_iron","dark_iron","azure_steel","tiangang_steel","five_essence","insect_carapace_fragment","spirit_devourer_sac","beast_blood","beast_hide").contains(id)
                 ||id.matches("(low|mid|high|perfect)_(gold_marrow|wood_seed|water_pearl|fire_flame|earth_core)")) return Category.MATERIALS;
         return Category.MISC;

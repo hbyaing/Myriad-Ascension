@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>雷击木 · 雷纹工作台</title>
+<style>
+  :root { color-scheme: dark; font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+    background: #101116; color: #e9e9f0; --quiet: #a3a4b5; --line: #2b2c38; --accent: #add5ff; }
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  main { width: min(1400px, 100%); margin: auto; padding: clamp(16px, 3vw, 44px); }
+  header { display: flex; align-items: end; justify-content: space-between; gap: 14px; margin-bottom: 22px; }
+  .eyebrow { color: var(--accent); font-size: 12px; letter-spacing: .22em; margin-bottom: 8px; }
+  h1 { font-size: clamp(24px, 4vw, 40px); letter-spacing: .08em; margin: 0; }
+  .badge { color: var(--accent); border: 1px solid #354b60; border-radius: 4px; background: #192332;
+    padding: 6px 10px; font-size: 12px; white-space: nowrap; }
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 16px; }
+  .stage, aside { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .stage { background: #0c0d13; position: relative; min-height: 580px; }
+  canvas { display: block; width: 100%; height: clamp(580px, 73vh, 900px); touch-action: none; cursor: grab; }
+  canvas:active { cursor: grabbing; }
+  .view-tag, .view-help { position: absolute; pointer-events: none; left: 18px; color: var(--quiet); font-size: 12px; }
+  .view-tag { top: 17px; letter-spacing: .12em; }
+  .view-help { bottom: 16px; }
+  #error { position: absolute; inset: 40% 10% auto; padding: 16px; color: #ffc5ba; background: #28191c; }
+  aside { background: #181920; padding: 20px; align-self: start; }
+  h2 { font-size: 16px; margin: 0 0 9px; letter-spacing: .08em; }
+  p { font-size: 13px; line-height: 1.75; color: var(--quiet); margin: 0 0 17px; }
+  .controls { display: grid; gap: 12px; }
+  .group { border-top: 1px solid var(--line); padding-top: 16px; margin-top: 17px; }
+  .label { display: flex; justify-content: space-between; font-size: 13px; }
+  output { color: var(--accent); font-variant-numeric: tabular-nums; }
+  input[type=range] { width: 100%; margin: 8px 0 0; accent-color: var(--accent); }
+  .buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  button { background: #21242e; border: 1px solid #383c4a; color: inherit; border-radius: 5px;
+    padding: 9px 3px; font: inherit; font-size: 13px; cursor: pointer; }
+  button:hover { border-color: #85accf; }
+  button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  button[aria-pressed=true] { border-color: #769bc3; color: var(--accent); background: #24384d; }
+  #replay { background: #add5ff; border-color: #add5ff; color: #162437; font-weight: 600; }
+  .track { height: 3px; margin-top: 15px; border-radius: 2px; background: #30323e; overflow: hidden; }
+  .track > i { display: block; width: 100%; height: 100%; transform: scaleX(0); transform-origin: left; background: var(--accent); }
+  @media (max-width: 760px) {
+    .layout { grid-template-columns: 1fr; }
+    .stage { min-height: 0; }
+    canvas { height: clamp(390px, 66vh, 650px); }
+  }
+</style>
+<main>
+  <header>
+    <div><div class="eyebrow">万界仙途 / 材质工作台</div><h1>雷击木 · 游走雷纹</h1></div>
+    <span class="badge">视觉预览</span>
+  </header>
+  <div class="layout">
+    <section class="stage" aria-label="雷击木三维预览">
+      <canvas id="preview"></canvas>
+      <div class="view-tag">三节桃木 · 六面原贴图</div>
+      <div class="view-help">拖动旋转 · 滚轮缩放</div>
+      <div id="error" role="alert" hidden></div>
+    </section>
+    <aside aria-label="雷纹参数">
+      <h2>蓝白雷纹</h2>
+      <p>雷纹沿四面焦裂铺开。主纹先向下窜行，细纹与分叉随后亮起，在棱角与木节接缝间留下蓝色余光。</p>
+      <div class="buttons" aria-label="预览模式">
+        <button data-mode="flow" aria-pressed="true">动态流窜</button>
+        <button data-mode="static" aria-pressed="false">静态雷纹</button>
+        <button data-mode="base" aria-pressed="false">纯焦木</button>
+        <button id="reset">复位视角</button>
+      </div>
+      <div class="group controls">
+        <label><span class="label">流窜速度 <output for="speed"></output></span>
+          <input id="speed" type="range" min=".35" max="3" step=".05" value="1.5">
+        </label>
+        <label><span class="label">亮纹宽度 <output for="width"></output></span>
+          <input id="width" type="range" min=".5" max="2.2" step=".05" value="1">
+        </label>
+        <label><span class="label">余辉强度 <output for="glow"></output></span>
+          <input id="glow" type="range" min="0" max="2" step=".05" value="1">
+        </label>
+      </div>
+      <div class="group">
+        <div class="buttons">
+          <button id="replay">重放落雷</button>
+          <button id="pause" aria-pressed="false">暂停</button>
+        </div>
+        <div class="track" aria-hidden="true"><i id="progress"></i></div>
+      </div>
+    </aside>
+  </div>
+</main>
+<script src="atlas.js"></script>
+<script src="preview.js"></script>
+</html>

@@ -10,6 +10,7 @@ import cn.blockforge.generated.generatedmod.RefiningForgeBlockEntity;
 import cn.blockforge.generated.generatedmod.HumanEmperorBannerStandBlockEntity;
 import cn.blockforge.generated.generatedmod.AlchemyFurnaceBlockEntity;
 import cn.blockforge.generated.generatedmod.WuXingBlocks;
+import cn.blockforge.generated.generatedmod.blocks.ThunderstruckWoodBlock.RuneAnchor;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -18,6 +19,9 @@ import net.minecraftforge.registries.RegistryObject;
 public final class ModBlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
             DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, GeneratedMod.MOD_ID);
+    public static final RegistryObject<BlockEntityType<RuneAnchor>> THUNDERSTRUCK_WOOD =
+            BLOCK_ENTITIES.register("thunderstruck_wood", () -> BlockEntityType.Builder.of(
+                    RuneAnchor::new, WuXingBlocks.THUNDERSTRUCK_WOOD.get()).build(null));
     public static final RegistryObject<BlockEntityType<cn.blockforge.generated.generatedmod.alchemy.research.ResearchTableEntity>> ALCHEMY_RESEARCH_TABLE=BLOCK_ENTITIES.register("alchemy_research_table",()->BlockEntityType.Builder.of(cn.blockforge.generated.generatedmod.alchemy.research.ResearchTableEntity::new,WuXingBlocks.ALCHEMY_RESEARCH_TABLE.get()).build(null));
     public static final RegistryObject<BlockEntityType<cn.blockforge.generated.generatedmod.alchemy.inputs.MoonBottleBlockEntity>> MOON_BOTTLE=
             BLOCK_ENTITIES.register("moon_bottle",()->BlockEntityType.Builder.of(cn.blockforge.generated.generatedmod.alchemy.inputs.MoonBottleBlockEntity::new,WuXingBlocks.MOON_BOTTLE.get()).build(null));

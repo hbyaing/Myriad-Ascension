@@ -148,6 +148,13 @@ public final class WuXingBlocks {
             "meditation_platform", CultivationBlock.Kind.PLATFORM, 5);
     public static final RegistryObject<Block> PEACH_WOOD = BLOCKS.register(
             "peach_wood", () -> new RotatedPillarBlock(woodProperties()));
+    public static final RegistryObject<Block> THUNDERSTRUCK_WOOD = BLOCKS.register(
+            "thunderstruck_wood", () -> new cn.blockforge.generated.generatedmod.blocks.ThunderstruckWoodBlock(BlockBehaviour.Properties.of()
+                    .mapColor(net.minecraft.world.level.material.MapColor.COLOR_BLACK)
+                    .strength(2.0F)
+                    .sound(net.minecraft.world.level.block.SoundType.WOOD)));
+    public static final RegistryObject<Item> THUNDERSTRUCK_WOOD_ITEM =
+            blockItem("thunderstruck_wood", THUNDERSTRUCK_WOOD, 64);
     public static final RegistryObject<Block> PEACH_LEAVES = BLOCKS.register(
             "peach_leaves", () -> new LeavesBlock(BlockBehaviour.Properties.of().strength(0.2F)
                     .sound(net.minecraft.world.level.block.SoundType.GRASS).noOcclusion().randomTicks()));
