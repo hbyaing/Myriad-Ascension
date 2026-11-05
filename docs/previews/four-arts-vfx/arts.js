@@ -37,8 +37,8 @@ export function performance(art,passive,t) {
   if(art>=5) {
     const time=art===5?wave(t,3.9,0):attackTime(t);
     if(art===5) {
-      const cast=ease(.08,.32,time)*(1-ease(.76,1.15,time));
-      return {root:[-3.6,0,0],speed:0,stride:0,yaw:Math.PI/2,guard:pulse(time,.02,.26,.65),hit:cast};
+      const cast=ease(.49,.68,time)*(1-ease(1.01,1.43,time));
+      return {root:[-3.6,0,0],speed:0,stride:0,yaw:Math.PI/2,guard:pulse(time,.025,.36,.76),hit:cast};
     }
     return {root:[-3.6,0,0],speed:0,stride:0,yaw:Math.PI/2,
       guard:pulse(time,0,.15,.40),hit:pulse(time,.07,.24,.58)};

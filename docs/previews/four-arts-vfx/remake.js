@@ -5,59 +5,79 @@ const ivory=[1,.92,.69], gold=[1,.70,.28], sun=[1,.81,.47], stain=[.28,.086,.30]
 const sequence=(count,fn)=>Array.from({length:count},(_,i)=>fn(i/(count-1)));
 export const iceTargets=[[7.52,0,.14],[7.0,0,1.75]];
 const volley=[
-  [0,.17,1.49,0,3.61,.40],
-  [.065,-.55,2.36,.52,2.42,.285],
-  [.108,.53,2.37,.02,2.26,.257],
-  [.035,-.63,.63,.42,2.34,.255],
-  [.12,.70,.84,.79,2.14,.232],
-  [.115,-.24,3.42,1.06,1.94,.209],
-  [.192,.70,.25,1.15,1.66,.184],
+  [0,.14,1.55,0,3.74,.425,.80,1.20],
+  [.070,-.61,2.48,.64,2.50,.282,-1.60,1.88],
+  [.112,.54,2.09,.08,2.16,.232,1.61,1.75],
+  [.031,-.64,.70,.54,2.42,.259,-2.66,.84],
+  [.134,.72,.93,.81,2.07,.226,2.42,.78],
+  [.106,-.24,3.26,1.14,1.83,.188,-.46,2.19],
+  [.183,.77,.27,1.22,1.59,.171,3.02,1.58],
 ];
-const iceImpact=.37+.66*(iceTargets[0][0]-.88)/7.25;
+const iceLaunch=.62;
+const iceImpact=iceLaunch+.66*(iceTargets[0][0]-.88)/7.25;
 
-function iceFlight(raw,side,height,lag) {
-  return [Math.min(8,.88+(7.25-lag)*clamp(raw)),
-    mix(1.08,height,ease(-.23,.53,raw)),side*ease(-.18,.49,raw)];
+function iceAnchor(bearing,level,time) {
+  const settle=ease(.04,.57,time);
+  return polar(1.36-.19*settle,level+.063*Math.sin(time*6.5+bearing),bearing+.39*settle);
+}
+
+function iceFlight(raw,side,height,lag,anchor) {
+  const advance=clamp(raw);
+  const bend=ease(.08,.46,raw);
+  const bypass=anchor[0]<0 && Math.abs(anchor[2])<.72
+    ? (Math.sign(anchor[2]||side)*.81-anchor[2])*ease(0,.12,raw)*(1-ease(.28,.46,raw)) : 0;
+  return [Math.min(8,mix(anchor[0],.88,ease(0,.28,raw))+(7.25-lag)*advance),
+    mix(anchor[1],height,bend),mix(anchor[2],side,bend)+bypass];
 }
 
 export function iceSpike(fx,root,t) {
   const time=wave(t,3.9,0);
-  if(time>.37 && time<2.38) {
-    const front=Math.min(iceTargets[0][0],iceFlight((time-.37)/.66,0,1.08,0)[0]);
-    fx.iceGround(root,front,time,iceTargets[0],iceImpact);
+  if(time>iceLaunch && time<2.64) {
+    const lead=volley[0];
+    const front=Math.min(iceTargets[0][0],iceFlight((time-iceLaunch)/.66,lead[1],lead[2],lead[3],
+      iceAnchor(lead[6],lead[7],iceLaunch))[0]);
+    fx.iceGround(root,front,time-iceLaunch,iceTargets[0],iceImpact-iceLaunch);
   }
-  const seal=pulse(time,.015,.25,.82);
-  const sealRadius=.24+.32*ease(.02,.27,time);
-  const castCenter=add(root,[.75,1.13,0]);
-  fx.plane(castCenter,[0,sealRadius,0],[0,0,sealRadius],ice,25,seal*.89,0);
-  for(let i=0;i<4;i++) {
-    const angle=i*turn/4+time*1.45;
-    const point=add(castCenter,[.10,sealRadius*.89*Math.cos(angle),sealRadius*.89*Math.sin(angle)]);
-    fx.stamp(point,.072,.050,frost,18,seal*.88,i,angle);
+  const gather=pulse(time,.025,.33,.74);
+  if(gather>.004) for(let i=0;i<7;i++) {
+    const angle=i*2.399963+time*1.6;
+    const radius=1.47-.20*ease(.05,.59,time);
+    fx.ribbon(sequence(21,u=>add(root,polar(radius-.22*u,.37+(i%5)*.32+.38*u,angle+u*1.21))),
+      .062,ice,gather*.57,i,14);
+    const point=add(root,polar(radius,.40+(i%4)*.35+time*.30,angle+.41));
+    fx.stamp(point,.11+(i%3)*.021,.11+(i%3)*.021,frost,28,gather*.74,i,angle*.48);
   }
-  for(const [i,[delay,side,height,back,length,width]] of volley.entries()) {
-    const launch=.37+delay;
+  for(const [i,[delay,side,height,back,length,width,bearing,level]] of volley.entries()) {
+    const launch=iceLaunch+delay;
     const raw=(time-launch)/.66;
-    if(raw<-.37 || raw>1.13) continue;
+    if(raw<-.96 || raw>1.13) continue;
     const travel=clamp(raw);
-    const appear=ease(-.37,-.04,raw);
+    const appear=ease(-.88,-.17,raw);
     const visibility=appear*(1-ease(.88,1.11,raw));
-    const [x,y,z]=iceFlight(raw,side,height,back);
+    const anchor=iceAnchor(bearing,level,Math.min(launch,time));
+    const [x,y,z]=iceFlight(raw,side,height,back,anchor);
     const contact=i===0?1-ease(iceImpact,iceImpact+.083,time):1;
-    const cluster=1-ease(-.12,.19,raw);
     const leading=i===0?Math.min(x,iceTargets[0][0]):x;
-    const tip=add(root,[leading+cluster*(i%3)*.10,y+cluster*(height-.99)*.13,z+cluster*side*.19]);
-    const size=Math.min((.15+.85*ease(.01,.32,raw))*length,leading-.61);
-    const axis=norm([1,.022*(height-1),side*.046]);
-    fx.crystal(tip,axis,size,width*(.29+.71*ease(-.05,.26,raw)),visibility*contact,i);
-    if(raw<=.015) continue;
-    const rear=Math.max(.24,x-size*.89);
+    const tip=add(root,[leading,y,z]);
+    const extent=(.22+.78*ease(.11,.43,raw))*length;
+    const clearance=ease(.47,.90,Math.abs(z));
+    const size=raw>0 && leading>.36
+      ? Math.min(extent,mix(Math.max(.24,leading-.66),extent,clearance)) : extent;
+    const turnIn=1-ease(-.50,.20,raw);
+    const axis=norm([1,.022*(height-1)+.13*turnIn,side*.046+Math.sin(bearing)*.33*turnIn]);
+    fx.crystal(tip,axis,size,width*(.36+.64*ease(.02,.32,raw)),visibility*contact,i);
+    if(raw<=.015) {
+      const condensate=pulse(raw,-.77,-.24,.03);
+      fx.stamp(add(root,anchor),.48,.72,ice,27,condensate*.42,i+91,bearing*.12);
+      continue;
+    }
+    const rear=x-size*.89;
     const lengthFade=ease(.015,.33,raw);
     const rearPhase=clamp((rear-.88)/(7.25-back));
     const tailPhase=Math.max(0,rearPhase-.53);
     const trailPoint=u=>{
       const phase=mix(tailPhase,rearPhase,u);
-      const pos=iceFlight(phase,side,height,back);
+      const pos=iceFlight(phase,side,height,back,anchor);
       return [mix(pos[0],rear+.14,ease(.74,1,u)),
         mix(pos[1],y,ease(.38,1,u)),mix(pos[2],z,ease(.38,1,u))];
     };
@@ -129,7 +149,7 @@ export function iceSpike(fx,root,t) {
       fx.stamp(flake,flakeSize,flakeSize,frost,28,impact*.87,i+121,angle+scatter*.88);
     }
   }
-  return time<.36?"起诀 · 结晶引锋":time<iceImpact?"齐射 · 主锥领锋":time<iceImpact+.84?"命中 · 冰体碎裂，霜纹铺开":"等待施术";
+  return time<iceLaunch?"凝聚 · 冰锥环身成形":time<iceImpact?"齐射 · 冰锥从周身发出":time<iceImpact+.84?"命中 · 冰体碎裂，霜纹铺开":"等待施术";
 }
 
 

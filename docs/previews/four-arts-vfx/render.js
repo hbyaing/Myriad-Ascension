@@ -81,7 +81,7 @@ void main(){
     if(iceGround.w>=0.) {
       vec2 p=world.xz-iceGround.xy;
       float head=iceGround.z;
-      float age=iceGround.w-.37-(p.x-.88)*.09103448;
+      float age=iceGround.w-(p.x-.88)*.09103448;
       vec2 chips=floor(world.xz*27.);
       float wind=iceGrain(chips*vec2(.095,.178)+vec2(8.1,2.4));
       float sweep=sin(p.x*1.12)*.14;
@@ -105,7 +105,7 @@ void main(){
       float leading=falloff((p.x-head+.44)*1.17);
       float wake=falloff((p.x-head+1.87)*.66)*.43;
       float halo=(leading+wake)*falloff((p.y-sweep)*1.47)
-        *smoothstep(.35,1.22,head)*(1.-smoothstep(1.03,1.57,iceGround.w));
+        *smoothstep(.35,1.22,head)*(1.-smoothstep(.66,1.20,iceGround.w));
       float band=.57+.43*iceGrain(chips*vec2(.073,.21)+vec2(14.,0.));
       vec2 hit=(p-iceContact.xy)*vec2(1.07,1.62);
       float hitAge=iceGround.w-iceContact.z;
@@ -459,8 +459,8 @@ export function actor(out, root, stride, turn, hit, guard, armed, casting=false)
   for (const side of [-1,1]) {
     body([side*.094,1.688,.197],[.049,.027,.015],[.14,.22,.23]);
     limb([side*.147,.825,0],.745,.21,side*stride,-side*.025,false);
-    const swing=casting==="ice"?(side===1?1.46*hit:.24*guard):armSwing(side,stride,hit,guard);
-    const spread=casting==="ice"?side*(.10+.16*guard):armSpread(side,hit,guard);
+    const swing=casting==="ice"?(side===1?1.37*hit+.29*guard:.31*guard):armSwing(side,stride,hit,guard);
+    const spread=casting==="ice"?side*(.10+.51*guard):armSpread(side,hit,guard);
     limb(armAnchor(side),armLength,.176,swing,spread,true);
   }
   function limb(anchor,length,width,swing,spread,arm) {
@@ -534,30 +534,38 @@ export function effectMesh(camera) {
     if(strength<=.004) return;
     const side=norm(cross(axis,Math.abs(axis[1])>.95?[0,0,1]:[0,1,0]));
     const up=cross(side,axis);
-    const outline=[[1,.54],[.57,1],[-.64,1],[-1,.61],[-1,-.63],[-.61,-1],[.69,-1],[1,-.57]];
-    const profile=fragment?[[0,.10],[.12,.73],[.31,1],[.53,.71],[1,0]]
-      :[[0,.27],[.022,.61],[.07,.64],[.084,.81],[.136,.84],[.153,1.05],[.216,1.10],
-        [.245,1.01],[.265,1.17],[.311,1.07],[.337,.99],[.417,.85],[.430,.90],
-        [.568,.61],[.59,.57],[.713,.42],[.735,.37],[.851,.20],[1,0]];
-    const angle=.13+Math.sin(seed*8.13)*(fragment?.71:.25);
-    const rows=profile.map(([u,r],row)=>outline.map(([y,z],i)=>{
-      const lobe=row>=2&&row<=9?1+.10*Math.sin(i*2.7+seed):1;
-      const offset=radius*r*lobe;
-      const center=add(add(tip,mul(axis,-length*(1-u))),mul(up,radius*.16*Math.sin(u*4.1)));
-      return add(center,add(mul(up,offset*(y*Math.cos(angle)-z*Math.sin(angle))),
-        mul(side,offset*(z*Math.cos(angle)+y*Math.sin(angle)))));
-    }));
-    const faces=[[.13,.47,.86],[.37,.72,.97],[.64,.85,1],[.25,.61,.94],
-      [.085,.26,.59],[.11,.33,.69],[.20,.48,.84],[.37,.69,.98]];
-    for(let j=1;j<rows.length;j++) for(let i=0;i<outline.length;i++) {
-      const next=(i+1)%outline.length;
-      face([rows[j-1][i],rows[j-1][next],rows[j][next],rows[j][i]],
-        [profile[j-1][0],profile[j-1][0],profile[j][0],profile[j][0]],faces[i],13,strength,seed*9+i);
+    const outline=[[1.04,.12],[.56,.94],[-.39,1.02],[-.86,.48],[-.72,-.66],[-.10,-.98],[.73,-.68]];
+    const faces=[[.34,.63,.93],[.50,.77,1],[.20,.43,.80],[.11,.32,.63],[.18,.44,.79],[.33,.62,.90],[.61,.83,1]];
+    function prism(end,extent,girth,angle,profile,brightness,variant) {
+      const c=Math.cos(angle), s=Math.sin(angle);
+      const rows=profile.map(([u,r],row)=>outline.map(([y,z],i)=>{
+        const facet=i*2.7+variant;
+        const offset=girth*r*(1+.075*Math.sin(facet+row*.76));
+        const lengthCut=(row===0||row===profile.length-1)?0:extent*.032*Math.sin(facet+row*1.71);
+        const center=add(end,mul(axis,-extent*(1-u)+lengthCut));
+        return add(center,add(mul(up,offset*(y*c-z*s)),mul(side,offset*(z*c+y*s))));
+      }));
+      for(let j=1;j<rows.length;j++) for(let i=0;i<outline.length;i++) {
+        const next=(i+1)%outline.length;
+        face([rows[j-1][i],rows[j-1][next],rows[j][next],rows[j][i]],
+          [profile[j-1][0],profile[j-1][0],profile[j][0],profile[j][0]],faces[i],13,brightness,variant*7+i);
+      }
+      const heel=add(end,mul(axis,-extent));
+      for(let i=0;i<outline.length;i++) {
+        const next=(i+1)%outline.length;
+        face([heel,rows[0][next],rows[0][i],heel],[0,.022,.022,0],faces[i],13,brightness*.85,variant*7+i);
+      }
     }
-    const heel=add(tip,mul(axis,-length));
-    for(let i=0;i<outline.length;i++) {
-      const next=(i+1)%outline.length;
-      face([heel,rows[0][next],rows[0][i],heel],[0,.038,.038,0],faces[i],13,strength*.86,seed*9+i);
+    const angle=.12+Math.sin(seed*8.13)*(fragment?.71:.23);
+    const shape=fragment?[[0,.08],[.15,.68],[.33,1],[.58,.69],[1,0]]
+      :[[0,.46],[.086,.83],[.217,1.04],[.337,.89],[.58,.54],[.82,.22],[1,0]];
+    prism(tip,length,radius,angle,shape,strength,seed);
+    if(!fragment) for(let plate=0;plate<3;plate++) {
+      const a=angle+plate*2.02+.51;
+      const edge=add(mul(up,Math.cos(a)),mul(side,Math.sin(a)));
+      const end=add(add(tip,mul(axis,-length*(.40+plate*.076))),mul(edge,radius*(.82+plate*.087)));
+      prism(end,length*(.49-.053*plate),radius*(.39-.033*plate),a,
+        [[0,.53],[.16,.96],[.43,.90],[1,0]],strength*.97,seed*3+plate+9);
     }
   }
   return {
