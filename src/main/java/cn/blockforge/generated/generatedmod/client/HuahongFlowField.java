@@ -11,13 +11,14 @@ public final class HuahongFlowField {
      * head-local curve is an input to its drift, so turns cannot rotate the wake. */
     public static java.util.List<WorldParcel> worldParcels(java.util.List<SwordFlightTrailHistory.Node> path,double now){
         var result=new java.util.ArrayList<WorldParcel>();if(path.size()<2)return result;
-        double spacing=.55,head=path.get(path.size()-1).arc(),start=Math.max(path.get(0).arc(),head-84);int cursor=0;
+        double spacing=.55,tailLength=44,tailFadeStart=26;
+        double head=path.get(path.size()-1).arc(),start=Math.max(path.get(0).arc(),head-tailLength);int cursor=0;
         for(long id=(long)Math.ceil(start/spacing);id*spacing<=head;id++){
             double arc=id*spacing;while(cursor<path.size()-2&&path.get(cursor+1).arc()<arc)cursor++;
             var a=path.get(cursor);var b=path.get(cursor+1);double span=b.arc()-a.arc();if(span<1e-9)continue;
             double t=Math.max(0,Math.min(1,(arc-a.arc())/span)),born=a.tick()+(b.tick()-a.tick())*t,age=(now-born)/20,behind=head-arc;
             if(age<0||age>=1.8)continue;
-            double join=smooth((behind-7)/10),end=1-smooth((behind-55)/29),life=1-smooth((age-1.2)/.6);
+            double join=smooth((behind-7)/10),end=1-smooth((behind-tailFadeStart)/(tailLength-tailFadeStart)),life=1-smooth((age-1.2)/.6);
             double alpha=.18*join*end*life*Math.exp(-age/1.45);if(alpha<.0005)continue;
             // The distance lattice supplies coverage. A coherent birth-time
             // profile supplies motion, so faster travel cannot sweep past a
