@@ -42,7 +42,7 @@ def main():
                     if name == 'design.png':
                         return str(report / '百窍-正背面总览-优化设计稿.png')
                     suite, _, name = name.partition('/')
-                    if suite in ('qa-release-plain', 'qa-release-solas') and name == Path(name).name and name.endswith('.png'):
+                    if suite in ('qa-corners-plain', 'qa-corners-solas') and name == Path(name).name and name.endswith('.png'):
                         return str(report / suite / name)
                 return super().translate_path(path)
 

@@ -69,11 +69,11 @@ public final class AcupointScreen extends Screen {
             int x = getX(), y = getY(), w = getWidth(), h = getHeight();
             boolean focused = isHoveredOrFocused();
             boolean down = pressed();
-            AlchemyChrome.button(g, x, y, w, h, active, active && chosen, focused, false, down, false);
+            AlchemyChrome.button(g, x, y, w, h, active, false, focused, chosen, down && !chosen, false);
             if (active && chosen) {
-                int top = down ? 0xC03A2B17 : 0xD6342719;
-                int bottom = down ? 0xCD6E4F26 : focused ? 0xD68E6A36 : 0xC87B592E;
-                g.fillGradient(x + 3, y + 3, x + w - 3, y + h - 3, top, bottom);
+                int top = down ? 0xFF302719 : 0xFF221F19;
+                int bottom = down ? 0xFF5A4223 : focused ? 0xFF806239 : 0xFF654B2B;
+                AlchemyChrome.surface(g, x + 1, y + 1, w - 2, h - 2, 0xFFC7A369, top, bottom);
             }
         }
     }
@@ -123,9 +123,12 @@ public final class AcupointScreen extends Screen {
         frame = new Box((width - w) / 2, (height - h) / 2, w, h);
         int x = frame.x() + 6, top = frame.y() + 6;
         int titleWidth = Mth.ceil(font.width(title) * 1.12F) + 13, backWidth = font.width(text("back")) + 12;
+        int tabs = Tab.values().length;
+        int tabGap = Math.max(3, w / 110);
         int minimumTab = Arrays.stream(Tab.values())
                 .mapToInt(value -> font.width(text("tab." + id(value))) + 10).max().orElseThrow();
-        int headerRoom = w - 12 - 4 * (minimumTab + 3);
+        int minimumGroup = tabs * minimumTab + (tabs - 1) * tabGap;
+        int headerRoom = w - 12 - minimumGroup - 5;
         boolean compactHeader = titleWidth + backWidth > headerRoom;
         if (!compactHeader) {
             titleWidth = Math.min(headerRoom - backWidth, Math.max(titleWidth, w * 23 / 100));
@@ -136,13 +139,15 @@ public final class AcupointScreen extends Screen {
         left = new Box(x, y, l, bottom - y);
         graph = new Box(x + l + 4, y, w - l - r - 20, bottom - y);
         right = new Box(graph.right() + 4, y, r, bottom - y);
-        action(frame.right() - backWidth - 6, top, backWidth, CONTROL_HEIGHT, text("back"), this::onClose, () -> false);
+        int backX = frame.right() - backWidth - 6;
+        action(backX, top, backWidth, CONTROL_HEIGHT, text("back"), this::onClose, () -> false);
         int tabX = compactHeader ? x : x + titleWidth;
         int tabY = compactHeader ? top + 19 : top;
-        int tabEnd = frame.right() - 6 - (compactHeader ? 0 : backWidth + 5);
-        int tabWidth = (tabEnd - tabX + 3) / Tab.values().length;
+        int tabSpace = compactHeader ? frame.right() - 6 - tabX : backX - 5 - tabX;
+        int tabGroup = compactHeader ? tabSpace : Math.min(tabSpace, Math.max(minimumGroup, w * 55 / 100));
+        int tabWidth = (tabGroup - (tabs - 1) * tabGap) / tabs;
         for (Tab value : Tab.values()) {
-            action(tabX + value.ordinal() * tabWidth, tabY, tabWidth - 3, CONTROL_HEIGHT,
+            action(tabX + value.ordinal() * (tabWidth + tabGap), tabY, tabWidth, CONTROL_HEIGHT,
                     text("tab." + id(value)), () -> changeTab(value), () -> tab == value);
         }
         if (!graphTab()) return;
@@ -160,14 +165,13 @@ public final class AcupointScreen extends Screen {
 
         int arrow = 15;
         routeArrow(inset, y + 39, arrow, -1);
-        lineFilter = action(inset + arrow + 2, y + 39, available - (arrow + 2) * 2, 15,
-                text("all_routes"), () -> {
-                    if (meridian.isEmpty()) meridian = point().meridian();
-                    else meridian = "";
+        lineFilter = addRenderableWidget(new RouteButton(inset + arrow, y + 39, available - 2 * arrow, 15,
+                text("all_routes"), button -> {
+                    meridian = meridian.isEmpty() ? point().meridian() : "";
                     resetList();
                     revealSelected();
                     updateControls();
-                }, () -> !meridian.isEmpty());
+                }, () -> !meridian.isEmpty()));
         lineFilter.setTooltip(net.minecraft.client.gui.components.Tooltip.create(text("route_filter_hint")));
         routeArrow(inset + available - arrow, y + 39, arrow, 1);
         int half = (available - 3) / 2;
@@ -204,9 +208,15 @@ public final class AcupointScreen extends Screen {
             rows.add(item);
         }
 
-        int modeWidth = (graph.width() - 9) / View.values().length;
+        int modeGap = Math.max(3, graph.width() / 55);
+        int modes = View.values().length;
+        int modeLabel = Arrays.stream(View.values()).mapToInt(mode -> font.width(text("view." + id(mode))))
+                .max().orElseThrow();
+        int modeInset = Mth.clamp((graph.width() - modes * (modeLabel + 8) - (modes - 1) * modeGap) / 2,
+                4, Math.max(4, graph.width() * 8 / 100));
+        int modeWidth = (graph.width() - 2 * modeInset - (modes - 1) * modeGap) / modes;
         for (View mode : View.values()) {
-            action(graph.x() + 4 + mode.ordinal() * modeWidth, graph.y() + 5, modeWidth - 2, CONTROL_HEIGHT,
+            action(graph.x() + modeInset + mode.ordinal() * (modeWidth + modeGap), graph.y() + 5, modeWidth, CONTROL_HEIGHT,
                     text("view." + id(mode)), () -> changeView(mode), () -> view == mode);
         }
         side = action(graph.x() + 4, graph.bottom() - 33, graph.width() - 8, 13,
@@ -239,7 +249,8 @@ public final class AcupointScreen extends Screen {
             @Override protected void renderWidget(GuiGraphics g, int mx, int my, float delta) {
                 int x = getX(), y = getY(), w = getWidth(), h = getHeight();
                 boolean on = autoHere();
-                surface(g, false);
+                int edge = isHoveredOrFocused() ? 0xFF9B8055 : 0xFF52616A;
+                AlchemyChrome.surface(g, x, y, w, h, edge, pressed() ? 0xFF1D2D34 : 0xFF13222A, 0xFF0E1B25);
                 int toggleX = x + w - SettingsUiAssets.RIGHT_INSET - SettingsUiAssets.TOGGLE_WIDTH;
                 SettingsUiAssets.toggle(g, toggleX, y + (h - SettingsUiAssets.TOGGLE_HEIGHT) / 2, on, active);
                 Component state = text(on ? "switch_on" : "switch_off");
@@ -302,9 +313,23 @@ public final class AcupointScreen extends Screen {
         scrollList(0);
     }
 
+    private static class RouteButton extends CultivationUi.Action {
+        RouteButton(int x, int y, int w, int h, Component label, OnPress action, BooleanSupplier chosen) {
+            super(x, y, w, h, label, action, chosen);
+        }
+
+        @Override protected void surface(GuiGraphics g, boolean chosen) {
+            if (isHoveredOrFocused()) {
+                int x = getX() + 2, y = getY() + 2, w = getWidth() - 4, h = getHeight() - 4;
+                g.fill(x, y, x + w, y + h, pressed() ? 0x706C5836 : 0x48705D41);
+                if (isFocused()) g.renderOutline(x, y, w, h, 0xA4C7A369);
+            }
+        }
+    }
+
     private void routeArrow(int x, int y, int size, int step) {
         String key = step < 0 ? "previous_route" : "next_route";
-        var button = addRenderableWidget(new BaiqiaoButton(x, y, size, size, text(key),
+        var button = addRenderableWidget(new RouteButton(x, y, size, size, text(key),
                 widget -> cycleRoute(step), () -> false) {
             @Override protected void renderWidget(GuiGraphics g, int mx, int my, float delta) {
                 surface(g, false);
@@ -519,8 +544,10 @@ public final class AcupointScreen extends Screen {
     @Override public void render(GuiGraphics g, int mx, int my, float partial) {
         renderBackground(g);
         if (frame == null || data() == null) return;
-        CultivationUi.background(g, "overview", frame.x(), frame.y(), frame.width(), frame.height());
-        g.fill(frame.x() + 1, frame.y() + 1, frame.right() - 1, frame.bottom() - 1, 0x40101B2C);
+        CultivationOuterFrame.clipBackground(g, frame.x(), frame.y(), frame.width(), frame.height(), () -> {
+            CultivationUi.background(g, "overview", frame.x(), frame.y(), frame.width(), frame.height());
+            g.fill(frame.x() + 1, frame.y() + 1, frame.right() - 1, frame.bottom() - 1, 0x40101B2C);
+        });
         CultivationUi.ornamentFrame(g, frame.x(), frame.y(), frame.width(), frame.height());
         heading(g, title, frame.x() + 9, frame.y() + 9, 1.12F);
         rule(g, frame.x() + 6, left.y() - 4, frame.width() - 12);
@@ -550,6 +577,7 @@ public final class AcupointScreen extends Screen {
         g.fill(input.x(), input.y(), input.right(), input.bottom(), 0xC10B1720);
         g.renderOutline(input.x(), input.y(), input.width(), input.height(), search.isFocused() ? GOLD : RAIL);
         HeavenlyFurnaceArt.icon(g, "search_icon", input.x() + 3, input.y() + 4, 9);
+        AlchemyChrome.surface(g, input.x(), left.y() + 39, input.width(), 15, 0xD6A58149, 0xFF2A261F, 0xFF362C20);
         if (menu != Menu.NONE) return;
         if (visiblePoints.isEmpty()) {
             label(g, text("empty"), left.x() + 6, left.y() + ROW_TOP + 2, left.width() - 12, CultivationUi.MUTED);
@@ -661,7 +689,7 @@ public final class AcupointScreen extends Screen {
     private List<Projector> projectors(Box area) {
         double centerY = area.y() + area.height() / 2.0;
         if (dualBody()) {
-            double unit = Math.min((area.width() / 2.0 - 7) / 16, (area.height() - 4) / 32.0);
+            double unit = Math.min((area.width() / 2.0 - 7) / 16, (area.height() - 4) / 32.0) * .95;
             return List.of(new Projector(area.x() + area.width() / 4.0 - 8 * unit, centerY - 16 * unit, unit, false),
                     new Projector(area.x() + area.width() * .75 - 8 * unit, centerY - 16 * unit, unit, true));
         }
@@ -746,7 +774,12 @@ public final class AcupointScreen extends Screen {
         var investment = text("investment", invested, point.cost());
         if (font.width(investment) > investmentWidth) investment = text("investment_compact", invested, point.cost());
         detailLabel(g, investment, x, y, investmentWidth, CultivationUi.TEXT, mx, my);
-        detailLabel(g, state, x + investmentWidth + 3, y, w - investmentWidth - 3, color(progress(), point, stage()), mx, my);
+        int stateX = x + investmentWidth + 3, stateSpace = x + w - stateX;
+        Component visibleState = font.width(state) > stateSpace && progress().eligibility(point, stage()) != AcupointProgress.Result.IDLE
+                && !progress().opened(point.id()) ? text("legend.locked") : state;
+        int stateInset = Math.max(0, stateSpace - font.width(visibleState));
+        detailLabel(g, visibleState, stateX + stateInset, y, stateSpace - stateInset, color(progress(), point, stage()), mx, my);
+        if (visibleState != state && new Box(stateX, y, stateSpace, 9).contains(mx, my)) CultivationUi.tooltip(state);
         drawSegments(g, x, y + 11, w, invested, point.cost());
         y += section + 7;
         rule(g, x, y - 3, w);

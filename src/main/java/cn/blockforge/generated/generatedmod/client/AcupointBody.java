@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.resources.ResourceLocation;
 import org.joml.Matrix4f;
 
 import java.util.*;
@@ -16,6 +17,9 @@ final class AcupointBody {
     static final int GOLD = 0xFFFFCF74;
     static final int BLUE = 0xFF77DCFF;
     static final int GRAY = 0xFF8B98A2;
+    private static final ResourceLocation BACKDROP = ResourceLocation.fromNamespaceAndPath("wuxingxiantu",
+            "textures/gui/wuxia/baiqiao_backdrop.png");
+    private static final int BACKDROP_TILE = 400;
 
     record Box(int x, int y, int width, int height) {
         int right() { return x + width; }
@@ -91,44 +95,19 @@ final class AcupointBody {
     }
 
     static void backdrop(GuiGraphics g, Box area, List<Projector> projectors) {
-        g.flush();
+        int count = projectors.size();
+        int size = Math.min(area.width() / count, area.height() * 9 / 10);
+        int y = area.y() + area.height() * 43 / 100 - size / 2;
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        var matrix = g.pose().last().pose();
-        BufferBuilder buffer = Tesselator.getInstance().getBuilder();
-        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        double radius = Math.min(area.width() / (projectors.size() == 2 ? 4.5 : 2.25), area.height() * .38);
-        for (Projector projector : projectors) {
-            double x = projector.x(8), y = area.y() + area.height() / 2.0;
-            circle(buffer, matrix, x, y, radius, 0x688C704D);
-            circle(buffer, matrix, x, y, radius * .82, 0x387A6C54);
-            for (int i = 0; i < 8; i++) {
-                double angle = i * Math.PI / 4;
-                double outwardX = Math.cos(angle), outwardY = Math.sin(angle);
-                for (int bar = 0; bar < 3; bar++) {
-                    double distance = radius * (.90 + bar * .045);
-                    double cx = x + outwardX * distance, cy = y + outwardY * distance;
-                    double vx = -outwardY * radius * .10, vy = outwardX * radius * .10;
-                    if ((i & 1 << bar) != 0) {
-                        segment(buffer, matrix, cx - vx, cy - vy, cx + vx, cy + vy, .45, 0x649D855F);
-                    } else {
-                        segment(buffer, matrix, cx - vx, cy - vy, cx - vx * .25, cy - vy * .25, .45, 0x649D855F);
-                        segment(buffer, matrix, cx + vx * .25, cy + vy * .25, cx + vx, cy + vy, .45, 0x649D855F);
-                    }
-                }
-            }
+        for (int i = 0; i < count; i++) {
+            // The artwork stays fixed when the projection pans or zooms.
+            int center = area.x() + area.width() * (2 * i + 1) / (2 * count);
+            int u = projectors.get(i).back() ? BACKDROP_TILE : 0;
+            g.blit(BACKDROP, center - size / 2, y, size, size, u, 0,
+                    BACKDROP_TILE, BACKDROP_TILE, 2 * BACKDROP_TILE, BACKDROP_TILE);
         }
-        BufferUploader.drawWithShader(buffer.end());
         RenderSystem.disableBlend();
-    }
-
-    private static void circle(BufferBuilder b, Matrix4f m, double x, double y, double radius, int color) {
-        for (int i = 0; i < 48; i++) {
-            double start = i * Math.PI / 24, end = (i + 1) * Math.PI / 24;
-            segment(b, m, x + radius * Math.cos(start), y + radius * Math.sin(start),
-                    x + radius * Math.cos(end), y + radius * Math.sin(end), .42, color);
-        }
     }
 
     static void graph(GuiGraphics g, Topology topology, AcupointProgress state, int stage, String selected,
