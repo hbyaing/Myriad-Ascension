@@ -15,7 +15,7 @@ import java.util.function.Predicate;
 final class AcupointBody {
     static final int GOLD = 0xFFFFCF74;
     static final int BLUE = 0xFF77DCFF;
-    static final int GRAY = 0xFF918CA0;
+    static final int GRAY = 0xFF8B98A2;
 
     record Box(int x, int y, int width, int height) {
         int right() { return x + width; }
@@ -145,11 +145,11 @@ final class AcupointBody {
         Meridian line = state.catalog().meridians().get(meridian);
         int count = state.bonuses().count(meridian);
         boolean full = line != null && count == line.count();
-        int lineTone = full ? 0xC0FBC86D : line != null && count >= line.half() ? 0xAF91E5FF : 0xB05CAFC9;
+        int lineTone = full ? 0xC0FBC86D : line != null && count >= line.half() ? 0xAF91E5FF : 0xD873CBDF;
         for (Edge edge : topology.edges()) {
             Dot from = edge.from(), dot = edge.to();
             if (!dot.point().meridian().equals(meridian)) {
-                if (edge.shortLink()) segment(buffer, matrix, from.x(), from.y(), dot.x(), dot.y(), .24, 0x524B9DBE);
+                if (edge.shortLink()) segment(buffer, matrix, from.x(), from.y(), dot.x(), dot.y(), .21, 0x627B8791);
                 continue;
             }
             int tone = selected.equals(dot.point().id()) ? 0xFFF8D08D : lineTone;
@@ -163,11 +163,17 @@ final class AcupointBody {
         for (Dot dot : dots) {
             if (dot.point().id().equals(selected)) continue;
             int color = color(state, dot.point(), stage);
+            boolean ready = color == BLUE;
             double radius = dot.point().tier() == Tier.HUB ? 1.15 : .72;
-            if (dot.point().meridian().equals(meridian)) radius += .25;
-            else if (color == GRAY) color = 0xA4B6BDD1;
+            if (dot.point().meridian().equals(meridian)) {
+                radius += .25;
+                if (color == GRAY) color = 0xFF8FD7EA;
+            } else {
+                color = (color & 0x00FFFFFF) | 0x81000000;
+            }
             if (color == GOLD || color == BLUE) square(buffer, matrix, dot.x(), dot.y(), radius + 1, color & 0x00FFFFFF | 0x3C000000);
-            square(buffer, matrix, dot.x(), dot.y(), radius, color);
+            if (ready) ring(buffer, matrix, dot.x(), dot.y(), radius + .45, color);
+            else square(buffer, matrix, dot.x(), dot.y(), radius, color);
         }
         for (Dot dot : dots) {
             boolean chosen = dot.point().id().equals(selected);

@@ -37,9 +37,13 @@ def main():
                     textures = ROOT.parents[1] / 'src/main/resources/assets/wuxingxiantu/textures/block'
                     return str(textures / path[1:])
                 if item == 'baiqiao' and path.startswith('/capture/'):
+                    report = ROOT.parents[1] / 'reports/baiqiao-ui-design-20261107'
                     name = path.removeprefix('/capture/')
-                    if name == Path(name).name and name.endswith('.png'):
-                        return str(ROOT.parents[1] / 'reports/baiqiao-361/base-stats/plain' / name)
+                    if name == 'design.png':
+                        return str(report / '百窍-正背面总览-优化设计稿.png')
+                    suite, _, name = name.partition('/')
+                    if suite in ('qa-release-plain', 'qa-release-solas') and name == Path(name).name and name.endswith('.png'):
+                        return str(report / suite / name)
                 return super().translate_path(path)
 
             def log_message(self,*args):pass

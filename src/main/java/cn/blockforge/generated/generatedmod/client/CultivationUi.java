@@ -42,10 +42,13 @@ public final class CultivationUi {
             this.selected = selected;
         }
         @Override public void onPress() { pressedUntil = net.minecraft.Util.getMillis() + 140; super.onPress(); }
+        protected boolean pressed() {
+            return active && (net.minecraft.Util.getMillis() < pressedUntil || isHovered()
+                    && org.lwjgl.glfw.GLFW.glfwGetMouseButton(Minecraft.getInstance().getWindow().getWindow(), 0) == 1);
+        }
         protected void surface(GuiGraphics g, boolean chosen) {
             if(customSurface!=null){customSurface.accept(g,this);return;}
-            boolean pressed = active && (net.minecraft.Util.getMillis() < pressedUntil || isHovered()
-                    && org.lwjgl.glfw.GLFW.glfwGetMouseButton(Minecraft.getInstance().getWindow().getWindow(), 0) == 1);
+            boolean pressed = pressed();
             if(width>=36)referenceButton(g,getX(),getY(),width,height,chrome,active,chosen,isHoveredOrFocused(),pressed);
             else buttonSurface(g, getX(), getY(), width, height, active, chosen, isHoveredOrFocused(), pressed);
         }

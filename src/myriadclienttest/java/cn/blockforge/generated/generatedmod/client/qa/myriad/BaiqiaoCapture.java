@@ -93,6 +93,25 @@ public final class BaiqiaoCapture {
                 clickEntry(client);
                 check(client.screen instanceof AcupointScreen, "Entry did not open Baiqiao");
                 next("overview");
+            } else if (step == 2 && ticks == 2) {
+                var screen = (AcupointScreen) client.screen;
+                click(screen, widget(screen, testCase == 2 ? "全部位" : "全部部位"));
+                check(widget(screen, "躯干").visible, "Region menu did not open");
+                capture = name("filters");
+            } else if (step == 2 && ticks == 4) {
+                var screen = (AcupointScreen) client.screen;
+                click(screen, widget(screen, "躯干"));
+                var ready = widget(screen, "气海 · CV-6");
+                check(ready.visible, "Torso filter hid Qihai");
+                click(screen, widget(screen, "石门 · CV-5"));
+                check(!widget(screen, "冲击一次").active && !widget(screen, "按住冲穴").active,
+                        "Locked point did not disable charge");
+                capture = name("locked");
+            } else if (step == 2 && ticks == 6) {
+                var screen = (AcupointScreen) client.screen;
+                click(screen, widget(screen, "气海 · CV-6"));
+                click(screen, widget(screen, "躯干"));
+                click(screen, widget(screen, "全部部位"));
             } else if (step == 2 && ticks == 8) {
                 var screen = (AcupointScreen) client.screen;
                 assertBounds(screen);
@@ -102,12 +121,13 @@ public final class BaiqiaoCapture {
                 check(search.isFocused(), "Search did not focus");
                 for (char ch : "CV-6".toCharArray()) screen.charTyped(ch, 0);
                 check(search.getValue().equals("CV-6"), "Search keystrokes did not enter");
-                click(screen, widget(screen, "气海 · CV-6"));
-                if (testCase == 0) {
-                    click(screen, widget(screen, "冲击一次"));
-                    invested = investment(client);
-                }
+                check(widget(screen, "气海 · CV-6").visible, "Exact ID search did not show the selected point");
+                invested = investment(client);
                 next("search");
+            } else if (step == 3 && ticks == 1) {
+                var screen = (AcupointScreen) client.screen;
+                click(screen, widget(screen, "气海 · CV-6"));
+                if (testCase == 0) click(screen, widget(screen, "冲击一次"));
             } else if (step == 3 && ticks == 12) {
                 if (testCase == 0) check(investment(client) == invested + 10, "Server tap did not sync to client");
                 var screen = (AcupointScreen) client.screen;
@@ -124,11 +144,19 @@ public final class BaiqiaoCapture {
                     check(investment(client) > invested + 10, "Hold did not sync to client");
                     screen.mouseReleased(clickX, clickY, 0);
                 }
+                var search = screen.children().stream().filter(ForgedSearchBox.class::isInstance)
+                        .map(ForgedSearchBox.class::cast).findFirst().orElseThrow();
+                search.setValue("");
+                click(screen, widget(screen, "石门 · CV-5"));
+                click(screen, widget(screen, "气海 · CV-6"));
                 click(screen, widget(screen, "经脉图谱"));
-                click(screen, widget(screen, "单经脉"));
+                click(screen, widget(screen, "正面"));
+                check(widget(screen, "背面").visible, "Projection did not switch to the back");
                 click(screen, widget(screen, "全身"));
                 var control = widget(screen, "局部放大");
-                double x = screen.width / 2.0, y = control.getY() + control.getHeight() + 35;
+                click(screen, control);
+                assertBounds(screen);
+                double x = control.getX() + control.getWidth() / 2.0, y = control.getY() + control.getHeight() + 35;
                 check(screen.mouseScrolled(x, y, 1), "Zoom did not consume scroll");
                 check(screen.mouseClicked(x, y, 1) && screen.mouseDragged(x + 4, y + 3, 1, 4, 3)
                         && screen.mouseReleased(x + 4, y + 3, 1), "Map pan did not consume drag");
@@ -145,7 +173,7 @@ public final class BaiqiaoCapture {
                 var screen = (AcupointScreen) client.screen;
                 click(screen, widget(screen, "返回内视"));
                 check(client.screen == origin, "Return did not restore the opening screen");
-                results.add("PASS " + name("entry, search, zoom/pan, tabs and return") + (testCase == 0 ? ", server tap/hold" : ""));
+                results.add("PASS " + name("entry, region dropdown, locked button state, index selection, focused ID search, projection switch, zoom/pan, tabs and return") + (testCase == 0 ? ", server tap/hold" : ""));
                 testCase++;
                 step = ticks = 0;
                 if (testCase == CASES.length) finish(client, null);

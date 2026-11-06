@@ -71,9 +71,10 @@ public final class CultivationVisionPage extends CultivationPage {
         }
         Box foundation = layout.foundation();
         int meridianY = foundation.y() + 22 + Math.max(18, (foundation.h() - 38) / 3);
-        button(foundation.x() + foundation.w() - 41, meridianY - 3, 36, 15,
-                () -> Component.translatable("gui.wuxingxiantu.baiqiao.entry"),
-                () -> minecraft.setScreen(new AcupointScreen(host)), () -> data() != null);
+        Component acupoints = Component.translatable("gui.wuxingxiantu.baiqiao.entry");
+        var entry = addRenderableWidget(new AcupointScreen.BaiqiaoButton(foundation.x() + foundation.w() - 41,
+                meridianY - 3, 36, 15, acupoints, button -> minecraft.setScreen(new AcupointScreen(host)), () -> false));
+        bindings.add(new Binding(entry, () -> acupoints, () -> data() != null));
         int actionWidth=(a.w()-14)/2;
         button(a.x()+5,a.y()+18,actionWidth,22,()->Component.literal("渡劫"),()->Network.CHANNEL.sendToServer(new TribulationPacket()),
                 ()->data()!=null&&TribulationManager.canStart(minecraft.player,data()));

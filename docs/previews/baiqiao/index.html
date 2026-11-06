@@ -14,17 +14,28 @@ main{display:grid;grid-template-columns:205px minmax(460px,1fr) 330px;gap:10px;h
 footer{margin-top:10px;border:1px solid #866b48;padding:11px 14px;display:flex;gap:14px;align-items:center;justify-content:space-between;color:#ead1a8;background:#161923}footer strong{color:#9fddf2}.small{font-size:11px}.listbox{position:absolute;z-index:12;inset:54px 12px 48px;background:#10141beb;border:1px solid #8b7351;overflow:auto;padding:8px;display:none}.listbox.open{display:block}.listbox .listitem{display:grid;grid-template-columns:60px 1fr 80px 60px;gap:5px;padding:7px;border-bottom:1px solid #3f4149;cursor:pointer}.listbox .listitem:hover{background:#2a303a}.listbox .listitem.selected{color:#ffe1a8;background:#34302b}.noselect{display:none}
 @media(max-width:1150px){main{grid-template-columns:160px minmax(360px,1fr) 300px;height:650px}.sidebar{padding:10px}.centerbody{gap:5px;padding:7px}}
 @media(max-width:920px){.shell{margin:0;padding:5px}main{display:flex;flex-direction:column;height:auto}.sidebar{display:flex;flex-wrap:wrap;gap:12px}.sidebar .section-label{display:none}.sidebar .options,.sidebar .inputblock{width:190px}.sidebar .help{display:none}.center{height:560px}.detail{min-height:420px}header{flex-wrap:wrap;height:auto;padding:10px}.tabs{overflow:auto}footer{flex-wrap:wrap}}
+.client-reference{padding:8px 12px;border:1px solid var(--line);background:#101820;color:var(--ink)}.client-reference summary{cursor:pointer;color:var(--gold2)}.client-reference a{color:#9fddf2}.comparison{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:10px;margin-top:8px}.comparison figure{margin:0}.comparison img{display:block;width:100%;aspect-ratio:16/9;object-fit:contain;background:#0c1117}.comparison figcaption{padding:5px 0;color:var(--muted)}
 </style>
 </head>
 <body>
 <div class="shell">
 <header><div><h1>内视 · 百窍经脉<small>五行仙途 / 361 穴位 / 14 经脉</small></h1></div><nav class="tabs"><button class="tab active">穴窍总览</button><button class="tab" id="tabMeridian">经脉图谱</button><button class="tab" id="tabCycle">周天循环</button></nav><div class="badge">设计交互原型 V1.1 · 演示数据</div></header>
 <p class="muted">Forge 实装以当前服务端数据包为准。原型冲穴仅模拟交互。近战暴击率、暴击伤害、攻击速度等附加收益从经脉半通和全通取得。</p>
-<details style="padding:7px 0"><summary>游戏实机对照</summary>
-<p><a href="/capture/1920x1080-gui3-entry.png">背包内视入口</a> ·
-<a href="/capture/1920x1080-gui3-overview.png">穴位总览</a> ·
-<a href="/capture/1920x1080-gui3-zoom.png">局部放大</a> ·
-<a href="/capture/1920x1080-gui3-attributes.png">二十六项基础属性</a></p></details>
+<details open class="client-reference">
+<summary>第二版 · 设计稿与游戏实机对照</summary>
+<div class="comparison">
+<figure><a href="/capture/design.png"><img src="/capture/design.png" alt="已确认的百窍正背面设计稿"></a><figcaption>已确认的优化设计稿</figcaption></figure>
+<figure><a href="/capture/qa-release-plain/1920x1080-gui3-overview.png"><img src="/capture/qa-release-plain/1920x1080-gui3-overview.png" alt="百窍新版穴位总览游戏截图"></a><figcaption>Forge 实机 · 1920 × 1080 · GUI 3</figcaption></figure>
+</div>
+<p><a href="/capture/qa-release-plain/1280x720-gui3-overview.png">720p 总览</a> ·
+<a href="/capture/qa-release-plain/2560x1440-gui4-overview.png">1440p 总览</a> ·
+<a href="/capture/qa-release-plain/1920x1080-gui3-search.png">搜索焦点</a> ·
+<a href="/capture/qa-release-plain/1920x1080-gui3-filters.png">部位筛选菜单</a> ·
+<a href="/capture/qa-release-plain/1920x1080-gui3-locked.png">前置未解锁状态</a> ·
+<a href="/capture/qa-release-plain/1920x1080-gui3-zoom.png">局部放大</a> ·
+<a href="/capture/qa-release-plain/1920x1080-gui3-attributes.png">二十六项基础属性</a> ·
+<a href="/capture/qa-release-solas/1920x1080-gui3-overview.png">Solas 光影实机</a></p>
+</details>
 <main>
 <aside class="sidebar">
 <div class="section-label">显示模式</div>
