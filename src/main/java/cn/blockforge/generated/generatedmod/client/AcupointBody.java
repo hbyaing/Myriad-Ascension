@@ -29,11 +29,15 @@ final class AcupointBody {
     }
 
     record Dot(Point point, Marker marker, double x, double y) {}
+    record Edge(Dot from, Dot to, boolean shortLink) {}
+    record Topology(List<Dot> dots, List<Edge> edges) {
+        static final Topology EMPTY = new Topology(List.of(), List.of());
+    }
     private static final String[] PARTS = {"head", "torso", "left_arm", "right_arm", "left_leg", "right_leg"};
     private static final int[][] FRONT = {{8, 8}, {20, 20}, {44, 20}, {36, 52}, {4, 20}, {20, 52}};
     private static final int[][] BACK = {{24, 8}, {32, 20}, {44, 52}, {52, 20}, {28, 52}, {12, 20}};
 
-    static List<Dot> dots(Data catalog, List<Projector> projectors, Predicate<Point> filter) {
+    static Topology project(Data catalog, List<Projector> projectors, Predicate<Point> filter) {
         List<Dot> dots = new ArrayList<>();
         for (Point point : catalog.points().values()) {
             if (!filter.test(point)) continue;
@@ -44,7 +48,18 @@ final class AcupointBody {
                 }
             }
         }
-        return dots;
+        Map<String, Dot> paths = new HashMap<>();
+        for (Dot dot : dots) paths.put(key(dot.point().id(), dot.marker()), dot);
+        List<Edge> edges = new ArrayList<>();
+        for (Dot dot : dots) {
+            for (String previous : dot.point().prerequisites()) {
+                Dot from = paths.get(key(previous, dot.marker()));
+                if (from == null || (dot.point().id().equals("BL-40") && previous.equals("BL-41"))
+                        || (dot.point().id().equals("BL-41") && previous.equals("BL-40"))) continue;
+                edges.add(new Edge(from, dot, Math.hypot(dot.x() - from.x(), dot.y() - from.y()) < 24));
+            }
+        }
+        return new Topology(List.copyOf(dots), List.copyOf(edges));
     }
 
     static int color(AcupointProgress state, Point point, int stage) {
@@ -116,8 +131,9 @@ final class AcupointBody {
         }
     }
 
-    static void graph(GuiGraphics g, List<Dot> dots, AcupointProgress state, int stage, String selected,
+    static void graph(GuiGraphics g, Topology topology, AcupointProgress state, int stage, String selected,
                       String active, String meridian, boolean animate, double seconds) {
+        List<Dot> dots = topology.dots();
         if (dots.isEmpty()) return;
         var matrix = g.pose().last().pose();
         g.flush();
@@ -126,29 +142,22 @@ final class AcupointBody {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         BufferBuilder buffer = Tesselator.getInstance().getBuilder();
         buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        Map<String, Dot> paths = new HashMap<>();
-        for (Dot dot : dots) paths.put(key(dot.point().id(), dot.marker()), dot);
-        for (Dot dot : dots) {
-            boolean highlighted = dot.point().meridian().equals(meridian);
-            for (String previous : dot.point().prerequisites()) {
-                Dot from = paths.get(key(previous, dot.marker()));
-                if (from == null || (dot.point().id().equals("BL-40") && previous.equals("BL-41"))
-                        || (dot.point().id().equals("BL-41") && previous.equals("BL-40"))) continue;
-                if (!highlighted) {
-                    if (Math.hypot(dot.x() - from.x(), dot.y() - from.y()) < 8 * 3)
-                        segment(buffer, matrix, from.x(), from.y(), dot.x(), dot.y(), .24, 0x524B9DBE);
-                    continue;
-                }
-                var line = state.catalog().meridians().get(meridian);
-                int count = state.bonuses().count(meridian);
-                int tone = count == line.count() ? 0xC0FBC86D : count >= line.half() ? 0xAF91E5FF : 0xB05CAFC9;
-                if (selected.equals(dot.point().id())) tone = 0xFFF8D08D;
-                segment(buffer, matrix, from.x(), from.y(), dot.x(), dot.y(), .53, tone);
-                if (animate && (count == line.count() || dot.point().id().equals(active))) {
-                    double t = (seconds * 1.6 + dot.point().order() * .07) % 1;
-                    square(buffer, matrix, from.x() + (dot.x() - from.x()) * t,
-                            from.y() + (dot.y() - from.y()) * t, 1, 0xFFFBE5AA);
-                }
+        Meridian line = state.catalog().meridians().get(meridian);
+        int count = state.bonuses().count(meridian);
+        boolean full = line != null && count == line.count();
+        int lineTone = full ? 0xC0FBC86D : line != null && count >= line.half() ? 0xAF91E5FF : 0xB05CAFC9;
+        for (Edge edge : topology.edges()) {
+            Dot from = edge.from(), dot = edge.to();
+            if (!dot.point().meridian().equals(meridian)) {
+                if (edge.shortLink()) segment(buffer, matrix, from.x(), from.y(), dot.x(), dot.y(), .24, 0x524B9DBE);
+                continue;
+            }
+            int tone = selected.equals(dot.point().id()) ? 0xFFF8D08D : lineTone;
+            segment(buffer, matrix, from.x(), from.y(), dot.x(), dot.y(), .53, tone);
+            if (animate && (full || dot.point().id().equals(active))) {
+                double t = (seconds * 1.6 + dot.point().order() * .07) % 1;
+                square(buffer, matrix, from.x() + (dot.x() - from.x()) * t,
+                        from.y() + (dot.y() - from.y()) * t, 1, 0xFFFBE5AA);
             }
         }
         for (Dot dot : dots) {

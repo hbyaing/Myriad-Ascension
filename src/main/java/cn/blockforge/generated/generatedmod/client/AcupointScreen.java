@@ -35,7 +35,8 @@ public final class AcupointScreen extends Screen {
     private ResultView result = new ResultView(AcupointProgress.Result.IDLE, 0);
     private Set<String> overlap = Set.of();
     private List<Point> visiblePoints = List.of();
-    private List<Dot> projected = List.of();
+    private Topology projected = Topology.EMPTY;
+    private List<Projector> graphViews = List.of();
     private Data shownCatalog;
     private boolean back, dragging, initialized;
     private boolean holdMouse;
@@ -79,7 +80,7 @@ public final class AcupointScreen extends Screen {
         clearWidgets();
         setFocused(null);
         rows.clear();
-        projected = List.of();
+        projected = Topology.EMPTY;
         renderedRevision = -1;
         int w = Math.min(900, width - 12), h = Math.min(520, height - 12);
         frame = new Box((width - w) / 2, (height - h) / 2, w, h);
@@ -360,11 +361,12 @@ public final class AcupointScreen extends Screen {
 
     private void drawGraph(GuiGraphics g, int mx, int my, float partial) {
         var area = mapArea();
-        var views = projectors(area);
         if (renderedRevision != graphRevision) {
-            projected = dots(catalog(), views, this::matches);
+            graphViews = projectors(area);
+            projected = project(catalog(), graphViews, this::matches);
             renderedRevision = graphRevision;
         }
+        var views = graphViews;
         g.enableScissor(area.x(), area.y(), area.right(), area.bottom());
         backdrop(g, area, views);
         for (var projector : views) skin(g, minecraft.player, catalog(), projector);
@@ -379,9 +381,9 @@ public final class AcupointScreen extends Screen {
         } else label(g, text(view == View.DETAIL ? "graph_hint" : back ? "back_view" : "front_view"),
                 graph.x() + 4, graph.bottom() - 12, graph.width() - 8, CultivationUi.MUTED);
         if (area.contains(mx, my) && !dragging) {
-            var hits = hits(mx, my);
-            if (!hits.isEmpty()) {
-                Point point = hits.get(0).point();
+            Dot hovered = nearestDot(mx, my);
+            if (hovered != null) {
+                Point point = hovered.point();
                 setTooltipForNextRenderPass(font.split(Component.literal(point.name() + " · " + point.id() + "  ").append(status(point)), 190));
             }
         }
@@ -404,9 +406,24 @@ public final class AcupointScreen extends Screen {
                 centerY - 16 * unit + panY, unit, back));
     }
 
+    private Dot nearestDot(double mx, double my) {
+        double radius = view == View.DETAIL ? 8 : 3.5;
+        double nearestDistance = radius * radius;
+        Dot nearest = null;
+        for (Dot dot : projected.dots()) {
+            double dx = dot.x() - mx, dy = dot.y() - my;
+            double distance = dx * dx + dy * dy;
+            if (distance < nearestDistance || nearest == null && distance == nearestDistance) {
+                nearest = dot;
+                nearestDistance = distance;
+            }
+        }
+        return nearest;
+    }
+
     private List<Dot> hits(double mx, double my) {
         double radius = view == View.DETAIL ? 8 : 3.5;
-        return projected.stream().filter(dot -> Math.hypot(dot.x() - mx, dot.y() - my) <= radius)
+        return projected.dots().stream().filter(dot -> Math.hypot(dot.x() - mx, dot.y() - my) <= radius)
                 .sorted(Comparator.comparingDouble(dot -> Math.hypot(dot.x() - mx, dot.y() - my))).toList();
     }
 
