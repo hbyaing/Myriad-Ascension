@@ -8,6 +8,8 @@ import cn.blockforge.generated.generatedmod.balance.DamageDomainBalance;
 import cn.blockforge.generated.generatedmod.balance.DamageDomainBalance.Domain;
 import cn.blockforge.generated.generatedmod.CultivationData;
 import cn.blockforge.generated.generatedmod.GeneratedMod;
+import cn.blockforge.generated.generatedmod.acupoint.AcupointAttributes;
+import cn.blockforge.generated.generatedmod.acupoint.AcupointCatalog.Stat;
 import cn.blockforge.generated.generatedmod.ModEffects;
 import cn.blockforge.generated.generatedmod.WuXingBlocks;
 import net.minecraft.core.BlockPos;
@@ -78,7 +80,8 @@ public final class CultivationLogic {
         if (data == null) return 0.0F;
         return ManaBalance.maximum(data.wuxingxiantu$getRealm(), data.wuxingxiantu$getAuraBonus(),
                 RootBalance.capacity(data) * PhysiqueLogic.manaMultiplier(data) * cn.blockforge.generated.generatedmod.balance.HeartMethodBalance.manaMultiplier(
-                        cn.blockforge.generated.generatedmod.ProgressionGate.effectiveHeartMethod(null,data)));
+                        cn.blockforge.generated.generatedmod.ProgressionGate.effectiveHeartMethod(null,data)))
+                + (float) data.acupoints().bonuses().get(Stat.MAX_MANA);
     }
     public static float refreshMaxMana(CultivationData data) {
         float target = calculateMaxMana(data);
@@ -153,6 +156,7 @@ public final class CultivationLogic {
         String key="WuxingRootTrainingRemainder";
         double multiplier=RootBalance.training(data)*cn.blockforge.generated.generatedmod.balance.HeartMethodBalance.cultivationMultiplier(
                 cn.blockforge.generated.generatedmod.ProgressionGate.effectiveHeartMethod(player,data),data.wuxingxiantu$isMeditating());
+        multiplier *= data.acupoints().bonuses().multiplier(Stat.TRAINING_PCT);
         var reward=RootBalance.split(base,multiplier,player.getPersistentData().getDouble(key));
         long gain=Math.min(reward.amount(),cap-current);
         player.getPersistentData().putDouble(key,current+gain>=cap?0:reward.remainder());
@@ -254,6 +258,10 @@ public final class CultivationLogic {
     }
 
     public static float regeneration(CultivationData data, boolean meditating) {
+        return baseRegeneration(data, meditating) * data.acupoints().bonuses().multiplier(Stat.MANA_REGEN_PCT);
+    }
+
+    private static float baseRegeneration(CultivationData data, boolean meditating) {
         if (!meditating) return manaRegenPerSecond(data);
         int tier = data.wuxingxiantu$getMeditationTier();
         float recoveryMultiplier = switch (tier) {
@@ -287,13 +295,13 @@ public final class CultivationLogic {
             if (currentMana >= maxMana) return;
 
             boolean meditating = data.wuxingxiantu$isMeditating();
-            float calculatedPerSecond = regeneration(data, meditating);
+            float calculatedPerSecond = baseRegeneration(data, meditating);
             float perSecond = calculatedPerSecond
                     * environmentMultiplier(player, data)
                     * cn.blockforge.generated.generatedmod.SpiritEnchantmentLogic.surgeRegenMultiplier(player);
             float capPerSecond = ManaBalance.regenerationCap(baseAura(data.wuxingxiantu$getRealm()), meditating) * RootBalance.recovery(data);
             perSecond = Math.min(Math.max(0.0F, capPerSecond), Math.max(0.0F, perSecond));
-            float amount = perSecond / 20.0F;
+            float amount = perSecond * data.acupoints().bonuses().multiplier(Stat.MANA_REGEN_PCT) / 20.0F;
             if (!Float.isFinite(amount) || amount <= 0.0F) return;
             float nextMana = Math.min(maxMana, currentMana + amount);
             if (nextMana > currentMana) data.wuxingxiantu$setCurrentMana(nextMana);
@@ -328,6 +336,7 @@ public final class CultivationLogic {
             health.removeModifier(FIVE_ROOT_HEALTH_UUID);
         }
         cn.blockforge.generated.generatedmod.HeartMethodEffects.updateAttributes(player,data);
+        if (!player.level().isClientSide) AcupointAttributes.apply(player, data);
         double newMaxHealth = player.getMaxHealth();
         if (previousMaxHealth > 0.0D && Math.abs(newMaxHealth - previousMaxHealth) > 0.001D
                 && previousHealth > 0.0F) {

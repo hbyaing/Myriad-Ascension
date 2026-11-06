@@ -312,7 +312,7 @@ public final class SpiritEnchantmentLogic {
 
     /** 熔金淬火按原版护甲公式折算，使本次攻击等效无视目标 10% 护甲。 */
     private static float compensateForArmorPenetration(LivingEntity target, float damage, float penetration) {
-        float armor = target.getArmorValue();
+        float armor = cn.blockforge.generated.generatedmod.acupoint.AcupointAttributes.armorForDamage(target, target.getArmorValue());
         float toughness = (float) target.getAttributeValue(Attributes.ARMOR_TOUGHNESS);
         if (armor <= 0.0F) return damage;
         float normalAfterArmor = CombatRules.getDamageAfterAbsorb(damage, armor, toughness);

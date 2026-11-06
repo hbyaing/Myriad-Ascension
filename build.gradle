@@ -82,6 +82,12 @@ if (project.hasProperty('myriadCapture')) {
             }
             if (project.hasProperty('thunderDomainCapture')) { property 'wuxingxiantu.thunderDomainCapture', 'true'; property 'wuxingxiantu.myriadCapture', 'false' }
             if (project.hasProperty('jeiLayoutCapture')) property 'wuxingxiantu.jeiLayoutCapture', 'true'
+            if (project.hasProperty('baiqiaoCapture')) {
+                workingDirectory project.file(project.hasProperty('myriadExternalShaders') ? 'build/baiqiao-oculus-client' : 'build/baiqiao-client')
+                property 'wuxingxiantu.baiqiaoCapture', 'true'
+                property 'wuxingxiantu.myriadCapture', 'false'
+                property 'wuxingxiantu.baiqiaoOutput', project.file(project.findProperty('baiqiaoOutput') ?: 'reports/baiqiao-361/client').absolutePath
+            }
             if (project.hasProperty('backpackLayoutCapture')) { property 'wuxingxiantu.backpackLayoutCapture', 'true'; property 'wuxingxiantu.myriadCapture', 'false' }
             if (project.hasProperty('backpackCaptureOutput')) property 'wuxingxiantu.backpackCaptureOutput', project.file(project.property('backpackCaptureOutput')).absolutePath
             if (project.hasProperty('backpackExpectShaders')) property 'wuxingxiantu.backpackExpectShaders', 'true'

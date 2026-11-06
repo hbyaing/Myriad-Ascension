@@ -1,0 +1,6475 @@
+{
+  "schema_version": 1,
+  "acupoints": [
+    {
+      "id": "LU-1",
+      "name_zh": "中府",
+      "meridian": "LU",
+      "standard_index": 1,
+      "route_order": 11,
+      "prerequisites": [
+        "LU-2"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "LU-1"
+    },
+    {
+      "id": "LU-2",
+      "name_zh": "云门",
+      "meridian": "LU",
+      "standard_index": 2,
+      "route_order": 10,
+      "prerequisites": [
+        "LU-3"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "LU-2"
+    },
+    {
+      "id": "LU-3",
+      "name_zh": "天府",
+      "meridian": "LU",
+      "standard_index": 3,
+      "route_order": 9,
+      "prerequisites": [
+        "LU-4"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "LU-3"
+    },
+    {
+      "id": "LU-4",
+      "name_zh": "侠白",
+      "meridian": "LU",
+      "standard_index": 4,
+      "route_order": 8,
+      "prerequisites": [
+        "LU-5"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "LU-4"
+    },
+    {
+      "id": "LU-5",
+      "name_zh": "尺泽",
+      "meridian": "LU",
+      "standard_index": 5,
+      "route_order": 7,
+      "prerequisites": [
+        "LU-6"
+      ],
+      "unlock_stage": 3,
+      "tier": "IMPORTANT",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.5,
+      "bonus_unit": "percentage_points",
+      "required_mana": 432,
+      "bilateral": true,
+      "ui_anchor_id": "LU-5"
+    },
+    {
+      "id": "LU-6",
+      "name_zh": "孔最",
+      "meridian": "LU",
+      "standard_index": 6,
+      "route_order": 6,
+      "prerequisites": [
+        "LU-7"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "LU-6"
+    },
+    {
+      "id": "LU-7",
+      "name_zh": "列缺",
+      "meridian": "LU",
+      "standard_index": 7,
+      "route_order": 5,
+      "prerequisites": [
+        "LU-8"
+      ],
+      "unlock_stage": 3,
+      "tier": "IMPORTANT",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.5,
+      "bonus_unit": "percentage_points",
+      "required_mana": 432,
+      "bilateral": true,
+      "ui_anchor_id": "LU-7"
+    },
+    {
+      "id": "LU-8",
+      "name_zh": "经渠",
+      "meridian": "LU",
+      "standard_index": 8,
+      "route_order": 4,
+      "prerequisites": [
+        "LU-9"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "LU-8"
+    },
+    {
+      "id": "LU-9",
+      "name_zh": "太渊",
+      "meridian": "LU",
+      "standard_index": 9,
+      "route_order": 3,
+      "prerequisites": [
+        "LU-10"
+      ],
+      "unlock_stage": 2,
+      "tier": "HUB",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.75,
+      "bonus_unit": "percentage_points",
+      "required_mana": 360,
+      "bilateral": true,
+      "ui_anchor_id": "LU-9"
+    },
+    {
+      "id": "LU-10",
+      "name_zh": "鱼际",
+      "meridian": "LU",
+      "standard_index": 10,
+      "route_order": 2,
+      "prerequisites": [
+        "LU-11"
+      ],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 60,
+      "bilateral": true,
+      "ui_anchor_id": "LU-10"
+    },
+    {
+      "id": "LU-11",
+      "name_zh": "少商",
+      "meridian": "LU",
+      "standard_index": 11,
+      "route_order": 1,
+      "prerequisites": [],
+      "unlock_stage": 1,
+      "tier": "IMPORTANT",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.5,
+      "bonus_unit": "percentage_points",
+      "required_mana": 108,
+      "bilateral": true,
+      "ui_anchor_id": "LU-11"
+    },
+    {
+      "id": "LI-1",
+      "name_zh": "商阳",
+      "meridian": "LI",
+      "standard_index": 1,
+      "route_order": 1,
+      "prerequisites": [],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 60,
+      "bilateral": true,
+      "ui_anchor_id": "LI-1"
+    },
+    {
+      "id": "LI-2",
+      "name_zh": "二间",
+      "meridian": "LI",
+      "standard_index": 2,
+      "route_order": 2,
+      "prerequisites": [
+        "LI-1"
+      ],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 60,
+      "bilateral": true,
+      "ui_anchor_id": "LI-2"
+    },
+    {
+      "id": "LI-3",
+      "name_zh": "三间",
+      "meridian": "LI",
+      "standard_index": 3,
+      "route_order": 3,
+      "prerequisites": [
+        "LI-2"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "LI-3"
+    },
+    {
+      "id": "LI-4",
+      "name_zh": "合谷",
+      "meridian": "LI",
+      "standard_index": 4,
+      "route_order": 4,
+      "prerequisites": [
+        "LI-3"
+      ],
+      "unlock_stage": 2,
+      "tier": "HUB",
+      "attribute": "attack",
+      "bonus": 0.12,
+      "bonus_unit": "attack",
+      "required_mana": 360,
+      "bilateral": true,
+      "ui_anchor_id": "LI-4"
+    },
+    {
+      "id": "LI-5",
+      "name_zh": "阳溪",
+      "meridian": "LI",
+      "standard_index": 5,
+      "route_order": 5,
+      "prerequisites": [
+        "LI-4"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "LI-5"
+    },
+    {
+      "id": "LI-6",
+      "name_zh": "偏历",
+      "meridian": "LI",
+      "standard_index": 6,
+      "route_order": 6,
+      "prerequisites": [
+        "LI-5"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "LI-6"
+    },
+    {
+      "id": "LI-7",
+      "name_zh": "温溜",
+      "meridian": "LI",
+      "standard_index": 7,
+      "route_order": 7,
+      "prerequisites": [
+        "LI-6"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "LI-7"
+    },
+    {
+      "id": "LI-8",
+      "name_zh": "下廉",
+      "meridian": "LI",
+      "standard_index": 8,
+      "route_order": 8,
+      "prerequisites": [
+        "LI-7"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "LI-8"
+    },
+    {
+      "id": "LI-9",
+      "name_zh": "上廉",
+      "meridian": "LI",
+      "standard_index": 9,
+      "route_order": 9,
+      "prerequisites": [
+        "LI-8"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "LI-9"
+    },
+    {
+      "id": "LI-10",
+      "name_zh": "手三里",
+      "meridian": "LI",
+      "standard_index": 10,
+      "route_order": 10,
+      "prerequisites": [
+        "LI-9"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "LI-10"
+    },
+    {
+      "id": "LI-11",
+      "name_zh": "曲池",
+      "meridian": "LI",
+      "standard_index": 11,
+      "route_order": 11,
+      "prerequisites": [
+        "LI-10"
+      ],
+      "unlock_stage": 3,
+      "tier": "IMPORTANT",
+      "attribute": "attack",
+      "bonus": 0.08,
+      "bonus_unit": "attack",
+      "required_mana": 432,
+      "bilateral": true,
+      "ui_anchor_id": "LI-11"
+    },
+    {
+      "id": "LI-12",
+      "name_zh": "肘髎",
+      "meridian": "LI",
+      "standard_index": 12,
+      "route_order": 12,
+      "prerequisites": [
+        "LI-11"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "LI-12"
+    },
+    {
+      "id": "LI-13",
+      "name_zh": "手五里",
+      "meridian": "LI",
+      "standard_index": 13,
+      "route_order": 13,
+      "prerequisites": [
+        "LI-12"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "LI-13"
+    },
+    {
+      "id": "LI-14",
+      "name_zh": "臂臑",
+      "meridian": "LI",
+      "standard_index": 14,
+      "route_order": 14,
+      "prerequisites": [
+        "LI-13"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "LI-14"
+    },
+    {
+      "id": "LI-15",
+      "name_zh": "肩髃",
+      "meridian": "LI",
+      "standard_index": 15,
+      "route_order": 15,
+      "prerequisites": [
+        "LI-14"
+      ],
+      "unlock_stage": 4,
+      "tier": "IMPORTANT",
+      "attribute": "attack",
+      "bonus": 0.08,
+      "bonus_unit": "attack",
+      "required_mana": 864,
+      "bilateral": true,
+      "ui_anchor_id": "LI-15"
+    },
+    {
+      "id": "LI-16",
+      "name_zh": "巨骨",
+      "meridian": "LI",
+      "standard_index": 16,
+      "route_order": 16,
+      "prerequisites": [
+        "LI-15"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "LI-16"
+    },
+    {
+      "id": "LI-17",
+      "name_zh": "天鼎",
+      "meridian": "LI",
+      "standard_index": 17,
+      "route_order": 17,
+      "prerequisites": [
+        "LI-16"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "LI-17"
+    },
+    {
+      "id": "LI-18",
+      "name_zh": "扶突",
+      "meridian": "LI",
+      "standard_index": 18,
+      "route_order": 18,
+      "prerequisites": [
+        "LI-17"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "LI-18"
+    },
+    {
+      "id": "LI-19",
+      "name_zh": "口禾髎",
+      "meridian": "LI",
+      "standard_index": 19,
+      "route_order": 19,
+      "prerequisites": [
+        "LI-18"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "LI-19"
+    },
+    {
+      "id": "LI-20",
+      "name_zh": "迎香",
+      "meridian": "LI",
+      "standard_index": 20,
+      "route_order": 20,
+      "prerequisites": [
+        "LI-19"
+      ],
+      "unlock_stage": 4,
+      "tier": "IMPORTANT",
+      "attribute": "defense",
+      "bonus": 0.05,
+      "bonus_unit": "defense",
+      "required_mana": 864,
+      "bilateral": true,
+      "ui_anchor_id": "LI-20"
+    },
+    {
+      "id": "ST-1",
+      "name_zh": "承泣",
+      "meridian": "ST",
+      "standard_index": 1,
+      "route_order": 45,
+      "prerequisites": [
+        "ST-2"
+      ],
+      "unlock_stage": 4,
+      "tier": "IMPORTANT",
+      "attribute": "max_health",
+      "bonus": 0.2,
+      "bonus_unit": "health",
+      "required_mana": 864,
+      "bilateral": true,
+      "ui_anchor_id": "ST-1"
+    },
+    {
+      "id": "ST-2",
+      "name_zh": "四白",
+      "meridian": "ST",
+      "standard_index": 2,
+      "route_order": 44,
+      "prerequisites": [
+        "ST-3"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "ST-2"
+    },
+    {
+      "id": "ST-3",
+      "name_zh": "巨髎",
+      "meridian": "ST",
+      "standard_index": 3,
+      "route_order": 43,
+      "prerequisites": [
+        "ST-4"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "ST-3"
+    },
+    {
+      "id": "ST-4",
+      "name_zh": "地仓",
+      "meridian": "ST",
+      "standard_index": 4,
+      "route_order": 42,
+      "prerequisites": [
+        "ST-5"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "ST-4"
+    },
+    {
+      "id": "ST-5",
+      "name_zh": "大迎",
+      "meridian": "ST",
+      "standard_index": 5,
+      "route_order": 41,
+      "prerequisites": [
+        "ST-6"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "ST-5"
+    },
+    {
+      "id": "ST-6",
+      "name_zh": "颊车",
+      "meridian": "ST",
+      "standard_index": 6,
+      "route_order": 40,
+      "prerequisites": [
+        "ST-7"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "ST-6"
+    },
+    {
+      "id": "ST-7",
+      "name_zh": "下关",
+      "meridian": "ST",
+      "standard_index": 7,
+      "route_order": 39,
+      "prerequisites": [
+        "ST-8"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "ST-7"
+    },
+    {
+      "id": "ST-8",
+      "name_zh": "头维",
+      "meridian": "ST",
+      "standard_index": 8,
+      "route_order": 38,
+      "prerequisites": [
+        "ST-9"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "ST-8"
+    },
+    {
+      "id": "ST-9",
+      "name_zh": "人迎",
+      "meridian": "ST",
+      "standard_index": 9,
+      "route_order": 37,
+      "prerequisites": [
+        "ST-10"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "ST-9"
+    },
+    {
+      "id": "ST-10",
+      "name_zh": "水突",
+      "meridian": "ST",
+      "standard_index": 10,
+      "route_order": 36,
+      "prerequisites": [
+        "ST-11"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "ST-10"
+    },
+    {
+      "id": "ST-11",
+      "name_zh": "气舍",
+      "meridian": "ST",
+      "standard_index": 11,
+      "route_order": 35,
+      "prerequisites": [
+        "ST-12"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "ST-11"
+    },
+    {
+      "id": "ST-12",
+      "name_zh": "缺盆",
+      "meridian": "ST",
+      "standard_index": 12,
+      "route_order": 34,
+      "prerequisites": [
+        "ST-13"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "ST-12"
+    },
+    {
+      "id": "ST-13",
+      "name_zh": "气户",
+      "meridian": "ST",
+      "standard_index": 13,
+      "route_order": 33,
+      "prerequisites": [
+        "ST-14"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "ST-13"
+    },
+    {
+      "id": "ST-14",
+      "name_zh": "库房",
+      "meridian": "ST",
+      "standard_index": 14,
+      "route_order": 32,
+      "prerequisites": [
+        "ST-15"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "ST-14"
+    },
+    {
+      "id": "ST-15",
+      "name_zh": "屋翳",
+      "meridian": "ST",
+      "standard_index": 15,
+      "route_order": 31,
+      "prerequisites": [
+        "ST-16"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "ST-15"
+    },
+    {
+      "id": "ST-16",
+      "name_zh": "膺窗",
+      "meridian": "ST",
+      "standard_index": 16,
+      "route_order": 30,
+      "prerequisites": [
+        "ST-17"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "ST-16"
+    },
+    {
+      "id": "ST-17",
+      "name_zh": "乳中",
+      "meridian": "ST",
+      "standard_index": 17,
+      "route_order": 29,
+      "prerequisites": [
+        "ST-18"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "ST-17"
+    },
+    {
+      "id": "ST-18",
+      "name_zh": "乳根",
+      "meridian": "ST",
+      "standard_index": 18,
+      "route_order": 28,
+      "prerequisites": [
+        "ST-19"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "ST-18"
+    },
+    {
+      "id": "ST-19",
+      "name_zh": "不容",
+      "meridian": "ST",
+      "standard_index": 19,
+      "route_order": 27,
+      "prerequisites": [
+        "ST-20"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "ST-19"
+    },
+    {
+      "id": "ST-20",
+      "name_zh": "承满",
+      "meridian": "ST",
+      "standard_index": 20,
+      "route_order": 26,
+      "prerequisites": [
+        "ST-21"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "ST-20"
+    },
+    {
+      "id": "ST-21",
+      "name_zh": "梁门",
+      "meridian": "ST",
+      "standard_index": 21,
+      "route_order": 25,
+      "prerequisites": [
+        "ST-22"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "ST-21"
+    },
+    {
+      "id": "ST-22",
+      "name_zh": "关门",
+      "meridian": "ST",
+      "standard_index": 22,
+      "route_order": 24,
+      "prerequisites": [
+        "ST-23"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "ST-22"
+    },
+    {
+      "id": "ST-23",
+      "name_zh": "太乙",
+      "meridian": "ST",
+      "standard_index": 23,
+      "route_order": 23,
+      "prerequisites": [
+        "ST-24"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "ST-23"
+    },
+    {
+      "id": "ST-24",
+      "name_zh": "滑肉门",
+      "meridian": "ST",
+      "standard_index": 24,
+      "route_order": 22,
+      "prerequisites": [
+        "ST-25"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "ST-24"
+    },
+    {
+      "id": "ST-25",
+      "name_zh": "天枢",
+      "meridian": "ST",
+      "standard_index": 25,
+      "route_order": 21,
+      "prerequisites": [
+        "ST-26"
+      ],
+      "unlock_stage": 3,
+      "tier": "IMPORTANT",
+      "attribute": "max_health",
+      "bonus": 0.2,
+      "bonus_unit": "health",
+      "required_mana": 432,
+      "bilateral": true,
+      "ui_anchor_id": "ST-25"
+    },
+    {
+      "id": "ST-26",
+      "name_zh": "外陵",
+      "meridian": "ST",
+      "standard_index": 26,
+      "route_order": 20,
+      "prerequisites": [
+        "ST-27"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "ST-26"
+    },
+    {
+      "id": "ST-27",
+      "name_zh": "大巨",
+      "meridian": "ST",
+      "standard_index": 27,
+      "route_order": 19,
+      "prerequisites": [
+        "ST-28"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "ST-27"
+    },
+    {
+      "id": "ST-28",
+      "name_zh": "水道",
+      "meridian": "ST",
+      "standard_index": 28,
+      "route_order": 18,
+      "prerequisites": [
+        "ST-29"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "ST-28"
+    },
+    {
+      "id": "ST-29",
+      "name_zh": "归来",
+      "meridian": "ST",
+      "standard_index": 29,
+      "route_order": 17,
+      "prerequisites": [
+        "ST-30"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "ST-29"
+    },
+    {
+      "id": "ST-30",
+      "name_zh": "气冲",
+      "meridian": "ST",
+      "standard_index": 30,
+      "route_order": 16,
+      "prerequisites": [
+        "ST-31"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "ST-30"
+    },
+    {
+      "id": "ST-31",
+      "name_zh": "髀关",
+      "meridian": "ST",
+      "standard_index": 31,
+      "route_order": 15,
+      "prerequisites": [
+        "ST-32"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "ST-31"
+    },
+    {
+      "id": "ST-32",
+      "name_zh": "伏兔",
+      "meridian": "ST",
+      "standard_index": 32,
+      "route_order": 14,
+      "prerequisites": [
+        "ST-33"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "ST-32"
+    },
+    {
+      "id": "ST-33",
+      "name_zh": "阴市",
+      "meridian": "ST",
+      "standard_index": 33,
+      "route_order": 13,
+      "prerequisites": [
+        "ST-34"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "ST-33"
+    },
+    {
+      "id": "ST-34",
+      "name_zh": "梁丘",
+      "meridian": "ST",
+      "standard_index": 34,
+      "route_order": 12,
+      "prerequisites": [
+        "ST-35"
+      ],
+      "unlock_stage": 2,
+      "tier": "IMPORTANT",
+      "attribute": "defense",
+      "bonus": 0.05,
+      "bonus_unit": "defense",
+      "required_mana": 216,
+      "bilateral": true,
+      "ui_anchor_id": "ST-34"
+    },
+    {
+      "id": "ST-35",
+      "name_zh": "犊鼻",
+      "meridian": "ST",
+      "standard_index": 35,
+      "route_order": 11,
+      "prerequisites": [
+        "ST-36"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "ST-35"
+    },
+    {
+      "id": "ST-36",
+      "name_zh": "足三里",
+      "meridian": "ST",
+      "standard_index": 36,
+      "route_order": 10,
+      "prerequisites": [
+        "ST-37"
+      ],
+      "unlock_stage": 2,
+      "tier": "HUB",
+      "attribute": "max_health",
+      "bonus": 0.3,
+      "bonus_unit": "health",
+      "required_mana": 360,
+      "bilateral": true,
+      "ui_anchor_id": "ST-36"
+    },
+    {
+      "id": "ST-37",
+      "name_zh": "上巨虚",
+      "meridian": "ST",
+      "standard_index": 37,
+      "route_order": 9,
+      "prerequisites": [
+        "ST-38"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "ST-37"
+    },
+    {
+      "id": "ST-38",
+      "name_zh": "条口",
+      "meridian": "ST",
+      "standard_index": 38,
+      "route_order": 8,
+      "prerequisites": [
+        "ST-39"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "ST-38"
+    },
+    {
+      "id": "ST-39",
+      "name_zh": "下巨虚",
+      "meridian": "ST",
+      "standard_index": 39,
+      "route_order": 7,
+      "prerequisites": [
+        "ST-40"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "ST-39"
+    },
+    {
+      "id": "ST-40",
+      "name_zh": "丰隆",
+      "meridian": "ST",
+      "standard_index": 40,
+      "route_order": 6,
+      "prerequisites": [
+        "ST-41"
+      ],
+      "unlock_stage": 2,
+      "tier": "IMPORTANT",
+      "attribute": "defense",
+      "bonus": 0.05,
+      "bonus_unit": "defense",
+      "required_mana": 216,
+      "bilateral": true,
+      "ui_anchor_id": "ST-40"
+    },
+    {
+      "id": "ST-41",
+      "name_zh": "解溪",
+      "meridian": "ST",
+      "standard_index": 41,
+      "route_order": 5,
+      "prerequisites": [
+        "ST-42"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "ST-41"
+    },
+    {
+      "id": "ST-42",
+      "name_zh": "冲阳",
+      "meridian": "ST",
+      "standard_index": 42,
+      "route_order": 4,
+      "prerequisites": [
+        "ST-43"
+      ],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 60,
+      "bilateral": true,
+      "ui_anchor_id": "ST-42"
+    },
+    {
+      "id": "ST-43",
+      "name_zh": "陷谷",
+      "meridian": "ST",
+      "standard_index": 43,
+      "route_order": 3,
+      "prerequisites": [
+        "ST-44"
+      ],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 60,
+      "bilateral": true,
+      "ui_anchor_id": "ST-43"
+    },
+    {
+      "id": "ST-44",
+      "name_zh": "内庭",
+      "meridian": "ST",
+      "standard_index": 44,
+      "route_order": 2,
+      "prerequisites": [
+        "ST-45"
+      ],
+      "unlock_stage": 1,
+      "tier": "IMPORTANT",
+      "attribute": "defense",
+      "bonus": 0.05,
+      "bonus_unit": "defense",
+      "required_mana": 108,
+      "bilateral": true,
+      "ui_anchor_id": "ST-44"
+    },
+    {
+      "id": "ST-45",
+      "name_zh": "厉兑",
+      "meridian": "ST",
+      "standard_index": 45,
+      "route_order": 1,
+      "prerequisites": [],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 60,
+      "bilateral": true,
+      "ui_anchor_id": "ST-45"
+    },
+    {
+      "id": "SP-1",
+      "name_zh": "隐白",
+      "meridian": "SP",
+      "standard_index": 1,
+      "route_order": 1,
+      "prerequisites": [],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 60,
+      "bilateral": true,
+      "ui_anchor_id": "SP-1"
+    },
+    {
+      "id": "SP-2",
+      "name_zh": "大都",
+      "meridian": "SP",
+      "standard_index": 2,
+      "route_order": 2,
+      "prerequisites": [
+        "SP-1"
+      ],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 60,
+      "bilateral": true,
+      "ui_anchor_id": "SP-2"
+    },
+    {
+      "id": "SP-3",
+      "name_zh": "太白",
+      "meridian": "SP",
+      "standard_index": 3,
+      "route_order": 3,
+      "prerequisites": [
+        "SP-2"
+      ],
+      "unlock_stage": 2,
+      "tier": "IMPORTANT",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.5,
+      "bonus_unit": "percentage_points",
+      "required_mana": 216,
+      "bilateral": true,
+      "ui_anchor_id": "SP-3"
+    },
+    {
+      "id": "SP-4",
+      "name_zh": "公孙",
+      "meridian": "SP",
+      "standard_index": 4,
+      "route_order": 4,
+      "prerequisites": [
+        "SP-3"
+      ],
+      "unlock_stage": 2,
+      "tier": "IMPORTANT",
+      "attribute": "max_health",
+      "bonus": 0.2,
+      "bonus_unit": "health",
+      "required_mana": 216,
+      "bilateral": true,
+      "ui_anchor_id": "SP-4"
+    },
+    {
+      "id": "SP-5",
+      "name_zh": "商丘",
+      "meridian": "SP",
+      "standard_index": 5,
+      "route_order": 5,
+      "prerequisites": [
+        "SP-4"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "SP-5"
+    },
+    {
+      "id": "SP-6",
+      "name_zh": "三阴交",
+      "meridian": "SP",
+      "standard_index": 6,
+      "route_order": 6,
+      "prerequisites": [
+        "SP-5"
+      ],
+      "unlock_stage": 2,
+      "tier": "HUB",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.75,
+      "bonus_unit": "percentage_points",
+      "required_mana": 360,
+      "bilateral": true,
+      "ui_anchor_id": "SP-6"
+    },
+    {
+      "id": "SP-7",
+      "name_zh": "漏谷",
+      "meridian": "SP",
+      "standard_index": 7,
+      "route_order": 7,
+      "prerequisites": [
+        "SP-6"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "SP-7"
+    },
+    {
+      "id": "SP-8",
+      "name_zh": "地机",
+      "meridian": "SP",
+      "standard_index": 8,
+      "route_order": 8,
+      "prerequisites": [
+        "SP-7"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "SP-8"
+    },
+    {
+      "id": "SP-9",
+      "name_zh": "阴陵泉",
+      "meridian": "SP",
+      "standard_index": 9,
+      "route_order": 9,
+      "prerequisites": [
+        "SP-8"
+      ],
+      "unlock_stage": 3,
+      "tier": "IMPORTANT",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.5,
+      "bonus_unit": "percentage_points",
+      "required_mana": 432,
+      "bilateral": true,
+      "ui_anchor_id": "SP-9"
+    },
+    {
+      "id": "SP-10",
+      "name_zh": "血海",
+      "meridian": "SP",
+      "standard_index": 10,
+      "route_order": 10,
+      "prerequisites": [
+        "SP-9"
+      ],
+      "unlock_stage": 3,
+      "tier": "IMPORTANT",
+      "attribute": "max_health",
+      "bonus": 0.2,
+      "bonus_unit": "health",
+      "required_mana": 432,
+      "bilateral": true,
+      "ui_anchor_id": "SP-10"
+    },
+    {
+      "id": "SP-11",
+      "name_zh": "箕门",
+      "meridian": "SP",
+      "standard_index": 11,
+      "route_order": 11,
+      "prerequisites": [
+        "SP-10"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "SP-11"
+    },
+    {
+      "id": "SP-12",
+      "name_zh": "冲门",
+      "meridian": "SP",
+      "standard_index": 12,
+      "route_order": 12,
+      "prerequisites": [
+        "SP-11"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "SP-12"
+    },
+    {
+      "id": "SP-13",
+      "name_zh": "府舍",
+      "meridian": "SP",
+      "standard_index": 13,
+      "route_order": 13,
+      "prerequisites": [
+        "SP-12"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "SP-13"
+    },
+    {
+      "id": "SP-14",
+      "name_zh": "腹结",
+      "meridian": "SP",
+      "standard_index": 14,
+      "route_order": 14,
+      "prerequisites": [
+        "SP-13"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "SP-14"
+    },
+    {
+      "id": "SP-15",
+      "name_zh": "大横",
+      "meridian": "SP",
+      "standard_index": 15,
+      "route_order": 15,
+      "prerequisites": [
+        "SP-14"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "SP-15"
+    },
+    {
+      "id": "SP-16",
+      "name_zh": "腹哀",
+      "meridian": "SP",
+      "standard_index": 16,
+      "route_order": 16,
+      "prerequisites": [
+        "SP-15"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "SP-16"
+    },
+    {
+      "id": "SP-17",
+      "name_zh": "食窦",
+      "meridian": "SP",
+      "standard_index": 17,
+      "route_order": 17,
+      "prerequisites": [
+        "SP-16"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "SP-17"
+    },
+    {
+      "id": "SP-18",
+      "name_zh": "天溪",
+      "meridian": "SP",
+      "standard_index": 18,
+      "route_order": 18,
+      "prerequisites": [
+        "SP-17"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "SP-18"
+    },
+    {
+      "id": "SP-19",
+      "name_zh": "胸乡",
+      "meridian": "SP",
+      "standard_index": 19,
+      "route_order": 19,
+      "prerequisites": [
+        "SP-18"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "SP-19"
+    },
+    {
+      "id": "SP-20",
+      "name_zh": "周荣",
+      "meridian": "SP",
+      "standard_index": 20,
+      "route_order": 20,
+      "prerequisites": [
+        "SP-19"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "SP-20"
+    },
+    {
+      "id": "SP-21",
+      "name_zh": "大包",
+      "meridian": "SP",
+      "standard_index": 21,
+      "route_order": 21,
+      "prerequisites": [
+        "SP-20"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "SP-21"
+    },
+    {
+      "id": "HT-1",
+      "name_zh": "极泉",
+      "meridian": "HT",
+      "standard_index": 1,
+      "route_order": 9,
+      "prerequisites": [
+        "HT-2"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "HT-1"
+    },
+    {
+      "id": "HT-2",
+      "name_zh": "青灵",
+      "meridian": "HT",
+      "standard_index": 2,
+      "route_order": 8,
+      "prerequisites": [
+        "HT-3"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "HT-2"
+    },
+    {
+      "id": "HT-3",
+      "name_zh": "少海",
+      "meridian": "HT",
+      "standard_index": 3,
+      "route_order": 7,
+      "prerequisites": [
+        "HT-4"
+      ],
+      "unlock_stage": 4,
+      "tier": "IMPORTANT",
+      "attribute": "max_mana",
+      "bonus": 4.0,
+      "bonus_unit": "mana",
+      "required_mana": 864,
+      "bilateral": true,
+      "ui_anchor_id": "HT-3"
+    },
+    {
+      "id": "HT-4",
+      "name_zh": "灵道",
+      "meridian": "HT",
+      "standard_index": 4,
+      "route_order": 6,
+      "prerequisites": [
+        "HT-5"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "HT-4"
+    },
+    {
+      "id": "HT-5",
+      "name_zh": "通里",
+      "meridian": "HT",
+      "standard_index": 5,
+      "route_order": 5,
+      "prerequisites": [
+        "HT-6"
+      ],
+      "unlock_stage": 3,
+      "tier": "IMPORTANT",
+      "attribute": "max_mana",
+      "bonus": 4.0,
+      "bonus_unit": "mana",
+      "required_mana": 432,
+      "bilateral": true,
+      "ui_anchor_id": "HT-5"
+    },
+    {
+      "id": "HT-6",
+      "name_zh": "阴郄",
+      "meridian": "HT",
+      "standard_index": 6,
+      "route_order": 4,
+      "prerequisites": [
+        "HT-7"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "HT-6"
+    },
+    {
+      "id": "HT-7",
+      "name_zh": "神门",
+      "meridian": "HT",
+      "standard_index": 7,
+      "route_order": 3,
+      "prerequisites": [
+        "HT-8"
+      ],
+      "unlock_stage": 2,
+      "tier": "HUB",
+      "attribute": "max_mana",
+      "bonus": 6.0,
+      "bonus_unit": "mana",
+      "required_mana": 360,
+      "bilateral": true,
+      "ui_anchor_id": "HT-7"
+    },
+    {
+      "id": "HT-8",
+      "name_zh": "少府",
+      "meridian": "HT",
+      "standard_index": 8,
+      "route_order": 2,
+      "prerequisites": [
+        "HT-9"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "HT-8"
+    },
+    {
+      "id": "HT-9",
+      "name_zh": "少冲",
+      "meridian": "HT",
+      "standard_index": 9,
+      "route_order": 1,
+      "prerequisites": [],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 60,
+      "bilateral": true,
+      "ui_anchor_id": "HT-9"
+    },
+    {
+      "id": "SI-1",
+      "name_zh": "少泽",
+      "meridian": "SI",
+      "standard_index": 1,
+      "route_order": 1,
+      "prerequisites": [],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 60,
+      "bilateral": true,
+      "ui_anchor_id": "SI-1"
+    },
+    {
+      "id": "SI-2",
+      "name_zh": "前谷",
+      "meridian": "SI",
+      "standard_index": 2,
+      "route_order": 2,
+      "prerequisites": [
+        "SI-1"
+      ],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 60,
+      "bilateral": true,
+      "ui_anchor_id": "SI-2"
+    },
+    {
+      "id": "SI-3",
+      "name_zh": "后溪",
+      "meridian": "SI",
+      "standard_index": 3,
+      "route_order": 3,
+      "prerequisites": [
+        "SI-2"
+      ],
+      "unlock_stage": 2,
+      "tier": "HUB",
+      "attribute": "attack",
+      "bonus": 0.12,
+      "bonus_unit": "attack",
+      "required_mana": 360,
+      "bilateral": true,
+      "ui_anchor_id": "SI-3"
+    },
+    {
+      "id": "SI-4",
+      "name_zh": "腕骨",
+      "meridian": "SI",
+      "standard_index": 4,
+      "route_order": 4,
+      "prerequisites": [
+        "SI-3"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "SI-4"
+    },
+    {
+      "id": "SI-5",
+      "name_zh": "阳谷",
+      "meridian": "SI",
+      "standard_index": 5,
+      "route_order": 5,
+      "prerequisites": [
+        "SI-4"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "SI-5"
+    },
+    {
+      "id": "SI-6",
+      "name_zh": "养老",
+      "meridian": "SI",
+      "standard_index": 6,
+      "route_order": 6,
+      "prerequisites": [
+        "SI-5"
+      ],
+      "unlock_stage": 2,
+      "tier": "IMPORTANT",
+      "attribute": "defense",
+      "bonus": 0.05,
+      "bonus_unit": "defense",
+      "required_mana": 216,
+      "bilateral": true,
+      "ui_anchor_id": "SI-6"
+    },
+    {
+      "id": "SI-7",
+      "name_zh": "支正",
+      "meridian": "SI",
+      "standard_index": 7,
+      "route_order": 7,
+      "prerequisites": [
+        "SI-6"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "SI-7"
+    },
+    {
+      "id": "SI-8",
+      "name_zh": "小海",
+      "meridian": "SI",
+      "standard_index": 8,
+      "route_order": 8,
+      "prerequisites": [
+        "SI-7"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "SI-8"
+    },
+    {
+      "id": "SI-9",
+      "name_zh": "肩贞",
+      "meridian": "SI",
+      "standard_index": 9,
+      "route_order": 9,
+      "prerequisites": [
+        "SI-8"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "SI-9"
+    },
+    {
+      "id": "SI-10",
+      "name_zh": "臑俞",
+      "meridian": "SI",
+      "standard_index": 10,
+      "route_order": 10,
+      "prerequisites": [
+        "SI-9"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "SI-10"
+    },
+    {
+      "id": "SI-11",
+      "name_zh": "天宗",
+      "meridian": "SI",
+      "standard_index": 11,
+      "route_order": 11,
+      "prerequisites": [
+        "SI-10"
+      ],
+      "unlock_stage": 3,
+      "tier": "IMPORTANT",
+      "attribute": "attack",
+      "bonus": 0.08,
+      "bonus_unit": "attack",
+      "required_mana": 432,
+      "bilateral": true,
+      "ui_anchor_id": "SI-11"
+    },
+    {
+      "id": "SI-12",
+      "name_zh": "秉风",
+      "meridian": "SI",
+      "standard_index": 12,
+      "route_order": 12,
+      "prerequisites": [
+        "SI-11"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "SI-12"
+    },
+    {
+      "id": "SI-13",
+      "name_zh": "曲垣",
+      "meridian": "SI",
+      "standard_index": 13,
+      "route_order": 13,
+      "prerequisites": [
+        "SI-12"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "SI-13"
+    },
+    {
+      "id": "SI-14",
+      "name_zh": "肩外俞",
+      "meridian": "SI",
+      "standard_index": 14,
+      "route_order": 14,
+      "prerequisites": [
+        "SI-13"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "SI-14"
+    },
+    {
+      "id": "SI-15",
+      "name_zh": "肩中俞",
+      "meridian": "SI",
+      "standard_index": 15,
+      "route_order": 15,
+      "prerequisites": [
+        "SI-14"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "SI-15"
+    },
+    {
+      "id": "SI-16",
+      "name_zh": "天窗",
+      "meridian": "SI",
+      "standard_index": 16,
+      "route_order": 16,
+      "prerequisites": [
+        "SI-15"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "SI-16"
+    },
+    {
+      "id": "SI-17",
+      "name_zh": "天容",
+      "meridian": "SI",
+      "standard_index": 17,
+      "route_order": 17,
+      "prerequisites": [
+        "SI-16"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "SI-17"
+    },
+    {
+      "id": "SI-18",
+      "name_zh": "颧髎",
+      "meridian": "SI",
+      "standard_index": 18,
+      "route_order": 18,
+      "prerequisites": [
+        "SI-17"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "SI-18"
+    },
+    {
+      "id": "SI-19",
+      "name_zh": "听宫",
+      "meridian": "SI",
+      "standard_index": 19,
+      "route_order": 19,
+      "prerequisites": [
+        "SI-18"
+      ],
+      "unlock_stage": 4,
+      "tier": "IMPORTANT",
+      "attribute": "attack",
+      "bonus": 0.08,
+      "bonus_unit": "attack",
+      "required_mana": 864,
+      "bilateral": true,
+      "ui_anchor_id": "SI-19"
+    },
+    {
+      "id": "BL-1",
+      "name_zh": "睛明",
+      "meridian": "BL",
+      "standard_index": 1,
+      "route_order": 67,
+      "prerequisites": [
+        "BL-2"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "BL-1"
+    },
+    {
+      "id": "BL-2",
+      "name_zh": "攒竹",
+      "meridian": "BL",
+      "standard_index": 2,
+      "route_order": 66,
+      "prerequisites": [
+        "BL-3"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "BL-2"
+    },
+    {
+      "id": "BL-3",
+      "name_zh": "眉冲",
+      "meridian": "BL",
+      "standard_index": 3,
+      "route_order": 65,
+      "prerequisites": [
+        "BL-4"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "BL-3"
+    },
+    {
+      "id": "BL-4",
+      "name_zh": "曲差",
+      "meridian": "BL",
+      "standard_index": 4,
+      "route_order": 64,
+      "prerequisites": [
+        "BL-5"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "BL-4"
+    },
+    {
+      "id": "BL-5",
+      "name_zh": "五处",
+      "meridian": "BL",
+      "standard_index": 5,
+      "route_order": 63,
+      "prerequisites": [
+        "BL-6"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "BL-5"
+    },
+    {
+      "id": "BL-6",
+      "name_zh": "承光",
+      "meridian": "BL",
+      "standard_index": 6,
+      "route_order": 62,
+      "prerequisites": [
+        "BL-7"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "BL-6"
+    },
+    {
+      "id": "BL-7",
+      "name_zh": "通天",
+      "meridian": "BL",
+      "standard_index": 7,
+      "route_order": 61,
+      "prerequisites": [
+        "BL-8"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "BL-7"
+    },
+    {
+      "id": "BL-8",
+      "name_zh": "络却",
+      "meridian": "BL",
+      "standard_index": 8,
+      "route_order": 60,
+      "prerequisites": [
+        "BL-9"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "BL-8"
+    },
+    {
+      "id": "BL-9",
+      "name_zh": "玉枕",
+      "meridian": "BL",
+      "standard_index": 9,
+      "route_order": 59,
+      "prerequisites": [
+        "BL-10"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "BL-9"
+    },
+    {
+      "id": "BL-10",
+      "name_zh": "天柱",
+      "meridian": "BL",
+      "standard_index": 10,
+      "route_order": 58,
+      "prerequisites": [
+        "BL-11"
+      ],
+      "unlock_stage": 4,
+      "tier": "IMPORTANT",
+      "attribute": "max_health",
+      "bonus": 0.2,
+      "bonus_unit": "health",
+      "required_mana": 864,
+      "bilateral": true,
+      "ui_anchor_id": "BL-10"
+    },
+    {
+      "id": "BL-11",
+      "name_zh": "大杼",
+      "meridian": "BL",
+      "standard_index": 11,
+      "route_order": 57,
+      "prerequisites": [
+        "BL-12"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "BL-11"
+    },
+    {
+      "id": "BL-12",
+      "name_zh": "风门",
+      "meridian": "BL",
+      "standard_index": 12,
+      "route_order": 56,
+      "prerequisites": [
+        "BL-13"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "BL-12"
+    },
+    {
+      "id": "BL-13",
+      "name_zh": "肺俞",
+      "meridian": "BL",
+      "standard_index": 13,
+      "route_order": 55,
+      "prerequisites": [
+        "BL-14"
+      ],
+      "unlock_stage": 4,
+      "tier": "IMPORTANT",
+      "attribute": "defense",
+      "bonus": 0.05,
+      "bonus_unit": "defense",
+      "required_mana": 864,
+      "bilateral": true,
+      "ui_anchor_id": "BL-13"
+    },
+    {
+      "id": "BL-14",
+      "name_zh": "厥阴俞",
+      "meridian": "BL",
+      "standard_index": 14,
+      "route_order": 54,
+      "prerequisites": [
+        "BL-15"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "BL-14"
+    },
+    {
+      "id": "BL-15",
+      "name_zh": "心俞",
+      "meridian": "BL",
+      "standard_index": 15,
+      "route_order": 53,
+      "prerequisites": [
+        "BL-16"
+      ],
+      "unlock_stage": 4,
+      "tier": "IMPORTANT",
+      "attribute": "max_health",
+      "bonus": 0.2,
+      "bonus_unit": "health",
+      "required_mana": 864,
+      "bilateral": true,
+      "ui_anchor_id": "BL-15"
+    },
+    {
+      "id": "BL-16",
+      "name_zh": "督俞",
+      "meridian": "BL",
+      "standard_index": 16,
+      "route_order": 52,
+      "prerequisites": [
+        "BL-17"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "BL-16"
+    },
+    {
+      "id": "BL-17",
+      "name_zh": "膈俞",
+      "meridian": "BL",
+      "standard_index": 17,
+      "route_order": 51,
+      "prerequisites": [
+        "BL-18"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "BL-17"
+    },
+    {
+      "id": "BL-18",
+      "name_zh": "肝俞",
+      "meridian": "BL",
+      "standard_index": 18,
+      "route_order": 50,
+      "prerequisites": [
+        "BL-19"
+      ],
+      "unlock_stage": 4,
+      "tier": "IMPORTANT",
+      "attribute": "max_health",
+      "bonus": 0.2,
+      "bonus_unit": "health",
+      "required_mana": 864,
+      "bilateral": true,
+      "ui_anchor_id": "BL-18"
+    },
+    {
+      "id": "BL-19",
+      "name_zh": "胆俞",
+      "meridian": "BL",
+      "standard_index": 19,
+      "route_order": 49,
+      "prerequisites": [
+        "BL-20"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "BL-19"
+    },
+    {
+      "id": "BL-20",
+      "name_zh": "脾俞",
+      "meridian": "BL",
+      "standard_index": 20,
+      "route_order": 48,
+      "prerequisites": [
+        "BL-21"
+      ],
+      "unlock_stage": 4,
+      "tier": "IMPORTANT",
+      "attribute": "max_health",
+      "bonus": 0.2,
+      "bonus_unit": "health",
+      "required_mana": 864,
+      "bilateral": true,
+      "ui_anchor_id": "BL-20"
+    },
+    {
+      "id": "BL-21",
+      "name_zh": "胃俞",
+      "meridian": "BL",
+      "standard_index": 21,
+      "route_order": 47,
+      "prerequisites": [
+        "BL-22"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "BL-21"
+    },
+    {
+      "id": "BL-22",
+      "name_zh": "三焦俞",
+      "meridian": "BL",
+      "standard_index": 22,
+      "route_order": 46,
+      "prerequisites": [
+        "BL-23"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "BL-22"
+    },
+    {
+      "id": "BL-23",
+      "name_zh": "肾俞",
+      "meridian": "BL",
+      "standard_index": 23,
+      "route_order": 45,
+      "prerequisites": [
+        "BL-24"
+      ],
+      "unlock_stage": 4,
+      "tier": "HUB",
+      "attribute": "max_mana",
+      "bonus": 6.0,
+      "bonus_unit": "mana",
+      "required_mana": 1440,
+      "bilateral": true,
+      "ui_anchor_id": "BL-23"
+    },
+    {
+      "id": "BL-24",
+      "name_zh": "气海俞",
+      "meridian": "BL",
+      "standard_index": 24,
+      "route_order": 44,
+      "prerequisites": [
+        "BL-25"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "BL-24"
+    },
+    {
+      "id": "BL-25",
+      "name_zh": "大肠俞",
+      "meridian": "BL",
+      "standard_index": 25,
+      "route_order": 43,
+      "prerequisites": [
+        "BL-26"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "BL-25"
+    },
+    {
+      "id": "BL-26",
+      "name_zh": "关元俞",
+      "meridian": "BL",
+      "standard_index": 26,
+      "route_order": 42,
+      "prerequisites": [
+        "BL-27"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "BL-26"
+    },
+    {
+      "id": "BL-27",
+      "name_zh": "小肠俞",
+      "meridian": "BL",
+      "standard_index": 27,
+      "route_order": 41,
+      "prerequisites": [
+        "BL-28"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "BL-27"
+    },
+    {
+      "id": "BL-28",
+      "name_zh": "膀胱俞",
+      "meridian": "BL",
+      "standard_index": 28,
+      "route_order": 40,
+      "prerequisites": [
+        "BL-29"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "BL-28"
+    },
+    {
+      "id": "BL-29",
+      "name_zh": "中膂俞",
+      "meridian": "BL",
+      "standard_index": 29,
+      "route_order": 39,
+      "prerequisites": [
+        "BL-30"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "BL-29"
+    },
+    {
+      "id": "BL-30",
+      "name_zh": "白环俞",
+      "meridian": "BL",
+      "standard_index": 30,
+      "route_order": 38,
+      "prerequisites": [
+        "BL-31"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "BL-30"
+    },
+    {
+      "id": "BL-31",
+      "name_zh": "上髎",
+      "meridian": "BL",
+      "standard_index": 31,
+      "route_order": 37,
+      "prerequisites": [
+        "BL-32"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "BL-31"
+    },
+    {
+      "id": "BL-32",
+      "name_zh": "次髎",
+      "meridian": "BL",
+      "standard_index": 32,
+      "route_order": 36,
+      "prerequisites": [
+        "BL-33"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "BL-32"
+    },
+    {
+      "id": "BL-33",
+      "name_zh": "中髎",
+      "meridian": "BL",
+      "standard_index": 33,
+      "route_order": 35,
+      "prerequisites": [
+        "BL-34"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "BL-33"
+    },
+    {
+      "id": "BL-34",
+      "name_zh": "下髎",
+      "meridian": "BL",
+      "standard_index": 34,
+      "route_order": 34,
+      "prerequisites": [
+        "BL-35"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "BL-34"
+    },
+    {
+      "id": "BL-35",
+      "name_zh": "会阳",
+      "meridian": "BL",
+      "standard_index": 35,
+      "route_order": 33,
+      "prerequisites": [
+        "BL-36"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "BL-35"
+    },
+    {
+      "id": "BL-36",
+      "name_zh": "承扶",
+      "meridian": "BL",
+      "standard_index": 36,
+      "route_order": 32,
+      "prerequisites": [
+        "BL-37"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "BL-36"
+    },
+    {
+      "id": "BL-37",
+      "name_zh": "殷门",
+      "meridian": "BL",
+      "standard_index": 37,
+      "route_order": 31,
+      "prerequisites": [
+        "BL-38"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "BL-37"
+    },
+    {
+      "id": "BL-38",
+      "name_zh": "浮郄",
+      "meridian": "BL",
+      "standard_index": 38,
+      "route_order": 30,
+      "prerequisites": [
+        "BL-39"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "BL-38"
+    },
+    {
+      "id": "BL-39",
+      "name_zh": "委阳",
+      "meridian": "BL",
+      "standard_index": 39,
+      "route_order": 29,
+      "prerequisites": [
+        "BL-40"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "BL-39"
+    },
+    {
+      "id": "BL-40",
+      "name_zh": "委中",
+      "meridian": "BL",
+      "standard_index": 40,
+      "route_order": 28,
+      "prerequisites": [
+        "BL-41"
+      ],
+      "unlock_stage": 3,
+      "tier": "IMPORTANT",
+      "attribute": "max_health",
+      "bonus": 0.2,
+      "bonus_unit": "health",
+      "required_mana": 432,
+      "bilateral": true,
+      "ui_anchor_id": "BL-40"
+    },
+    {
+      "id": "BL-41",
+      "name_zh": "附分",
+      "meridian": "BL",
+      "standard_index": 41,
+      "route_order": 27,
+      "prerequisites": [
+        "BL-42"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "BL-41"
+    },
+    {
+      "id": "BL-42",
+      "name_zh": "魄户",
+      "meridian": "BL",
+      "standard_index": 42,
+      "route_order": 26,
+      "prerequisites": [
+        "BL-43"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "BL-42"
+    },
+    {
+      "id": "BL-43",
+      "name_zh": "膏肓",
+      "meridian": "BL",
+      "standard_index": 43,
+      "route_order": 25,
+      "prerequisites": [
+        "BL-44"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "BL-43"
+    },
+    {
+      "id": "BL-44",
+      "name_zh": "神堂",
+      "meridian": "BL",
+      "standard_index": 44,
+      "route_order": 24,
+      "prerequisites": [
+        "BL-45"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "BL-44"
+    },
+    {
+      "id": "BL-45",
+      "name_zh": "譩譆",
+      "meridian": "BL",
+      "standard_index": 45,
+      "route_order": 23,
+      "prerequisites": [
+        "BL-46"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "BL-45"
+    },
+    {
+      "id": "BL-46",
+      "name_zh": "膈关",
+      "meridian": "BL",
+      "standard_index": 46,
+      "route_order": 22,
+      "prerequisites": [
+        "BL-47"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "BL-46"
+    },
+    {
+      "id": "BL-47",
+      "name_zh": "魂门",
+      "meridian": "BL",
+      "standard_index": 47,
+      "route_order": 21,
+      "prerequisites": [
+        "BL-48"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "BL-47"
+    },
+    {
+      "id": "BL-48",
+      "name_zh": "阳纲",
+      "meridian": "BL",
+      "standard_index": 48,
+      "route_order": 20,
+      "prerequisites": [
+        "BL-49"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "BL-48"
+    },
+    {
+      "id": "BL-49",
+      "name_zh": "意舍",
+      "meridian": "BL",
+      "standard_index": 49,
+      "route_order": 19,
+      "prerequisites": [
+        "BL-50"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "BL-49"
+    },
+    {
+      "id": "BL-50",
+      "name_zh": "胃仓",
+      "meridian": "BL",
+      "standard_index": 50,
+      "route_order": 18,
+      "prerequisites": [
+        "BL-51"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "BL-50"
+    },
+    {
+      "id": "BL-51",
+      "name_zh": "肓门",
+      "meridian": "BL",
+      "standard_index": 51,
+      "route_order": 17,
+      "prerequisites": [
+        "BL-52"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "BL-51"
+    },
+    {
+      "id": "BL-52",
+      "name_zh": "志室",
+      "meridian": "BL",
+      "standard_index": 52,
+      "route_order": 16,
+      "prerequisites": [
+        "BL-53"
+      ],
+      "unlock_stage": 2,
+      "tier": "IMPORTANT",
+      "attribute": "max_health",
+      "bonus": 0.2,
+      "bonus_unit": "health",
+      "required_mana": 216,
+      "bilateral": true,
+      "ui_anchor_id": "BL-52"
+    },
+    {
+      "id": "BL-53",
+      "name_zh": "胞肓",
+      "meridian": "BL",
+      "standard_index": 53,
+      "route_order": 15,
+      "prerequisites": [
+        "BL-54"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "BL-53"
+    },
+    {
+      "id": "BL-54",
+      "name_zh": "秩边",
+      "meridian": "BL",
+      "standard_index": 54,
+      "route_order": 14,
+      "prerequisites": [
+        "BL-55"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "BL-54"
+    },
+    {
+      "id": "BL-55",
+      "name_zh": "合阳",
+      "meridian": "BL",
+      "standard_index": 55,
+      "route_order": 13,
+      "prerequisites": [
+        "BL-56"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "BL-55"
+    },
+    {
+      "id": "BL-56",
+      "name_zh": "承筋",
+      "meridian": "BL",
+      "standard_index": 56,
+      "route_order": 12,
+      "prerequisites": [
+        "BL-57"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "BL-56"
+    },
+    {
+      "id": "BL-57",
+      "name_zh": "承山",
+      "meridian": "BL",
+      "standard_index": 57,
+      "route_order": 11,
+      "prerequisites": [
+        "BL-58"
+      ],
+      "unlock_stage": 2,
+      "tier": "IMPORTANT",
+      "attribute": "defense",
+      "bonus": 0.05,
+      "bonus_unit": "defense",
+      "required_mana": 216,
+      "bilateral": true,
+      "ui_anchor_id": "BL-57"
+    },
+    {
+      "id": "BL-58",
+      "name_zh": "飞扬",
+      "meridian": "BL",
+      "standard_index": 58,
+      "route_order": 10,
+      "prerequisites": [
+        "BL-59"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "BL-58"
+    },
+    {
+      "id": "BL-59",
+      "name_zh": "跗阳",
+      "meridian": "BL",
+      "standard_index": 59,
+      "route_order": 9,
+      "prerequisites": [
+        "BL-60"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "BL-59"
+    },
+    {
+      "id": "BL-60",
+      "name_zh": "昆仑",
+      "meridian": "BL",
+      "standard_index": 60,
+      "route_order": 8,
+      "prerequisites": [
+        "BL-61"
+      ],
+      "unlock_stage": 2,
+      "tier": "IMPORTANT",
+      "attribute": "max_health",
+      "bonus": 0.2,
+      "bonus_unit": "health",
+      "required_mana": 216,
+      "bilateral": true,
+      "ui_anchor_id": "BL-60"
+    },
+    {
+      "id": "BL-61",
+      "name_zh": "仆参",
+      "meridian": "BL",
+      "standard_index": 61,
+      "route_order": 7,
+      "prerequisites": [
+        "BL-62"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "BL-61"
+    },
+    {
+      "id": "BL-62",
+      "name_zh": "申脉",
+      "meridian": "BL",
+      "standard_index": 62,
+      "route_order": 6,
+      "prerequisites": [
+        "BL-63"
+      ],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 60,
+      "bilateral": true,
+      "ui_anchor_id": "BL-62"
+    },
+    {
+      "id": "BL-63",
+      "name_zh": "金门",
+      "meridian": "BL",
+      "standard_index": 63,
+      "route_order": 5,
+      "prerequisites": [
+        "BL-64"
+      ],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 60,
+      "bilateral": true,
+      "ui_anchor_id": "BL-63"
+    },
+    {
+      "id": "BL-64",
+      "name_zh": "京骨",
+      "meridian": "BL",
+      "standard_index": 64,
+      "route_order": 4,
+      "prerequisites": [
+        "BL-65"
+      ],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 60,
+      "bilateral": true,
+      "ui_anchor_id": "BL-64"
+    },
+    {
+      "id": "BL-65",
+      "name_zh": "束骨",
+      "meridian": "BL",
+      "standard_index": 65,
+      "route_order": 3,
+      "prerequisites": [
+        "BL-66"
+      ],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 60,
+      "bilateral": true,
+      "ui_anchor_id": "BL-65"
+    },
+    {
+      "id": "BL-66",
+      "name_zh": "足通谷",
+      "meridian": "BL",
+      "standard_index": 66,
+      "route_order": 2,
+      "prerequisites": [
+        "BL-67"
+      ],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 60,
+      "bilateral": true,
+      "ui_anchor_id": "BL-66"
+    },
+    {
+      "id": "BL-67",
+      "name_zh": "至阴",
+      "meridian": "BL",
+      "standard_index": 67,
+      "route_order": 1,
+      "prerequisites": [],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 60,
+      "bilateral": true,
+      "ui_anchor_id": "BL-67"
+    },
+    {
+      "id": "KI-1",
+      "name_zh": "涌泉",
+      "meridian": "KI",
+      "standard_index": 1,
+      "route_order": 1,
+      "prerequisites": [],
+      "unlock_stage": 1,
+      "tier": "HUB",
+      "attribute": "move_speed_pct",
+      "bonus": 0.36,
+      "bonus_unit": "percentage_points",
+      "required_mana": 180,
+      "bilateral": true,
+      "ui_anchor_id": "KI-1"
+    },
+    {
+      "id": "KI-2",
+      "name_zh": "然谷",
+      "meridian": "KI",
+      "standard_index": 2,
+      "route_order": 2,
+      "prerequisites": [
+        "KI-1"
+      ],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 60,
+      "bilateral": true,
+      "ui_anchor_id": "KI-2"
+    },
+    {
+      "id": "KI-3",
+      "name_zh": "太溪",
+      "meridian": "KI",
+      "standard_index": 3,
+      "route_order": 3,
+      "prerequisites": [
+        "KI-2"
+      ],
+      "unlock_stage": 1,
+      "tier": "IMPORTANT",
+      "attribute": "max_mana",
+      "bonus": 4.0,
+      "bonus_unit": "mana",
+      "required_mana": 108,
+      "bilateral": true,
+      "ui_anchor_id": "KI-3"
+    },
+    {
+      "id": "KI-4",
+      "name_zh": "大钟",
+      "meridian": "KI",
+      "standard_index": 4,
+      "route_order": 4,
+      "prerequisites": [
+        "KI-3"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "KI-4"
+    },
+    {
+      "id": "KI-5",
+      "name_zh": "水泉",
+      "meridian": "KI",
+      "standard_index": 5,
+      "route_order": 5,
+      "prerequisites": [
+        "KI-4"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "KI-5"
+    },
+    {
+      "id": "KI-6",
+      "name_zh": "照海",
+      "meridian": "KI",
+      "standard_index": 6,
+      "route_order": 6,
+      "prerequisites": [
+        "KI-5"
+      ],
+      "unlock_stage": 2,
+      "tier": "IMPORTANT",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.5,
+      "bonus_unit": "percentage_points",
+      "required_mana": 216,
+      "bilateral": true,
+      "ui_anchor_id": "KI-6"
+    },
+    {
+      "id": "KI-7",
+      "name_zh": "复溜",
+      "meridian": "KI",
+      "standard_index": 7,
+      "route_order": 7,
+      "prerequisites": [
+        "KI-6"
+      ],
+      "unlock_stage": 2,
+      "tier": "IMPORTANT",
+      "attribute": "max_mana",
+      "bonus": 4.0,
+      "bonus_unit": "mana",
+      "required_mana": 216,
+      "bilateral": true,
+      "ui_anchor_id": "KI-7"
+    },
+    {
+      "id": "KI-8",
+      "name_zh": "交信",
+      "meridian": "KI",
+      "standard_index": 8,
+      "route_order": 8,
+      "prerequisites": [
+        "KI-7"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "KI-8"
+    },
+    {
+      "id": "KI-9",
+      "name_zh": "筑宾",
+      "meridian": "KI",
+      "standard_index": 9,
+      "route_order": 9,
+      "prerequisites": [
+        "KI-8"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "KI-9"
+    },
+    {
+      "id": "KI-10",
+      "name_zh": "阴谷",
+      "meridian": "KI",
+      "standard_index": 10,
+      "route_order": 10,
+      "prerequisites": [
+        "KI-9"
+      ],
+      "unlock_stage": 3,
+      "tier": "IMPORTANT",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.5,
+      "bonus_unit": "percentage_points",
+      "required_mana": 432,
+      "bilateral": true,
+      "ui_anchor_id": "KI-10"
+    },
+    {
+      "id": "KI-11",
+      "name_zh": "横骨",
+      "meridian": "KI",
+      "standard_index": 11,
+      "route_order": 11,
+      "prerequisites": [
+        "KI-10"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "KI-11"
+    },
+    {
+      "id": "KI-12",
+      "name_zh": "大赫",
+      "meridian": "KI",
+      "standard_index": 12,
+      "route_order": 12,
+      "prerequisites": [
+        "KI-11"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "KI-12"
+    },
+    {
+      "id": "KI-13",
+      "name_zh": "气穴",
+      "meridian": "KI",
+      "standard_index": 13,
+      "route_order": 13,
+      "prerequisites": [
+        "KI-12"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "KI-13"
+    },
+    {
+      "id": "KI-14",
+      "name_zh": "四满",
+      "meridian": "KI",
+      "standard_index": 14,
+      "route_order": 14,
+      "prerequisites": [
+        "KI-13"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "KI-14"
+    },
+    {
+      "id": "KI-15",
+      "name_zh": "中注",
+      "meridian": "KI",
+      "standard_index": 15,
+      "route_order": 15,
+      "prerequisites": [
+        "KI-14"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "KI-15"
+    },
+    {
+      "id": "KI-16",
+      "name_zh": "肓俞",
+      "meridian": "KI",
+      "standard_index": 16,
+      "route_order": 16,
+      "prerequisites": [
+        "KI-15"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "KI-16"
+    },
+    {
+      "id": "KI-17",
+      "name_zh": "商曲",
+      "meridian": "KI",
+      "standard_index": 17,
+      "route_order": 17,
+      "prerequisites": [
+        "KI-16"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "KI-17"
+    },
+    {
+      "id": "KI-18",
+      "name_zh": "石关",
+      "meridian": "KI",
+      "standard_index": 18,
+      "route_order": 18,
+      "prerequisites": [
+        "KI-17"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "KI-18"
+    },
+    {
+      "id": "KI-19",
+      "name_zh": "阴都",
+      "meridian": "KI",
+      "standard_index": 19,
+      "route_order": 19,
+      "prerequisites": [
+        "KI-18"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "KI-19"
+    },
+    {
+      "id": "KI-20",
+      "name_zh": "腹通谷",
+      "meridian": "KI",
+      "standard_index": 20,
+      "route_order": 20,
+      "prerequisites": [
+        "KI-19"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "KI-20"
+    },
+    {
+      "id": "KI-21",
+      "name_zh": "幽门",
+      "meridian": "KI",
+      "standard_index": 21,
+      "route_order": 21,
+      "prerequisites": [
+        "KI-20"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "KI-21"
+    },
+    {
+      "id": "KI-22",
+      "name_zh": "步廊",
+      "meridian": "KI",
+      "standard_index": 22,
+      "route_order": 22,
+      "prerequisites": [
+        "KI-21"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "KI-22"
+    },
+    {
+      "id": "KI-23",
+      "name_zh": "神封",
+      "meridian": "KI",
+      "standard_index": 23,
+      "route_order": 23,
+      "prerequisites": [
+        "KI-22"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "KI-23"
+    },
+    {
+      "id": "KI-24",
+      "name_zh": "灵墟",
+      "meridian": "KI",
+      "standard_index": 24,
+      "route_order": 24,
+      "prerequisites": [
+        "KI-23"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "KI-24"
+    },
+    {
+      "id": "KI-25",
+      "name_zh": "神藏",
+      "meridian": "KI",
+      "standard_index": 25,
+      "route_order": 25,
+      "prerequisites": [
+        "KI-24"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "KI-25"
+    },
+    {
+      "id": "KI-26",
+      "name_zh": "彧中",
+      "meridian": "KI",
+      "standard_index": 26,
+      "route_order": 26,
+      "prerequisites": [
+        "KI-25"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "KI-26"
+    },
+    {
+      "id": "KI-27",
+      "name_zh": "俞府",
+      "meridian": "KI",
+      "standard_index": 27,
+      "route_order": 27,
+      "prerequisites": [
+        "KI-26"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "KI-27"
+    },
+    {
+      "id": "PC-1",
+      "name_zh": "天池",
+      "meridian": "PC",
+      "standard_index": 1,
+      "route_order": 9,
+      "prerequisites": [
+        "PC-2"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "PC-1"
+    },
+    {
+      "id": "PC-2",
+      "name_zh": "天泉",
+      "meridian": "PC",
+      "standard_index": 2,
+      "route_order": 8,
+      "prerequisites": [
+        "PC-3"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "PC-2"
+    },
+    {
+      "id": "PC-3",
+      "name_zh": "曲泽",
+      "meridian": "PC",
+      "standard_index": 3,
+      "route_order": 7,
+      "prerequisites": [
+        "PC-4"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "PC-3"
+    },
+    {
+      "id": "PC-4",
+      "name_zh": "郄门",
+      "meridian": "PC",
+      "standard_index": 4,
+      "route_order": 6,
+      "prerequisites": [
+        "PC-5"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "PC-4"
+    },
+    {
+      "id": "PC-5",
+      "name_zh": "间使",
+      "meridian": "PC",
+      "standard_index": 5,
+      "route_order": 5,
+      "prerequisites": [
+        "PC-6"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "PC-5"
+    },
+    {
+      "id": "PC-6",
+      "name_zh": "内关",
+      "meridian": "PC",
+      "standard_index": 6,
+      "route_order": 4,
+      "prerequisites": [
+        "PC-7"
+      ],
+      "unlock_stage": 3,
+      "tier": "HUB",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.75,
+      "bonus_unit": "percentage_points",
+      "required_mana": 720,
+      "bilateral": true,
+      "ui_anchor_id": "PC-6"
+    },
+    {
+      "id": "PC-7",
+      "name_zh": "大陵",
+      "meridian": "PC",
+      "standard_index": 7,
+      "route_order": 3,
+      "prerequisites": [
+        "PC-8"
+      ],
+      "unlock_stage": 2,
+      "tier": "IMPORTANT",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.5,
+      "bonus_unit": "percentage_points",
+      "required_mana": 216,
+      "bilateral": true,
+      "ui_anchor_id": "PC-7"
+    },
+    {
+      "id": "PC-8",
+      "name_zh": "劳宫",
+      "meridian": "PC",
+      "standard_index": 8,
+      "route_order": 2,
+      "prerequisites": [
+        "PC-9"
+      ],
+      "unlock_stage": 2,
+      "tier": "IMPORTANT",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.5,
+      "bonus_unit": "percentage_points",
+      "required_mana": 216,
+      "bilateral": true,
+      "ui_anchor_id": "PC-8"
+    },
+    {
+      "id": "PC-9",
+      "name_zh": "中冲",
+      "meridian": "PC",
+      "standard_index": 9,
+      "route_order": 1,
+      "prerequisites": [],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 60,
+      "bilateral": true,
+      "ui_anchor_id": "PC-9"
+    },
+    {
+      "id": "TE-1",
+      "name_zh": "关冲",
+      "meridian": "TE",
+      "standard_index": 1,
+      "route_order": 1,
+      "prerequisites": [],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 60,
+      "bilateral": true,
+      "ui_anchor_id": "TE-1"
+    },
+    {
+      "id": "TE-2",
+      "name_zh": "液门",
+      "meridian": "TE",
+      "standard_index": 2,
+      "route_order": 2,
+      "prerequisites": [
+        "TE-1"
+      ],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 60,
+      "bilateral": true,
+      "ui_anchor_id": "TE-2"
+    },
+    {
+      "id": "TE-3",
+      "name_zh": "中渚",
+      "meridian": "TE",
+      "standard_index": 3,
+      "route_order": 3,
+      "prerequisites": [
+        "TE-2"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "TE-3"
+    },
+    {
+      "id": "TE-4",
+      "name_zh": "阳池",
+      "meridian": "TE",
+      "standard_index": 4,
+      "route_order": 4,
+      "prerequisites": [
+        "TE-3"
+      ],
+      "unlock_stage": 2,
+      "tier": "IMPORTANT",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.5,
+      "bonus_unit": "percentage_points",
+      "required_mana": 216,
+      "bilateral": true,
+      "ui_anchor_id": "TE-4"
+    },
+    {
+      "id": "TE-5",
+      "name_zh": "外关",
+      "meridian": "TE",
+      "standard_index": 5,
+      "route_order": 5,
+      "prerequisites": [
+        "TE-4"
+      ],
+      "unlock_stage": 2,
+      "tier": "HUB",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.75,
+      "bonus_unit": "percentage_points",
+      "required_mana": 360,
+      "bilateral": true,
+      "ui_anchor_id": "TE-5"
+    },
+    {
+      "id": "TE-6",
+      "name_zh": "支沟",
+      "meridian": "TE",
+      "standard_index": 6,
+      "route_order": 6,
+      "prerequisites": [
+        "TE-5"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "TE-6"
+    },
+    {
+      "id": "TE-7",
+      "name_zh": "会宗",
+      "meridian": "TE",
+      "standard_index": 7,
+      "route_order": 7,
+      "prerequisites": [
+        "TE-6"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "TE-7"
+    },
+    {
+      "id": "TE-8",
+      "name_zh": "三阳络",
+      "meridian": "TE",
+      "standard_index": 8,
+      "route_order": 8,
+      "prerequisites": [
+        "TE-7"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "TE-8"
+    },
+    {
+      "id": "TE-9",
+      "name_zh": "四渎",
+      "meridian": "TE",
+      "standard_index": 9,
+      "route_order": 9,
+      "prerequisites": [
+        "TE-8"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "TE-9"
+    },
+    {
+      "id": "TE-10",
+      "name_zh": "天井",
+      "meridian": "TE",
+      "standard_index": 10,
+      "route_order": 10,
+      "prerequisites": [
+        "TE-9"
+      ],
+      "unlock_stage": 3,
+      "tier": "IMPORTANT",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.5,
+      "bonus_unit": "percentage_points",
+      "required_mana": 432,
+      "bilateral": true,
+      "ui_anchor_id": "TE-10"
+    },
+    {
+      "id": "TE-11",
+      "name_zh": "清冷渊",
+      "meridian": "TE",
+      "standard_index": 11,
+      "route_order": 11,
+      "prerequisites": [
+        "TE-10"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "TE-11"
+    },
+    {
+      "id": "TE-12",
+      "name_zh": "消泺",
+      "meridian": "TE",
+      "standard_index": 12,
+      "route_order": 12,
+      "prerequisites": [
+        "TE-11"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "TE-12"
+    },
+    {
+      "id": "TE-13",
+      "name_zh": "臑会",
+      "meridian": "TE",
+      "standard_index": 13,
+      "route_order": 13,
+      "prerequisites": [
+        "TE-12"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "TE-13"
+    },
+    {
+      "id": "TE-14",
+      "name_zh": "肩髎",
+      "meridian": "TE",
+      "standard_index": 14,
+      "route_order": 14,
+      "prerequisites": [
+        "TE-13"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "TE-14"
+    },
+    {
+      "id": "TE-15",
+      "name_zh": "天髎",
+      "meridian": "TE",
+      "standard_index": 15,
+      "route_order": 15,
+      "prerequisites": [
+        "TE-14"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "TE-15"
+    },
+    {
+      "id": "TE-16",
+      "name_zh": "天牖",
+      "meridian": "TE",
+      "standard_index": 16,
+      "route_order": 16,
+      "prerequisites": [
+        "TE-15"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "TE-16"
+    },
+    {
+      "id": "TE-17",
+      "name_zh": "翳风",
+      "meridian": "TE",
+      "standard_index": 17,
+      "route_order": 17,
+      "prerequisites": [
+        "TE-16"
+      ],
+      "unlock_stage": 4,
+      "tier": "IMPORTANT",
+      "attribute": "max_mana",
+      "bonus": 4.0,
+      "bonus_unit": "mana",
+      "required_mana": 864,
+      "bilateral": true,
+      "ui_anchor_id": "TE-17"
+    },
+    {
+      "id": "TE-18",
+      "name_zh": "瘈脉",
+      "meridian": "TE",
+      "standard_index": 18,
+      "route_order": 18,
+      "prerequisites": [
+        "TE-17"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "TE-18"
+    },
+    {
+      "id": "TE-19",
+      "name_zh": "颅息",
+      "meridian": "TE",
+      "standard_index": 19,
+      "route_order": 19,
+      "prerequisites": [
+        "TE-18"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "TE-19"
+    },
+    {
+      "id": "TE-20",
+      "name_zh": "角孙",
+      "meridian": "TE",
+      "standard_index": 20,
+      "route_order": 20,
+      "prerequisites": [
+        "TE-19"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "TE-20"
+    },
+    {
+      "id": "TE-21",
+      "name_zh": "耳门",
+      "meridian": "TE",
+      "standard_index": 21,
+      "route_order": 21,
+      "prerequisites": [
+        "TE-20"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "TE-21"
+    },
+    {
+      "id": "TE-22",
+      "name_zh": "耳和髎",
+      "meridian": "TE",
+      "standard_index": 22,
+      "route_order": 22,
+      "prerequisites": [
+        "TE-21"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "TE-22"
+    },
+    {
+      "id": "TE-23",
+      "name_zh": "丝竹空",
+      "meridian": "TE",
+      "standard_index": 23,
+      "route_order": 23,
+      "prerequisites": [
+        "TE-22"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "TE-23"
+    },
+    {
+      "id": "GB-1",
+      "name_zh": "瞳子髎",
+      "meridian": "GB",
+      "standard_index": 1,
+      "route_order": 44,
+      "prerequisites": [
+        "GB-2"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "move_speed_pct",
+      "bonus": 0.12,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "GB-1"
+    },
+    {
+      "id": "GB-2",
+      "name_zh": "听会",
+      "meridian": "GB",
+      "standard_index": 2,
+      "route_order": 43,
+      "prerequisites": [
+        "GB-3"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "GB-2"
+    },
+    {
+      "id": "GB-3",
+      "name_zh": "上关",
+      "meridian": "GB",
+      "standard_index": 3,
+      "route_order": 42,
+      "prerequisites": [
+        "GB-4"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "move_speed_pct",
+      "bonus": 0.12,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "GB-3"
+    },
+    {
+      "id": "GB-4",
+      "name_zh": "颔厌",
+      "meridian": "GB",
+      "standard_index": 4,
+      "route_order": 41,
+      "prerequisites": [
+        "GB-5"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "GB-4"
+    },
+    {
+      "id": "GB-5",
+      "name_zh": "悬颅",
+      "meridian": "GB",
+      "standard_index": 5,
+      "route_order": 40,
+      "prerequisites": [
+        "GB-6"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "move_speed_pct",
+      "bonus": 0.12,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "GB-5"
+    },
+    {
+      "id": "GB-6",
+      "name_zh": "悬厘",
+      "meridian": "GB",
+      "standard_index": 6,
+      "route_order": 39,
+      "prerequisites": [
+        "GB-7"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "GB-6"
+    },
+    {
+      "id": "GB-7",
+      "name_zh": "曲鬓",
+      "meridian": "GB",
+      "standard_index": 7,
+      "route_order": 38,
+      "prerequisites": [
+        "GB-8"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "move_speed_pct",
+      "bonus": 0.12,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "GB-7"
+    },
+    {
+      "id": "GB-8",
+      "name_zh": "率谷",
+      "meridian": "GB",
+      "standard_index": 8,
+      "route_order": 37,
+      "prerequisites": [
+        "GB-9"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "GB-8"
+    },
+    {
+      "id": "GB-9",
+      "name_zh": "天冲",
+      "meridian": "GB",
+      "standard_index": 9,
+      "route_order": 36,
+      "prerequisites": [
+        "GB-10"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "move_speed_pct",
+      "bonus": 0.12,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "GB-9"
+    },
+    {
+      "id": "GB-10",
+      "name_zh": "浮白",
+      "meridian": "GB",
+      "standard_index": 10,
+      "route_order": 35,
+      "prerequisites": [
+        "GB-11"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "GB-10"
+    },
+    {
+      "id": "GB-11",
+      "name_zh": "头窍阴",
+      "meridian": "GB",
+      "standard_index": 11,
+      "route_order": 34,
+      "prerequisites": [
+        "GB-12"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "move_speed_pct",
+      "bonus": 0.12,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "GB-11"
+    },
+    {
+      "id": "GB-12",
+      "name_zh": "完骨",
+      "meridian": "GB",
+      "standard_index": 12,
+      "route_order": 33,
+      "prerequisites": [
+        "GB-13"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "GB-12"
+    },
+    {
+      "id": "GB-13",
+      "name_zh": "本神",
+      "meridian": "GB",
+      "standard_index": 13,
+      "route_order": 32,
+      "prerequisites": [
+        "GB-14"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "move_speed_pct",
+      "bonus": 0.12,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "GB-13"
+    },
+    {
+      "id": "GB-14",
+      "name_zh": "阳白",
+      "meridian": "GB",
+      "standard_index": 14,
+      "route_order": 31,
+      "prerequisites": [
+        "GB-15"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "GB-14"
+    },
+    {
+      "id": "GB-15",
+      "name_zh": "头临泣",
+      "meridian": "GB",
+      "standard_index": 15,
+      "route_order": 30,
+      "prerequisites": [
+        "GB-16"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "move_speed_pct",
+      "bonus": 0.12,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "GB-15"
+    },
+    {
+      "id": "GB-16",
+      "name_zh": "目窗",
+      "meridian": "GB",
+      "standard_index": 16,
+      "route_order": 29,
+      "prerequisites": [
+        "GB-17"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "GB-16"
+    },
+    {
+      "id": "GB-17",
+      "name_zh": "正营",
+      "meridian": "GB",
+      "standard_index": 17,
+      "route_order": 28,
+      "prerequisites": [
+        "GB-18"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "move_speed_pct",
+      "bonus": 0.12,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "GB-17"
+    },
+    {
+      "id": "GB-18",
+      "name_zh": "承灵",
+      "meridian": "GB",
+      "standard_index": 18,
+      "route_order": 27,
+      "prerequisites": [
+        "GB-19"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "GB-18"
+    },
+    {
+      "id": "GB-19",
+      "name_zh": "脑空",
+      "meridian": "GB",
+      "standard_index": 19,
+      "route_order": 26,
+      "prerequisites": [
+        "GB-20"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "move_speed_pct",
+      "bonus": 0.12,
+      "bonus_unit": "percentage_points",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "GB-19"
+    },
+    {
+      "id": "GB-20",
+      "name_zh": "风池",
+      "meridian": "GB",
+      "standard_index": 20,
+      "route_order": 25,
+      "prerequisites": [
+        "GB-21"
+      ],
+      "unlock_stage": 3,
+      "tier": "HUB",
+      "attribute": "move_speed_pct",
+      "bonus": 0.36,
+      "bonus_unit": "percentage_points",
+      "required_mana": 720,
+      "bilateral": true,
+      "ui_anchor_id": "GB-20"
+    },
+    {
+      "id": "GB-21",
+      "name_zh": "肩井",
+      "meridian": "GB",
+      "standard_index": 21,
+      "route_order": 24,
+      "prerequisites": [
+        "GB-22"
+      ],
+      "unlock_stage": 3,
+      "tier": "IMPORTANT",
+      "attribute": "move_speed_pct",
+      "bonus": 0.24,
+      "bonus_unit": "percentage_points",
+      "required_mana": 432,
+      "bilateral": true,
+      "ui_anchor_id": "GB-21"
+    },
+    {
+      "id": "GB-22",
+      "name_zh": "渊腋",
+      "meridian": "GB",
+      "standard_index": 22,
+      "route_order": 23,
+      "prerequisites": [
+        "GB-23"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "GB-22"
+    },
+    {
+      "id": "GB-23",
+      "name_zh": "辄筋",
+      "meridian": "GB",
+      "standard_index": 23,
+      "route_order": 22,
+      "prerequisites": [
+        "GB-24"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "move_speed_pct",
+      "bonus": 0.12,
+      "bonus_unit": "percentage_points",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "GB-23"
+    },
+    {
+      "id": "GB-24",
+      "name_zh": "日月",
+      "meridian": "GB",
+      "standard_index": 24,
+      "route_order": 21,
+      "prerequisites": [
+        "GB-25"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "GB-24"
+    },
+    {
+      "id": "GB-25",
+      "name_zh": "京门",
+      "meridian": "GB",
+      "standard_index": 25,
+      "route_order": 20,
+      "prerequisites": [
+        "GB-26"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "move_speed_pct",
+      "bonus": 0.12,
+      "bonus_unit": "percentage_points",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "GB-25"
+    },
+    {
+      "id": "GB-26",
+      "name_zh": "带脉",
+      "meridian": "GB",
+      "standard_index": 26,
+      "route_order": 19,
+      "prerequisites": [
+        "GB-27"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "GB-26"
+    },
+    {
+      "id": "GB-27",
+      "name_zh": "五枢",
+      "meridian": "GB",
+      "standard_index": 27,
+      "route_order": 18,
+      "prerequisites": [
+        "GB-28"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "move_speed_pct",
+      "bonus": 0.12,
+      "bonus_unit": "percentage_points",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "GB-27"
+    },
+    {
+      "id": "GB-28",
+      "name_zh": "维道",
+      "meridian": "GB",
+      "standard_index": 28,
+      "route_order": 17,
+      "prerequisites": [
+        "GB-29"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "GB-28"
+    },
+    {
+      "id": "GB-29",
+      "name_zh": "居髎",
+      "meridian": "GB",
+      "standard_index": 29,
+      "route_order": 16,
+      "prerequisites": [
+        "GB-30"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "move_speed_pct",
+      "bonus": 0.12,
+      "bonus_unit": "percentage_points",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "GB-29"
+    },
+    {
+      "id": "GB-30",
+      "name_zh": "环跳",
+      "meridian": "GB",
+      "standard_index": 30,
+      "route_order": 15,
+      "prerequisites": [
+        "GB-31"
+      ],
+      "unlock_stage": 3,
+      "tier": "IMPORTANT",
+      "attribute": "move_speed_pct",
+      "bonus": 0.24,
+      "bonus_unit": "percentage_points",
+      "required_mana": 432,
+      "bilateral": true,
+      "ui_anchor_id": "GB-30"
+    },
+    {
+      "id": "GB-31",
+      "name_zh": "风市",
+      "meridian": "GB",
+      "standard_index": 31,
+      "route_order": 14,
+      "prerequisites": [
+        "GB-32"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "move_speed_pct",
+      "bonus": 0.12,
+      "bonus_unit": "percentage_points",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "GB-31"
+    },
+    {
+      "id": "GB-32",
+      "name_zh": "中渎",
+      "meridian": "GB",
+      "standard_index": 32,
+      "route_order": 13,
+      "prerequisites": [
+        "GB-33"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "GB-32"
+    },
+    {
+      "id": "GB-33",
+      "name_zh": "膝阳关",
+      "meridian": "GB",
+      "standard_index": 33,
+      "route_order": 12,
+      "prerequisites": [
+        "GB-34"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "move_speed_pct",
+      "bonus": 0.12,
+      "bonus_unit": "percentage_points",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "GB-33"
+    },
+    {
+      "id": "GB-34",
+      "name_zh": "阳陵泉",
+      "meridian": "GB",
+      "standard_index": 34,
+      "route_order": 11,
+      "prerequisites": [
+        "GB-35"
+      ],
+      "unlock_stage": 2,
+      "tier": "IMPORTANT",
+      "attribute": "attack",
+      "bonus": 0.08,
+      "bonus_unit": "attack",
+      "required_mana": 216,
+      "bilateral": true,
+      "ui_anchor_id": "GB-34"
+    },
+    {
+      "id": "GB-35",
+      "name_zh": "阳交",
+      "meridian": "GB",
+      "standard_index": 35,
+      "route_order": 10,
+      "prerequisites": [
+        "GB-36"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "move_speed_pct",
+      "bonus": 0.12,
+      "bonus_unit": "percentage_points",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "GB-35"
+    },
+    {
+      "id": "GB-36",
+      "name_zh": "外丘",
+      "meridian": "GB",
+      "standard_index": 36,
+      "route_order": 9,
+      "prerequisites": [
+        "GB-37"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "GB-36"
+    },
+    {
+      "id": "GB-37",
+      "name_zh": "光明",
+      "meridian": "GB",
+      "standard_index": 37,
+      "route_order": 8,
+      "prerequisites": [
+        "GB-38"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "move_speed_pct",
+      "bonus": 0.12,
+      "bonus_unit": "percentage_points",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "GB-37"
+    },
+    {
+      "id": "GB-38",
+      "name_zh": "阳辅",
+      "meridian": "GB",
+      "standard_index": 38,
+      "route_order": 7,
+      "prerequisites": [
+        "GB-39"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "GB-38"
+    },
+    {
+      "id": "GB-39",
+      "name_zh": "悬钟",
+      "meridian": "GB",
+      "standard_index": 39,
+      "route_order": 6,
+      "prerequisites": [
+        "GB-40"
+      ],
+      "unlock_stage": 2,
+      "tier": "IMPORTANT",
+      "attribute": "move_speed_pct",
+      "bonus": 0.24,
+      "bonus_unit": "percentage_points",
+      "required_mana": 216,
+      "bilateral": true,
+      "ui_anchor_id": "GB-39"
+    },
+    {
+      "id": "GB-40",
+      "name_zh": "丘墟",
+      "meridian": "GB",
+      "standard_index": 40,
+      "route_order": 5,
+      "prerequisites": [
+        "GB-41"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "GB-40"
+    },
+    {
+      "id": "GB-41",
+      "name_zh": "足临泣",
+      "meridian": "GB",
+      "standard_index": 41,
+      "route_order": 4,
+      "prerequisites": [
+        "GB-42"
+      ],
+      "unlock_stage": 1,
+      "tier": "IMPORTANT",
+      "attribute": "move_speed_pct",
+      "bonus": 0.24,
+      "bonus_unit": "percentage_points",
+      "required_mana": 108,
+      "bilateral": true,
+      "ui_anchor_id": "GB-41"
+    },
+    {
+      "id": "GB-42",
+      "name_zh": "地五会",
+      "meridian": "GB",
+      "standard_index": 42,
+      "route_order": 3,
+      "prerequisites": [
+        "GB-43"
+      ],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 60,
+      "bilateral": true,
+      "ui_anchor_id": "GB-42"
+    },
+    {
+      "id": "GB-43",
+      "name_zh": "侠溪",
+      "meridian": "GB",
+      "standard_index": 43,
+      "route_order": 2,
+      "prerequisites": [
+        "GB-44"
+      ],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "move_speed_pct",
+      "bonus": 0.12,
+      "bonus_unit": "percentage_points",
+      "required_mana": 60,
+      "bilateral": true,
+      "ui_anchor_id": "GB-43"
+    },
+    {
+      "id": "GB-44",
+      "name_zh": "足窍阴",
+      "meridian": "GB",
+      "standard_index": 44,
+      "route_order": 1,
+      "prerequisites": [],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 60,
+      "bilateral": true,
+      "ui_anchor_id": "GB-44"
+    },
+    {
+      "id": "LR-1",
+      "name_zh": "大敦",
+      "meridian": "LR",
+      "standard_index": 1,
+      "route_order": 1,
+      "prerequisites": [],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 60,
+      "bilateral": true,
+      "ui_anchor_id": "LR-1"
+    },
+    {
+      "id": "LR-2",
+      "name_zh": "行间",
+      "meridian": "LR",
+      "standard_index": 2,
+      "route_order": 2,
+      "prerequisites": [
+        "LR-1"
+      ],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 60,
+      "bilateral": true,
+      "ui_anchor_id": "LR-2"
+    },
+    {
+      "id": "LR-3",
+      "name_zh": "太冲",
+      "meridian": "LR",
+      "standard_index": 3,
+      "route_order": 3,
+      "prerequisites": [
+        "LR-2"
+      ],
+      "unlock_stage": 2,
+      "tier": "HUB",
+      "attribute": "attack",
+      "bonus": 0.12,
+      "bonus_unit": "attack",
+      "required_mana": 360,
+      "bilateral": true,
+      "ui_anchor_id": "LR-3"
+    },
+    {
+      "id": "LR-4",
+      "name_zh": "中封",
+      "meridian": "LR",
+      "standard_index": 4,
+      "route_order": 4,
+      "prerequisites": [
+        "LR-3"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "LR-4"
+    },
+    {
+      "id": "LR-5",
+      "name_zh": "蠡沟",
+      "meridian": "LR",
+      "standard_index": 5,
+      "route_order": 5,
+      "prerequisites": [
+        "LR-4"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 120,
+      "bilateral": true,
+      "ui_anchor_id": "LR-5"
+    },
+    {
+      "id": "LR-6",
+      "name_zh": "中都",
+      "meridian": "LR",
+      "standard_index": 6,
+      "route_order": 6,
+      "prerequisites": [
+        "LR-5"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "LR-6"
+    },
+    {
+      "id": "LR-7",
+      "name_zh": "膝关",
+      "meridian": "LR",
+      "standard_index": 7,
+      "route_order": 7,
+      "prerequisites": [
+        "LR-6"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "LR-7"
+    },
+    {
+      "id": "LR-8",
+      "name_zh": "曲泉",
+      "meridian": "LR",
+      "standard_index": 8,
+      "route_order": 8,
+      "prerequisites": [
+        "LR-7"
+      ],
+      "unlock_stage": 3,
+      "tier": "IMPORTANT",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.5,
+      "bonus_unit": "percentage_points",
+      "required_mana": 432,
+      "bilateral": true,
+      "ui_anchor_id": "LR-8"
+    },
+    {
+      "id": "LR-9",
+      "name_zh": "阴包",
+      "meridian": "LR",
+      "standard_index": 9,
+      "route_order": 9,
+      "prerequisites": [
+        "LR-8"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 240,
+      "bilateral": true,
+      "ui_anchor_id": "LR-9"
+    },
+    {
+      "id": "LR-10",
+      "name_zh": "足五里",
+      "meridian": "LR",
+      "standard_index": 10,
+      "route_order": 10,
+      "prerequisites": [
+        "LR-9"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "LR-10"
+    },
+    {
+      "id": "LR-11",
+      "name_zh": "阴廉",
+      "meridian": "LR",
+      "standard_index": 11,
+      "route_order": 11,
+      "prerequisites": [
+        "LR-10"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "attack",
+      "bonus": 0.04,
+      "bonus_unit": "attack",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "LR-11"
+    },
+    {
+      "id": "LR-12",
+      "name_zh": "急脉",
+      "meridian": "LR",
+      "standard_index": 12,
+      "route_order": 12,
+      "prerequisites": [
+        "LR-11"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": true,
+      "ui_anchor_id": "LR-12"
+    },
+    {
+      "id": "LR-13",
+      "name_zh": "章门",
+      "meridian": "LR",
+      "standard_index": 13,
+      "route_order": 13,
+      "prerequisites": [
+        "LR-12"
+      ],
+      "unlock_stage": 4,
+      "tier": "IMPORTANT",
+      "attribute": "attack",
+      "bonus": 0.08,
+      "bonus_unit": "attack",
+      "required_mana": 864,
+      "bilateral": true,
+      "ui_anchor_id": "LR-13"
+    },
+    {
+      "id": "LR-14",
+      "name_zh": "期门",
+      "meridian": "LR",
+      "standard_index": 14,
+      "route_order": 14,
+      "prerequisites": [
+        "LR-13"
+      ],
+      "unlock_stage": 4,
+      "tier": "IMPORTANT",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.5,
+      "bonus_unit": "percentage_points",
+      "required_mana": 864,
+      "bilateral": true,
+      "ui_anchor_id": "LR-14"
+    },
+    {
+      "id": "GV-1",
+      "name_zh": "长强",
+      "meridian": "GV",
+      "standard_index": 1,
+      "route_order": 6,
+      "prerequisites": [
+        "GV-2"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 120,
+      "bilateral": false,
+      "ui_anchor_id": "GV-1"
+    },
+    {
+      "id": "GV-2",
+      "name_zh": "腰俞",
+      "meridian": "GV",
+      "standard_index": 2,
+      "route_order": 4,
+      "prerequisites": [
+        "GV-3"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 120,
+      "bilateral": false,
+      "ui_anchor_id": "GV-2"
+    },
+    {
+      "id": "GV-3",
+      "name_zh": "腰阳关",
+      "meridian": "GV",
+      "standard_index": 3,
+      "route_order": 2,
+      "prerequisites": [
+        "GV-4"
+      ],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 60,
+      "bilateral": false,
+      "ui_anchor_id": "GV-3"
+    },
+    {
+      "id": "GV-4",
+      "name_zh": "命门",
+      "meridian": "GV",
+      "standard_index": 4,
+      "route_order": 1,
+      "prerequisites": [],
+      "unlock_stage": 1,
+      "tier": "HUB",
+      "attribute": "max_health",
+      "bonus": 0.3,
+      "bonus_unit": "health",
+      "required_mana": 180,
+      "bilateral": false,
+      "ui_anchor_id": "GV-4"
+    },
+    {
+      "id": "GV-5",
+      "name_zh": "悬枢",
+      "meridian": "GV",
+      "standard_index": 5,
+      "route_order": 3,
+      "prerequisites": [
+        "GV-4"
+      ],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 60,
+      "bilateral": false,
+      "ui_anchor_id": "GV-5"
+    },
+    {
+      "id": "GV-6",
+      "name_zh": "脊中",
+      "meridian": "GV",
+      "standard_index": 6,
+      "route_order": 5,
+      "prerequisites": [
+        "GV-5"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 120,
+      "bilateral": false,
+      "ui_anchor_id": "GV-6"
+    },
+    {
+      "id": "GV-7",
+      "name_zh": "中枢",
+      "meridian": "GV",
+      "standard_index": 7,
+      "route_order": 7,
+      "prerequisites": [
+        "GV-6"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 120,
+      "bilateral": false,
+      "ui_anchor_id": "GV-7"
+    },
+    {
+      "id": "GV-8",
+      "name_zh": "筋缩",
+      "meridian": "GV",
+      "standard_index": 8,
+      "route_order": 8,
+      "prerequisites": [
+        "GV-7"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 120,
+      "bilateral": false,
+      "ui_anchor_id": "GV-8"
+    },
+    {
+      "id": "GV-9",
+      "name_zh": "至阳",
+      "meridian": "GV",
+      "standard_index": 9,
+      "route_order": 9,
+      "prerequisites": [
+        "GV-8"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 240,
+      "bilateral": false,
+      "ui_anchor_id": "GV-9"
+    },
+    {
+      "id": "GV-10",
+      "name_zh": "灵台",
+      "meridian": "GV",
+      "standard_index": 10,
+      "route_order": 10,
+      "prerequisites": [
+        "GV-9"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 240,
+      "bilateral": false,
+      "ui_anchor_id": "GV-10"
+    },
+    {
+      "id": "GV-11",
+      "name_zh": "神道",
+      "meridian": "GV",
+      "standard_index": 11,
+      "route_order": 11,
+      "prerequisites": [
+        "GV-10"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 240,
+      "bilateral": false,
+      "ui_anchor_id": "GV-11"
+    },
+    {
+      "id": "GV-12",
+      "name_zh": "身柱",
+      "meridian": "GV",
+      "standard_index": 12,
+      "route_order": 12,
+      "prerequisites": [
+        "GV-11"
+      ],
+      "unlock_stage": 3,
+      "tier": "IMPORTANT",
+      "attribute": "max_health",
+      "bonus": 0.2,
+      "bonus_unit": "health",
+      "required_mana": 432,
+      "bilateral": false,
+      "ui_anchor_id": "GV-12"
+    },
+    {
+      "id": "GV-13",
+      "name_zh": "陶道",
+      "meridian": "GV",
+      "standard_index": 13,
+      "route_order": 13,
+      "prerequisites": [
+        "GV-12"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 240,
+      "bilateral": false,
+      "ui_anchor_id": "GV-13"
+    },
+    {
+      "id": "GV-14",
+      "name_zh": "大椎",
+      "meridian": "GV",
+      "standard_index": 14,
+      "route_order": 14,
+      "prerequisites": [
+        "GV-13"
+      ],
+      "unlock_stage": 3,
+      "tier": "IMPORTANT",
+      "attribute": "max_health",
+      "bonus": 0.2,
+      "bonus_unit": "health",
+      "required_mana": 432,
+      "bilateral": false,
+      "ui_anchor_id": "GV-14"
+    },
+    {
+      "id": "GV-15",
+      "name_zh": "哑门",
+      "meridian": "GV",
+      "standard_index": 15,
+      "route_order": 15,
+      "prerequisites": [
+        "GV-14"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 240,
+      "bilateral": false,
+      "ui_anchor_id": "GV-15"
+    },
+    {
+      "id": "GV-16",
+      "name_zh": "风府",
+      "meridian": "GV",
+      "standard_index": 16,
+      "route_order": 16,
+      "prerequisites": [
+        "GV-15"
+      ],
+      "unlock_stage": 3,
+      "tier": "IMPORTANT",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.5,
+      "bonus_unit": "percentage_points",
+      "required_mana": 432,
+      "bilateral": false,
+      "ui_anchor_id": "GV-16"
+    },
+    {
+      "id": "GV-17",
+      "name_zh": "脑户",
+      "meridian": "GV",
+      "standard_index": 17,
+      "route_order": 17,
+      "prerequisites": [
+        "GV-16"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": false,
+      "ui_anchor_id": "GV-17"
+    },
+    {
+      "id": "GV-18",
+      "name_zh": "强间",
+      "meridian": "GV",
+      "standard_index": 18,
+      "route_order": 18,
+      "prerequisites": [
+        "GV-17"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": false,
+      "ui_anchor_id": "GV-18"
+    },
+    {
+      "id": "GV-19",
+      "name_zh": "后顶",
+      "meridian": "GV",
+      "standard_index": 19,
+      "route_order": 19,
+      "prerequisites": [
+        "GV-18"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": false,
+      "ui_anchor_id": "GV-19"
+    },
+    {
+      "id": "GV-20",
+      "name_zh": "百会",
+      "meridian": "GV",
+      "standard_index": 20,
+      "route_order": 20,
+      "prerequisites": [
+        "GV-19"
+      ],
+      "unlock_stage": 4,
+      "tier": "HUB",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.75,
+      "bonus_unit": "percentage_points",
+      "required_mana": 1440,
+      "bilateral": false,
+      "ui_anchor_id": "GV-20"
+    },
+    {
+      "id": "GV-21",
+      "name_zh": "前顶",
+      "meridian": "GV",
+      "standard_index": 21,
+      "route_order": 21,
+      "prerequisites": [
+        "GV-20"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": false,
+      "ui_anchor_id": "GV-21"
+    },
+    {
+      "id": "GV-22",
+      "name_zh": "囟会",
+      "meridian": "GV",
+      "standard_index": 22,
+      "route_order": 22,
+      "prerequisites": [
+        "GV-21"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": false,
+      "ui_anchor_id": "GV-22"
+    },
+    {
+      "id": "GV-23",
+      "name_zh": "上星",
+      "meridian": "GV",
+      "standard_index": 23,
+      "route_order": 23,
+      "prerequisites": [
+        "GV-22"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": false,
+      "ui_anchor_id": "GV-23"
+    },
+    {
+      "id": "GV-24",
+      "name_zh": "神庭",
+      "meridian": "GV",
+      "standard_index": 24,
+      "route_order": 24,
+      "prerequisites": [
+        "GV-23"
+      ],
+      "unlock_stage": 4,
+      "tier": "IMPORTANT",
+      "attribute": "max_health",
+      "bonus": 0.2,
+      "bonus_unit": "health",
+      "required_mana": 864,
+      "bilateral": false,
+      "ui_anchor_id": "GV-24"
+    },
+    {
+      "id": "GV-25",
+      "name_zh": "素髎",
+      "meridian": "GV",
+      "standard_index": 25,
+      "route_order": 25,
+      "prerequisites": [
+        "GV-24"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": false,
+      "ui_anchor_id": "GV-25"
+    },
+    {
+      "id": "GV-26",
+      "name_zh": "水沟",
+      "meridian": "GV",
+      "standard_index": 26,
+      "route_order": 26,
+      "prerequisites": [
+        "GV-25"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": false,
+      "ui_anchor_id": "GV-26"
+    },
+    {
+      "id": "GV-27",
+      "name_zh": "兑端",
+      "meridian": "GV",
+      "standard_index": 27,
+      "route_order": 27,
+      "prerequisites": [
+        "GV-26"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "defense",
+      "bonus": 0.025,
+      "bonus_unit": "defense",
+      "required_mana": 480,
+      "bilateral": false,
+      "ui_anchor_id": "GV-27"
+    },
+    {
+      "id": "GV-28",
+      "name_zh": "龈交",
+      "meridian": "GV",
+      "standard_index": 28,
+      "route_order": 28,
+      "prerequisites": [
+        "GV-27"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_health",
+      "bonus": 0.1,
+      "bonus_unit": "health",
+      "required_mana": 480,
+      "bilateral": false,
+      "ui_anchor_id": "GV-28"
+    },
+    {
+      "id": "CV-1",
+      "name_zh": "会阴",
+      "meridian": "CV",
+      "standard_index": 1,
+      "route_order": 10,
+      "prerequisites": [
+        "CV-2"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 240,
+      "bilateral": false,
+      "ui_anchor_id": "CV-1"
+    },
+    {
+      "id": "CV-2",
+      "name_zh": "曲骨",
+      "meridian": "CV",
+      "standard_index": 2,
+      "route_order": 8,
+      "prerequisites": [
+        "CV-3"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 240,
+      "bilateral": false,
+      "ui_anchor_id": "CV-2"
+    },
+    {
+      "id": "CV-3",
+      "name_zh": "中极",
+      "meridian": "CV",
+      "standard_index": 3,
+      "route_order": 6,
+      "prerequisites": [
+        "CV-4"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 120,
+      "bilateral": false,
+      "ui_anchor_id": "CV-3"
+    },
+    {
+      "id": "CV-4",
+      "name_zh": "关元",
+      "meridian": "CV",
+      "standard_index": 4,
+      "route_order": 4,
+      "prerequisites": [
+        "CV-5"
+      ],
+      "unlock_stage": 2,
+      "tier": "IMPORTANT",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.5,
+      "bonus_unit": "percentage_points",
+      "required_mana": 216,
+      "bilateral": false,
+      "ui_anchor_id": "CV-4"
+    },
+    {
+      "id": "CV-5",
+      "name_zh": "石门",
+      "meridian": "CV",
+      "standard_index": 5,
+      "route_order": 2,
+      "prerequisites": [
+        "CV-6"
+      ],
+      "unlock_stage": 1,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 60,
+      "bilateral": false,
+      "ui_anchor_id": "CV-5"
+    },
+    {
+      "id": "CV-6",
+      "name_zh": "气海",
+      "meridian": "CV",
+      "standard_index": 6,
+      "route_order": 1,
+      "prerequisites": [],
+      "unlock_stage": 1,
+      "tier": "HUB",
+      "attribute": "max_mana",
+      "bonus": 6.0,
+      "bonus_unit": "mana",
+      "required_mana": 180,
+      "bilateral": false,
+      "ui_anchor_id": "CV-6"
+    },
+    {
+      "id": "CV-7",
+      "name_zh": "阴交",
+      "meridian": "CV",
+      "standard_index": 7,
+      "route_order": 3,
+      "prerequisites": [
+        "CV-6"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 120,
+      "bilateral": false,
+      "ui_anchor_id": "CV-7"
+    },
+    {
+      "id": "CV-8",
+      "name_zh": "神阙",
+      "meridian": "CV",
+      "standard_index": 8,
+      "route_order": 5,
+      "prerequisites": [
+        "CV-7"
+      ],
+      "unlock_stage": 2,
+      "tier": "IMPORTANT",
+      "attribute": "max_health",
+      "bonus": 0.2,
+      "bonus_unit": "health",
+      "required_mana": 216,
+      "bilateral": false,
+      "ui_anchor_id": "CV-8"
+    },
+    {
+      "id": "CV-9",
+      "name_zh": "水分",
+      "meridian": "CV",
+      "standard_index": 9,
+      "route_order": 7,
+      "prerequisites": [
+        "CV-8"
+      ],
+      "unlock_stage": 2,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 120,
+      "bilateral": false,
+      "ui_anchor_id": "CV-9"
+    },
+    {
+      "id": "CV-10",
+      "name_zh": "下脘",
+      "meridian": "CV",
+      "standard_index": 10,
+      "route_order": 9,
+      "prerequisites": [
+        "CV-9"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 240,
+      "bilateral": false,
+      "ui_anchor_id": "CV-10"
+    },
+    {
+      "id": "CV-11",
+      "name_zh": "建里",
+      "meridian": "CV",
+      "standard_index": 11,
+      "route_order": 11,
+      "prerequisites": [
+        "CV-10"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 240,
+      "bilateral": false,
+      "ui_anchor_id": "CV-11"
+    },
+    {
+      "id": "CV-12",
+      "name_zh": "中脘",
+      "meridian": "CV",
+      "standard_index": 12,
+      "route_order": 12,
+      "prerequisites": [
+        "CV-11"
+      ],
+      "unlock_stage": 3,
+      "tier": "IMPORTANT",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.5,
+      "bonus_unit": "percentage_points",
+      "required_mana": 432,
+      "bilateral": false,
+      "ui_anchor_id": "CV-12"
+    },
+    {
+      "id": "CV-13",
+      "name_zh": "上脘",
+      "meridian": "CV",
+      "standard_index": 13,
+      "route_order": 13,
+      "prerequisites": [
+        "CV-12"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 240,
+      "bilateral": false,
+      "ui_anchor_id": "CV-13"
+    },
+    {
+      "id": "CV-14",
+      "name_zh": "巨阙",
+      "meridian": "CV",
+      "standard_index": 14,
+      "route_order": 14,
+      "prerequisites": [
+        "CV-13"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 240,
+      "bilateral": false,
+      "ui_anchor_id": "CV-14"
+    },
+    {
+      "id": "CV-15",
+      "name_zh": "鸠尾",
+      "meridian": "CV",
+      "standard_index": 15,
+      "route_order": 15,
+      "prerequisites": [
+        "CV-14"
+      ],
+      "unlock_stage": 3,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 240,
+      "bilateral": false,
+      "ui_anchor_id": "CV-15"
+    },
+    {
+      "id": "CV-16",
+      "name_zh": "中庭",
+      "meridian": "CV",
+      "standard_index": 16,
+      "route_order": 16,
+      "prerequisites": [
+        "CV-15"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": false,
+      "ui_anchor_id": "CV-16"
+    },
+    {
+      "id": "CV-17",
+      "name_zh": "膻中",
+      "meridian": "CV",
+      "standard_index": 17,
+      "route_order": 17,
+      "prerequisites": [
+        "CV-16"
+      ],
+      "unlock_stage": 4,
+      "tier": "HUB",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.75,
+      "bonus_unit": "percentage_points",
+      "required_mana": 1440,
+      "bilateral": false,
+      "ui_anchor_id": "CV-17"
+    },
+    {
+      "id": "CV-18",
+      "name_zh": "玉堂",
+      "meridian": "CV",
+      "standard_index": 18,
+      "route_order": 18,
+      "prerequisites": [
+        "CV-17"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": false,
+      "ui_anchor_id": "CV-18"
+    },
+    {
+      "id": "CV-19",
+      "name_zh": "紫宫",
+      "meridian": "CV",
+      "standard_index": 19,
+      "route_order": 19,
+      "prerequisites": [
+        "CV-18"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 480,
+      "bilateral": false,
+      "ui_anchor_id": "CV-19"
+    },
+    {
+      "id": "CV-20",
+      "name_zh": "华盖",
+      "meridian": "CV",
+      "standard_index": 20,
+      "route_order": 20,
+      "prerequisites": [
+        "CV-19"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.25,
+      "bonus_unit": "percentage_points",
+      "required_mana": 480,
+      "bilateral": false,
+      "ui_anchor_id": "CV-20"
+    },
+    {
+      "id": "CV-21",
+      "name_zh": "璇玑",
+      "meridian": "CV",
+      "standard_index": 21,
+      "route_order": 21,
+      "prerequisites": [
+        "CV-20"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 480,
+      "bilateral": false,
+      "ui_anchor_id": "CV-21"
+    },
+    {
+      "id": "CV-22",
+      "name_zh": "天突",
+      "meridian": "CV",
+      "standard_index": 22,
+      "route_order": 22,
+      "prerequisites": [
+        "CV-21"
+      ],
+      "unlock_stage": 4,
+      "tier": "IMPORTANT",
+      "attribute": "skill_damage_pct",
+      "bonus": 0.5,
+      "bonus_unit": "percentage_points",
+      "required_mana": 864,
+      "bilateral": false,
+      "ui_anchor_id": "CV-22"
+    },
+    {
+      "id": "CV-23",
+      "name_zh": "廉泉",
+      "meridian": "CV",
+      "standard_index": 23,
+      "route_order": 23,
+      "prerequisites": [
+        "CV-22"
+      ],
+      "unlock_stage": 4,
+      "tier": "NORMAL",
+      "attribute": "max_mana",
+      "bonus": 2.0,
+      "bonus_unit": "mana",
+      "required_mana": 480,
+      "bilateral": false,
+      "ui_anchor_id": "CV-23"
+    },
+    {
+      "id": "CV-24",
+      "name_zh": "承浆",
+      "meridian": "CV",
+      "standard_index": 24,
+      "route_order": 24,
+      "prerequisites": [
+        "CV-23"
+      ],
+      "unlock_stage": 4,
+      "tier": "IMPORTANT",
+      "attribute": "mana_regen_pct",
+      "bonus": 0.5,
+      "bonus_unit": "percentage_points",
+      "required_mana": 864,
+      "bilateral": false,
+      "ui_anchor_id": "CV-24"
+    }
+  ]
+}

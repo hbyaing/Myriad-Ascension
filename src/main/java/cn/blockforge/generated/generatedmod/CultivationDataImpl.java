@@ -1,5 +1,6 @@
 package cn.blockforge.generated.generatedmod;
 
+import cn.blockforge.generated.generatedmod.acupoint.AcupointProgress;
 import cn.blockforge.generated.generatedmod.items.CultivationLogic;
 import net.minecraft.core.BlockPos;
 import cn.blockforge.generated.generatedmod.balance.RealmBalance;
@@ -7,6 +8,9 @@ import cn.blockforge.generated.generatedmod.balance.ManaBalance;
 import net.minecraft.nbt.CompoundTag;
 
 public final class CultivationDataImpl implements CultivationData {
+    private final AcupointProgress acupoints = new AcupointProgress();
+    @Override public AcupointProgress acupoints() { return acupoints; }
+
     // Runtime invalidation only; never persisted or sent over protocol 63.
     private long stableSyncVersion,divineSyncVersion;
     public long stableSyncVersion(){return stableSyncVersion;}
@@ -482,6 +486,7 @@ public final class CultivationDataImpl implements CultivationData {
         tag.putString("HeartDemonInvasionCause", heartDemonInvasionCause);
         tag.putInt("DaoHeartCultivation", daoHeartCultivation);
         tag.put("mindscape",mindscapeData.copy());
+        tag.put("Baiqiao", acupoints.save());
         if(heartForgeContract!=null)tag.putUUID("HeartForgeContract",heartForgeContract);
         tag.put("robe_stack",robeStack.save(new CompoundTag()));
         tag.put("yujian_stack",yujianStack.save(new CompoundTag()));
@@ -591,6 +596,7 @@ public final class CultivationDataImpl implements CultivationData {
         daoHeartCultivation = Math.max(0, Math.min(10000, tag.getInt("DaoHeartCultivation")));
         if (legacyUnstable && daoXin != 4) { daoHeartBeforeInvasion = daoXin; daoXin = 4; }
         mindscapeData=tag.getCompound("mindscape").copy();
+        acupoints.load(tag.getCompound("Baiqiao"));
         heartForgeContract=tag.hasUUID("HeartForgeContract")?tag.getUUID("HeartForgeContract"):null;
         robeStack=net.minecraft.world.item.ItemStack.of(tag.getCompound("robe_stack"));
         yujianStack=net.minecraft.world.item.ItemStack.of(tag.getCompound("yujian_stack"));

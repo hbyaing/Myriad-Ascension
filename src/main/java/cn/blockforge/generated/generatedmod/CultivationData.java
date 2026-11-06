@@ -1,10 +1,12 @@
 package cn.blockforge.generated.generatedmod;
 
+import cn.blockforge.generated.generatedmod.acupoint.AcupointProgress;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 
 /** 玩家修炼数据；所有修改均在服务端执行，并通过网络同步给客户端。 */
 public interface CultivationData {
+    AcupointProgress acupoints();
     float getCurrentMana();
     void setCurrentMana(float value);
     float getMaxMana();

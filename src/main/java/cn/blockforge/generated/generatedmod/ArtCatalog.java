@@ -310,6 +310,12 @@ public final class ArtCatalog {
         };
     }
 
+    public static float damageFor(String id, double playerAttack, int uses, CultivationData data) {
+        float base = damageFor(id, playerAttack, uses, cn.blockforge.generated.generatedmod.items.CultivationLogic.maxAura(data));
+        return data == null ? base : base * data.acupoints().bonuses().multiplier(
+                cn.blockforge.generated.generatedmod.acupoint.AcupointCatalog.Stat.SKILL_DAMAGE_PCT);
+    }
+
     public static float damageFor(String id, double playerAttack, int uses, float maxMana) {
         return (float) (playerAttack * artPowerMultiplier(id) + damageBase(id))
                 * damageInjectionMultiplier(id) * proficiencyMultiplier(uses);

@@ -69,6 +69,11 @@ public final class CultivationVisionPage extends CultivationPage {
             bindings.add(new Binding(switchButton,()->Component.literal(ROOT_NAMES[index]),
                     ()->data()!=null&&(index==1||index==3)&&(data().wuxingxiantu$getRootMask()&(1<<index))!=0));
         }
+        Box foundation = layout.foundation();
+        int meridianY = foundation.y() + 22 + Math.max(18, (foundation.h() - 38) / 3);
+        button(foundation.x() + foundation.w() - 41, meridianY - 3, 36, 15,
+                () -> Component.translatable("gui.wuxingxiantu.baiqiao.entry"),
+                () -> minecraft.setScreen(new AcupointScreen(host)), () -> data() != null);
         int actionWidth=(a.w()-14)/2;
         button(a.x()+5,a.y()+18,actionWidth,22,()->Component.literal("渡劫"),()->Network.CHANNEL.sendToServer(new TribulationPacket()),
                 ()->data()!=null&&TribulationManager.canStart(minecraft.player,data()));
@@ -238,13 +243,13 @@ public final class CultivationVisionPage extends CultivationPage {
         int step=Math.max(18,(b.h()-38)/3);
         labelledAttribute(g,b,"dao","道心",Component.translatable("dao.wuxingxiantu."+dao),22,dao==4?0xFFAB302C:CultivationUi.INK,mx,my);
         int status=d.wuxingxiantu$getMeridianStatus();
-        labelledAttribute(g,b,"meridian","经脉",Component.translatable("gui.wuxingxiantu.inner_vision.meridian_"+(status>=2?"shattered":status==1?"damaged":"intact")),22+step,status>0?0xFFAB302C:0xFF30694F,mx,my);
+        labelledAttribute(g,new Box(b.x(), b.y(), b.w()-40, b.h()),"meridian","经脉",Component.translatable("gui.wuxingxiantu.inner_vision.meridian_"+(status>=2?"shattered":status==1?"damaged":"intact")),22+step,status>0?0xFFAB302C:0xFF30694F,mx,my);
         labelledAttribute(g,b,"physique","体质",Component.translatable("physique.wuxingxiantu."+d.wuxingxiantu$getPhysique().id()),22+step*2,0xFF266779,mx,my);
         labelledAttribute(g,b,"purity","阳神纯度",Component.literal(d.wuxingxiantu$getYinShenPurity()+"%"),22+step*3,0xFF266779,mx,my);
         if(b.contains(mx,my)) {
             int row=my-b.y();
             if(row>=17&&row<33)CultivationUi.tooltip(Component.translatable("dao.wuxingxiantu."+dao).append("\n").append(Component.translatable("dao.effect.wuxingxiantu."+dao)));
-            else if(row>=17+step&&row<33+step)CultivationUi.tooltip(status==0?Component.literal("经脉完整\n经脉无损伤减益"):
+            else if(row>=17+step&&row<33+step&&mx<b.x()+b.w()-41)CultivationUi.tooltip(status==0?Component.literal("经脉完整\n经脉无损伤减益"):
                     Component.translatable("effect.wuxingxiantu.meridian_"+(status>=2?"shattered":"damaged")+".description"));
             else if(row>=17+step*2&&row<33+step*2)CultivationUi.tooltip(physiqueHint(d));
         }

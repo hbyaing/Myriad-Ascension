@@ -1,0 +1,7932 @@
+{
+  "schema_version": 1,
+  "coordinate_space": "minecraft_model_front_back_16x32_units",
+  "body_model": {
+    "head": [
+      4,
+      0,
+      8,
+      8
+    ],
+    "torso": [
+      4,
+      8,
+      8,
+      12
+    ],
+    "left_arm": [
+      0,
+      8,
+      4,
+      12
+    ],
+    "right_arm": [
+      12,
+      8,
+      4,
+      12
+    ],
+    "left_leg": [
+      4,
+      20,
+      4,
+      12
+    ],
+    "right_leg": [
+      8,
+      20,
+      4,
+      12
+    ]
+  },
+  "positions": [
+    {
+      "point_id": "LU-1",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.4,
+          "y": 9.4,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.6,
+          "y": 9.4,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LU-2",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.0,
+          "y": 8.6,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.0,
+          "y": 8.6,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LU-3",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 2.85,
+          "y": 9.3,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 13.15,
+          "y": 9.3,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LU-4",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 2.55,
+          "y": 10.5,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 13.45,
+          "y": 10.5,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LU-5",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 2.4,
+          "y": 13.6,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 13.6,
+          "y": 13.6,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LU-6",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 2.0,
+          "y": 15.0,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 14.0,
+          "y": 15.0,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LU-7",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 1.85,
+          "y": 16.2,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 14.15,
+          "y": 16.2,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LU-8",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 1.8,
+          "y": 17.1,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 14.2,
+          "y": 17.1,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LU-9",
+      "schematic_only": true,
+      "zone": "hand",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 1.7,
+          "y": 18.3,
+          "zone": "hand",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 14.3,
+          "y": 18.3,
+          "zone": "hand",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LU-10",
+      "schematic_only": true,
+      "zone": "hand",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 1.45,
+          "y": 19.2,
+          "zone": "hand",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 14.55,
+          "y": 19.2,
+          "zone": "hand",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LU-11",
+      "schematic_only": true,
+      "zone": "hand",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 1.0,
+          "y": 19.55,
+          "zone": "hand",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 15.0,
+          "y": 19.55,
+          "zone": "hand",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LI-1",
+      "schematic_only": true,
+      "zone": "hand",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 1.05,
+          "y": 19.65,
+          "zone": "hand",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 14.95,
+          "y": 19.65,
+          "zone": "hand",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LI-2",
+      "schematic_only": true,
+      "zone": "hand",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 1.225,
+          "y": 19.475,
+          "zone": "hand",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 14.775,
+          "y": 19.475,
+          "zone": "hand",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LI-3",
+      "schematic_only": true,
+      "zone": "hand",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 1.4,
+          "y": 19.3,
+          "zone": "hand",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 14.6,
+          "y": 19.3,
+          "zone": "hand",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LI-4",
+      "schematic_only": true,
+      "zone": "hand",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 1.5,
+          "y": 18.675,
+          "zone": "hand",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 14.5,
+          "y": 18.675,
+          "zone": "hand",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LI-5",
+      "schematic_only": true,
+      "zone": "hand",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 1.6,
+          "y": 18.05,
+          "zone": "hand",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 14.4,
+          "y": 18.05,
+          "zone": "hand",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LI-6",
+      "schematic_only": true,
+      "zone": "hand",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 1.517,
+          "y": 17.25,
+          "zone": "hand",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 14.483,
+          "y": 17.25,
+          "zone": "hand",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LI-7",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 1.433,
+          "y": 16.45,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 14.567,
+          "y": 16.45,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LI-8",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 1.35,
+          "y": 15.65,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 14.65,
+          "y": 15.65,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LI-9",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 1.233,
+          "y": 14.583,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 14.767,
+          "y": 14.583,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LI-10",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 1.117,
+          "y": 13.517,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 14.883,
+          "y": 13.517,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LI-11",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 1.0,
+          "y": 12.45,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 15.0,
+          "y": 12.45,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LI-12",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 1.117,
+          "y": 11.667,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 14.883,
+          "y": 11.667,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LI-13",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 1.233,
+          "y": 10.883,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 14.767,
+          "y": 10.883,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LI-14",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 1.35,
+          "y": 10.1,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 14.65,
+          "y": 10.1,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LI-15",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 3.6,
+          "y": 8.5,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 12.4,
+          "y": 8.5,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LI-16",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.2,
+          "y": 8.2,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.8,
+          "y": 8.2,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LI-17",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.2,
+          "y": 7.7,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.8,
+          "y": 7.7,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LI-18",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.2,
+          "y": 6.8,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.8,
+          "y": 6.8,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LI-19",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.65,
+          "y": 4.4,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.35,
+          "y": 4.4,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LI-20",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.8,
+          "y": 4.6,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.2,
+          "y": 4.6,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-1",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.25,
+          "y": 3.45,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.75,
+          "y": 3.45,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-2",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.125,
+          "y": 3.9,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.875,
+          "y": 3.9,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-3",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.0,
+          "y": 4.35,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.0,
+          "y": 4.35,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-4",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.05,
+          "y": 4.75,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.95,
+          "y": 4.75,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-5",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.1,
+          "y": 5.15,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.9,
+          "y": 5.15,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-6",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.767,
+          "y": 5.767,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.233,
+          "y": 5.767,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-7",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.433,
+          "y": 6.383,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.567,
+          "y": 6.383,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-8",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.1,
+          "y": 7.0,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.9,
+          "y": 7.0,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-9",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.4,
+          "y": 7.4,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.6,
+          "y": 7.4,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-10",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.2,
+          "y": 7.7,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.8,
+          "y": 7.7,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-11",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.0,
+          "y": 8.0,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.0,
+          "y": 8.0,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-12",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.8,
+          "y": 8.3,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.2,
+          "y": 8.3,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-13",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.07,
+          "y": 8.82,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.93,
+          "y": 8.82,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-14",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.34,
+          "y": 9.34,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.66,
+          "y": 9.34,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-15",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.61,
+          "y": 9.86,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.39,
+          "y": 9.86,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-16",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.88,
+          "y": 10.38,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.12,
+          "y": 10.38,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-17",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.15,
+          "y": 10.9,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.85,
+          "y": 10.9,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-18",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.16,
+          "y": 11.36,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.84,
+          "y": 11.36,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-19",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.17,
+          "y": 11.82,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.83,
+          "y": 11.82,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-20",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.18,
+          "y": 12.28,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.82,
+          "y": 12.28,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-21",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.19,
+          "y": 12.74,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.81,
+          "y": 12.74,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-22",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.2,
+          "y": 13.2,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.8,
+          "y": 13.2,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-23",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.19,
+          "y": 14.02,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.81,
+          "y": 14.02,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-24",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.18,
+          "y": 14.84,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.82,
+          "y": 14.84,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-25",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.17,
+          "y": 15.66,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.83,
+          "y": 15.66,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-26",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.16,
+          "y": 16.48,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.84,
+          "y": 16.48,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-27",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.15,
+          "y": 17.3,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.85,
+          "y": 17.3,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-28",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.1,
+          "y": 17.983,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.9,
+          "y": 17.983,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-29",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.05,
+          "y": 18.667,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.95,
+          "y": 18.667,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-30",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.0,
+          "y": 19.35,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.0,
+          "y": 19.35,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-31",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.0,
+          "y": 21.0,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.0,
+          "y": 21.0,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-32",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.013,
+          "y": 21.875,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.987,
+          "y": 21.875,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-33",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.025,
+          "y": 22.75,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.975,
+          "y": 22.75,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-34",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.037,
+          "y": 23.625,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.963,
+          "y": 23.625,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-35",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.05,
+          "y": 24.5,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.95,
+          "y": 24.5,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-36",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.1,
+          "y": 25.6,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.9,
+          "y": 25.6,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-37",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.125,
+          "y": 26.475,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.875,
+          "y": 26.475,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-38",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.15,
+          "y": 27.35,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.85,
+          "y": 27.35,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-39",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.175,
+          "y": 28.225,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.825,
+          "y": 28.225,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-40",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.2,
+          "y": 29.1,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.8,
+          "y": 29.1,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-41",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.15,
+          "y": 29.8,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.85,
+          "y": 29.8,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-42",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.138,
+          "y": 30.288,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.862,
+          "y": 30.288,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-43",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.125,
+          "y": 30.775,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.875,
+          "y": 30.775,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-44",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.112,
+          "y": 31.262,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.888,
+          "y": 31.262,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "ST-45",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.1,
+          "y": 31.75,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.9,
+          "y": 31.75,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SP-1",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.2,
+          "y": 31.75,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.8,
+          "y": 31.75,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SP-2",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.25,
+          "y": 31.3,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.75,
+          "y": 31.3,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SP-3",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.3,
+          "y": 30.85,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.7,
+          "y": 30.85,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SP-4",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.35,
+          "y": 30.4,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.65,
+          "y": 30.4,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SP-5",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.45,
+          "y": 29.7,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.55,
+          "y": 29.7,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SP-6",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.817,
+          "y": 28.7,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.183,
+          "y": 28.7,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SP-7",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.183,
+          "y": 27.7,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.817,
+          "y": 27.7,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SP-8",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.55,
+          "y": 26.7,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.45,
+          "y": 26.7,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SP-9",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.65,
+          "y": 25.8,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.35,
+          "y": 25.8,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SP-10",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.6,
+          "y": 23.6,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.4,
+          "y": 23.6,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SP-11",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.55,
+          "y": 21.4,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.45,
+          "y": 21.4,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SP-12",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.65,
+          "y": 19.15,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.35,
+          "y": 19.15,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SP-13",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.75,
+          "y": 18.083,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.25,
+          "y": 18.083,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SP-14",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.85,
+          "y": 17.017,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.15,
+          "y": 17.017,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SP-15",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.95,
+          "y": 15.95,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.05,
+          "y": 15.95,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SP-16",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.817,
+          "y": 14.65,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.183,
+          "y": 14.65,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SP-17",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.683,
+          "y": 13.35,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.317,
+          "y": 13.35,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SP-18",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.55,
+          "y": 12.05,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.45,
+          "y": 12.05,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SP-19",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.65,
+          "y": 10.925,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.35,
+          "y": 10.925,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SP-20",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.75,
+          "y": 9.8,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.25,
+          "y": 9.8,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SP-21",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.1,
+          "y": 11.8,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.9,
+          "y": 11.8,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "HT-1",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 3.4,
+          "y": 9.0,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 12.6,
+          "y": 9.0,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "HT-2",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 2.8,
+          "y": 10.85,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 13.2,
+          "y": 10.85,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "HT-3",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 2.9,
+          "y": 13.9,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 13.1,
+          "y": 13.9,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "HT-4",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 2.5,
+          "y": 15.2,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 13.5,
+          "y": 15.2,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "HT-5",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 2.483,
+          "y": 16.167,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 13.517,
+          "y": 16.167,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "HT-6",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 2.467,
+          "y": 17.133,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 13.533,
+          "y": 17.133,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "HT-7",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 2.45,
+          "y": 18.1,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 13.55,
+          "y": 18.1,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "HT-8",
+      "schematic_only": true,
+      "zone": "hand",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 2.45,
+          "y": 19.1,
+          "zone": "hand",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 13.55,
+          "y": 19.1,
+          "zone": "hand",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "HT-9",
+      "schematic_only": true,
+      "zone": "hand",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 2.8,
+          "y": 19.75,
+          "zone": "hand",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 13.2,
+          "y": 19.75,
+          "zone": "hand",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SI-1",
+      "schematic_only": true,
+      "zone": "hand",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 1.1,
+          "y": 19.65,
+          "zone": "hand",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 14.9,
+          "y": 19.65,
+          "zone": "hand",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SI-2",
+      "schematic_only": true,
+      "zone": "hand",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 1.2,
+          "y": 19.367,
+          "zone": "hand",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 14.8,
+          "y": 19.367,
+          "zone": "hand",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SI-3",
+      "schematic_only": true,
+      "zone": "hand",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 1.3,
+          "y": 19.083,
+          "zone": "hand",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 14.7,
+          "y": 19.083,
+          "zone": "hand",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SI-4",
+      "schematic_only": true,
+      "zone": "hand",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 1.4,
+          "y": 18.8,
+          "zone": "hand",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 14.6,
+          "y": 18.8,
+          "zone": "hand",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SI-5",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 1.25,
+          "y": 18.15,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 14.75,
+          "y": 18.15,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SI-6",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 1.233,
+          "y": 16.75,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 14.767,
+          "y": 16.75,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SI-7",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 1.217,
+          "y": 15.35,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 14.783,
+          "y": 15.35,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SI-8",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 1.2,
+          "y": 13.95,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 14.8,
+          "y": 13.95,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SI-9",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 2.8,
+          "y": 10.4,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 13.2,
+          "y": 10.4,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SI-10",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 3.45,
+          "y": 9.45,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 12.55,
+          "y": 9.45,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SI-11",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.175,
+          "y": 9.325,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.825,
+          "y": 9.325,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SI-12",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.9,
+          "y": 9.2,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.1,
+          "y": 9.2,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SI-13",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 5.3,
+          "y": 8.85,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 10.7,
+          "y": 8.85,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SI-14",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 5.7,
+          "y": 8.5,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 10.3,
+          "y": 8.5,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SI-15",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 5.85,
+          "y": 8.0,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 10.15,
+          "y": 8.0,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SI-16",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.0,
+          "y": 7.5,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 10.0,
+          "y": 7.5,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SI-17",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 5.1,
+          "y": 6.8,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 10.9,
+          "y": 6.8,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SI-18",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 5.2,
+          "y": 4.2,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 10.8,
+          "y": 4.2,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "SI-19",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.6,
+          "y": 3.9,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.4,
+          "y": 3.9,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-1",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.6,
+          "y": 4.55,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.4,
+          "y": 4.55,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-2",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.2,
+          "y": 3.1,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.8,
+          "y": 3.1,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-3",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.2,
+          "y": 2.3,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.8,
+          "y": 2.3,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-4",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 5.65,
+          "y": 1.95,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 10.35,
+          "y": 1.95,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-5",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 5.863,
+          "y": 2.825,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 10.137,
+          "y": 2.825,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-6",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.075,
+          "y": 3.7,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.925,
+          "y": 3.7,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-7",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.287,
+          "y": 4.575,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.713,
+          "y": 4.575,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-8",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.5,
+          "y": 5.45,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.5,
+          "y": 5.45,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-9",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.675,
+          "y": 6.425,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.325,
+          "y": 6.425,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-10",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.85,
+          "y": 7.4,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.15,
+          "y": 7.4,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-11",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.3,
+          "y": 9.0,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.7,
+          "y": 9.0,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-12",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.3,
+          "y": 9.4,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.7,
+          "y": 9.4,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-13",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.3,
+          "y": 9.8,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.7,
+          "y": 9.8,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-14",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.3,
+          "y": 10.2,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.7,
+          "y": 10.2,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-15",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.3,
+          "y": 10.6,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.7,
+          "y": 10.6,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-16",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.3,
+          "y": 11.0,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.7,
+          "y": 11.0,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-17",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.3,
+          "y": 11.4,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.7,
+          "y": 11.4,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-18",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.292,
+          "y": 11.875,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.708,
+          "y": 11.875,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-19",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.283,
+          "y": 12.35,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.717,
+          "y": 12.35,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-20",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.275,
+          "y": 12.825,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.725,
+          "y": 12.825,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-21",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.267,
+          "y": 13.3,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.733,
+          "y": 13.3,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-22",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.258,
+          "y": 13.775,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.742,
+          "y": 13.775,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-23",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.25,
+          "y": 14.25,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.75,
+          "y": 14.25,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-24",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.25,
+          "y": 14.792,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.75,
+          "y": 14.792,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-25",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.25,
+          "y": 15.333,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.75,
+          "y": 15.333,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-26",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.25,
+          "y": 15.875,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.75,
+          "y": 15.875,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-27",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.25,
+          "y": 16.417,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.75,
+          "y": 16.417,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-28",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.25,
+          "y": 16.958,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.75,
+          "y": 16.958,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-29",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.25,
+          "y": 17.5,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.75,
+          "y": 17.5,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-30",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.258,
+          "y": 17.842,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.742,
+          "y": 17.842,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-31",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.267,
+          "y": 18.183,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.733,
+          "y": 18.183,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-32",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.275,
+          "y": 18.525,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.725,
+          "y": 18.525,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-33",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.283,
+          "y": 18.867,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.717,
+          "y": 18.867,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-34",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.292,
+          "y": 19.208,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.708,
+          "y": 19.208,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-35",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.3,
+          "y": 19.55,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.7,
+          "y": 19.55,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-36",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 5.05,
+          "y": 21.0,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 10.95,
+          "y": 21.0,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-37",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 5.112,
+          "y": 21.95,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 10.888,
+          "y": 21.95,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-38",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 5.175,
+          "y": 22.9,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 10.825,
+          "y": 22.9,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-39",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 5.237,
+          "y": 23.85,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 10.763,
+          "y": 23.85,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-40",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 5.3,
+          "y": 24.8,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 10.7,
+          "y": 24.8,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-41",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.55,
+          "y": 8.9,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.45,
+          "y": 8.9,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-42",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.55,
+          "y": 9.417,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.45,
+          "y": 9.417,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-43",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.55,
+          "y": 9.933,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.45,
+          "y": 9.933,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-44",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.55,
+          "y": 10.45,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.45,
+          "y": 10.45,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-45",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.55,
+          "y": 10.967,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.45,
+          "y": 10.967,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-46",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.55,
+          "y": 11.483,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.45,
+          "y": 11.483,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-47",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.55,
+          "y": 12.0,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.45,
+          "y": 12.0,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-48",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.557,
+          "y": 13.057,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.443,
+          "y": 13.057,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-49",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.564,
+          "y": 14.114,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.436,
+          "y": 14.114,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-50",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.571,
+          "y": 15.171,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.429,
+          "y": 15.171,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-51",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.579,
+          "y": 16.229,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.421,
+          "y": 16.229,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-52",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.586,
+          "y": 17.286,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.414,
+          "y": 17.286,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-53",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.593,
+          "y": 18.343,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.407,
+          "y": 18.343,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-54",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.6,
+          "y": 19.4,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.4,
+          "y": 19.4,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-55",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.8,
+          "y": 25.65,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.2,
+          "y": 25.65,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-56",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.78,
+          "y": 26.41,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.22,
+          "y": 26.41,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-57",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.76,
+          "y": 27.17,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.24,
+          "y": 27.17,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-58",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.74,
+          "y": 27.93,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.26,
+          "y": 27.93,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-59",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.72,
+          "y": 28.69,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.28,
+          "y": 28.69,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-60",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.7,
+          "y": 29.45,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.3,
+          "y": 29.45,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-61",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.683,
+          "y": 29.867,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.317,
+          "y": 29.867,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-62",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.667,
+          "y": 30.283,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.333,
+          "y": 30.283,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-63",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.65,
+          "y": 30.7,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.35,
+          "y": 30.7,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-64",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.725,
+          "y": 30.962,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.275,
+          "y": 30.962,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-65",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.8,
+          "y": 31.225,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.2,
+          "y": 31.225,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-66",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.875,
+          "y": 31.488,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.125,
+          "y": 31.488,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "BL-67",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.95,
+          "y": 31.75,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.05,
+          "y": 31.75,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-1",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.1,
+          "y": 31.7,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.9,
+          "y": 31.7,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-2",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.325,
+          "y": 30.9,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.675,
+          "y": 30.9,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-3",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.55,
+          "y": 30.1,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.45,
+          "y": 30.1,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-4",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.5,
+          "y": 29.783,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.5,
+          "y": 29.783,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-5",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.45,
+          "y": 29.467,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.55,
+          "y": 29.467,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-6",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.4,
+          "y": 29.15,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.6,
+          "y": 29.15,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-7",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.45,
+          "y": 28.4,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.55,
+          "y": 28.4,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-8",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.5,
+          "y": 27.65,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.5,
+          "y": 27.65,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-9",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.525,
+          "y": 26.825,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.475,
+          "y": 26.825,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-10",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.55,
+          "y": 26.0,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.45,
+          "y": 26.0,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-11",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 7.1,
+          "y": 19.3,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 8.9,
+          "y": 19.3,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-12",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 7.125,
+          "y": 18.5,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 8.875,
+          "y": 18.5,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-13",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 7.15,
+          "y": 17.7,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 8.85,
+          "y": 17.7,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-14",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 7.175,
+          "y": 16.9,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 8.825,
+          "y": 16.9,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-15",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 7.2,
+          "y": 16.1,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 8.8,
+          "y": 16.1,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-16",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 7.2,
+          "y": 15.18,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 8.8,
+          "y": 15.18,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-17",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 7.2,
+          "y": 14.26,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 8.8,
+          "y": 14.26,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-18",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 7.2,
+          "y": 13.34,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 8.8,
+          "y": 13.34,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-19",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 7.2,
+          "y": 12.42,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 8.8,
+          "y": 12.42,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-20",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 7.2,
+          "y": 11.5,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 8.8,
+          "y": 11.5,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-21",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 7.025,
+          "y": 11.05,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 8.975,
+          "y": 11.05,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-22",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.85,
+          "y": 10.6,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.15,
+          "y": 10.6,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-23",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.86,
+          "y": 10.21,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.14,
+          "y": 10.21,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-24",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.87,
+          "y": 9.82,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.13,
+          "y": 9.82,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-25",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.88,
+          "y": 9.43,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.12,
+          "y": 9.43,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-26",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.89,
+          "y": 9.04,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.11,
+          "y": 9.04,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "KI-27",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.9,
+          "y": 8.65,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.1,
+          "y": 8.65,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "PC-1",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.1,
+          "y": 9.65,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.9,
+          "y": 9.65,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "PC-2",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 2.85,
+          "y": 10.6,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 13.15,
+          "y": 10.6,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "PC-3",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 2.55,
+          "y": 13.65,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 13.45,
+          "y": 13.65,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "PC-4",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 2.3,
+          "y": 15.2,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 13.7,
+          "y": 15.2,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "PC-5",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 2.3,
+          "y": 16.25,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 13.7,
+          "y": 16.25,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "PC-6",
+      "schematic_only": true,
+      "zone": "hand",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 2.3,
+          "y": 17.3,
+          "zone": "hand",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 13.7,
+          "y": 17.3,
+          "zone": "hand",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "PC-7",
+      "schematic_only": true,
+      "zone": "hand",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 2.3,
+          "y": 18.35,
+          "zone": "hand",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 13.7,
+          "y": 18.35,
+          "zone": "hand",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "PC-8",
+      "schematic_only": true,
+      "zone": "hand",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 2.2,
+          "y": 19.15,
+          "zone": "hand",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 13.8,
+          "y": 19.15,
+          "zone": "hand",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "PC-9",
+      "schematic_only": true,
+      "zone": "hand",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 2.0,
+          "y": 19.75,
+          "zone": "hand",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 14.0,
+          "y": 19.75,
+          "zone": "hand",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "TE-1",
+      "schematic_only": true,
+      "zone": "hand",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 1.15,
+          "y": 19.75,
+          "zone": "hand",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 14.85,
+          "y": 19.75,
+          "zone": "hand",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "TE-2",
+      "schematic_only": true,
+      "zone": "hand",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 1.283,
+          "y": 19.233,
+          "zone": "hand",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 14.717,
+          "y": 19.233,
+          "zone": "hand",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "TE-3",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 1.417,
+          "y": 18.717,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 14.583,
+          "y": 18.717,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "TE-4",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 1.55,
+          "y": 18.2,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 14.45,
+          "y": 18.2,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "TE-5",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 1.617,
+          "y": 17.617,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 14.383,
+          "y": 17.617,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "TE-6",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 1.683,
+          "y": 17.033,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 14.317,
+          "y": 17.033,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "TE-7",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 1.75,
+          "y": 16.45,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 14.25,
+          "y": 16.45,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "TE-8",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 1.867,
+          "y": 15.7,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 14.133,
+          "y": 15.7,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "TE-9",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 1.983,
+          "y": 14.95,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 14.017,
+          "y": 14.95,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "TE-10",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 2.1,
+          "y": 14.2,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 13.9,
+          "y": 14.2,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "TE-11",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 2.217,
+          "y": 13.433,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 13.783,
+          "y": 13.433,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "TE-12",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 2.333,
+          "y": 12.667,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 13.667,
+          "y": 12.667,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "TE-13",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 2.45,
+          "y": 11.9,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 13.55,
+          "y": 11.9,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "TE-14",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 3.1,
+          "y": 10.4,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 12.9,
+          "y": 10.4,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "TE-15",
+      "schematic_only": true,
+      "zone": "arm",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 3.75,
+          "y": 8.9,
+          "zone": "arm",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 12.25,
+          "y": 8.9,
+          "zone": "arm",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "TE-16",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 5.1,
+          "y": 8.0,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 10.9,
+          "y": 8.0,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "TE-17",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.7,
+          "y": 6.6,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.3,
+          "y": 6.6,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "TE-18",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.7,
+          "y": 5.933,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.3,
+          "y": 5.933,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "TE-19",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.7,
+          "y": 5.267,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.3,
+          "y": 5.267,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "TE-20",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.7,
+          "y": 4.6,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.3,
+          "y": 4.6,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "TE-21",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 5.0,
+          "y": 4.2,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.0,
+          "y": 4.2,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "TE-22",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 5.275,
+          "y": 3.65,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 10.725,
+          "y": 3.65,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "TE-23",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 5.55,
+          "y": 3.1,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 10.45,
+          "y": 3.1,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-1",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.15,
+          "y": 4.05,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.85,
+          "y": 4.05,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-2",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.975,
+          "y": 4.475,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.025,
+          "y": 4.475,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-3",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.8,
+          "y": 4.9,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.2,
+          "y": 4.9,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-4",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.967,
+          "y": 4.433,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.033,
+          "y": 4.433,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-5",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.133,
+          "y": 3.967,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.867,
+          "y": 3.967,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-6",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.3,
+          "y": 3.5,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.7,
+          "y": 3.5,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-7",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.387,
+          "y": 3.175,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.613,
+          "y": 3.175,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-8",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 5.475,
+          "y": 2.85,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 10.525,
+          "y": 2.85,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-9",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 5.563,
+          "y": 2.525,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 10.437,
+          "y": 2.525,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-10",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 5.65,
+          "y": 2.2,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 10.35,
+          "y": 2.2,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-11",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 5.81,
+          "y": 2.19,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 10.19,
+          "y": 2.19,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-12",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 5.97,
+          "y": 2.18,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 10.03,
+          "y": 2.18,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-13",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.13,
+          "y": 2.17,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.87,
+          "y": 2.17,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-14",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.29,
+          "y": 2.16,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.71,
+          "y": 2.16,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-15",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.45,
+          "y": 2.15,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.55,
+          "y": 2.15,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-16",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 6.17,
+          "y": 3.1,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 9.83,
+          "y": 3.1,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-17",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 5.89,
+          "y": 4.05,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 10.11,
+          "y": 4.05,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-18",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 5.61,
+          "y": 5.0,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 10.39,
+          "y": 5.0,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-19",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 5.33,
+          "y": 5.95,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 10.67,
+          "y": 5.95,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-20",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 5.05,
+          "y": 6.9,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 10.95,
+          "y": 6.9,
+          "zone": "head",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-21",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.1,
+          "y": 8.5,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.9,
+          "y": 8.5,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-22",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "L",
+          "x": 4.183,
+          "y": 9.7,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "back",
+          "side": "R",
+          "x": 11.817,
+          "y": 9.7,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-23",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.267,
+          "y": 10.9,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.733,
+          "y": 10.9,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-24",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.35,
+          "y": 12.1,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.65,
+          "y": 12.1,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-25",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.375,
+          "y": 13.65,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.625,
+          "y": 13.65,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-26",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.4,
+          "y": 15.2,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.6,
+          "y": 15.2,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-27",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.425,
+          "y": 16.75,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.575,
+          "y": 16.75,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-28",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.45,
+          "y": 18.3,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.55,
+          "y": 18.3,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-29",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.417,
+          "y": 19.483,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.583,
+          "y": 19.483,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-30",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.383,
+          "y": 20.667,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.617,
+          "y": 20.667,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-31",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.35,
+          "y": 21.85,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.65,
+          "y": 21.85,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-32",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.35,
+          "y": 22.863,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.65,
+          "y": 22.863,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-33",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.35,
+          "y": 23.875,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.65,
+          "y": 23.875,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-34",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.35,
+          "y": 24.887,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.65,
+          "y": 24.887,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-35",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.35,
+          "y": 25.9,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.65,
+          "y": 25.9,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-36",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.387,
+          "y": 26.775,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.613,
+          "y": 26.775,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-37",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.425,
+          "y": 27.65,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.575,
+          "y": 27.65,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-38",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.463,
+          "y": 28.525,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.537,
+          "y": 28.525,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-39",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.5,
+          "y": 29.4,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.5,
+          "y": 29.4,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-40",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.575,
+          "y": 29.95,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.425,
+          "y": 29.95,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-41",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.65,
+          "y": 30.5,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.35,
+          "y": 30.5,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-42",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.683,
+          "y": 30.917,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.317,
+          "y": 30.917,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-43",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.717,
+          "y": 31.333,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.283,
+          "y": 31.333,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GB-44",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.75,
+          "y": 31.75,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.25,
+          "y": 31.75,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LR-1",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.15,
+          "y": 31.75,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.85,
+          "y": 31.75,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LR-2",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.3,
+          "y": 31.2,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.7,
+          "y": 31.2,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LR-3",
+      "schematic_only": true,
+      "zone": "foot",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.45,
+          "y": 30.65,
+          "zone": "foot",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.55,
+          "y": 30.65,
+          "zone": "foot",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LR-4",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.525,
+          "y": 29.65,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.475,
+          "y": 29.65,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LR-5",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.6,
+          "y": 28.65,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.4,
+          "y": 28.65,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LR-6",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.667,
+          "y": 27.483,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.333,
+          "y": 27.483,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LR-7",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.733,
+          "y": 26.317,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.267,
+          "y": 26.317,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LR-8",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.8,
+          "y": 25.15,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.2,
+          "y": 25.15,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LR-9",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.625,
+          "y": 24.0,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.375,
+          "y": 24.0,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LR-10",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.45,
+          "y": 22.85,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.55,
+          "y": 22.85,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LR-11",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.45,
+          "y": 21.85,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.55,
+          "y": 21.85,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LR-12",
+      "schematic_only": true,
+      "zone": "leg",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 6.45,
+          "y": 20.85,
+          "zone": "leg",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 9.55,
+          "y": 20.85,
+          "zone": "leg",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LR-13",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 4.5,
+          "y": 16.3,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 11.5,
+          "y": 16.3,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "LR-14",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "L",
+          "x": 5.2,
+          "y": 11.85,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        },
+        {
+          "view": "front",
+          "side": "R",
+          "x": 10.8,
+          "y": 11.85,
+          "zone": "torso",
+          "face_note": "镜像游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-1",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "MID",
+          "x": 8.0,
+          "y": 19.85,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-2",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "MID",
+          "x": 8.0,
+          "y": 18.867,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-3",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "MID",
+          "x": 8.0,
+          "y": 17.883,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-4",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "MID",
+          "x": 8.0,
+          "y": 16.9,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-5",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "MID",
+          "x": 8.0,
+          "y": 16.137,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-6",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "MID",
+          "x": 8.0,
+          "y": 15.375,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-7",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "MID",
+          "x": 8.0,
+          "y": 14.612,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-8",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "MID",
+          "x": 8.0,
+          "y": 13.85,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-9",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "MID",
+          "x": 8.0,
+          "y": 12.81,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-10",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "MID",
+          "x": 8.0,
+          "y": 11.77,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-11",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "MID",
+          "x": 8.0,
+          "y": 10.73,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-12",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "MID",
+          "x": 8.0,
+          "y": 9.69,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-13",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "back",
+          "side": "MID",
+          "x": 8.0,
+          "y": 8.65,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-14",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "MID",
+          "x": 8.0,
+          "y": 7.95,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-15",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "MID",
+          "x": 8.0,
+          "y": 7.25,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-16",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "MID",
+          "x": 8.0,
+          "y": 6.0,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-17",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "MID",
+          "x": 8.0,
+          "y": 4.75,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-18",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "MID",
+          "x": 8.0,
+          "y": 3.5,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-19",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "MID",
+          "x": 8.0,
+          "y": 2.25,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-20",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "back",
+          "side": "MID",
+          "x": 8.0,
+          "y": 1.0,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-21",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 1.65,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-22",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 2.183,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-23",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 2.717,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-24",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 3.25,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-25",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 3.875,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-26",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 4.5,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-27",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 5.125,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "GV-28",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 5.75,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "CV-1",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 19.85,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "CV-2",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 19.3,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "CV-3",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 18.75,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "CV-4",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 18.2,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "CV-5",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 17.65,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "CV-6",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 17.1,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "CV-7",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 16.65,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "CV-8",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 16.2,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "CV-9",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 15.625,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "CV-10",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 15.05,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "CV-11",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 14.475,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "CV-12",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 13.9,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "CV-13",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 13.34,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "CV-14",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 12.78,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "CV-15",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 12.22,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "CV-16",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 11.66,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "CV-17",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 11.1,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "CV-18",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 10.567,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "CV-19",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 10.033,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "CV-20",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 9.5,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "CV-21",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 8.875,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "CV-22",
+      "schematic_only": true,
+      "zone": "torso",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 8.25,
+          "zone": "torso",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "CV-23",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 6.4,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    },
+    {
+      "point_id": "CV-24",
+      "schematic_only": true,
+      "zone": "head",
+      "markers": [
+        {
+          "view": "front",
+          "side": "MID",
+          "x": 8.0,
+          "y": 5.5,
+          "zone": "head",
+          "face_note": "2D正背面游戏化投影"
+        }
+      ]
+    }
+  ],
+  "warning": "这是经脉玩法示意坐标，不是医学穴位定位。需要在Minecraft模型表面校准与美术验收；侧面/掌心/脚底仍需独立细化。"
+}

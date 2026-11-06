@@ -65,16 +65,20 @@ import cn.blockforge.generated.generatedmod.network.packet.talisman.TalismanSubm
 import cn.blockforge.generated.generatedmod.network.packet.talisman.TalismanRubPacket;
 import cn.blockforge.generated.generatedmod.network.packet.talisman.TalismanSelectPacket;
 import cn.blockforge.generated.generatedmod.*;
+import cn.blockforge.generated.generatedmod.acupoint.AcupointPackets.Request;
+import cn.blockforge.generated.generatedmod.acupoint.AcupointPackets.State;
 
 
 public final class NetworkChannel {
     // Flight snapshots now carry presentation state on their motion timestamp.
-    private static final String VERSION = "114";
+    private static final String VERSION = "115";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(GeneratedMod.MOD_ID, "main"), () -> VERSION, VERSION::equals, VERSION::equals);
     private static final java.util.Set<Integer> IDS=new java.util.HashSet<>();
 
     public static void register() {
+        c2s(99, Request.class, Request::encode, Request::decode, Request::handle);
+        s2c(100, State.class, State::encode, State::decode, State::handle);
         c2s(96,cn.blockforge.generated.generatedmod.yujian.HuahongSkinPacket.class,cn.blockforge.generated.generatedmod.yujian.HuahongSkinPacket::encode,cn.blockforge.generated.generatedmod.yujian.HuahongSkinPacket::decode,cn.blockforge.generated.generatedmod.yujian.HuahongSkinPacket::handle);
         c2s(80,cn.blockforge.generated.generatedmod.network.packet.cultivation.ExoticFireTargetingPacket.class,cn.blockforge.generated.generatedmod.network.packet.cultivation.ExoticFireTargetingPacket::encode,cn.blockforge.generated.generatedmod.network.packet.cultivation.ExoticFireTargetingPacket::decode,cn.blockforge.generated.generatedmod.network.packet.cultivation.ExoticFireTargetingPacket::handle);
         c2s(79,cn.blockforge.generated.generatedmod.network.packet.cultivation.ManaLossTogglePacket.class,cn.blockforge.generated.generatedmod.network.packet.cultivation.ManaLossTogglePacket::encode,cn.blockforge.generated.generatedmod.network.packet.cultivation.ManaLossTogglePacket::decode,cn.blockforge.generated.generatedmod.network.packet.cultivation.ManaLossTogglePacket::handle);

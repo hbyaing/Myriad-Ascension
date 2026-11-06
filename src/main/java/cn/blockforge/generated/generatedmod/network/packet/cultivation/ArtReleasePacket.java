@@ -101,7 +101,7 @@ public record ArtReleasePacket(int slot) {
             int masteryLevel = ArtCatalog.masteryLevel(mastery);
             int buffTicks = (6 + masteryLevel) * 20;
             double playerAttack = player.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
-            float damage = ArtCatalog.damageFor(art, playerAttack, mastery, CultivationLogic.maxAura(GeneratedMod.data(player)));
+            float damage = ArtCatalog.damageFor(art, playerAttack, mastery, GeneratedMod.data(player));
             if (FourArtsVisuals.FLAME.equals(art)) {
                 damage *= cn.blockforge.generated.generatedmod.balance.HeartMethodBalance.fireDamageMultiplier(
                         ProgressionGate.effectiveHeartMethod(player,GeneratedMod.data(player)));

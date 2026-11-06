@@ -11,6 +11,7 @@ import java.util.function.Consumer;
  * 逻辑由 client 包在启动期替换进来，专用服务端则始终只加载到占位实现。
  */
 public final class ClientPacketSink {
+    public static Consumer<cn.blockforge.generated.generatedmod.acupoint.AcupointPackets.State> acupointState = packet -> {};
     public static Consumer<net.minecraft.nbt.CompoundTag> playerProgression=n->{};
     public static java.util.function.Consumer<net.minecraft.core.BlockPos> coreBlueprint=pos->{};
     public static java.util.function.Consumer<cn.blockforge.generated.generatedmod.network.packet.CoreBuildProgressPacket> coreBuildProgress=packet->{};

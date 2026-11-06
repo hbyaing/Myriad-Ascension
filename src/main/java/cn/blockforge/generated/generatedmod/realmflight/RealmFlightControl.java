@@ -61,6 +61,10 @@ public final class RealmFlightControl {
         s.boostWeight=RealmFlightBalance.approach(s.boostWeight,boost?1:0,1.0/12);
         double cruise=RealmFlightBalance.speed(realm,stage,false)/20;
         double speed=cruise+(RealmFlightBalance.speed(realm,stage,true)/20-cruise)*s.boostWeight,vertical=RealmFlightBalance.vertical(realm,stage)/20;
+        double baiqiaoFlight = d.acupoints().bonuses().multiplier(
+                cn.blockforge.generated.generatedmod.acupoint.AcupointCatalog.Stat.REALM_FLIGHT_SPEED_PCT);
+        speed *= baiqiaoFlight;
+        vertical *= baiqiaoFlight;
         Vec3 target=new Vec3(input.x*speed,input.y*vertical,input.z*speed);
         if(p instanceof ServerPlayer server)cn.blockforge.generated.generatedmod.flight.FlightTerrainStreaming.prefetch(server,p.position(),target);
         var prediction=p.getBoundingBox().deflate(.02).expandTowards(target.scale(3)).inflate(1);

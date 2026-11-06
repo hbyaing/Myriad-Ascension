@@ -29,7 +29,9 @@ public final class ScreenResolutionEvents {
             if(!fitted)return;
             InventoryResolutionFit.restore(mc);fitted=false;
         }else{
-            int requiredWidth=480,requiredHeight=360;
+            // Baiqiao adapts its three columns and body views to a 320×240 canvas.
+            int requiredWidth = screen instanceof AcupointScreen ? 320 : 480;
+            int requiredHeight = screen instanceof AcupointScreen ? 240 : 360;
             if(screen instanceof AbstractContainerScreen<?> container){
                 requiredWidth=Math.max(320,container.getXSize()+32);
                 requiredHeight=Math.max(240,container.getYSize()+32);

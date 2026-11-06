@@ -493,5 +493,15 @@
     "id": 98,
     "type": "cn.blockforge.generated.generatedmod.network.packet.cultivation.IceSpikePacket",
     "direction": "S2C"
+  },
+  {
+    "id": 99,
+    "type": "cn.blockforge.generated.generatedmod.acupoint.AcupointPackets.Request",
+    "direction": "C2S"
+  },
+  {
+    "id": 100,
+    "type": "cn.blockforge.generated.generatedmod.acupoint.AcupointPackets.State",
+    "direction": "S2C"
   }
 ]

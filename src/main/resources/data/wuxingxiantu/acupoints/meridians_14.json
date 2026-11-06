@@ -1,0 +1,284 @@
+{
+  "schema_version": 1,
+  "meridians": [
+    {
+      "id": "LU",
+      "name": "手太阴肺经",
+      "standard_point_count": 11,
+      "element_association_for_game": "金",
+      "root_point_id": "LU-11",
+      "reward": {
+        "attribute": "mana_regen_pct",
+        "full_value": 1.0,
+        "half_fraction": 0.3
+      },
+      "half_threshold": 6,
+      "unlock_order": "path_from_root",
+      "bilateral": true,
+      "extra_rewards": {
+        "swim_speed_pct": 4,
+        "training_pct": 4
+      }
+    },
+    {
+      "id": "LI",
+      "name": "手阳明大肠经",
+      "standard_point_count": 20,
+      "element_association_for_game": "金",
+      "root_point_id": "LI-1",
+      "reward": {
+        "attribute": "attack",
+        "full_value": 0.2,
+        "half_fraction": 0.3
+      },
+      "half_threshold": 10,
+      "unlock_order": "path_from_root",
+      "bilateral": true,
+      "extra_rewards": {
+        "mining_speed_pct": 4,
+        "attack_speed_pct": 4,
+        "block_reach": 0.25
+      }
+    },
+    {
+      "id": "ST",
+      "name": "足阳明胃经",
+      "standard_point_count": 45,
+      "element_association_for_game": "土",
+      "root_point_id": "ST-45",
+      "reward": {
+        "attribute": "max_health",
+        "full_value": 1.0,
+        "half_fraction": 0.3
+      },
+      "half_threshold": 23,
+      "unlock_order": "path_from_root",
+      "bilateral": true,
+      "extra_rewards": {
+        "toughness": 0.5,
+        "crit_chance_pct": 4,
+        "step_height": 0.08
+      }
+    },
+    {
+      "id": "SP",
+      "name": "足太阴脾经",
+      "standard_point_count": 21,
+      "element_association_for_game": "土",
+      "root_point_id": "SP-1",
+      "reward": {
+        "attribute": "mana_regen_pct",
+        "full_value": 1.0,
+        "half_fraction": 0.3
+      },
+      "half_threshold": 11,
+      "unlock_order": "path_from_root",
+      "bilateral": true,
+      "extra_rewards": {
+        "step_height": 0.12,
+        "luck": 0.6
+      }
+    },
+    {
+      "id": "HT",
+      "name": "手少阴心经",
+      "standard_point_count": 9,
+      "element_association_for_game": "火",
+      "root_point_id": "HT-9",
+      "reward": {
+        "attribute": "max_mana",
+        "full_value": 5.0,
+        "half_fraction": 0.3
+      },
+      "half_threshold": 5,
+      "unlock_order": "path_from_root",
+      "bilateral": true,
+      "extra_rewards": {
+        "ranged_damage_pct": 4,
+        "training_pct": 4
+      }
+    },
+    {
+      "id": "SI",
+      "name": "手太阳小肠经",
+      "standard_point_count": 19,
+      "element_association_for_game": "火",
+      "root_point_id": "SI-1",
+      "reward": {
+        "attribute": "attack",
+        "full_value": 0.15,
+        "half_fraction": 0.3
+      },
+      "half_threshold": 10,
+      "unlock_order": "path_from_root",
+      "bilateral": true,
+      "extra_rewards": {
+        "mining_speed_pct": 3,
+        "attack_speed_pct": 3,
+        "lightness_pct": 2,
+        "entity_reach": 0.15
+      }
+    },
+    {
+      "id": "BL",
+      "name": "足太阳膀胱经",
+      "standard_point_count": 67,
+      "element_association_for_game": "水",
+      "root_point_id": "BL-67",
+      "reward": {
+        "attribute": "defense",
+        "full_value": 0.5,
+        "half_fraction": 0.3
+      },
+      "half_threshold": 34,
+      "unlock_order": "path_from_root",
+      "bilateral": true,
+      "extra_rewards": {
+        "toughness": 0.75,
+        "ranged_damage_pct": 4
+      }
+    },
+    {
+      "id": "KI",
+      "name": "足少阴肾经",
+      "standard_point_count": 27,
+      "element_association_for_game": "水",
+      "root_point_id": "KI-1",
+      "reward": {
+        "attribute": "max_mana",
+        "full_value": 8.0,
+        "half_fraction": 0.3
+      },
+      "half_threshold": 14,
+      "unlock_order": "path_from_root",
+      "bilateral": true,
+      "extra_rewards": {
+        "sense_capacity": 10,
+        "swim_speed_pct": 8
+      }
+    },
+    {
+      "id": "PC",
+      "name": "手厥阴心包经",
+      "standard_point_count": 9,
+      "element_association_for_game": "相火",
+      "root_point_id": "PC-9",
+      "reward": {
+        "attribute": "skill_damage_pct",
+        "full_value": 1.0,
+        "half_fraction": 0.3
+      },
+      "half_threshold": 5,
+      "unlock_order": "path_from_root",
+      "bilateral": true,
+      "extra_rewards": {
+        "sense_regen_pct": 4,
+        "crit_damage_pct": 5,
+        "entity_reach": 0.2
+      }
+    },
+    {
+      "id": "TE",
+      "name": "手少阳三焦经",
+      "standard_point_count": 23,
+      "element_association_for_game": "相火",
+      "root_point_id": "TE-1",
+      "reward": {
+        "attribute": "max_mana",
+        "full_value": 6.0,
+        "half_fraction": 0.3
+      },
+      "half_threshold": 12,
+      "unlock_order": "path_from_root",
+      "bilateral": true,
+      "extra_rewards": {
+        "sense_capacity": 10,
+        "crit_chance_pct": 4,
+        "block_reach": 0.25,
+        "sense_scan_radius": 2
+      }
+    },
+    {
+      "id": "GB",
+      "name": "足少阳胆经",
+      "standard_point_count": 44,
+      "element_association_for_game": "木",
+      "root_point_id": "GB-44",
+      "reward": {
+        "attribute": "move_speed_pct",
+        "full_value": 0.5,
+        "half_fraction": 0.3
+      },
+      "half_threshold": 22,
+      "unlock_order": "path_from_root",
+      "bilateral": true,
+      "extra_rewards": {
+        "fall_resist_pct": 8,
+        "attack_speed_pct": 3,
+        "jump_power_pct": 4,
+        "realm_flight_speed_pct": 3
+      }
+    },
+    {
+      "id": "LR",
+      "name": "足厥阴肝经",
+      "standard_point_count": 14,
+      "element_association_for_game": "木",
+      "root_point_id": "LR-1",
+      "reward": {
+        "attribute": "attack",
+        "full_value": 0.15,
+        "half_fraction": 0.3
+      },
+      "half_threshold": 7,
+      "unlock_order": "path_from_root",
+      "bilateral": true,
+      "extra_rewards": {
+        "mining_speed_pct": 3,
+        "crit_chance_pct": 4,
+        "jump_power_pct": 2
+      }
+    },
+    {
+      "id": "GV",
+      "name": "督脉",
+      "standard_point_count": 28,
+      "element_association_for_game": "阳",
+      "root_point_id": "GV-4",
+      "reward": {
+        "attribute": "defense",
+        "full_value": 0.5,
+        "half_fraction": 0.3
+      },
+      "half_threshold": 14,
+      "unlock_order": "path_from_root",
+      "bilateral": false,
+      "extra_rewards": {
+        "crit_damage_pct": 5,
+        "lightness_pct": 2,
+        "realm_flight_speed_pct": 3
+      }
+    },
+    {
+      "id": "CV",
+      "name": "任脉",
+      "standard_point_count": 24,
+      "element_association_for_game": "阴",
+      "root_point_id": "CV-6",
+      "reward": {
+        "attribute": "max_mana",
+        "full_value": 10.0,
+        "half_fraction": 0.3
+      },
+      "half_threshold": 12,
+      "unlock_order": "path_from_root",
+      "bilateral": false,
+      "extra_rewards": {
+        "sense_regen_pct": 6,
+        "crit_damage_pct": 5,
+        "luck": 0.9,
+        "sense_scan_radius": 2
+      }
+    }
+  ]
+}

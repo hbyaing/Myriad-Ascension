@@ -81,7 +81,7 @@ public final class SustainedSwordArts {
         CultivationData data = GeneratedMod.data(player);
         if (data == null || !supports(art)) return 0;
         return ArtCatalog.damageFor(art,player.getAttributeValue(Attributes.ATTACK_DAMAGE),
-                data.wuxingxiantu$getArtMastery(art),CultivationLogic.maxAura(data))
+                data.wuxingxiantu$getArtMastery(art),data)
                 * (JIUXIAO.equals(art) ? .14F : .18F);
     }
     public static String description(String art, int mastery) {
