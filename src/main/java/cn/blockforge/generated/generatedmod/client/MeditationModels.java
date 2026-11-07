@@ -7,6 +7,7 @@ import net.minecraft.client.model.geom.*;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.layers.CapeLayer;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -33,6 +34,11 @@ public final class MeditationModels {
                 List layers=(List)layersField.get(renderer);
                 layers.removeIf(layer->layer instanceof HumanoidArmorLayer);
                 layers.removeIf(layer->layer instanceof net.minecraft.client.renderer.entity.layers.PlayerItemInHandLayer);
+                // The vanilla cape uses the player's world cloak history. Flight
+                // renders the rider through a sword-relative root transform, so
+                // install a layer that uses that same interpolated flight frame.
+                layers.removeIf(layer->layer instanceof CapeLayer);
+                renderer.addLayer(new FlightCapeLayer((net.minecraft.client.renderer.entity.RenderLayerParent)renderer));
                 ((LivingEntityRenderer)renderer).addLayer(new FlightHands((net.minecraft.client.renderer.entity.RenderLayerParent)renderer,event.getContext().getItemInHandRenderer()));
                 // Keep the same split armor bones when installing visibility and enchantment visuals.
                 renderer.addLayer(new RobeArmorLayer(renderer,new SeatedArmor(0.5F),
@@ -137,6 +143,10 @@ public final class MeditationModels {
             }
         }
         Iterable<ModelPart> parts(HumanoidModel<?> model,PlayerModel<?> skin,boolean flight,boolean forge) {
+            // PlayerModel.bodyParts() normally supplies the head and its hat layer.
+            // The folded pose replaces that iterator, so keep both parts here as
+            // well; otherwise meditation/flight renders the face without the
+            // player's outer head skin (and armor loses its head part too).
             var result=new ArrayList<ModelPart>();result.add(model.body);
             if(skin!=null)result.add(skin.jacket);
             ModelPart[] vanilla={model.rightArm,model.leftArm,model.rightLeg,model.leftLeg};
@@ -151,6 +161,10 @@ public final class MeditationModels {
                     if(!armor) {outer[i][j].visible=overlays[i].visible;result.add(outer[i][j]);}
                 }
             }
+            // Keep the vanilla body-part order: the custom folded limbs above
+            // still render before the head and its outer layer.
+            result.add(model.head);
+            if(skin!=null)result.add(skin.hat);
             return result;
         }
     }

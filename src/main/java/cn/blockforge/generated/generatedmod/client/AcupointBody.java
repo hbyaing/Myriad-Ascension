@@ -40,6 +40,11 @@ final class AcupointBody {
     private static final String[] PARTS = {"head", "torso", "left_arm", "right_arm", "left_leg", "right_leg"};
     private static final int[][] FRONT = {{8, 8}, {20, 20}, {44, 20}, {36, 52}, {4, 20}, {20, 52}};
     private static final int[][] BACK = {{24, 8}, {32, 20}, {44, 52}, {52, 20}, {28, 52}, {12, 20}};
+    // The Baiqiao projection uses the same 64x64 player-skin atlas as the
+    // in-world model. These are the front/back rectangles for the second
+    // (hat, jacket, sleeve and pants) layer, in PARTS order.
+    private static final int[][] OUTER_FRONT = {{40, 8}, {20, 36}, {44, 36}, {52, 52}, {4, 36}, {4, 52}};
+    private static final int[][] OUTER_BACK = {{56, 8}, {32, 36}, {60, 52}, {52, 36}, {12, 52}, {12, 36}};
 
     static Topology project(Data catalog, List<Projector> projectors, Predicate<Point> filter) {
         List<Dot> dots = new ArrayList<>();
@@ -72,15 +77,31 @@ final class AcupointBody {
     }
 
     static void skin(GuiGraphics graphics, LocalPlayer player, Data catalog, Projector projector) {
-        int[][] uvs = projector.back ? BACK : FRONT;
         RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
         graphics.setColor(.60F, .66F, .75F, 1);
+        drawSkinLayer(graphics, player, catalog, projector, projector.back ? BACK : FRONT, false);
+        // The outer layer is a second, slightly enlarged model shell in
+        // PlayerModel (CubeDeformation .25). It must be drawn as a separate
+        // full-alpha pass; using the base tint makes transparent hat/jacket
+        // pixels disappear into the translucent body projection.
+        graphics.setColor(.96F, .98F, 1F, 1);
+        drawSkinLayer(graphics, player, catalog, projector, projector.back ? OUTER_BACK : OUTER_FRONT, true);
+        graphics.setColor(1, 1, 1, 1);
+        RenderSystem.disableBlend();
+    }
+
+    private static void drawSkinLayer(GuiGraphics graphics, LocalPlayer player, Data catalog,
+                                      Projector projector, int[][] uvs, boolean outer) {
         for (int i = 0; i < PARTS.length; i++) {
             Region part = catalog.regions().get(PARTS[i]);
-            int x = (int) Math.round(projector.x(part.x()));
-            int y = (int) Math.round(projector.y(part.y()));
-            int w = (int) Math.round(projector.x(part.x() + part.width())) - x;
-            int h = (int) Math.round(projector.y(part.y() + part.height())) - y;
+            // Match the .25-pixel outer CubeDeformation instead of painting
+            // both layers into exactly the same rectangle.
+            double pad = outer ? .28 : 0;
+            int x = (int) Math.round(projector.x(part.x() - pad));
+            int y = (int) Math.round(projector.y(part.y() - pad));
+            int w = (int) Math.round(projector.x(part.x() + part.width() + pad)) - x;
+            int h = (int) Math.round(projector.y(part.y() + part.height() + pad)) - y;
             int textureWidth = part.width();
             int u = uvs[i][0];
             if ((i == 2 || i == 3) && player.getModelName().equals("slim")) {
@@ -90,8 +111,6 @@ final class AcupointBody {
             graphics.blit(player.getSkinTextureLocation(), x, y, w, h,
                     u, uvs[i][1], textureWidth, part.height(), 64, 64);
         }
-        graphics.setColor(1, 1, 1, 1);
-        RenderSystem.disableBlend();
     }
 
     static void backdrop(GuiGraphics g, Box area, List<Projector> projectors) {

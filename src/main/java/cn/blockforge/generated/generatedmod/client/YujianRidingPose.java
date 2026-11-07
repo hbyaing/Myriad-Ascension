@@ -14,12 +14,17 @@ import net.minecraftforge.fml.common.Mod;
 public final class YujianRidingPose {
     private record Saved(float body,float oldBody,float walk) {}
     private static final java.util.Map<java.util.UUID,Saved> SAVED=new java.util.HashMap<>();
+    private static final java.util.Set<java.util.UUID> ACTIVE=new java.util.HashSet<>();
+    static boolean flightRootActive(net.minecraft.client.player.AbstractClientPlayer player){
+        return ACTIVE.contains(player.getUUID());
+    }
     @SubscribeEvent(priority=net.minecraftforge.eventbus.api.EventPriority.LOWEST)
     public static void before(net.minecraftforge.client.event.RenderPlayerEvent.Pre event){
         var player=event.getEntity();
         if(cn.blockforge.generated.generatedmod.ParalysisControl.blocked(player)||event.isCanceled() || JindouCloudRenderState.isActive(player)
                 || !(player.getVehicle() instanceof ControlledSwordEntity sword) || !sword.flightRoot())return;
         SAVED.put(player.getUUID(),new Saved(player.yBodyRot,player.yBodyRotO,player.walkAnimation.speed()));
+        ACTIVE.add(player.getUUID());
         var frame=InterpolatedFlyingSwordTransform.get(sword,event.getPartialTick());
         player.yBodyRot=frame.yaw();player.yBodyRotO=frame.yaw();
         player.walkAnimation.setSpeed(0);
@@ -36,6 +41,7 @@ public final class YujianRidingPose {
     public static void after(net.minecraftforge.client.event.RenderPlayerEvent.Post event){
         var saved=SAVED.remove(event.getEntity().getUUID());
         if(saved==null)return;
+        ACTIVE.remove(event.getEntity().getUUID());
         var player=event.getEntity();player.yBodyRot=saved.body;player.yBodyRotO=saved.oldBody;
         player.walkAnimation.setSpeed(saved.walk);event.getPoseStack().popPose();
     }
