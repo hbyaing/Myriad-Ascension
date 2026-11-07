@@ -98,6 +98,23 @@ public final class RealmFlightVisuals {
         var pose=state.pose(partial,HudConfig.REALM_FLIGHT_HORIZONTAL.get());
         return (float)cn.blockforge.generated.generatedmod.realmflight.RealmMeteorTuning.smooth((pose.leanPitch()-25)/40);
     }
+    /** True only while this player's RenderPlayer root has the realm-flight transform. */
+    public static boolean bodyTransformActive(Player player) {
+        return player != null && RENDERING.containsKey(player.getUUID());
+    }
+    /** Local cape pitch contribution for the same interpolated flight frame as the body. */
+    public static float capeLift(Player player,float partial) {
+        var state=player==null?null:STATES.get(player.getUUID());
+        if(state==null)return 6F;
+        var flight=state.pose(partial,HudConfig.REALM_FLIGHT_HORIZONTAL.get());
+        return Mth.clamp(6F+flight.travel()*28F-flight.trajectoryPitch()*.20F,-6F,72F);
+    }
+    /** Local cape bank contribution for turns in the realm-flight frame. */
+    public static float capeBank(Player player,float partial) {
+        var state=player==null?null:STATES.get(player.getUUID());
+        if(state==null)return 0F;
+        return Mth.clamp(state.pose(partial,HudConfig.REALM_FLIGHT_HORIZONTAL.get()).roll()*.35F,-24F,24F);
+    }
     @SubscribeEvent(priority=EventPriority.LOWEST) public static void before(RenderPlayerEvent.Pre e) {
         if(cn.blockforge.generated.generatedmod.ParalysisControl.blocked(e.getEntity())||e.isCanceled()||excluded(e.getEntity())||vanillaChoice(e.getEntity()))return;
         var s=STATES.get(e.getEntity().getUUID());if(s==null)return;

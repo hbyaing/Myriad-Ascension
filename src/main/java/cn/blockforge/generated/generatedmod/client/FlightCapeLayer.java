@@ -1,6 +1,7 @@
 package cn.blockforge.generated.generatedmod.client;
 
 import cn.blockforge.generated.generatedmod.yujian.ControlledSwordEntity;
+import cn.blockforge.generated.generatedmod.client.realmflight.RealmFlightVisuals;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -32,8 +33,10 @@ final class FlightCapeLayer extends CapeLayer {
     public void render(PoseStack pose, MultiBufferSource buffers, int light,
                        AbstractClientPlayer player, float limbSwing, float limbSwingAmount,
                        float partial, float age, float netHeadYaw, float headPitch) {
-        if (!(player.getVehicle() instanceof ControlledSwordEntity sword) || !sword.flightRoot()
-                || !YujianRidingPose.flightRootActive(player)) {
+        ControlledSwordEntity sword = player.getVehicle() instanceof ControlledSwordEntity vehicle ? vehicle : null;
+        boolean yujian = sword != null && sword.flightRoot() && YujianRidingPose.flightRootActive(player);
+        boolean realm = RealmFlightVisuals.bodyTransformActive(player);
+        if (!yujian && !realm) {
             super.render(pose, buffers, light, player, limbSwing, limbSwingAmount, partial, age, netHeadYaw, headPitch);
             return;
         }
@@ -42,16 +45,23 @@ final class FlightCapeLayer extends CapeLayer {
                 || player.getCloakTextureLocation() == null
                 || player.getItemBySlot(EquipmentSlot.CHEST).is(Items.ELYTRA)) return;
 
-        var frame = InterpolatedFlyingSwordTransform.get(sword, partial);
-        float speed = Mth.clamp(frame.speedFactor(), 0F, 1.5F);
-        float climb = (float) Mth.clamp(frame.forward().y * 14.0D, -14.0D, 14.0D);
-        float turn = Mth.clamp(frame.angular() * 20F * Mth.RAD_TO_DEG, -24F, 24F);
-        float bank = Mth.clamp(frame.roll() * .35F + turn * .35F, -24F, 24F);
+        float lift;
+        float bank;
+        if (yujian) {
+            var frame = InterpolatedFlyingSwordTransform.get(sword, partial);
+            float speed = Mth.clamp(frame.speedFactor(), 0F, 1.5F);
+            float climb = (float) Mth.clamp(frame.forward().y * 14.0D, -14.0D, 14.0D);
+            float turn = Mth.clamp(frame.angular() * 20F * Mth.RAD_TO_DEG, -24F, 24F);
+            bank = Mth.clamp(frame.roll() * .35F + turn * .35F, -24F, 24F);
+            lift = Mth.clamp(6F + speed * 28F + climb, -6F, 72F);
+        } else {
+            lift = RealmFlightVisuals.capeLift(player, partial);
+            bank = RealmFlightVisuals.capeBank(player, partial);
+        }
 
         // The cape is attached at the shoulders.  The normal 6 degree hang is
         // retained at a hover; speed lifts it behind the flight direction and
         // bank/turn keeps the sheet from staying on a stale world heading.
-        float lift = Mth.clamp(6F + speed * 28F + climb, -6F, 72F);
         pose.pushPose();
         pose.translate(0, 0, 0.125F);
         pose.mulPose(Axis.XP.rotationDegrees(lift));
